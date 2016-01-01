@@ -56,8 +56,8 @@ namespace hcube
 
 		void build_tree();
 		void build_tree(node* parent, unsigned int& node, unsigned int level=0);
-		void draw_tree(node* parent, unsigned int level_to_draw = 0, unsigned int level = 0);
-
+        void draw_tree(node* parent, unsigned int level_to_draw = 0, unsigned int level = 0);
+        
 	public:
 
 		//size
@@ -79,11 +79,16 @@ namespace hcube
 			return nullptr;
 		}
 
+        void set_draw_level(unsigned int level=0)
+        {
+            m_level_to_draw = level;
+        }
 
 	private:
 		//levels
-		ivec2		 m_size;
-		unsigned int m_levels;
+        ivec2		 m_size;
+        unsigned int m_levels;
+        unsigned int m_level_to_draw{0};
 		//draw info
 		context_input_layout*  m_layout { nullptr };
 		context_vertex_buffer* m_vbuffer{ nullptr };

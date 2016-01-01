@@ -1,4 +1,3 @@
-#pragma once
 #include <component/lod_sphere_tree.h>
 
 namespace hcube

@@ -21,6 +21,10 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		E01866631E0BCBB000ECE445 /* lod_sphere_tree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E01866611E0BCBB000ECE445 /* lod_sphere_tree.cpp */; };
+		E01866641E0BCBB000ECE445 /* lod_sphere_tree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E01866611E0BCBB000ECE445 /* lod_sphere_tree.cpp */; };
+		E01866651E0BCBB000ECE445 /* lod_terrain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E01866621E0BCBB000ECE445 /* lod_terrain.cpp */; };
+		E01866661E0BCBB000ECE445 /* lod_terrain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E01866621E0BCBB000ECE445 /* lod_terrain.cpp */; };
 		E07A918F1E08B01D00C07728 /* planet_assets in Resources */ = {isa = PBXBuildFile; fileRef = E07A918E1E08B01D00C07728 /* planet_assets */; };
 		E0B0F3391C35FB2600E96215 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E0B0F3381C35FB2600E96215 /* IOKit.framework */; };
 		E0B0F33B1C35FB3500E96215 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E0B0F33A1C35FB3500E96215 /* Cocoa.framework */; };
@@ -54,6 +58,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		E018665E1E0BCBA000ECE445 /* lod_sphere_tree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lod_sphere_tree.h; sourceTree = "<group>"; };
+		E018665F1E0BCBA000ECE445 /* lod_terrain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lod_terrain.h; sourceTree = "<group>"; };
+		E01866611E0BCBB000ECE445 /* lod_sphere_tree.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = lod_sphere_tree.cpp; sourceTree = "<group>"; };
+		E01866621E0BCBB000ECE445 /* lod_terrain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = lod_terrain.cpp; sourceTree = "<group>"; };
 		E063AD891D9D61E800784D40 /* libHCube.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libHCube.dylib; path = ../../build/Debug/libHCube.dylib; sourceTree = "<group>"; };
 		E07A918E1E08B01D00C07728 /* planet_assets */ = {isa = PBXFileReference; lastKnownFileType = folder; name = planet_assets; path = ../planet_assets; sourceTree = "<group>"; };
 		E0B0F3321C35FAE400E96215 /* libHCube.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libHCube.dylib; path = ../../build/Release/libHCube.dylib; sourceTree = "<group>"; };
@@ -100,6 +108,24 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		E018665D1E0BCBA000ECE445 /* component */ = {
+			isa = PBXGroup;
+			children = (
+				E018665E1E0BCBA000ECE445 /* lod_sphere_tree.h */,
+				E018665F1E0BCBA000ECE445 /* lod_terrain.h */,
+			);
+			path = component;
+			sourceTree = "<group>";
+		};
+		E01866601E0BCBB000ECE445 /* component */ = {
+			isa = PBXGroup;
+			children = (
+				E01866611E0BCBB000ECE445 /* lod_sphere_tree.cpp */,
+				E01866621E0BCBB000ECE445 /* lod_terrain.cpp */,
+			);
+			path = component;
+			sourceTree = "<group>";
+		};
 		E063AD8E1D9D648D00784D40 /* osxapp_libs */ = {
 			isa = PBXGroup;
 			children = (
@@ -147,6 +173,7 @@
 		E0B8CA2D1D9D482800754DEA /* include */ = {
 			isa = PBXGroup;
 			children = (
+				E018665D1E0BCBA000ECE445 /* component */,
 				E0B8CA2E1D9D482800754DEA /* app_basic.h */,
 			);
 			path = include;
@@ -155,6 +182,7 @@
 		E0B8CA2F1D9D482800754DEA /* source */ = {
 			isa = PBXGroup;
 			children = (
+				E01866601E0BCBB000ECE445 /* component */,
 				E0B8CA301D9D482800754DEA /* app_basic.cpp */,
 				E0B8CA311D9D482800754DEA /* main.cpp */,
 			);
@@ -292,6 +320,8 @@
 			files = (
 				E0B8CA331D9D482800754DEA /* main.cpp in Sources */,
 				E0B8CA321D9D482800754DEA /* app_basic.cpp in Sources */,
+				E01866631E0BCBB000ECE445 /* lod_sphere_tree.cpp in Sources */,
+				E01866651E0BCBB000ECE445 /* lod_terrain.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -301,6 +331,8 @@
 			files = (
 				E0B8CA611D9D4BE400754DEA /* main.cpp in Sources */,
 				E0B8CA601D9D4BE400754DEA /* app_basic.cpp in Sources */,
+				E01866641E0BCBB000ECE445 /* lod_sphere_tree.cpp in Sources */,
+				E01866661E0BCBB000ECE445 /* lod_terrain.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

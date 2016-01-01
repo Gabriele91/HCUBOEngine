@@ -97,7 +97,8 @@ namespace hcube
 		};
 		material_ptr m_material[4];
 		entity::ptr  m_planet;
-		entity::ptr  m_sky;
+        entity::ptr  m_sky;
+        entity::ptr  m_terrain;
 		planet_draw_state m_planet_draw_state;
 		void set_planet_material(planet_draw_state material);
 		//aspect

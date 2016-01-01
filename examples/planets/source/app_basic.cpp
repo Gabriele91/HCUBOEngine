@@ -48,13 +48,30 @@ namespace hcube
 	void app_basic::key_event(application& app, int key, int scancode, int action, int mods)
 	{
 		//draw move
-		float move_vel = m_planet_draw_state == PDRAW_ON_GROUND ? 0.5 : 5.0f;
-		
+		float move_vel   = m_planet_draw_state == PDRAW_ON_GROUND ? 0.5 : 5.0f;
+        auto l_terrain = (lod_terrain*)&(*m_terrain->get_component<renderable>());
+        
 		if (key == GLFW_KEY_ESCAPE)
 		{
 			m_loop = false;
 			return;
-		}
+        }
+        else if (key == GLFW_KEY_0)
+        {
+            l_terrain->set_draw_level(0);
+        }
+        else if (key == GLFW_KEY_1)
+        {
+            l_terrain->set_draw_level(1);
+        }
+        else if (key == GLFW_KEY_2)
+        {
+            l_terrain->set_draw_level(2);
+        }
+        else if (key == GLFW_KEY_3)
+        {
+            l_terrain->set_draw_level(3);
+        }
 		else if (key == GLFW_KEY_O)
 		{
 			rendering_system*	r_system = m_systems.get_system<rendering_system>();
@@ -247,14 +264,14 @@ namespace hcube
 			//set material
 			set_planet_material(PDRAW_IN_SPACE);
 
-			//test terrain 
-			auto terrain = gameobject::node_new(lod_terrain::snew());
-			auto terrain_mat = m_resources.get_material("earth_terrain");
-			terrain->get_component<renderable>()->set_material(terrain_mat);
-
-			//set camera
-			m_systems.add_entity(terrain);
-			m_systems.add_entity(m_planet);
+			//test terrain
+            
+            m_terrain   = gameobject::node_new(lod_terrain::snew(ivec2{1024,1024},4));
+			m_terrain->get_component<renderable>()->set_material(m_resources.get_material("earth_terrain"));
+            m_terrain->get_component<transform>()->position({0,-100,0});
+            
+            m_systems.add_entity(m_terrain);
+            m_systems.add_entity(m_planet);
 			m_systems.add_entity(m_sky);
 		}
 		

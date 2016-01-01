@@ -1,4 +1,3 @@
-#pragma once
 #include <iostream>
 #include <component/lod_terrain.h>
 #include <hcube/math/tangent_space_calculation.h>
@@ -95,22 +94,22 @@ namespace hcube
 		{
 			ivec2 start = p_info.m_start;
 			ivec2 end = start + l_size;
-			parent->m_chils[0]->build({ m_size, p_info.m_start,	end, v_stride });
+			parent->m_chils[0]->build({ m_size, start,	end, v_stride });
 		}
 		{
 			ivec2 start = p_info.m_start + ivec2(p_g_size.x / 2, 0);
 			ivec2 end = start + l_size;
-			parent->m_chils[1]->build({ m_size, p_info.m_start,	end, v_stride });
+			parent->m_chils[1]->build({ m_size, start,	end, v_stride });
 		}
 		{
 			ivec2 start = p_info.m_start + ivec2(0, p_g_size.y / 2);
 			ivec2 end = start + l_size;
-			parent->m_chils[2]->build({ m_size, p_info.m_start,	end, v_stride });
+			parent->m_chils[2]->build({ m_size, start,	end, v_stride });
 		}
 		{
 			ivec2 start = p_info.m_start + p_g_size / 2;
 			ivec2 end = start + l_size;
-			parent->m_chils[3]->build({ m_size, p_info.m_start,	end, v_stride });
+			parent->m_chils[3]->build({ m_size, start,	end, v_stride });
 		}
 		//next levels
 		++level;
@@ -220,9 +219,11 @@ namespace hcube
 		//size matrix
 		ivec2 l_size = ivec2(info.m_end - info.m_start);
 		ivec2 s_size = l_size / info.m_stride;
-		//jump last
-		//if(g_size != l_size)
-		s_size += ivec2(-1,-1);
+        //jump last
+        //if(g_size.x == info.m_end.x)
+            s_size.x += -1;
+        //if(g_size.y == info.m_end.y)
+            s_size.y += -1;
 		//mapping tris
 		size_t n_quad = (s_size.x) * (s_size.y);
 		std::vector< unsigned int > idxs(n_quad * 6);
@@ -262,8 +263,7 @@ namespace hcube
 		render::bind_VBO(m_vbuffer);
 		render::bind_IL(m_layout);
 		//set index
-		unsigned int lvl = 0;
-		draw_tree(&m_nodes[0], lvl, 0);
+		draw_tree(&m_nodes[0], m_level_to_draw, 0);
 	}
 
 }
