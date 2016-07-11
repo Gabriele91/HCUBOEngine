@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "E09799371D2E5DD2006D1F13"
-               BuildableName = "HCUBOViwer.app"
-               BlueprintName = "HCUBOViwer"
-               ReferencedContainer = "container:OGLHCubeView.xcodeproj">
+               BuildableName = "HCubo.app"
+               BlueprintName = "HCubo"
+               ReferencedContainer = "container:HCubo.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,16 +33,16 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "E09799371D2E5DD2006D1F13"
-            BuildableName = "HCUBOViwer.app"
-            BlueprintName = "HCUBOViwer"
-            ReferencedContainer = "container:OGLHCubeView.xcodeproj">
+            BuildableName = "HCubo.app"
+            BlueprintName = "HCubo"
+            ReferencedContainer = "container:HCubo.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
       </AdditionalOptions>
    </TestAction>
    <LaunchAction
-      buildConfiguration = "Release"
+      buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       launchStyle = "0"
@@ -56,9 +56,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "E09799371D2E5DD2006D1F13"
-            BuildableName = "HCUBOViwer.app"
-            BlueprintName = "HCUBOViwer"
-            ReferencedContainer = "container:OGLHCubeView.xcodeproj">
+            BuildableName = "HCubo.app"
+            BlueprintName = "HCubo"
+            ReferencedContainer = "container:HCubo.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <AdditionalOptions>
@@ -75,9 +75,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "E09799371D2E5DD2006D1F13"
-            BuildableName = "HCUBOViwer.app"
-            BlueprintName = "HCUBOViwer"
-            ReferencedContainer = "container:OGLHCubeView.xcodeproj">
+            BuildableName = "HCubo.app"
+            BlueprintName = "HCubo"
+            ReferencedContainer = "container:HCubo.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

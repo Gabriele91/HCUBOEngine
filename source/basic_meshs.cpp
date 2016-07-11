@@ -4,7 +4,7 @@ namespace basic_meshs
 {
 	mesh::ptr cube(const glm::vec3& cube_size)
 	{
-		glm::vec3& cube_size_h = cube_size * 0.5f;
+		const glm::vec3& cube_size_h = cube_size * 0.5f;
 		//cube
 		mesh::ptr mesh_cube = mesh::snew();
 		//build

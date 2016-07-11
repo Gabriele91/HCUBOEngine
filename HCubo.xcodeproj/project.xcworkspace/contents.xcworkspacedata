@@ -2,6 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:OGLHCubeView.xcodeproj">
+      location = "self:/Volumes/64_GB_SD/GitHub/HCUBOEngine/HCubo.xcodeproj">
    </FileRef>
 </Workspace>
