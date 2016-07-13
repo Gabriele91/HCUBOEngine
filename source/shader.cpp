@@ -107,19 +107,19 @@ void shader::load(const std::string& effect_file,  const std::vector<std::string
             if(compare_and_jmp_keyword(c_effect_line,"vertex"))
             {
                 state = P_VERTEX;
-                vertex+="#line "+std::to_string(line)+"\n";
+                vertex+="#line "+std::to_string(line+1)+"\n";
                 continue;
             }
             else if(compare_and_jmp_keyword(c_effect_line,"fragment"))
             {
                 state = P_FRAGMENT;
-                fragment+="#line "+std::to_string(line)+"\n";
+                fragment+="#line "+std::to_string(line+1)+"\n";
                 continue;
             }
             else if(compare_and_jmp_keyword(c_effect_line,"geometry"))
             {
                 state = P_GEOMETRY;
-                geometry+="#line "+std::to_string(line)+"\n";
+                geometry+="#line "+std::to_string(line+1)+"\n";
                 continue;
             }
         }
