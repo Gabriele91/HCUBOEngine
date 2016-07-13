@@ -7,6 +7,8 @@
 //
 #include <app_basic.h>
 #include <glm/vec2.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <basic_meshs.h>
 #include <regex>
 
 void app_basic::key_event(application& app,int key, int scancode, int action, int mods)
@@ -68,21 +70,33 @@ void app_basic::start(application& app)
     //do clear
     app.clear();
     //load shader
-    m_shader_map.load_standard_shader();
+    m_resources.add_directory("assets",true);
     //camera
     m_camera       = camera::snew();
     glm::vec2 size = app.get_window_size();
     m_aspect       = float(size.x) / float(size.y);
     m_camera->set_viewport(glm::ivec4{0, 0, size.x, size.y});
-    m_camera->look_at(glm::vec3{ 0.0f, 0.0f, 0.0f  },
-                      glm::vec3{ 0.0f, 0.0f, 0.0f  },
-                      glm::vec3{ 0.0f, 1.0f, 0.0f  });
+    m_camera->look_at(glm::vec3{ 0.0f, 0.0f, 10.0f  },
+                      glm::vec3{ 0.0f, 0.0f, 0.0f   },
+                      glm::vec3{ 0.0f, 1.0f, 0.0f   });
     m_camera->set_perspective(m_fov, m_aspect, 0.01, 100.0);
     //set camera
     m_render.set_camera(m_camera);
 	//set render pass
-	m_render.add_rendering_pass(rendering_pass_base::snew());
+    m_render.add_rendering_pass(rendering_pass_base::snew());
     /////// /////// /////// /////// /////// /////// /////// /////// ///////
+    // build scene
+    {
+        //material
+        base_material::ptr base_mat = base_material::snew(m_resources);
+        base_mat->set_color({0,0,1,1});
+        //mesh
+        mesh::ptr  cube_mesh = basic_meshs::cube( { 1.,1., 1. } );
+        //object
+        entity::ptr cube = entity::snew(cube_mesh,base_mat);
+        //add to render
+        m_render.add_entity(cube);
+    }
 }
 
 bool app_basic::run(application& app,double delta_time)
@@ -90,6 +104,9 @@ bool app_basic::run(application& app,double delta_time)
 	//////////////////////////////////////////////////////////
     //clear screen
     app.clear();
+    //rote
+    glm::mat4& model = m_render.get_entities()[0]->m_model;
+    model = glm::rotate(model, float( glm::radians(180.f) * delta_time), glm::vec3( 0.0, 1.0, 0.0 ));
     //////////////////////////////////////////////////////////
     //draw
     m_render.draw();
@@ -147,3 +164,4 @@ bool app_basic::is_fullscreen(application& app) const
 {
     return glfwGetWindowMonitor(app.get_window()) != nullptr;
 }
+

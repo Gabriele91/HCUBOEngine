@@ -14,6 +14,7 @@
 #include <glm/vec4.hpp>
 #include <glm/mat4x4.hpp>
 #include <texture.h>
+#include <smart_pointers.h>
 
 template <class T>
 class uniform
@@ -323,7 +324,7 @@ public:
     }
 };
 
-class shader
+class shader : public smart_pointers<shader>, public resource
 {
 
 public:
@@ -331,25 +332,40 @@ public:
     shader(){}
     virtual ~shader();
     
-    void load_shader(const std::string& vs, const std::string& fs)
+    void load(const std::string& effect)
     {
         std::vector<std::string> defines;
-        load_shader(vs, fs, "", defines);
+        load(effect, defines);
     }
-    void load_shader(const std::string& vs, const std::string& fs, const std::string& gs)
+    
+    
+    void load(const std::string& vs, const std::string& fs)
     {
         std::vector<std::string> defines;
-        load_shader(vs, fs, gs, defines);
+        load(vs, fs, "", defines);
     }
-    void load_shader(const std::string& vs, const std::string& fs, const std::vector<std::string>& defines)
+    
+    void load(const std::string& vs, const std::string& fs, const std::string& gs)
     {
-        load_shader(vs, fs, "", defines);
+        std::vector<std::string> defines;
+        load(vs, fs, gs, defines);
     }
-    void load_shader(const std::string& vs, const std::string& fs, const std::string& gs, const std::vector<std::string>& defines);
-
-
+    
+    void load(const std::string& vs, const std::string& fs,  const std::vector<std::string>& defines)
+    {
+        load(vs, fs, "", defines);
+    }
+    
+    void load(const std::string& effect, const std::vector<std::string>& defines);
+    
+    void load(const std::string& vs, const std::string& fs, const std::string& gs, const std::vector<std::string>& defines);
+    
+    void load_shader(const std::string& vs, size_t line_vs,
+                     const std::string& fs, size_t line_fs,
+                     const std::string& gs, size_t line_gs,
+                     const std::vector<std::string>& defines);
+    
     //get consts
-    //virtual CTexture* getConstTexture(const char *name) = 0;
     uniform_texture*   get_uniform_texture(const char *name);
     uniform_int*       get_uniform_int(const char *name);
     uniform_float*     get_uniform_float(const char *name);

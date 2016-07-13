@@ -7,6 +7,7 @@
 //
 #pragma once
 #include <string>
+#include <vector>
 #include <GLFW/glfw3.h>
 
 namespace native_dialog
@@ -17,8 +18,8 @@ namespace native_dialog
         bool        m_success;
         std::string m_path;
     };
-
-	std::string working_dir();
-	std::string home_dir();
-	open_file_output open_file_dialog(GLFWwindow* window);
+    
+    open_file_output open_file_dialog(GLFWwindow* window,
+                                      const std::string& title,
+                                      const std::vector<std::string>& types);
 };

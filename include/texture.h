@@ -9,9 +9,10 @@
 #include <vector>
 #include <string>
 #include <OpenGL4.h>
+#include <resource.h>
 #include <smart_pointers.h>
 
-class texture : public smart_pointers<texture>
+class texture : public smart_pointers<texture>, public resource
 {
   
     unsigned int m_texture_id{ 0 };

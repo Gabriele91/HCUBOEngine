@@ -1,3 +1,19 @@
+#pragma vertex
+
+layout(location = 0) in vec3 vertex;
+
+uniform mat4 projection;
+uniform mat4 view;
+uniform mat4 model;
+
+void main()
+{
+    gl_Position = projection*view*model*vec4(vertex,1.0);
+}
+
+
+#pragma geometry
+
 layout(triangles) in;
 layout(triangle_strip, max_vertices = 3) out;
 
@@ -32,4 +48,19 @@ void main(void)
     EmitVertex();
     
     EndPrimitive();
+}
+
+
+#pragma fragment
+
+noperspective in vec3 dist;
+uniform vec4 in_color_fill;
+uniform vec4 in_color_wire;
+out vec4 frag_color;
+
+void main(void)
+{
+    float d = min(dist[0],min(dist[1],dist[2]));
+    float intensity = exp2(-2*d*d);
+    frag_color = mix(in_color_fill,in_color_wire,intensity);
 }

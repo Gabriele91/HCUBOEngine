@@ -6,8 +6,8 @@
 //  Copyright © 2016 Gabriele. All rights reserved.
 //
 #pragma once
-#include <shader.h>
-#include <shader_map.h>
+#include <OpenGL4.h>
+#include <glm/mat4x4.hpp>
 #include <camera.h>
 
 class material

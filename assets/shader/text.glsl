@@ -1,3 +1,19 @@
+#pragma vertex
+
+layout(location = 0) in int character;
+out int v_character;
+out int v_position;
+
+void main()
+{
+    v_character = character;
+    v_position  = gl_VertexID;
+    gl_Position = vec4(0, 0, 0, 1);
+}
+
+
+#pragma geometry
+
 layout(points) in;
 layout(triangle_strip, max_vertices = 4) out;
 
@@ -41,4 +57,17 @@ void main()
     tex_coord = vec2(S1, T0); gl_Position = P + U + V; EmitVertex();
     
     EndPrimitive();
+}
+
+#pragma fragment
+
+in vec2 tex_coord;
+out vec4 frag_color;
+
+uniform sampler2D image;
+uniform vec4 in_color;
+
+void main()
+{
+    frag_color = vec4(in_color.xyz, in_color.a*texture(image, tex_coord).r);
 }

@@ -3,7 +3,7 @@
 //  OGLHCubeView
 //
 //  Created by Gabriele on 02/07/16.
-//  Copyright © 2016 Gabriele. All rights reserved.
+//  Copyright ï¿½ 2016 Gabriele. All rights reserved.
 //
 #include <rendering_system.h>
 
@@ -25,6 +25,9 @@ void rendering_system::add_rendering_pass(rendering_pass_ptr pass)
 
 void rendering_pass_base::draw_pass(camera::ptr camera, std::vector< entity::ptr >& entities)
 {
+    const glm::vec4& viewport = camera->get_viewport();
+    glViewport(viewport.x, viewport.y, viewport.z, viewport.w);
+    
 	for (entity::ptr& entity : entities)
 	{
 		entity->m_material->bind(camera.get(), entity->m_model);

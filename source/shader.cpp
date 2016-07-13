@@ -1,29 +1,12 @@
 #include <string>
+#include <sstream>
 #include <vector>
 #include <cstdio>
 #include <iostream>
 #include <shader.h>
 #include <OpenGL4.h>
+#include <filesystem.h>
 
-static std::string text_file_read(const std::string &path)
-{
-    std::string out;
-    /////////////////////////////////////////////////////////////////////
-    FILE* file = fopen(path.c_str(),"rb");
-    //bad case
-    if(!file) return "";
-    /////////////////////////////////////////////////////////////////////
-    std::fseek(file, 0, SEEK_END);
-    size_t size = std::ftell(file);
-    std::fseek(file, 0, SEEK_SET);
-    /////////////////////////////////////////////////////////////////////
-    out.resize(size+1,'\0');
-    std::fread(&out[0], size, 1, file);
-    /////////////////////////////////////////////////////////////////////
-    std::fclose(file);
-    //return
-    return out;
-}
 
 static bool log_error(unsigned int shader, int status,const std::string& type)
 {
@@ -67,9 +50,111 @@ static const char* glsl_type_to_string (GLenum type)
     return "other";
 }
 #endif
-void shader::load_shader(const std::string& vs_file,
-                         const std::string& fs_file,
-                         const std::string& gs_file,
+
+
+inline void jmp_spaces(const char*& str)
+{
+    //jump space chars
+    while((*str) == ' ' || (*str) == '\t' ) ++str;
+}
+
+inline bool compare_and_jmp_keyword(const char*& str,const char* keyword)
+{
+    //get len
+    size_t len_str = std::strlen(keyword);
+    //compare
+    if(std::strncmp(str, keyword, len_str) == 0){ str += len_str; return true; };
+    //else
+    return false;
+}
+
+void shader::load(const std::string& effect_file,  const std::vector<std::string>& defines)
+{
+    //read file
+    std::istringstream effect(filesystem::text_file_read_all(effect_file));
+    //parsing
+    std::string vertex;
+    std::string fragment;
+    std::string geometry;
+    //state
+    enum parsing_state
+    {
+        P_NONE,
+        P_VERTEX,
+        P_FRAGMENT,
+        P_GEOMETRY
+    };
+    parsing_state state = P_NONE;
+    //line buffer
+    std::string effect_line;
+    //count line
+    size_t      line = 0;
+    //start to parse
+    while (std::getline(effect, effect_line))
+    {
+        //line count
+        ++line;
+        //ptr to line
+        const char* c_effect_line = effect_line.c_str();
+        //jmp space
+        jmp_spaces(c_effect_line);
+        //is pragma?
+        if(compare_and_jmp_keyword(c_effect_line,"#pragma"))
+        {
+            //jmp space
+            jmp_spaces(c_effect_line);
+            //type
+            if(compare_and_jmp_keyword(c_effect_line,"vertex"))
+            {
+                state = P_VERTEX;
+                vertex+="#line "+std::to_string(line)+"\n";
+                continue;
+            }
+            else if(compare_and_jmp_keyword(c_effect_line,"fragment"))
+            {
+                state = P_FRAGMENT;
+                fragment+="#line "+std::to_string(line)+"\n";
+                continue;
+            }
+            else if(compare_and_jmp_keyword(c_effect_line,"geometry"))
+            {
+                state = P_GEOMETRY;
+                geometry+="#line "+std::to_string(line)+"\n";
+                continue;
+            }
+        }
+        
+        switch (state)
+        {
+            case P_VERTEX:    vertex   += effect_line; vertex+="\n";   break;
+            case P_FRAGMENT:  fragment += effect_line; fragment+="\n"; break;
+            case P_GEOMETRY:  geometry += effect_line; geometry+="\n"; break;
+            default:   break;
+        }
+    }
+    //load shader
+    load_shader  ( vertex, 0,  fragment, 0, geometry, 0, defines  );
+}
+
+
+void shader::load(const std::string& vs_file,
+                  const std::string& fs_file,
+                  const std::string& gs_file,
+                  const std::vector<std::string>& defines)
+{
+    load_shader
+    (
+        filesystem::text_file_read_all(vs_file), 0,
+        filesystem::text_file_read_all(fs_file), 0,
+        gs_file.size() ?
+        filesystem::text_file_read_all(gs_file) : "", 0,
+        defines
+    );
+}
+
+void shader::load_shader(const std::string& vs_str, size_t line_vs,
+                         const std::string& fs_str, size_t line_fs,
+                         const std::string& gs_str, size_t line_gs,
                          const std::vector<std::string>& defines)
 {
     //delete last shader
@@ -82,14 +167,13 @@ void shader::load_shader(const std::string& vs_file,
     ////////////////////////////////////////////////////////////////////////////////
     // load shaders files
     // vertex
-    std::string file_vs = text_file_read(vs_file);
-    file_vs =
+    std::string file_vs =
     "#version 400\n" +
     defines_string +
     "#define saturate(x) clamp( x, 0.0, 1.0 )       \n"
     "#define lerp        mix                        \n"
-    "#line 0\n" +
-    file_vs;
+    "#line "+std::to_string(line_vs)+"\n" +
+    vs_str;
     //create a vertex shader
     m_shader_vs = glCreateShader(GL_VERTEX_SHADER);
     const char* c_vs_source = file_vs.c_str();
@@ -101,8 +185,7 @@ void shader::load_shader(const std::string& vs_file,
     if (!log_error(m_shader_vs, compiled,"vertex shader")){ glDeleteShader(m_shader_vs); }
     ////////////////////////////////////////////////////////////////////////////////
     //fragmentx
-    std::string file_fs = text_file_read(fs_file);
-    file_fs =
+    std::string file_fs =
     "#version 400\n" +
     defines_string +
     "#define saturate(x) clamp( x, 0.0, 1.0 )       \n"
@@ -111,8 +194,8 @@ void shader::load_shader(const std::string& vs_file,
     "#define highp\n"
     "#define mediump\n"
     "#define lowp\n"
-    "#line 0\n" +
-    file_fs;
+    "#line "+std::to_string(line_fs)+"\n" +
+    fs_str;
     //create a fragment shader
     m_shader_fs = glCreateShader(GL_FRAGMENT_SHADER);
     const char* c_fs_source = file_fs.c_str();
@@ -123,19 +206,18 @@ void shader::load_shader(const std::string& vs_file,
     glGetShaderiv(m_shader_fs, GL_COMPILE_STATUS, &compiled);
     if (!log_error(m_shader_fs, compiled,"fragment shader")){ glDeleteShader(m_shader_fs); }
     ////////////////////////////////////////////////////////////////////////////////
-    if(gs_file.size())
+    if(gs_str.size())
     {
-        //geometry
-        std::string file_gs = gs_file.size() ? text_file_read(gs_file) : "";
-        file_gs =
+        //geometrfs_stry
+        std::string file_gs =
         "#version 400\n" +
         defines_string +
         "#define saturate(x) clamp( x, 0.0, 1.0 )       \n"
         "#define lerp        mix                        \n"
-        "#line 0\n" +
-        file_gs;
+        "#line "+std::to_string(line_gs)+"\n" +
+        gs_str;
         //geometry
-        m_shader_gs = gs_file.size() ? glCreateShader(GL_GEOMETRY_SHADER) : 0;
+        m_shader_gs = glCreateShader(GL_GEOMETRY_SHADER);
         const char* c_gs_source = file_gs.c_str();
         glShaderSource(m_shader_gs, 1, &(c_gs_source), 0);
         //compiling

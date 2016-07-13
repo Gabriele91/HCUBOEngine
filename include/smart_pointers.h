@@ -14,6 +14,7 @@ public:
     
     using ptr  = std::shared_ptr< T >;
     using uptr = std::unique_ptr< T >;
+    using wptr = std::weak_ptr< T >;
     
     template < class... Args >
     static ptr snew(Args&&... args)

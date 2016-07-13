@@ -18,6 +18,8 @@
 //mesh types
 #include <mesh.h>
 #include <text_mesh.h>
+//manager resources
+#include <resources_manager.h>
 //rendering system
 #include <rendering_system.h>
 
@@ -79,7 +81,7 @@ private:
 	//loop 
 	bool m_loop{ true };
     //shader map
-    shader_map       m_shader_map;
+    resources_manager m_resources;
     //camera
     camera::ptr      m_camera;
     //applay

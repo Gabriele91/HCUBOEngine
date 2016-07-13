@@ -12,6 +12,7 @@
 #include <glm/vec4.hpp>
 #include <glm/mat4x4.hpp>
 #include <smart_pointers.h>
+#include <resources_manager.h>
 
 class base_material : public material, public smart_pointers<base_material>
 {
@@ -21,27 +22,31 @@ public:
     {
     }
     
-    base_material(shader_map& map)
+    base_material(resources_manager& resources)
     {
-        init(map);
+        init(resources);
     }
     
-    base_material(shader& base_shader)
+    base_material(shader::ptr base_shader)
     {
         init(base_shader);
     }
     
-    void init(shader_map& map)
+    void init(resources_manager& resources)
     {
-        init(map.get_shader("base"));
+        init(resources.get_shader("base"));
     }
     
-    void init(shader& base_shader)
+    void init(shader::ptr base_shader)
     {
         //save pr shader
-        m_shader = &base_shader;
+        m_shader = base_shader;
         //get color uniform
         m_uniform_color = m_shader->get_shader_uniform_vec4("in_color");
+        //matrix
+        m_uniform_projection = m_shader->get_shader_uniform_mat4("projection");
+        m_uniform_view       = m_shader->get_shader_uniform_mat4("view");
+        m_uniform_model      = m_shader->get_shader_uniform_mat4("model");
     }
     
     void set_color(const glm::vec4& color)
@@ -53,6 +58,9 @@ public:
     {
         m_shader->bind();
         m_uniform_color->set_value(m_color);
+        m_uniform_projection->set_value(cam->get_projection());
+        m_uniform_view->set_value(cam->get_view());
+        m_uniform_model->set_value(model);
     }
     
     virtual void unbind()
@@ -62,9 +70,13 @@ public:
     
 private:
     
-    shader*           m_shader{ nullptr };
+    shader::ptr       m_shader{ nullptr };
     glm::vec4         m_color;
     uniform_vec4::ptr m_uniform_color{ nullptr };
+    //model info
+    uniform_mat4::ptr m_uniform_projection{ nullptr };
+    uniform_mat4::ptr m_uniform_view{ nullptr };
+    uniform_mat4::ptr m_uniform_model{ nullptr };
 };
 
 class points_material : public material, public smart_pointers< points_material >
@@ -75,25 +87,25 @@ public:
     {
     }
     
-    points_material(shader_map& map)
+    points_material(resources_manager& resources)
     {
-        init(map);
+        init(resources);
     }
     
-    points_material(shader& points_shader)
+    points_material(shader::ptr points_shader)
     {
         init(points_shader);
     }
     
-    void init(shader_map& map)
+    void init(resources_manager& resources)
     {
-        init(map.get_shader("points"));
+        init(resources.get_shader("points"));
     }
     
-    void init(shader& points_shader)
+    void init(shader::ptr points_shader)
     {
         //save pr shader
-        m_shader = &points_shader;
+        m_shader = points_shader;
         //get color uniform
         m_uniform_color_center = m_shader->get_shader_uniform_vec4("in_color_center");
         m_uniform_color_border = m_shader->get_shader_uniform_vec4("in_color_border");
@@ -139,7 +151,7 @@ public:
     
 private:
     
-    shader*           m_shader{ nullptr };
+    shader::ptr       m_shader{ nullptr };
     //color info
     glm::vec4         m_color_center;
     uniform_vec4::ptr m_uniform_color_center{ nullptr };
@@ -155,33 +167,33 @@ private:
 };
 
 
-class cube_material : public material, public smart_pointers< cube_material >
+class wireframe_material : public material, public smart_pointers< wireframe_material >
 {
 public:
     
-    cube_material()
+    wireframe_material()
     {
     }
     
-    cube_material(shader_map& map)
+    wireframe_material(resources_manager& resources)
     {
-        init(map);
+        init(resources);
     }
     
-    cube_material(shader& points_shader)
+    wireframe_material(shader::ptr points_shader)
     {
         init(points_shader);
     }
     
-    void init(shader_map& map)
+    void init(resources_manager& resources)
     {
-        init(map.get_shader("cube"));
+        init(resources.get_shader("wireframe"));
     }
     
-    void init(shader& points_shader)
+    void init(shader::ptr points_shader)
     {
         //save pr shader
-        m_shader = &points_shader;
+        m_shader = points_shader;
         //windows scale
         m_uniform_window_size = m_shader->get_shader_uniform_vec2("window_scale");
         m_uniform_line_size   = m_shader->get_shader_uniform_vec2("line_size");
@@ -235,7 +247,7 @@ public:
     
 private:
     
-    shader*           m_shader{ nullptr };
+    shader::ptr       m_shader{ nullptr };
     //line size
     glm::vec2         m_line_size{ 1.0, 1.0 };
     uniform_vec2::ptr m_uniform_line_size;
@@ -262,25 +274,25 @@ public:
     {
     }
     
-    text_material(shader_map& map)
+    text_material(resources_manager& resources)
     {
-        init(map);
+        init(resources);
     }
     
-    text_material(shader& points_shader)
+    text_material(shader::ptr points_shader)
     {
         init(points_shader);
     }
     
-    void init(shader_map& map)
+    void init(resources_manager& map)
     {
         init(map.get_shader("text"));
     }
     
-    void init(shader& points_shader)
+    void init(shader::ptr points_shader)
     {
         //save pr shader
-        m_shader = &points_shader;
+        m_shader = points_shader;
         //uniform texture
         m_uniform_image = m_shader->get_shader_uniform_texture("image");
         //color
@@ -343,7 +355,7 @@ public:
     
 private:
     
-    shader*           m_shader{ nullptr };
+    shader::ptr          m_shader{ nullptr };
     //cell
     texture::ptr         m_image{ nullptr };
     uniform_texture::ptr m_uniform_image{ nullptr };
