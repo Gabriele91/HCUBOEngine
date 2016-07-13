@@ -167,27 +167,28 @@ private:
 };
 
 
-class wireframe_material : public material, public smart_pointers< wireframe_material >
+class triangle_lines_material : public material, public smart_pointers< triangle_lines_material >
 {
+    
 public:
     
-    wireframe_material()
+    triangle_lines_material()
     {
     }
     
-    wireframe_material(resources_manager& resources)
+    triangle_lines_material(resources_manager& resources)
     {
         init(resources);
     }
     
-    wireframe_material(shader::ptr points_shader)
+    triangle_lines_material(shader::ptr points_shader)
     {
         init(points_shader);
     }
     
     void init(resources_manager& resources)
     {
-        init(resources.get_shader("wireframe"));
+        init(resources.get_shader("triangle_lines"));
     }
     
     void init(shader::ptr points_shader)
@@ -204,6 +205,12 @@ public:
         m_uniform_projection = m_shader->get_shader_uniform_mat4("projection");
         m_uniform_view       = m_shader->get_shader_uniform_mat4("view");
         m_uniform_model      = m_shader->get_shader_uniform_mat4("model");
+    }
+    
+    void set_line_size(float line_size)
+    {
+        m_line_size.x = line_size;
+        m_line_size.y = line_size;
     }
     
     void set_line_size(const glm::vec2& line_size)
@@ -265,6 +272,94 @@ private:
     uniform_mat4::ptr m_uniform_model{ nullptr };
 };
 
+class wireframe_material : public material, public smart_pointers< wireframe_material >
+{
+public:
+    
+    wireframe_material()
+    {
+    }
+    
+    wireframe_material(resources_manager& resources)
+    {
+        init(resources);
+    }
+    
+    wireframe_material(shader::ptr points_shader)
+    {
+        init(points_shader);
+    }
+    
+    void init(resources_manager& resources)
+    {
+        init(resources.get_shader("wireframe"));
+    }
+    
+    void init(shader::ptr points_shader)
+    {
+        //save pr shader
+        m_shader = points_shader;
+        //windows scale
+        m_uniform_window_size = m_shader->get_shader_uniform_vec2("window_scale");
+        m_uniform_line_size   = m_shader->get_shader_uniform_vec2("line_size");
+        //get color uniform
+        m_uniform_color_lines = m_shader->get_shader_uniform_vec4("in_color_lines");
+        //get geometry uniform
+        m_uniform_projection = m_shader->get_shader_uniform_mat4("projection");
+        m_uniform_view       = m_shader->get_shader_uniform_mat4("view");
+        m_uniform_model      = m_shader->get_shader_uniform_mat4("model");
+    }
+    
+    void set_line_size(float line_size)
+    {
+        m_line_size.x = line_size;
+        m_line_size.y = line_size;
+    }
+    
+    void set_line_size(const glm::vec2& line_size)
+    {
+        m_line_size = line_size;
+    }
+    
+    void set_color_lines(const glm::vec4& color_wire)
+    {
+        m_color_lines = color_wire;
+    }
+    
+    virtual void bind(camera* cam,const glm::mat4& model)
+    {
+        bind_state();
+        m_shader->bind();
+        m_uniform_window_size->set_value(cam->get_viewport_size());
+        m_uniform_line_size->set_value(m_line_size);
+        m_uniform_color_lines->set_value(m_color_lines);
+        m_uniform_projection->set_value(cam->get_projection());
+        m_uniform_view->set_value(cam->get_view());
+        m_uniform_model->set_value(model);
+    }
+    
+    virtual void unbind()
+    {
+        m_shader->unbind();
+        unbind_state();
+    }
+    
+private:
+    
+    shader::ptr       m_shader{ nullptr };
+    //line size
+    glm::vec2         m_line_size{ 1.0, 1.0 };
+    uniform_vec2::ptr m_uniform_line_size;
+    //color info
+    glm::vec4         m_color_lines;
+    uniform_vec4::ptr m_uniform_color_lines{ nullptr };
+    //window size
+    uniform_vec2::ptr m_uniform_window_size;
+    //model info
+    uniform_mat4::ptr m_uniform_projection{ nullptr };
+    uniform_mat4::ptr m_uniform_view{ nullptr };
+    uniform_mat4::ptr m_uniform_model{ nullptr };
+};
 
 class text_material : public material, public smart_pointers< text_material >
 {

@@ -54,12 +54,13 @@ void main(void)
 #pragma fragment
 
 noperspective in vec3 dist;
-uniform vec4 in_color_lines;
+uniform vec4 in_color_fill;
+uniform vec4 in_color_wire;
 out vec4 frag_color;
 
 void main(void)
 {
     float d = min(dist[0],min(dist[1],dist[2]));
-    if(exp2(-2*d*d) < 0.5) discard;
-    frag_color = in_color_lines;
+    float intensity = exp2(-2*d*d);
+    frag_color = mix(in_color_fill,in_color_wire,intensity);
 }
