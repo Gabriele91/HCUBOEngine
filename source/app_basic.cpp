@@ -88,14 +88,15 @@ void app_basic::start(application& app)
     // build scene
     {
         //material
-        base_material::ptr base_mat = base_material::snew(m_resources);
-        base_mat->set_color({0,0,1,1});
+        base_texture_material::ptr base_mat = base_texture_material::snew(m_resources);
+        base_mat->set_texture(m_resources.get_texture("box"));
+        base_mat->set_color({1,1,1,1});
         //material
         wireframe_material::ptr wireframe_mat = wireframe_material::snew(m_resources);
         wireframe_mat->set_color_lines({ 1., 0.,0., 0. });
         wireframe_mat->set_line_size( 10. );
         //mesh
-        mesh::ptr  cube_mesh = basic_meshs::cube( { 1.,1., 1. } );
+        mesh::ptr  cube_mesh = basic_meshs::cube( { 1.,1., 1. }, true );
         //add to render
         m_render.add_entity(entity::snew(cube_mesh,base_mat));
         //add to render

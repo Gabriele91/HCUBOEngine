@@ -4,5 +4,5 @@
 
 namespace basic_meshs
 {
-	mesh::ptr cube(const glm::vec3& size);
+	mesh::ptr cube(const glm::vec3& size,bool uvmap = false);
 };

@@ -79,6 +79,82 @@ private:
     uniform_mat4::ptr m_uniform_model{ nullptr };
 };
 
+class base_texture_material : public material, public smart_pointers<base_texture_material>
+{
+public:
+    
+    base_texture_material()
+    {
+    }
+    
+    base_texture_material(resources_manager& resources)
+    {
+        init(resources);
+    }
+    
+    base_texture_material(shader::ptr base_shader)
+    {
+        init(base_shader);
+    }
+    
+    void init(resources_manager& resources)
+    {
+        init(resources.get_shader("base_texture"));
+    }
+    
+    void init(shader::ptr base_shader)
+    {
+        //save pr shader
+        m_shader = base_shader;
+        //get color uniform
+        m_uniform_color = m_shader->get_shader_uniform_vec4("in_color");
+        //get texture uniform
+        m_uniform_texture = m_shader->get_shader_uniform_texture("texture_id");
+        //matrix
+        m_uniform_projection = m_shader->get_shader_uniform_mat4("projection");
+        m_uniform_view       = m_shader->get_shader_uniform_mat4("view");
+        m_uniform_model      = m_shader->get_shader_uniform_mat4("model");
+    }
+    
+    void set_color(const glm::vec4& color)
+    {
+        m_color = color;
+    }
+    
+    void set_texture(texture::ptr tex)
+    {
+        m_texture = tex;
+    }
+    
+    virtual void bind(camera* cam,const glm::mat4& model)
+    {
+        m_shader->bind();
+        m_uniform_color->set_value(m_color);
+        m_uniform_texture->set_value(m_texture);
+        m_uniform_projection->set_value(cam->get_projection());
+        m_uniform_view->set_value(cam->get_view());
+        m_uniform_model->set_value(model);
+    }
+    
+    virtual void unbind()
+    {
+        m_shader->unbind();
+    }
+    
+private:
+    
+    shader::ptr          m_shader{ nullptr };
+    glm::vec4            m_color;
+    uniform_vec4::ptr    m_uniform_color{ nullptr };
+    //texture
+    texture::ptr         m_texture;
+    uniform_texture::ptr m_uniform_texture{ nullptr };
+    //model info
+    uniform_mat4::ptr m_uniform_projection{ nullptr };
+    uniform_mat4::ptr m_uniform_view{ nullptr };
+    uniform_mat4::ptr m_uniform_model{ nullptr };
+};
+
 class points_material : public material, public smart_pointers< points_material >
 {
 public:
