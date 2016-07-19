@@ -13,6 +13,8 @@
 		E01A2EEC1D22C51200A8BA77 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E01A2EEB1D22C51200A8BA77 /* Cocoa.framework */; };
 		E01A2EF71D22C58A00A8BA77 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E01A2EF61D22C58A00A8BA77 /* IOKit.framework */; };
 		E01A2EF81D22C5A300A8BA77 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E01A2EF41D22C57500A8BA77 /* CoreVideo.framework */; };
+		E022AF481D3DFF98009F76D5 /* g_buffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E022AF471D3DFF98009F76D5 /* g_buffer.cpp */; };
+		E022AF491D3E01BC009F76D5 /* g_buffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E022AF471D3DFF98009F76D5 /* g_buffer.cpp */; };
 		E03EDC861D34186900C0C22A /* app_basic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E03EDC731D34186900C0C22A /* app_basic.cpp */; };
 		E03EDC871D34186900C0C22A /* application.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E03EDC741D34186900C0C22A /* application.cpp */; };
 		E03EDC881D34186900C0C22A /* basic_meshs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E03EDC751D34186900C0C22A /* basic_meshs.cpp */; };
@@ -74,6 +76,8 @@
 		E01A2EEB1D22C51200A8BA77 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		E01A2EF41D22C57500A8BA77 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
 		E01A2EF61D22C58A00A8BA77 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
+		E022AF461D3DFE5A009F76D5 /* g_buffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = g_buffer.h; sourceTree = "<group>"; };
+		E022AF471D3DFF98009F76D5 /* g_buffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = g_buffer.cpp; sourceTree = "<group>"; };
 		E03EDC731D34186900C0C22A /* app_basic.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = app_basic.cpp; sourceTree = "<group>"; };
 		E03EDC741D34186900C0C22A /* application.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = application.cpp; sourceTree = "<group>"; };
 		E03EDC751D34186900C0C22A /* basic_meshs.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = basic_meshs.cpp; sourceTree = "<group>"; };
@@ -151,10 +155,10 @@
 			children = (
 				E03EDC731D34186900C0C22A /* app_basic.cpp */,
 				E03EDC741D34186900C0C22A /* application.cpp */,
-				E03EDC751D34186900C0C22A /* basic_meshs.cpp */,
 				E03EDC761D34186900C0C22A /* camera.cpp */,
 				E03EDC7A1D34186900C0C22A /* main.cpp */,
 				E03EDC7C1D34186900C0C22A /* mesh.cpp */,
+				E03EDC751D34186900C0C22A /* basic_meshs.cpp */,
 				E03EDC831D34186900C0C22A /* text_mesh.cpp */,
 				E03EDC821D34186900C0C22A /* shader.cpp */,
 				E03EDC841D34186900C0C22A /* texture.cpp */,
@@ -167,6 +171,7 @@
 				E03EDC7D1D34186900C0C22A /* native_dialog.cpp */,
 				E03EDC771D34186900C0C22A /* cocoa_native_dialog.mm */,
 				E03EDC851D34186900C0C22A /* window_native_dialog.cpp */,
+				E022AF471D3DFF98009F76D5 /* g_buffer.cpp */,
 			);
 			path = source;
 			sourceTree = "<group>";
@@ -219,6 +224,7 @@
 				E03EDCB21D3418CF00C0C22A /* filesystem.h */,
 				E03EDCBA1D3418CF00C0C22A /* query_performance.h */,
 				E03EDCB61D3418CF00C0C22A /* native_dialog.h */,
+				E022AF461D3DFE5A009F76D5 /* g_buffer.h */,
 			);
 			path = include;
 			sourceTree = "<group>";
@@ -341,6 +347,7 @@
 				E01461AB1D34D2EC008A2574 /* resources_manager.cpp in Sources */,
 				E03EDC871D34186900C0C22A /* application.cpp in Sources */,
 				E03EDC901D34186900C0C22A /* native_dialog.cpp in Sources */,
+				E022AF481D3DFF98009F76D5 /* g_buffer.cpp in Sources */,
 				E03EDC8B1D34186900C0C22A /* filesystem.cpp in Sources */,
 				E03EDC8C1D34186900C0C22A /* json11.cpp in Sources */,
 				E03EDC881D34186900C0C22A /* basic_meshs.cpp in Sources */,
@@ -365,6 +372,7 @@
 				E01461AC1D34D2EF008A2574 /* resources_manager.cpp in Sources */,
 				E03EDC9A1D34187500C0C22A /* application.cpp in Sources */,
 				E03EDCA31D34187500C0C22A /* native_dialog.cpp in Sources */,
+				E022AF491D3E01BC009F76D5 /* g_buffer.cpp in Sources */,
 				E03EDC9E1D34187500C0C22A /* filesystem.cpp in Sources */,
 				E03EDC9F1D34187500C0C22A /* json11.cpp in Sources */,
 				E03EDC9B1D34187500C0C22A /* basic_meshs.cpp in Sources */,

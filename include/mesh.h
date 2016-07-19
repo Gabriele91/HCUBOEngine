@@ -17,127 +17,48 @@ class mesh :  public smart_pointers< mesh >,  public renderable
 {
 
 public:
-    
-    mesh(){}
-    mesh(const std::vector< glm::vec3 >& points){ build(points); };
-    
-    mesh(const std::vector< glm::vec3 >& points,
-         const std::vector< glm::vec2 >& uvmap)
+    //byte type
+    using byte = unsigned char;
+    //layout field
+    struct input
     {
-        build(points,uvmap);
-    }
-    
-    mesh(const std::vector< glm::vec3 >& points,
-         const std::vector< glm::vec3 >& colors)
+        int m_attribute;
+        int m_size;
+        int m_strip;
+        size_t m_offset;
+    };
+    //layout
+    using input_layout = std::vector< input >;
+    //mesh layout
+    struct mesh_layout
     {
-        build(points,colors);
-    }
-    
-    mesh(const std::vector< glm::vec3 >& points,
-         const std::vector< glm::vec2 >& uvmap,
-         const std::vector< glm::vec3 >& colors)
-    {
-        build(points,uvmap,colors);
-    }
-    
-    mesh(const std::vector< unsigned int >& indexs,
-         const std::vector< glm::vec3 >& points)
-    {
-        build(indexs,points);
-    }
-
-    
-    mesh(const std::vector< unsigned int >& indexs,
-         const std::vector< glm::vec3 >& points,
-         const std::vector< glm::vec2 >& uvmap)
-    
-    {
-        build(indexs,points,uvmap);
-    }
-    
-    mesh(const std::vector< unsigned int >& indexs,
-         const std::vector< glm::vec3 >& points,
-         const std::vector< glm::vec3 >& colors)
-    {
-        build(indexs,points,colors);
-    }
-    
-    mesh(const std::vector< unsigned int >& indexs,
-         const std::vector< glm::vec3 >& points,
-         const std::vector< glm::vec2 >& uvmap,
-         const std::vector< glm::vec3 >& colors)
-    {
-        build(indexs,points,uvmap,colors);
-    }
-    
-    void build(const std::vector< glm::vec3 >& points);
-    
-    void build(const std::vector< glm::vec3 >& points,
-               const std::vector< glm::vec2 >& uvmap);
-    
-    void build(const std::vector< glm::vec3 >& points,
-               const std::vector< glm::vec3 >& colors);
-    
-    void build(const std::vector< glm::vec3 >& points,
-               const std::vector< glm::vec2 >& uvmap,
-               const std::vector< glm::vec3 >& colors);
-    
-    void build(const std::vector< unsigned int >& indexs,
-               const std::vector< glm::vec3 >& points);
-    
-    void build(const std::vector< unsigned int >& indexs,
-               const std::vector< glm::vec3 >& points,
-               const std::vector< glm::vec2 >& uvmap);
-    
-    void build(const std::vector< unsigned int >& indexs,
-               const std::vector< glm::vec3 >& points,
-               const std::vector< glm::vec3 >& colors);
-    
-    void build(const std::vector< unsigned int >& indexs,
-               const std::vector< glm::vec3 >& points,
-               const std::vector< glm::vec2 >& uvmap,
-               const std::vector< glm::vec3 >& colors);
-    
-    struct draw_info
-    {
-        int m_draw_mode       { GL_TRIANGLES };
-        int m_attribute_vertex{ 0 };
-        int m_attribute_uvmap { 1 };
-        int m_attribute_color { 2 };
-        
-        draw_info()
-        {
-        }
-        
-        draw_info(int draw_mode)
-        {
-            m_draw_mode = draw_mode;
-        }
-        
-        draw_info(int draw_mode,int attribute_vertex)
-        {
-            m_draw_mode = draw_mode;
-            m_attribute_vertex = attribute_vertex;
-        }
-        
-        draw_info(int draw_mode,int attribute_vertex,int attribute_uvmap)
-        {
-            m_draw_mode = draw_mode;
-            m_attribute_vertex = attribute_vertex;
-            m_attribute_uvmap  = attribute_uvmap;
-        }
-        
-        draw_info(int draw_mode,int attribute_vertex,int attribute_uvmap,int attribute_color)
-        {
-            m_draw_mode = draw_mode;
-            m_attribute_vertex = attribute_vertex;
-            m_attribute_uvmap  = attribute_uvmap;
-            m_attribute_color  = attribute_color;
-        }
-        
+        input_layout m_input_layout;
+        int m_draw_mode;
+        int m_buffer_mode;
     };
     
-    void set_draw_info(const draw_info& info);
+    
+    mesh(){}
+    
+    mesh(const mesh_layout& layout,
+         const std::vector< byte >& vertex)
+    {
+        build(layout, vertex);
+    }
+    
+    mesh(const mesh_layout& layout,
+         const std::vector< unsigned int >& indexs,
+         const std::vector< byte >& vertex)
+    {
+        build(layout, indexs, vertex);
+    }
+    
+    void build(const mesh_layout& layout,
+               const std::vector< unsigned int >& indexs,
+               const std::vector< byte >& points);
+    
+    void build(const mesh_layout& layout,
+               const std::vector< byte >& points);
     
     void draw();
     
@@ -148,18 +69,14 @@ public:
 protected:
     
     void build_index(const std::vector< unsigned int >& indexs);
-    void build_vertex(const std::vector< glm::vec3 >& points);
-    void build_uvmap(const std::vector< glm::vec2 >& points);
-    void build_color(const std::vector< glm::vec3 >& points);
+    void build_vertex(const std::vector< byte >& points);
     
     void set_buffer(unsigned int buffer,int attribute_location, int strip);
     
-    draw_info    m_info;
+    mesh_layout  m_layout;
     unsigned int m_bvertex_size{ 0 };
     unsigned int m_bindex_size { 0 };
     unsigned int m_bindex      { 0 };
     unsigned int m_bvertex     { 0 };
-    unsigned int m_buvmap      { 0 };
-    unsigned int m_bcolor      { 0 };
     
 };
