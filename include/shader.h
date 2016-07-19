@@ -401,13 +401,13 @@ public:
     virtual void unbind();
     virtual void uniform();
     
-protected:
-    
     //get uniform id
     unsigned int get_uniform_id(const char *name);
   
     //id programma
     unsigned int program_id() const;
+
+protected:
     
     //count uniforms texture
     long m_uniform_ntexture{ -1 };

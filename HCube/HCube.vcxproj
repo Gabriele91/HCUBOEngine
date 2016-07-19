@@ -162,6 +162,7 @@
     <ClInclude Include="..\include\collection_materials.h" />
     <ClInclude Include="..\include\entity.h" />
     <ClInclude Include="..\include\filesystem.h" />
+    <ClInclude Include="..\include\g_buffer.h" />
     <ClInclude Include="..\include\native_dialog.h" />
     <ClInclude Include="..\include\json11.h" />
     <ClInclude Include="..\include\material.h" />
@@ -171,6 +172,8 @@
     <ClInclude Include="..\include\picking_rotation.h" />
     <ClInclude Include="..\include\renderable.h" />
     <ClInclude Include="..\include\rendering_system.h" />
+    <ClInclude Include="..\include\resource.h" />
+    <ClInclude Include="..\include\resources_manager.h" />
     <ClInclude Include="..\include\shader.h" />
     <ClInclude Include="..\include\shader_map.h" />
     <ClInclude Include="..\include\smart_pointers.h" />
@@ -184,6 +187,7 @@
     <ClCompile Include="..\source\basic_meshs.cpp" />
     <ClCompile Include="..\source\camera.cpp" />
     <ClCompile Include="..\source\filesystem.cpp" />
+    <ClCompile Include="..\source\g_buffer.cpp" />
     <ClCompile Include="..\source\native_dialog.cpp" />
     <ClCompile Include="..\source\json11.cpp" />
     <ClCompile Include="..\source\main.cpp" />
@@ -191,21 +195,24 @@
     <ClCompile Include="..\source\pico_png.cpp" />
     <ClCompile Include="..\source\query_performance.cpp" />
     <ClCompile Include="..\source\rendering_system.cpp" />
+    <ClCompile Include="..\source\resources_manager.cpp" />
     <ClCompile Include="..\source\shader.cpp" />
-    <ClCompile Include="..\source\shader_map.cpp" />
     <ClCompile Include="..\source\texture.cpp" />
     <ClCompile Include="..\source\text_mesh.cpp" />
     <ClCompile Include="..\source\window_native_dialog.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\shader\base\base.fs.glsl" />
-    <None Include="..\shader\base\base.vs.glsl" />
-    <None Include="..\shader\cube\cube.fs.glsl" />
-    <None Include="..\shader\cube\cube.gs.glsl" />
-    <None Include="..\shader\cube\cube.vs.glsl" />
-    <None Include="..\shader\points\points.fs.glsl" />
-    <None Include="..\shader\points\points.gs.glsl" />
-    <None Include="..\shader\points\points.vs.glsl" />
+    <None Include="..\assets\shaders\deferred\base.glsl" />
+    <None Include="..\assets\shaders\deferred\base_texture.glsl" />
+    <None Include="..\assets\shaders\deferred\deferred_light.glsl" />
+    <None Include="..\assets\shaders\deferred\text.glsl" />
+    <None Include="..\assets\shaders\deferred\triangle_lines.glsl" />
+    <None Include="..\assets\shaders\deferred\wireframe.glsl" />
+    <None Include="..\assets\shaders\forward\base.glsl" />
+    <None Include="..\assets\shaders\forward\base_texture.glsl" />
+    <None Include="..\assets\shaders\forward\text.glsl" />
+    <None Include="..\assets\shaders\forward\triangle_lines.glsl" />
+    <None Include="..\assets\shaders\forward\wireframe.glsl" />
     <None Include="..\source\cocoa_native_dialog.mm">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <FileType>CppCode</FileType>
@@ -215,7 +222,8 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="..\assets\font.png" />
+    <Image Include="..\assets\textures\box.png" />
+    <Image Include="..\assets\textures\font.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

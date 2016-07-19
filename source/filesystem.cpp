@@ -146,28 +146,28 @@ namespace filesystem
     {
         //test directory
         if(!is_directory(directorypath)) return files_list{ false, std::vector<std::string>{} };
-        //alloc output
-        list_files files_list{ true, std::vector<std::string>{} };
+		//alloc output
+		files_list output{ true, std::vector<std::string>{} };
         //redefine path
         std::string std_directorypath=directorypath+"/";
         std::string path_all=std_directorypath+"*";
         //attributes
-        WIN32_FIND_DATA ffd;
+        WIN32_FIND_DATAA ffd;
         //struct stat st;
-        HANDLE hFind = FindFirstFile(path_all.c_str(), &ffd);
+        HANDLE hFind = FindFirstFileA(path_all.c_str(), &ffd);
         //read all
         do
         {
             if ( !strcmp( ffd.cFileName, "."   )) continue;
             if ( !strcmp( ffd.cFileName, ".."  )) continue;
             //put into vector only files
-            if(is_file(std_directorypath+dirent->d_name))
+            if(is_file(std_directorypath+ffd.cFileName))
             {
-                output.m_fields.push_back(dirent->d_name);
+                output.m_fields.push_back(ffd.cFileName);
             }
             
         }
-        while (FindNextFile(hFind, &ffd) != 0);
+        while (FindNextFileA(hFind, &ffd) != 0);
         //return output
         return output;
     }
@@ -176,28 +176,28 @@ namespace filesystem
     {
         //test directory
         if(!is_directory(directorypath)) return directories_list{ false, std::vector<std::string>{} };
-        //alloc output
-        directories_list files_list{ true, std::vector<std::string>{} };
+		//alloc output
+		files_list output{ true, std::vector<std::string>{} };
         //redefine path
         std::string std_directorypath=directorypath+"/";
         std::string path_all=std_directorypath+"*";
         //attributes
-        WIN32_FIND_DATA ffd;
+        WIN32_FIND_DATAA ffd;
         //struct stat st;
-        HANDLE hFind = FindFirstFile(path_all.c_str(), &ffd);
+        HANDLE hFind = FindFirstFileA(path_all.c_str(), &ffd);
         //read all
         do
         {
             if ( !strcmp( ffd.cFileName, "."   )) continue;
             if ( !strcmp( ffd.cFileName, ".."  )) continue;
             //put into vector only dirs
-            if(is_directory(std_directorypath+dirent->d_name))
+            if(is_directory(std_directorypath+ffd.cFileName))
             {
-                output.m_fields.push_back(dirent->d_name);
+                output.m_fields.push_back(ffd.cFileName);
             }
             
         }
-        while (FindNextFile(hFind, &ffd) != 0);
+        while (FindNextFileA(hFind, &ffd) != 0);
         //return output
         return output;
     }

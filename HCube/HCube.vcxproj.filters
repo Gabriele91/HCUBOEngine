@@ -13,20 +13,20 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="File di risorse\shader">
-      <UniqueIdentifier>{43006d9e-f495-4f2b-a466-be924f3230c8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="File di risorse\shader\base">
-      <UniqueIdentifier>{0dccccc8-79f7-4013-b13c-2b47e8ff2f2f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="File di risorse\shader\points">
-      <UniqueIdentifier>{8a4bb9eb-f5a4-46da-a8ac-f66bfbd5cbee}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="File di risorse\shader\cube">
-      <UniqueIdentifier>{54a30de2-9c2d-4ba4-8253-f1d76ca6ba70}</UniqueIdentifier>
-    </Filter>
     <Filter Include="File di risorse\assets">
       <UniqueIdentifier>{62dd8327-b5a5-4d9a-956b-ed41580b8863}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="File di risorse\assets\shaders">
+      <UniqueIdentifier>{43006d9e-f495-4f2b-a466-be924f3230c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="File di risorse\assets\shaders\deferred">
+      <UniqueIdentifier>{56748d9b-af85-4c58-a8f8-c054c3fc380a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="File di risorse\assets\shaders\forward">
+      <UniqueIdentifier>{a455aba3-dee9-4fff-8392-8e3f8a0c3875}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="File di risorse\assets\textures">
+      <UniqueIdentifier>{4f6d4cf0-c98a-4131-a2a2-51d3ac46dba7}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -99,6 +99,15 @@
     <ClInclude Include="..\include\rendering_system.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\g_buffer.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\resource.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\resources_manager.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\application.cpp">
@@ -114,9 +123,6 @@
       <Filter>File di origine</Filter>
     </ClCompile>
     <ClCompile Include="..\source\shader.cpp">
-      <Filter>File di origine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\shader_map.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
     <ClCompile Include="..\source\json11.cpp">
@@ -152,39 +158,57 @@
     <ClCompile Include="..\source\rendering_system.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\g_buffer.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\resources_manager.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\shader\base\base.fs.glsl">
-      <Filter>File di risorse\shader\base</Filter>
-    </None>
-    <None Include="..\shader\base\base.vs.glsl">
-      <Filter>File di risorse\shader\base</Filter>
-    </None>
-    <None Include="..\shader\points\points.fs.glsl">
-      <Filter>File di risorse\shader\points</Filter>
-    </None>
-    <None Include="..\shader\points\points.gs.glsl">
-      <Filter>File di risorse\shader\points</Filter>
-    </None>
-    <None Include="..\shader\points\points.vs.glsl">
-      <Filter>File di risorse\shader\points</Filter>
-    </None>
-    <None Include="..\shader\cube\cube.fs.glsl">
-      <Filter>File di risorse\shader\cube</Filter>
-    </None>
-    <None Include="..\shader\cube\cube.gs.glsl">
-      <Filter>File di risorse\shader\cube</Filter>
-    </None>
-    <None Include="..\shader\cube\cube.vs.glsl">
-      <Filter>File di risorse\shader\cube</Filter>
-    </None>
     <None Include="..\source\cocoa_native_dialog.mm">
       <Filter>File di origine</Filter>
     </None>
+    <None Include="..\assets\shaders\deferred\base.glsl">
+      <Filter>File di risorse\assets\shaders\deferred</Filter>
+    </None>
+    <None Include="..\assets\shaders\deferred\base_texture.glsl">
+      <Filter>File di risorse\assets\shaders\deferred</Filter>
+    </None>
+    <None Include="..\assets\shaders\deferred\text.glsl">
+      <Filter>File di risorse\assets\shaders\deferred</Filter>
+    </None>
+    <None Include="..\assets\shaders\deferred\triangle_lines.glsl">
+      <Filter>File di risorse\assets\shaders\deferred</Filter>
+    </None>
+    <None Include="..\assets\shaders\deferred\wireframe.glsl">
+      <Filter>File di risorse\assets\shaders\deferred</Filter>
+    </None>
+    <None Include="..\assets\shaders\forward\base.glsl">
+      <Filter>File di risorse\assets\shaders\forward</Filter>
+    </None>
+    <None Include="..\assets\shaders\forward\base_texture.glsl">
+      <Filter>File di risorse\assets\shaders\forward</Filter>
+    </None>
+    <None Include="..\assets\shaders\forward\text.glsl">
+      <Filter>File di risorse\assets\shaders\forward</Filter>
+    </None>
+    <None Include="..\assets\shaders\forward\triangle_lines.glsl">
+      <Filter>File di risorse\assets\shaders\forward</Filter>
+    </None>
+    <None Include="..\assets\shaders\forward\wireframe.glsl">
+      <Filter>File di risorse\assets\shaders\forward</Filter>
+    </None>
+    <None Include="..\assets\shaders\deferred\deferred_light.glsl">
+      <Filter>File di risorse\assets\shaders\deferred</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="..\assets\font.png">
-      <Filter>File di risorse\assets</Filter>
+    <Image Include="..\assets\textures\box.png">
+      <Filter>File di risorse\assets\textures</Filter>
+    </Image>
+    <Image Include="..\assets\textures\font.png">
+      <Filter>File di risorse\assets\textures</Filter>
     </Image>
   </ItemGroup>
 </Project>
