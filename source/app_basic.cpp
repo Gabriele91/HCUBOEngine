@@ -10,6 +10,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <basic_meshs.h>
 #include <regex>
+#include <OpenGL4.h>
 
 void app_basic::key_event(application& app,int key, int scancode, int action, int mods)
 {
@@ -74,8 +75,8 @@ public:
 		m_g_buffer.init(camera->get_viewport_size());
 		m_square = basic_meshs::square3D({ 2.0,2.0 }, true);
 		m_shader = resources.get_shader("deferred_light");
-		m_vertex = m_shader->get_shader_uniform_int("g_vertex");
-		m_normal = m_shader->get_shader_uniform_int("g_normal");
+        m_vertex = m_shader->get_shader_uniform_int("g_vertex");
+        m_normal = m_shader->get_shader_uniform_int("g_normal");
 		m_albedo = m_shader->get_shader_uniform_int("g_albedo_spec");
 	}
 	

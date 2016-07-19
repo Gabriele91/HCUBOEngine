@@ -20,6 +20,7 @@
 #endif
 
 #ifdef _DEBUG
+    #include <iostream>
 	#define _OPENGL_PRINT_DEBUG_ \
 	{\
 		GLenum gl_err = GL_NO_ERROR;\
