@@ -14,9 +14,7 @@
 class rendering_pass
 {
 public:
-	virtual void pre_pass(camera::ptr camera, std::vector< entity::ptr >& entities) {};
 	virtual void draw_pass(camera::ptr camera, std::vector< entity::ptr >& entities)= 0;
-	virtual void post_pass(camera::ptr camera, std::vector< entity::ptr >& entities){};
 };
 using rendering_pass_ptr  = std::shared_ptr< rendering_pass >;
 using rendering_pass_uptr = std::unique_ptr< rendering_pass >;

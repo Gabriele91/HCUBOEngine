@@ -7,6 +7,7 @@
 //
 #include <camera.h>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/matrix_decompose.hpp>
 
 void camera::set_viewport(const glm::ivec4& viewport)
 {
@@ -23,9 +24,8 @@ void camera::look_at(const glm::vec3& eye,const glm::vec3& center,const glm::vec
 {
     glm::mat4 look_at = glm::lookAt(eye,center,up);
     glm::quat la_rotation = glm::quat(glm::mat3(look_at));
-    glm::vec3 la_position = glm::vec3(look_at[3]);
-    rotation(glm::inverse(la_rotation));
-    position(-la_position);
+	rotation(glm::inverse(la_rotation));
+	position(eye);
 }
 
 void camera::translation(const glm::vec3& vector)
@@ -99,8 +99,8 @@ void camera::compute_matrix()
 {
     if(m_tranform.m_change)
     {
-        m_view_inv = glm::mat4_cast(m_tranform.m_rotation);
-        m_view_inv = glm::translate(m_view_inv, m_tranform.m_position);
+		m_view_inv = glm::translate(glm::mat4(1.0f),m_tranform.m_position);
+        m_view_inv*= glm::mat4_cast(m_tranform.m_rotation);
         m_view     = glm::inverse(m_view_inv);
     }
 }

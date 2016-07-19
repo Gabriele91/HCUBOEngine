@@ -37,10 +37,15 @@ layout(location = 2) out vec4 g_albedo_spec;
 //uniform
 uniform vec4      in_color;
 uniform sampler2D texture_id;
+uniform sampler2D specular_id;
 
 void main()
 {
-	g_vertex          = frag_vertex;
-	g_normal          = normalize(frag_normal);
-	g_albedo_spec     = vec4((texture(texture_id, frag_uvcoord)*in_color).rgb,1.0);
+	//coords
+	g_vertex       = frag_vertex;
+	g_normal       = normalize(frag_normal);
+	//albedo
+	vec3 color     = vec3(texture(texture_id, frag_uvcoord)*in_color);
+	float specular = texture(specular_id, frag_uvcoord).r;
+	g_albedo_spec  = vec4(color, specular);
 }

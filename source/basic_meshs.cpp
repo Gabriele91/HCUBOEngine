@@ -162,6 +162,7 @@ namespace basic_meshs
 		//return cube
 		return mesh_cube;
 	}
+
 	mesh::ptr square3D(const glm::vec2& square_size, bool use_uvmap)
 	{
 		const glm::vec2& square_size_h = square_size * 0.5f;

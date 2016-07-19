@@ -108,6 +108,9 @@
     <ClInclude Include="..\include\resources_manager.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\rendering_pass_deferred.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\application.cpp">
@@ -164,6 +167,9 @@
     <ClCompile Include="..\source\resources_manager.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\rendering_pass_deferred.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\source\cocoa_native_dialog.mm">
@@ -200,6 +206,9 @@
       <Filter>File di risorse\assets\shaders\forward</Filter>
     </None>
     <None Include="..\assets\shaders\deferred\deferred_light.glsl">
+      <Filter>File di risorse\assets\shaders\deferred</Filter>
+    </None>
+    <None Include="..\assets\shaders\deferred\base_texture_specular.glsl">
       <Filter>File di risorse\assets\shaders\deferred</Filter>
     </None>
   </ItemGroup>

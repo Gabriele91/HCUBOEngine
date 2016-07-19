@@ -38,9 +38,7 @@ void rendering_pass_base::draw_pass(camera::ptr camera, std::vector< entity::ptr
 
 void rendering_system::draw()
 {
-	for (rendering_pass_ptr& pass : m_rendering_pass) pass->pre_pass (m_camera, m_entities);
 	for (rendering_pass_ptr& pass : m_rendering_pass) pass->draw_pass(m_camera, m_entities);
-	for (rendering_pass_ptr& pass : m_rendering_pass) pass->post_pass(m_camera, m_entities);
 }
 
 camera::ptr rendering_system::get_camera() const

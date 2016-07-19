@@ -11,6 +11,8 @@
 #include <basic_meshs.h>
 #include <regex>
 #include <OpenGL4.h>
+#include <rendering_pass_deferred.h>
+
 
 void app_basic::key_event(application& app,int key, int scancode, int action, int mods)
 {
@@ -20,6 +22,7 @@ void app_basic::key_event(application& app,int key, int scancode, int action, in
 		m_loop = false;
 		return;
 	}
+
 
     if((mods   == GLFW_MOD_SUPER   ||
         mods   == GLFW_MOD_CONTROL)&&
@@ -57,64 +60,6 @@ void app_basic::resize_event(application& application,const glm::ivec2& size)
     m_camera->set_perspective(m_fov, m_aspect, 0.01, 100.0);
 }
 
-#include <g_buffer.h>
-class rendering_pass_deferred : public rendering_pass, public smart_pointers< rendering_pass_deferred >
-{
-public:
-
-	g_buffer          m_g_buffer;
-	mesh::ptr         m_square;
-	shader::ptr	      m_shader;
-	uniform_int::ptr  m_vertex;
-	uniform_int::ptr  m_normal;
-	uniform_int::ptr  m_albedo;
-
-
-	rendering_pass_deferred(camera::ptr camera, resources_manager& resources)
-	{
-		m_g_buffer.init(camera->get_viewport_size());
-		m_square = basic_meshs::square3D({ 2.0,2.0 }, true);
-		m_shader = resources.get_shader("deferred_light");
-        m_vertex = m_shader->get_shader_uniform_int("g_vertex");
-        m_normal = m_shader->get_shader_uniform_int("g_normal");
-		m_albedo = m_shader->get_shader_uniform_int("g_albedo_spec");
-	}
-	
-
-	virtual void draw_pass(camera::ptr camera, std::vector< entity::ptr >& entities)
-	{
-		const glm::vec4& viewport = camera->get_viewport();
-		glViewport(viewport.x, viewport.y, viewport.z, viewport.w);
-
-		m_g_buffer.bind();
-
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		for (entity::ptr& entity : entities)
-		{
-			entity->m_material->bind(camera.get(), entity->m_model);
-			entity->m_renderable->draw();
-			entity->m_material->unbind();
-		}
-
-		m_g_buffer.unbind();
-
-		m_shader->bind();
-		//set texture
-		m_g_buffer.set_texture_buffer(g_buffer::G_BUFFER_TEXTURE_TYPE_POSITION);
-		m_g_buffer.set_texture_buffer(g_buffer::G_BUFFER_TEXTURE_TYPE_NORMAL);
-		m_g_buffer.set_texture_buffer(g_buffer::G_BUFFER_TEXTURE_TYPE_ALBEDO);
-		//set uniform id
-		m_vertex->setValue(0);
-		m_normal->setValue(1);
-		m_albedo->setValue(2);
-		//draw squere
-		m_square->draw();
-		//bind
-		m_shader->unbind();
-	}
-
-};
 
 void app_basic::start(application& app)
 {
@@ -135,9 +80,9 @@ void app_basic::start(application& app)
     glm::vec2 size = app.get_window_size();
     m_aspect       = float(size.x) / float(size.y);
     m_camera->set_viewport(glm::ivec4{0, 0, size.x, size.y});
-    m_camera->look_at(glm::vec3{ 0.0f, 0.0f, 5.0f  },
-                      glm::vec3{ 0.0f, 0.0f, 0.0f   },
-                      glm::vec3{ 0.0f, 1.0f, 0.0f   });
+	m_camera->look_at(glm::vec3{ 0.0f, 3.0f, 6.0f },
+				  	  glm::vec3{ 0.0f,-1.0f, 0.0f },
+					  glm::vec3{ 0.0f, 1.0f, 0.0f });
     m_camera->set_perspective(m_fov, m_aspect, 0.01, 100.0);
     //set camera
     m_render.set_camera(m_camera);
@@ -148,19 +93,44 @@ void app_basic::start(application& app)
 #else
 	//deferred alloc
 	m_resources.add_directory("assets/shaders/deferred");
-	m_render.add_rendering_pass(rendering_pass_deferred::snew(m_camera, m_resources));
+	auto rendering_pass = rendering_pass_deferred::snew(m_camera, m_resources);
+	rendering_pass->m_lights[0].m_position  = { -1.0f, 0.0f, 0.0f };
+	rendering_pass->m_lights[0].m_diffuse   = { 0.0f, 0.0f, 1.0f, 1.0f };
+	rendering_pass->m_lights[0].m_linear    = 0.1;
+	rendering_pass->m_lights[0].m_const     = 0.5;
+	rendering_pass->m_lights[0].m_quadratic = 0.5;
+
+	rendering_pass->m_lights[1].m_position  = { 0.0f, 0.0f, 0.0f };
+	rendering_pass->m_lights[1].m_diffuse   = { 1.0f, 0.0f, 0.0f, 1.0f };
+	rendering_pass->m_lights[1].m_linear	= 0.1;
+	rendering_pass->m_lights[1].m_const     = 0.5;
+	rendering_pass->m_lights[1].m_quadratic = 0.5;
+
+	rendering_pass->m_lights[2].m_position  = { 1.0f, 0.0f, 0.0f };
+	rendering_pass->m_lights[2].m_diffuse   = { 0.0f, 1.0f, 0.0f, 1.0f };
+	rendering_pass->m_lights[2].m_linear    = 0.1;
+	rendering_pass->m_lights[2].m_const     = 0.5;
+	rendering_pass->m_lights[2].m_quadratic = 0.5;
+
+	rendering_pass->m_n_lights_used = 3;
+	m_render.add_rendering_pass(rendering_pass);
 #endif
     /////// /////// /////// /////// /////// /////// /////// /////// ///////
     // build scene
     {
         //material
-        base_texture_material::ptr base_mat = base_texture_material::snew(m_resources);
-        base_mat->set_texture(m_resources.get_texture("box"));
-        base_mat->set_color({1,1,1,1});
+		base_texture_specular_material::ptr base_mat = base_texture_specular_material::snew(m_resources);
+		base_mat->set_texture(m_resources.get_texture("box"));
+		base_mat->set_specular(m_resources.get_texture("box_specular"));
+		base_mat->set_color({ 1,1,1,1 });
         //mesh
-        mesh::ptr  cube_mesh = basic_meshs::cube( { 1.,1., 1. }, true );
+        mesh::ptr  cube_mesh = basic_meshs::cube( { 5.,1., 5. }, true );
         //add to render
         m_render.add_entity(entity::snew(cube_mesh,base_mat));
+		//move
+		glm::mat4& model0 = m_render.get_entities()[0]->m_model;
+		model0 = glm::translate(glm::mat4(1), { 0.0f, -1.0f, 0.0f });
+		model0 = glm::rotate(model0, float(glm::radians(90.f)), glm::vec3(0.0, 1.0, 0.0));
     }
 }
 
@@ -169,9 +139,6 @@ bool app_basic::run(application& app,double delta_time)
 	//////////////////////////////////////////////////////////
     //clear screen
     app.clear();
-    //rote
-    glm::mat4& model0 = m_render.get_entities()[0]->m_model;
-    model0 = glm::rotate(model0, float( glm::radians(45.f) * delta_time), glm::vec3( 0.0, 1.0, 0.0 ));
     //////////////////////////////////////////////////////////
     //draw
     m_render.draw();

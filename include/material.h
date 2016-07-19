@@ -43,9 +43,7 @@ public:
     virtual void unbind() = 0;
     
     virtual ~material(){};
-    
-protected:
-    
+        
     void  bind_state()
     {
         if(m_cullface)
@@ -72,7 +70,9 @@ protected:
             glCullFace(m_cullmode);
         }
     }
-    
+
+protected:
+
     bool m_cullface  { false   };
     int  m_cullmode  { GL_BACK };
     
