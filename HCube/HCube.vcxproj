@@ -206,6 +206,7 @@
   <ItemGroup>
     <None Include="..\assets\shaders\deferred\base.glsl" />
     <None Include="..\assets\shaders\deferred\base_texture.glsl" />
+    <None Include="..\assets\shaders\deferred\base_texture_normal.glsl" />
     <None Include="..\assets\shaders\deferred\base_texture_specular.glsl" />
     <None Include="..\assets\shaders\deferred\deferred_light.glsl" />
     <None Include="..\assets\shaders\deferred\text.glsl" />

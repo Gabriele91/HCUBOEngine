@@ -211,6 +211,9 @@
     <None Include="..\assets\shaders\deferred\base_texture_specular.glsl">
       <Filter>File di risorse\assets\shaders\deferred</Filter>
     </None>
+    <None Include="..\assets\shaders\deferred\base_texture_normal.glsl">
+      <Filter>File di risorse\assets\shaders\deferred</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\assets\textures\box.png">
