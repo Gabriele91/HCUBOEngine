@@ -71,7 +71,7 @@ void rendering_pass_deferred::draw_pass(camera::ptr camera, std::vector< entity:
 	m_albedo->setValue(2);
 	//add info
 	m_view_pos->set_value(camera->get_position());
-	m_ambient_light->set_value({ 0.1, 0.1, 0.1, 1.0 });
+	m_ambient_light->set_value({ 0.16, 0.16, 0.16, 1.0 });
 	m_uniform_n_lights_used->setValue(m_n_lights_used);
 	//uniform lights
 	for (unsigned i = 0; i != m_max_lights; ++i)

@@ -25,7 +25,7 @@ uniform sampler2D g_albedo_spec;
 
 uniform vec3 view_pos;
 uniform vec4 ambient_light;
-uniform const int n_lights_used = 0;
+uniform int n_lights_used = 0;
 
 const int max_lights = 32;
 
@@ -44,7 +44,7 @@ void main()
 {
 	// Retrieve data from gbuffer
 	vec3  vertex   = texture(g_vertex,      frag_uvcoord).rgb;
-	vec3  normal   = texture(g_normal,      frag_uvcoord).rgb;
+	vec3  normal   = texture(g_normal,      frag_uvcoord).rgb * 2.0 - 1.0;
 	vec3  diffuse  = texture(g_albedo_spec, frag_uvcoord).rgb;
 	float specular = texture(g_albedo_spec, frag_uvcoord).a;
 
@@ -52,7 +52,8 @@ void main()
 	vec3 lighting = diffuse * ambient_light.rgb;
 	vec3 view_dir = normalize(view_pos - vertex);
 
-	const int n_lights = min(n_lights_used, max_lights);
+    //for size
+    int n_lights = min(n_lights_used, max_lights);
 
 	for (int i = 0; i < n_lights; ++i)
 	{
@@ -76,6 +77,6 @@ void main()
 		lspecular *= lattenuation;
 		lighting += ldiffuse+lspecular;
 	}
-	//output
-	frag_color = vec4(lighting, 1.0);
+    //output
+    frag_color = vec4(lighting, 1.0);
 }

@@ -43,7 +43,7 @@ void main()
 {
 	//coords
 	g_vertex       = frag_vertex;
-	g_normal       = normalize(frag_normal);
+	g_normal       = normalize(frag_normal) * 0.5 + 0.5;
 	//albedo
 	vec3 color     = vec3(texture(texture_id, frag_uvcoord)*in_color);
 	float specular = texture(specular_id, frag_uvcoord).r;

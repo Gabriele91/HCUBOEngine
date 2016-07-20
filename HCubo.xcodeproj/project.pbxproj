@@ -15,6 +15,7 @@
 		E01A2EF81D22C5A300A8BA77 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E01A2EF41D22C57500A8BA77 /* CoreVideo.framework */; };
 		E022AF481D3DFF98009F76D5 /* g_buffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E022AF471D3DFF98009F76D5 /* g_buffer.cpp */; };
 		E022AF491D3E01BC009F76D5 /* g_buffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E022AF471D3DFF98009F76D5 /* g_buffer.cpp */; };
+		E022AF4C1D3EB487009F76D5 /* rendering_pass_deferred.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E022AF4B1D3EB487009F76D5 /* rendering_pass_deferred.cpp */; };
 		E03EDC861D34186900C0C22A /* app_basic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E03EDC731D34186900C0C22A /* app_basic.cpp */; };
 		E03EDC871D34186900C0C22A /* application.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E03EDC741D34186900C0C22A /* application.cpp */; };
 		E03EDC881D34186900C0C22A /* basic_meshs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E03EDC751D34186900C0C22A /* basic_meshs.cpp */; };
@@ -78,6 +79,8 @@
 		E01A2EF61D22C58A00A8BA77 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		E022AF461D3DFE5A009F76D5 /* g_buffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = g_buffer.h; sourceTree = "<group>"; };
 		E022AF471D3DFF98009F76D5 /* g_buffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = g_buffer.cpp; sourceTree = "<group>"; };
+		E022AF4A1D3EB47E009F76D5 /* rendering_pass_deferred.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rendering_pass_deferred.h; sourceTree = "<group>"; };
+		E022AF4B1D3EB487009F76D5 /* rendering_pass_deferred.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = rendering_pass_deferred.cpp; sourceTree = "<group>"; };
 		E03EDC731D34186900C0C22A /* app_basic.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = app_basic.cpp; sourceTree = "<group>"; };
 		E03EDC741D34186900C0C22A /* application.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = application.cpp; sourceTree = "<group>"; };
 		E03EDC751D34186900C0C22A /* basic_meshs.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = basic_meshs.cpp; sourceTree = "<group>"; };
@@ -166,6 +169,7 @@
 				E03EDC791D34186900C0C22A /* json11.cpp */,
 				E01461AA1D34D2EC008A2574 /* resources_manager.cpp */,
 				E03EDC801D34186900C0C22A /* rendering_system.cpp */,
+				E022AF4B1D3EB487009F76D5 /* rendering_pass_deferred.cpp */,
 				E03EDC7F1D34186900C0C22A /* query_performance.cpp */,
 				E03EDC781D34186900C0C22A /* filesystem.cpp */,
 				E03EDC7D1D34186900C0C22A /* native_dialog.cpp */,
@@ -215,6 +219,7 @@
 				E03EDCAE1D3418CF00C0C22A /* basic_meshs.h */,
 				E03EDCBB1D3418CF00C0C22A /* renderable.h */,
 				E03EDCBC1D3418CF00C0C22A /* rendering_system.h */,
+				E022AF4A1D3EB47E009F76D5 /* rendering_pass_deferred.h */,
 				E03EDCB71D3418CF00C0C22A /* OpenGL4.h */,
 				E03EDCBE1D3418CF00C0C22A /* shader.h */,
 				E03EDCC11D3418CF00C0C22A /* texture.h */,
@@ -346,6 +351,7 @@
 				E03EDC971D34186900C0C22A /* texture.cpp in Sources */,
 				E01461AB1D34D2EC008A2574 /* resources_manager.cpp in Sources */,
 				E03EDC871D34186900C0C22A /* application.cpp in Sources */,
+				E022AF4C1D3EB487009F76D5 /* rendering_pass_deferred.cpp in Sources */,
 				E03EDC901D34186900C0C22A /* native_dialog.cpp in Sources */,
 				E022AF481D3DFF98009F76D5 /* g_buffer.cpp in Sources */,
 				E03EDC8B1D34186900C0C22A /* filesystem.cpp in Sources */,

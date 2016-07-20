@@ -41,6 +41,6 @@ uniform sampler2D texture_id;
 void main()
 {
 	g_vertex          = frag_vertex;
-	g_normal          = normalize(frag_normal);
+	g_normal          = normalize(frag_normal) * 0.5 + 0.5 ;
 	g_albedo_spec     = vec4((texture(texture_id, frag_uvcoord)*in_color).rgb,1.0);
 }
