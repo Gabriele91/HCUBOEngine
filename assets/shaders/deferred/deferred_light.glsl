@@ -78,5 +78,5 @@ void main()
 		lighting += ldiffuse+lspecular;
 	}
     //output
-    frag_color = vec4(lighting, 1.0);
+    frag_color = vec4(normal*0.5+0.5, 1.0);
 }

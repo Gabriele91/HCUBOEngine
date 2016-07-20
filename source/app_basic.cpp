@@ -83,7 +83,7 @@ void app_basic::start(application& app)
     m_aspect       = float(size.x) / float(size.y);
     m_camera->set_viewport(glm::ivec4{0, 0, size.x, size.y});
 	m_camera->look_at(glm::vec3{ 0.0f, 3.0f, 6.5f },
-				  	  glm::vec3{ 0.0f,-1.0f, 0.0f },
+				  	  glm::vec3{ 0.0f, 0.0f, 0.0f },
 					  glm::vec3{ 0.0f, 1.0f, 0.0f });
     m_camera->set_perspective(m_fov, m_aspect, 0.01, 100.0);
     //set camera
@@ -97,25 +97,25 @@ void app_basic::start(application& app)
 	m_resources.add_directory("assets/shaders/deferred");
 	auto rendering_pass = rendering_pass_deferred::snew(m_camera, m_resources);
     
-	rendering_pass->m_lights[0].m_position  = { 0.0f, 0.0f, 2.0f };
+	rendering_pass->m_lights[0].m_position  = { 0.0f, 1.0f, 0.0f };
 	rendering_pass->m_lights[0].m_diffuse   = { 0.0f, 0.0f, 1.0f, 1.0f };
 	rendering_pass->m_lights[0].m_linear    = 0.015;
-	rendering_pass->m_lights[0].m_const     = 0.25;
-	rendering_pass->m_lights[0].m_quadratic = 0.25;
+	rendering_pass->m_lights[0].m_const     = 0.15;
+	rendering_pass->m_lights[0].m_quadratic = 0.15;
 
-	rendering_pass->m_lights[1].m_position  = {-2.0f, 0.0f, 0.0f };
+	rendering_pass->m_lights[1].m_position  = {-1.0f, -1.0f, 0.0f };
 	rendering_pass->m_lights[1].m_diffuse   = { 1.0f, 0.0f, 0.0f, 1.0f };
 	rendering_pass->m_lights[1].m_linear	= 0.015;
-	rendering_pass->m_lights[1].m_const     = 0.25;
-	rendering_pass->m_lights[1].m_quadratic = 0.25;
+	rendering_pass->m_lights[1].m_const     = 0.15;
+	rendering_pass->m_lights[1].m_quadratic = 0.15;
 
-	rendering_pass->m_lights[2].m_position  = { 2.0f, 0.0f, 0.0f };
+	rendering_pass->m_lights[2].m_position  = { 1.0f,-1.0f, 0.0f };
 	rendering_pass->m_lights[2].m_diffuse   = { 0.0f, 1.0f, 0.0f, 1.0f };
 	rendering_pass->m_lights[2].m_linear    = 0.015;
-	rendering_pass->m_lights[2].m_const     = 0.25;
-	rendering_pass->m_lights[2].m_quadratic = 0.25;
+	rendering_pass->m_lights[2].m_const     = 0.15;
+	rendering_pass->m_lights[2].m_quadratic = 0.15;
 
-	rendering_pass->m_n_lights_used = 3;
+	rendering_pass->m_n_lights_used = 1;
     //
     __deff = rendering_pass;
     //
@@ -154,22 +154,25 @@ bool app_basic::run(application& app,double delta_time)
     //angle
     static float angle = 0;
     //update angle
-    angle += glm::radians(45.f)*delta_time;
+    angle += 1.0f * delta_time;
     //////////////////////////////////////////////////////////
     //update
     glm::mat4& model0 = m_render.get_entities()[0]->m_model;
-    model0 = glm::translate(glm::mat4(1), { 0.0f, -1.0f, 0.0f });
-    model0 = glm::rotate(model0, float(glm::radians(angle*5.0)), glm::vec3(0.0, 1.0, 0.0));
+    model0 = glm::translate(glm::mat4(1), { 0.0f, 0.0f, -1.0f });
+    model0 = glm::rotate(model0, float(glm::radians(angle*35.0f)), glm::vec3(0.0, 0.0, -1.0));
+    model0 = glm::rotate(model0, float(glm::radians(90.0)), glm::vec3(1.0, 0.0, 0.0));
     //for all
     for(int i=0;i!=3;++i)
     {
         
-#if 0
+#if 1
         __deff->m_lights[i].m_position = glm::vec3
         {
-            std::sin((M_PI*0.5)*i+angle),
-            -0.5,
-            std::cos((M_PI*0.5)*i+angle),
+            0.0,
+            std::sin(angle) * 2.0f,
+            0.0
+            //-0.5,
+            //std::cos((M_PI*0.5)*i+angle),
         };
 #endif
     }

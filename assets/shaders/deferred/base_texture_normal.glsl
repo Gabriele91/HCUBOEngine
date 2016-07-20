@@ -8,7 +8,7 @@ layout(location = 4) in vec3 binormal;
 //out 
 out vec3 frag_vertex;
 out vec2 frag_uvcoord;
-out mat3 tbn_matrix;
+out mat3 tbn;
 //uniform
 uniform mat4 projection;
 uniform mat4 view;
@@ -16,20 +16,20 @@ uniform mat4 model;
 
 void main()
 {
-	//vertex
-	vec4 world_vertex = model * vec4(vertex, 1.0);
+    //vertex
+    vec4 world_vertex = model * vec4(vertex, 1.0);
 	frag_vertex = world_vertex.xyz;
     gl_Position = projection * view * world_vertex;
-	//normal
-    mat3 normal_matrix = transpose(inverse(mat3(model)));
+    //normal
+    mat3 normal_mat = transpose(inverse(mat3(view*model)));
     //pass T/N
-    vec3 T = normalize(normal_matrix * tangent);
-    vec3 B = normalize(normal_matrix * binormal);
-    vec3 N = normalize(normal_matrix * normal);
-   	// tbn column-major matrix
-    tbn_matrix = mat3(T.x, B.x, N.x,
-                      T.y, B.y, N.y,
-                      T.z, B.z, N.z);
+    vec3 t_pixel = normalize(normal_mat * tangent);
+    vec3 b_pixel = normalize(normal_mat * binormal);
+    vec3 n_pixel = normalize(normal_mat * normal);
+    //..
+    tbn = mat3(t_pixel.x, b_pixel.x, n_pixel.x,
+               t_pixel.y, b_pixel.y, n_pixel.y,
+               t_pixel.z, b_pixel.z, n_pixel.z);
 	//uvmap
 	frag_uvcoord = uvcoord;
 }
@@ -38,7 +38,8 @@ void main()
 //in
 in vec3 frag_vertex;
 in vec2 frag_uvcoord;
-in mat3 tbn_matrix;
+in mat3 tbn;
+
 //out
 layout(location = 0) out vec3 g_vertex;
 layout(location = 1) out vec3 g_normal;
@@ -55,9 +56,9 @@ uniform mat4 model;
 vec3 compute_normal()
 {
     //get normal texture
-    vec3 text_normal = texture(normal_id, frag_uvcoord).rgb * 2.0f - 1.0f;
+    vec3 text_normal = normalize( texture(normal_id, frag_uvcoord).rgb * 2.0f - 1.0f );
     //return
-    return normalize( text_normal * tbn_matrix );
+    return text_normal * tbn ;
 }
 
 void main()
