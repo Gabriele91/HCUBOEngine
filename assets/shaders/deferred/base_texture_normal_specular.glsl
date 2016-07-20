@@ -48,6 +48,7 @@ layout(location = 2) out vec4 g_albedo_spec;
 uniform vec4      in_color;
 uniform sampler2D texture_id;
 uniform sampler2D normal_id;
+uniform sampler2D specular_id;
 //uniform matrix
 uniform mat4 projection;
 uniform mat4 view;
@@ -68,6 +69,7 @@ void main()
     //normal map
     g_normal      = compute_normal() * 0.5 + 0.5;
 	//albedo
-	vec3 color    = vec3(texture(texture_id, frag_uvcoord)*in_color);
-	g_albedo_spec = vec4(color, 0.0);
+	vec3 color     = vec3(texture(texture_id, frag_uvcoord)*in_color);
+	float specular = texture(specular_id, frag_uvcoord).r;
+	g_albedo_spec  = vec4(color, specular*0.5);
 }

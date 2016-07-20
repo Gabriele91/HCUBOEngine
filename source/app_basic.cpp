@@ -82,8 +82,8 @@ void app_basic::start(application& app)
     glm::vec2 size = app.get_window_size();
     m_aspect       = float(size.x) / float(size.y);
     m_camera->set_viewport(glm::ivec4{0, 0, size.x, size.y});
-	m_camera->look_at(glm::vec3{ 0.0f, 3.0f, 6.5f },
-				  	  glm::vec3{ 0.0f, 0.0f, 0.0f },
+	m_camera->look_at(glm::vec3{ 0.0f, 4.0f, 6.0f },
+				  	  glm::vec3{ 0.0f,-1.0f, 0.0f },
 					  glm::vec3{ 0.0f, 1.0f, 0.0f });
     m_camera->set_perspective(m_fov, m_aspect, 0.01, 100.0);
     //set camera
@@ -99,23 +99,23 @@ void app_basic::start(application& app)
     
 	rendering_pass->m_lights[0].m_position  = { 0.0f, 1.0f, 0.0f };
 	rendering_pass->m_lights[0].m_diffuse   = { 0.0f, 0.0f, 1.0f, 1.0f };
-	rendering_pass->m_lights[0].m_linear    = 0.015;
-	rendering_pass->m_lights[0].m_const     = 0.15;
+	rendering_pass->m_lights[0].m_linear    = 0.15;
+	rendering_pass->m_lights[0].m_const     = 0.9;
 	rendering_pass->m_lights[0].m_quadratic = 0.15;
 
 	rendering_pass->m_lights[1].m_position  = {-1.0f, -1.0f, 0.0f };
 	rendering_pass->m_lights[1].m_diffuse   = { 1.0f, 0.0f, 0.0f, 1.0f };
-	rendering_pass->m_lights[1].m_linear	= 0.015;
-	rendering_pass->m_lights[1].m_const     = 0.15;
+	rendering_pass->m_lights[1].m_linear	= 0.15;
+	rendering_pass->m_lights[1].m_const     = 0.9;
 	rendering_pass->m_lights[1].m_quadratic = 0.15;
 
 	rendering_pass->m_lights[2].m_position  = { 1.0f,-1.0f, 0.0f };
 	rendering_pass->m_lights[2].m_diffuse   = { 0.0f, 1.0f, 0.0f, 1.0f };
-	rendering_pass->m_lights[2].m_linear    = 0.015;
-	rendering_pass->m_lights[2].m_const     = 0.15;
+	rendering_pass->m_lights[2].m_linear    = 0.15;
+	rendering_pass->m_lights[2].m_const     = 0.9;
 	rendering_pass->m_lights[2].m_quadratic = 0.15;
 
-	rendering_pass->m_n_lights_used = 1;
+	rendering_pass->m_n_lights_used = 3;
     //
     __deff = rendering_pass;
     //
@@ -131,13 +131,14 @@ void app_basic::start(application& app)
 		base_mat->set_specular(m_resources.get_texture("box_specular"));
 		base_mat->set_color({ 1,1,1,1 });
 #else
-        base_texture_normal_material::ptr base_mat = base_texture_normal_material::snew(m_resources);
-        base_mat->set_texture(m_resources.get_texture("brickwall"));
-        base_mat->set_normal(m_resources.get_texture("brickwall_normal"));
+		base_texture_normal_specular_material::ptr base_mat = base_texture_normal_specular_material::snew(m_resources);
+        base_mat->set_texture(m_resources.get_texture("baril"));
+		base_mat->set_specular(m_resources.get_texture("baril_specular"));
+		base_mat->set_normal(m_resources.get_texture("baril_normal"));
         base_mat->set_color({ 1,1,1,1 });
 #endif
         //mesh
-        mesh::ptr  cube_mesh = basic_meshs::cube( { 9.,0.2, 9. }, true );
+        mesh::ptr  cube_mesh = basic_meshs::cube( { 2., 2.0, 2. }, true );
         //add to render
         m_render.add_entity(entity::snew(cube_mesh,base_mat));
 		//move
@@ -158,23 +159,17 @@ bool app_basic::run(application& app,double delta_time)
     //////////////////////////////////////////////////////////
     //update
     glm::mat4& model0 = m_render.get_entities()[0]->m_model;
-    model0 = glm::translate(glm::mat4(1), { 0.0f, 0.0f, -1.0f });
-    model0 = glm::rotate(model0, float(glm::radians(angle*35.0f)), glm::vec3(0.0, 0.0, -1.0));
-    model0 = glm::rotate(model0, float(glm::radians(90.0)), glm::vec3(1.0, 0.0, 0.0));
+    model0 = glm::translate(glm::mat4(1), { 0.0f, 0.0f, 0.0f });
+    model0 = glm::rotate(model0, float(glm::radians(angle*25.0)), glm::vec3(0.2, 0.8, 0.4));
     //for all
     for(int i=0;i!=3;++i)
     {
-        
-#if 1
         __deff->m_lights[i].m_position = glm::vec3
         {
+			std::sin((glm::pi<float>()*0.66)*(i + 1)+angle)*2.5,
             0.0,
-            std::sin(angle) * 2.0f,
-            0.0
-            //-0.5,
-            //std::cos((M_PI*0.5)*i+angle),
+            std::cos((glm::pi<float>()*0.66)*(i+1)+angle)*2.5,
         };
-#endif
     }
     //draw
     m_render.draw();
@@ -208,7 +203,7 @@ void app_basic::go_to_fullscreen(application& app)
                              , 0
                              , 0
                              , monitor_mode->width
-                             , monitor_mode->width
+                             , monitor_mode->height
                              , 60
                              );
     }

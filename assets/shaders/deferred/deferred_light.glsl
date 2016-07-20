@@ -44,9 +44,12 @@ void main()
 {
 	// Retrieve data from gbuffer
 	vec3  vertex   = texture(g_vertex,      frag_uvcoord).rgb;
-	vec3  normal   = texture(g_normal,      frag_uvcoord).rgb * 2.0 - 1.0;
+	vec3  normal   = texture(g_normal,      frag_uvcoord).rgb;
 	vec3  diffuse  = texture(g_albedo_spec, frag_uvcoord).rgb;
 	float specular = texture(g_albedo_spec, frag_uvcoord).a;
+
+	//unpack
+	normal = normalize(normal * 2.0 - 1.0);
 
 	// Then calculate lighting as usual
 	vec3 lighting = diffuse * ambient_light.rgb;
@@ -75,8 +78,8 @@ void main()
 									+ lights[i].m_quadratic * ldistance * ldistance);
 		ldiffuse  *= lattenuation;
 		lspecular *= lattenuation;
-		lighting += ldiffuse+lspecular;
+		lighting  += ldiffuse+lspecular;
 	}
     //output
-    frag_color = vec4(normal*0.5+0.5, 1.0);
+	frag_color = vec4(lighting, 1.0);
 }
