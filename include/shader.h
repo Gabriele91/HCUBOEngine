@@ -332,40 +332,40 @@ public:
     shader(){}
     virtual ~shader();
     
-    void load(resources_manager& resources,const std::string& path)
+    bool load(resources_manager& resources,const std::string& path)
     {
-        load(path);
+        return load(path);
     }
     
-    void load(const std::string& effect)
-    {
-        std::vector<std::string> defines;
-        load(effect, defines);
-    }
-    
-    
-    void load(const std::string& vs, const std::string& fs)
+    bool load(const std::string& effect)
     {
         std::vector<std::string> defines;
-        load(vs, fs, "", defines);
+        return load(effect, defines);
     }
     
-    void load(const std::string& vs, const std::string& fs, const std::string& gs)
+    
+    bool load(const std::string& vs, const std::string& fs)
     {
         std::vector<std::string> defines;
-        load(vs, fs, gs, defines);
+        return load(vs, fs, "", defines);
     }
     
-    void load(const std::string& vs, const std::string& fs,  const std::vector<std::string>& defines)
+    bool load(const std::string& vs, const std::string& fs, const std::string& gs)
     {
-        load(vs, fs, "", defines);
+        std::vector<std::string> defines;
+        return load(vs, fs, gs, defines);
     }
     
-    void load(const std::string& effect, const std::vector<std::string>& defines);
+    bool load(const std::string& vs, const std::string& fs,  const std::vector<std::string>& defines)
+    {
+        return load(vs, fs, "", defines);
+    }
     
-    void load(const std::string& vs, const std::string& fs, const std::string& gs, const std::vector<std::string>& defines);
+    bool load(const std::string& effect, const std::vector<std::string>& defines);
     
-    void load_shader(const std::string& vs, size_t line_vs,
+    bool load(const std::string& vs, const std::string& fs, const std::string& gs, const std::vector<std::string>& defines);
+    
+    bool load_shader(const std::string& vs, size_t line_vs,
                      const std::string& fs, size_t line_fs,
                      const std::string& gs, size_t line_gs,
                      const std::vector<std::string>& defines);

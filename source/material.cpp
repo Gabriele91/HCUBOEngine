@@ -898,7 +898,7 @@ protected:
 
 
 
-void material::load(resources_manager& resources,const std::string& path)
+bool material::load(resources_manager& resources,const std::string& path)
 {
     
     //parse
@@ -918,7 +918,7 @@ void material::load(resources_manager& resources,const std::string& path)
                   << std::endl
                   << parser.errors_to_string()
                   << std::endl;
-        return;
+        return false;
     }
     //set blend
     blend(parser.get_context().m_blend.m_enable);
@@ -982,4 +982,5 @@ void material::load(resources_manager& resources,const std::string& path)
             }
         }
     }
+    return true;
 }

@@ -68,7 +68,7 @@ inline bool compare_and_jmp_keyword(const char*& str,const char* keyword)
     return false;
 }
 
-void shader::load(const std::string& effect_file,  const std::vector<std::string>& defines)
+bool shader::load(const std::string& effect_file,  const std::vector<std::string>& defines)
 {
     //read file
     std::istringstream effect(filesystem::text_file_read_all(effect_file));
@@ -133,16 +133,16 @@ void shader::load(const std::string& effect_file,  const std::vector<std::string
         }
     }
     //load shader
-    load_shader  ( vertex, 0,  fragment, 0, geometry, 0, defines  );
+    return load_shader  ( vertex, 0,  fragment, 0, geometry, 0, defines  );
 }
 
 
-void shader::load(const std::string& vs_file,
+bool shader::load(const std::string& vs_file,
                   const std::string& fs_file,
                   const std::string& gs_file,
                   const std::vector<std::string>& defines)
 {
-    load_shader
+    return load_shader
     (
         filesystem::text_file_read_all(vs_file), 0,
         filesystem::text_file_read_all(fs_file), 0,
@@ -152,7 +152,7 @@ void shader::load(const std::string& vs_file,
     );
 }
 
-void shader::load_shader(const std::string& vs_str, size_t line_vs,
+bool shader::load_shader(const std::string& vs_str, size_t line_vs,
                          const std::string& fs_str, size_t line_fs,
                          const std::string& gs_str, size_t line_gs,
                          const std::vector<std::string>& defines)
@@ -263,7 +263,10 @@ void shader::load_shader(const std::string& vs_str, size_t line_vs,
         m_shader_fs = 0;
         m_shader_gs = 0;
         m_shader_id = 0;
+        //fail
+        return false;
     }
+    return true;
 }
 
 void shader::delete_program()

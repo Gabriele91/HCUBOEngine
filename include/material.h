@@ -20,6 +20,8 @@ class material : public resource
 {
 public:
     
+    bool load(resources_manager& resources,const std::string& path);
+    
     void cullface(bool face)
     {
         m_cullface = face;
@@ -44,8 +46,6 @@ public:
     {
         m_blend_dst = dst;
     }
-    
-    void load(resources_manager& resources,const std::string& path);
     
     virtual void bind(camera* cam,const glm::mat4& model)
     {
