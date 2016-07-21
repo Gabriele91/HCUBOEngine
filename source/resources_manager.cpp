@@ -25,11 +25,15 @@ void resources_manager::add_directory(const std::string& directory, bool recursi
         //types
         if(ext == ".png")
         {
-            get_texture(basename)->load(directory+"/"+filename);
+            get_texture(basename)->load(*this,directory+"/"+filename);
         }
         else if(ext == ".glsl")
         {
-            get_shader(basename)->load(directory+"/"+filename);
+            get_shader(basename)->load(*this,directory+"/"+filename);
+        }
+        else if(ext == ".mat")
+        {
+            get_material(basename)->load(*this,directory+"/"+filename);
         }
         else if(ext == ".json")
         {
@@ -60,7 +64,7 @@ shader::ptr resources_manager::get_shader(const std::string& name)
     //alloc
     if(resource_it == m_resources_map.end())
     {
-        m_resources_map[shader_name] = shader::snew();
+        m_resources_map[shader_name] =  std::static_pointer_cast< resource >(shader::snew());
         resource_it = m_resources_map.find(shader_name);
     }
     //return
@@ -76,9 +80,25 @@ texture::ptr resources_manager::get_texture(const std::string& name)
     //alloc
     if(resource_it == m_resources_map.end())
     {
-        m_resources_map[texture_name] = texture::snew();
+        m_resources_map[texture_name] = std::static_pointer_cast< resource >(texture::snew());
         resource_it = m_resources_map.find(texture_name);
     }
     //return
     return std::static_pointer_cast< texture >(resource_it->second);
+}
+
+material_ptr resources_manager::get_material(const std::string& name)
+{
+    //shader name
+    std::string material_name = "material:"+name;
+    //rerouce
+    resources_map_it resource_it = m_resources_map.find(material_name);
+    //alloc
+    if(resource_it == m_resources_map.end())
+    {
+        m_resources_map[material_name] = std::static_pointer_cast< resource >(material_snew());
+        resource_it = m_resources_map.find(material_name);
+    }
+    //return
+    return std::static_pointer_cast< material >(resource_it->second);
 }

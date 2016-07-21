@@ -12,7 +12,6 @@
 #include <glm/mat4x4.hpp>
 //material
 #include <material.h>
-#include <collection_materials.h>
 //camera
 #include <camera.h>
 //mesh types

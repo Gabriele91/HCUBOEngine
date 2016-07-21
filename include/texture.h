@@ -110,6 +110,11 @@ public:
     
     virtual ~texture();
     
+    void load(resources_manager& resources,const std::string& path)
+    {
+        load(path);
+    }
+    
     bool load(const std::string& path);
     
     bool load(const attributes& attr,

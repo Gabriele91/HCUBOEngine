@@ -17,9 +17,9 @@ void rendering_pass_deferred::uniform_light::uniform(light_wptr weak_light,const
     auto light = weak_light.lock();
     m_uniform_position->set_value((glm::vec3)(model * glm::vec4(0,0,0,1.0)));
 	m_uniform_diffuse->set_value(light->m_diffuse);
-	m_uniform_const->setValue(light->m_const);
-	m_uniform_linear->setValue(light->m_linear);
-	m_uniform_quadratic->setValue(light->m_quadratic);
+	m_uniform_const->set_value(light->m_const);
+	m_uniform_linear->set_value(light->m_linear);
+	m_uniform_quadratic->set_value(light->m_quadratic);
 }
 
 rendering_pass_deferred::rendering_pass_deferred(camera::ptr camera, resources_manager& resources)
@@ -79,15 +79,15 @@ void rendering_pass_deferred::draw_pass(glm::vec4&  clear_color,
 	m_g_buffer.set_texture_buffer(g_buffer::G_BUFFER_TEXTURE_TYPE_NORMAL);
 	m_g_buffer.set_texture_buffer(g_buffer::G_BUFFER_TEXTURE_TYPE_ALBEDO);
 	//set uniform id
-	m_vertex->setValue(0);
-	m_normal->setValue(1);
-	m_albedo->setValue(2);
+	m_vertex->set_value(0);
+	m_normal->set_value(1);
+	m_albedo->set_value(2);
 	//add info
 	m_view_pos->set_value(camera->get_position());
 	m_ambient_light->set_value(ambient_color);
     //compute max lights
     unsigned max_lights = std::min(m_max_lights,(unsigned)lights.size());
-	m_uniform_n_lights_used->setValue(max_lights);
+	m_uniform_n_lights_used->set_value(max_lights);
 	//uniform lights
     for (unsigned i = 0; i != max_lights; ++i)
     {

@@ -82,7 +82,7 @@ public:
     {
         return *((int*)(this->get()));
     }
-    void setValue(int i)
+    void set_value(int i)
     {
         set(&i);
     }
@@ -107,7 +107,7 @@ public:
         return *((float*)(this->get()));
     }
     
-    void setValue(float f)
+    void set_value(float f)
     {
         set(&f);
     }
@@ -332,6 +332,11 @@ public:
     shader(){}
     virtual ~shader();
     
+    void load(resources_manager& resources,const std::string& path)
+    {
+        load(path);
+    }
+    
     void load(const std::string& effect)
     {
         std::vector<std::string> defines;
@@ -402,7 +407,7 @@ public:
     virtual void uniform();
     
     //get uniform id
-    unsigned int get_uniform_id(const char *name);
+    int get_uniform_id(const char *name);
   
     //id programma
     unsigned int program_id() const;

@@ -1,0 +1,29 @@
+//cullface
+cullface true
+{
+    mode back
+}
+
+//blend
+blend false
+{
+    source one
+    destination zero
+}
+
+//shader
+shader "base_texture_normal_specular"
+{
+    //texture
+    textures
+    {
+        diffuse_map  "box"
+        specular_map "box_specular"
+        normal_map   "box_normal"
+    }
+    //costant uniforms
+    uniforms
+    {
+        color vec4 (1.0,1.0,1.0,1.0)
+    }
+}

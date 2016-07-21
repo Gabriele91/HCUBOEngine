@@ -303,7 +303,7 @@ void shader::bind()
 }
 
 //get uniform id
-unsigned int shader::get_uniform_id(const char *name)
+int shader::get_uniform_id(const char *name)
 {
     return glGetUniformLocation(m_shader_id, name);
 }
@@ -343,10 +343,10 @@ void shader::uniform()
 #define uniform_gl_class(class_name,T,uniform_gl_call)\
 class class_name : public uniform<class_name> {\
 \
-GLuint m_id{0};\
+GLint m_id{0};\
 \
     public:\
-    class_name( GLuint id ): m_id(id){}\
+    class_name( GLint id ): m_id(id){}\
     virtual void  set(const void* value, size_t s, size_t n)\
     {\
         uniform_gl_call ((GLuint)(m_id+s), (GLuint)n, (const T*)value); \
@@ -371,12 +371,12 @@ uniform_gl_class(uniform_gl_vec4, float, glUniform4fv)
 class uniform_gl_texture : public uniform_texture
 {
     GLint     m_unform_id{-1};
-    GLuint    m_id{ 0 };
+    GLint    m_id{ 0 };
     shader*   m_shader{ nullptr };
     
 public:
     
-    uniform_gl_texture(GLuint id, shader* shader)
+    uniform_gl_texture(GLint id, shader* shader)
     :m_id(id)
     ,m_shader(shader)
     {}
@@ -411,10 +411,10 @@ public:
 
 class uniform_gl_mat4 : public uniform < uniform_gl_mat4 >
 {
-    GLuint m_id{ 0 };
+    GLint m_id{ 0 };
 public:
     
-    uniform_gl_mat4(GLuint id) : m_id(id){}
+    uniform_gl_mat4(GLint id) : m_id(id){}
     
     virtual void  set(const void* value, size_t s, size_t n)
     {

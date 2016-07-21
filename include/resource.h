@@ -8,6 +8,7 @@
 #pragma once
 #include <memory>
 
+class resources_manager;
 class resource{};
 using resource_ptr  = std::shared_ptr< resource >;
 using resource_uptr = std::unique_ptr< resource >;

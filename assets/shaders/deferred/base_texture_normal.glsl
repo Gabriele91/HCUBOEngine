@@ -45,9 +45,9 @@ layout(location = 0) out vec3 g_vertex;
 layout(location = 1) out vec3 g_normal;
 layout(location = 2) out vec4 g_albedo_spec;
 //uniform
-uniform vec4      in_color;
-uniform sampler2D texture_id;
-uniform sampler2D normal_id;
+uniform vec4      color;
+uniform sampler2D diffuse_map;
+uniform sampler2D normal_map;
 //uniform matrix
 uniform mat4 projection;
 uniform mat4 view;
@@ -56,7 +56,7 @@ uniform mat4 model;
 vec3 compute_normal()
 {
     //get normal texture
-    vec3 text_normal = normalize( texture(normal_id, frag_uvcoord).rgb * 2.0f - 1.0f );
+    vec3 text_normal = normalize( texture(normal_map, frag_uvcoord).rgb * 2.0f - 1.0f );
     //return
     return tbn*text_normal;
 }
@@ -68,6 +68,6 @@ void main()
     //normal map
     g_normal      = compute_normal() * 0.5 + 0.5;
 	//albedo
-	vec3 color    = vec3(texture(texture_id, frag_uvcoord)*in_color);
+	vec3 color    = vec3(texture(diffuse_map, frag_uvcoord)*color);
 	g_albedo_spec = vec4(color, 0.0);
 }

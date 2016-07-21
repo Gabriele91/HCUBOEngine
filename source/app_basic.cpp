@@ -70,8 +70,6 @@ void app_basic::start(application& app)
 	};
     //do clear
     app.clear();
-    //load shader
-	m_resources.add_directory("assets/textures");
     //camera
     m_camera       = camera::snew();
     glm::vec2 size = app.get_window_size();
@@ -83,30 +81,28 @@ void app_basic::start(application& app)
     m_camera->set_perspective(m_fov, m_aspect, 0.01, 100.0);
     //set camera
     m_render.set_camera(m_camera);
-	//set render pass
+    //set render pass
 #if 0
-	m_resources.add_directory("assets/shaders/forward");
-	m_render.add_rendering_pass(rendering_pass_base::snew());
+    m_resources.add_directory("assets/shaders/forward");
+    m_render.add_rendering_pass(rendering_pass_base::snew());
 #else
-	//deferred alloc
-	m_resources.add_directory("assets/shaders/deferred");
-	auto rendering_pass = rendering_pass_deferred::snew(m_camera, m_resources);
-	m_render.add_rendering_pass(rendering_pass);
+    //deferred alloc
+    m_resources.add_directory("assets/shaders/deferred");
+    auto rendering_pass = rendering_pass_deferred::snew(m_camera, m_resources);
+    m_render.add_rendering_pass(rendering_pass);
 #endif
+    //load assets
+    m_resources.add_directory("assets/textures");
+    m_resources.add_directory("assets/materials");
     /////// /////// /////// /////// /////// /////// /////// /////// ///////
     // build scene
     {
         //material
-		base_texture_normal_specular_material::ptr base_mat = base_texture_normal_specular_material::snew(m_resources);
-        base_mat->set_texture(m_resources.get_texture("baril"));
-		base_mat->set_specular(m_resources.get_texture("baril_specular"));
-		base_mat->set_normal(m_resources.get_texture("baril_normal"));
-        base_mat->set_color({ 1,1,1,1 });
-        
+        material_ptr box_mat = m_resources.get_material("baril_mat");
         //mesh
         mesh::ptr  cube_mesh = basic_meshs::cube( { 2., 2.0, 2. }, true );
         //add to render
-        m_render.add_entity(entity::snew(cube_mesh,base_mat));
+        m_render.add_entity(entity::snew(cube_mesh,box_mat));
         
         //lights
         light_ptr light0 = light_snew();
@@ -132,6 +128,7 @@ void app_basic::start(application& app)
         m_render.add_entity(entity::snew(light0));
         m_render.add_entity(entity::snew(light1));
         m_render.add_entity(entity::snew(light2));
+        
         //ambient color
         m_render.set_ambient_color(glm::vec4{ 0.16, 0.16, 0.16, 1.0 });
         

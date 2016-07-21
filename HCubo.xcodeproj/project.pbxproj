@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E0101B241D40C1AC00930372 /* material.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E0101B231D40B74900930372 /* material.cpp */; };
+		E0101B251D40C1AD00930372 /* material.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E0101B231D40B74900930372 /* material.cpp */; };
 		E01461AB1D34D2EC008A2574 /* resources_manager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E01461AA1D34D2EC008A2574 /* resources_manager.cpp */; };
 		E01461AC1D34D2EF008A2574 /* resources_manager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E01461AA1D34D2EC008A2574 /* resources_manager.cpp */; };
 		E01A2EEA1D22C50E00A8BA77 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E01A2EE91D22C50E00A8BA77 /* OpenGL.framework */; };
@@ -71,6 +73,7 @@
 
 /* Begin PBXFileReference section */
 		E0101B211D4094C300930372 /* light.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = light.h; sourceTree = "<group>"; };
+		E0101B231D40B74900930372 /* material.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = material.cpp; sourceTree = "<group>"; };
 		E01461AA1D34D2EC008A2574 /* resources_manager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = resources_manager.cpp; sourceTree = "<group>"; };
 		E01461AD1D34D343008A2574 /* resource.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = resource.h; sourceTree = "<group>"; };
 		E01A2EDA1D22C24D00A8BA77 /* HCube */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = HCube; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -104,7 +107,6 @@
 		E03EDCAD1D3418CF00C0C22A /* arc_ball.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = arc_ball.h; sourceTree = "<group>"; };
 		E03EDCAE1D3418CF00C0C22A /* basic_meshs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = basic_meshs.h; sourceTree = "<group>"; };
 		E03EDCAF1D3418CF00C0C22A /* camera.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = camera.h; sourceTree = "<group>"; };
-		E03EDCB01D3418CF00C0C22A /* collection_materials.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = collection_materials.h; sourceTree = "<group>"; };
 		E03EDCB11D3418CF00C0C22A /* entity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = entity.h; sourceTree = "<group>"; };
 		E03EDCB21D3418CF00C0C22A /* filesystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = filesystem.h; sourceTree = "<group>"; };
 		E03EDCB31D3418CF00C0C22A /* json11.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = json11.h; sourceTree = "<group>"; };
@@ -164,6 +166,7 @@
 				E03EDC7C1D34186900C0C22A /* mesh.cpp */,
 				E03EDC751D34186900C0C22A /* basic_meshs.cpp */,
 				E03EDC831D34186900C0C22A /* text_mesh.cpp */,
+				E0101B231D40B74900930372 /* material.cpp */,
 				E03EDC821D34186900C0C22A /* shader.cpp */,
 				E03EDC841D34186900C0C22A /* texture.cpp */,
 				E03EDC7E1D34186900C0C22A /* pico_png.cpp */,
@@ -214,10 +217,9 @@
 				E03EDCB91D3418CF00C0C22A /* picking.h */,
 				E03EDCB81D3418CF00C0C22A /* picking_rotation.h */,
 				E03EDCB41D3418CF00C0C22A /* material.h */,
-				E03EDCB01D3418CF00C0C22A /* collection_materials.h */,
 				E03EDCB51D3418CF00C0C22A /* mesh.h */,
-				E03EDCC01D3418CF00C0C22A /* text_mesh.h */,
 				E03EDCAE1D3418CF00C0C22A /* basic_meshs.h */,
+				E03EDCC01D3418CF00C0C22A /* text_mesh.h */,
 				E0101B211D4094C300930372 /* light.h */,
 				E03EDCBB1D3418CF00C0C22A /* renderable.h */,
 				E03EDCBC1D3418CF00C0C22A /* rendering_system.h */,
@@ -351,6 +353,7 @@
 				E03EDC891D34186900C0C22A /* camera.cpp in Sources */,
 				E03EDC951D34186900C0C22A /* shader.cpp in Sources */,
 				E03EDC971D34186900C0C22A /* texture.cpp in Sources */,
+				E0101B251D40C1AD00930372 /* material.cpp in Sources */,
 				E01461AB1D34D2EC008A2574 /* resources_manager.cpp in Sources */,
 				E03EDC871D34186900C0C22A /* application.cpp in Sources */,
 				E022AF4C1D3EB487009F76D5 /* rendering_pass_deferred.cpp in Sources */,
@@ -390,6 +393,7 @@
 				E03EDCA61D34187500C0C22A /* rendering_system.cpp in Sources */,
 				E03EDCA51D34187500C0C22A /* query_performance.cpp in Sources */,
 				E03EDCA21D34187500C0C22A /* mesh.cpp in Sources */,
+				E0101B241D40C1AC00930372 /* material.cpp in Sources */,
 				E03EDC991D34187500C0C22A /* app_basic.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

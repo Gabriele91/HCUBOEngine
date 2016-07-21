@@ -10,6 +10,7 @@
 #include <resource.h>
 #include <shader.h>
 #include <texture.h>
+#include <material.h>
 
 class resources_manager
 {
@@ -18,6 +19,7 @@ public:
     void add_directory(const std::string& directory,bool recursive = false);
     shader::ptr get_shader(const std::string& name);
     texture::ptr get_texture(const std::string& name);
+    material_ptr get_material(const std::string& name);
     
 private:
     

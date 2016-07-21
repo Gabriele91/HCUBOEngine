@@ -35,12 +35,12 @@ layout(location = 0) out vec3 g_vertex;
 layout(location = 1) out vec3 g_normal;
 layout(location = 2) out vec4 g_albedo_spec;
 //uniform
-uniform vec4      in_color;
-uniform sampler2D texture_id;
+uniform vec4      color;
+uniform sampler2D diffuse_map;
 
 void main()
 {
 	g_vertex          = frag_vertex;
 	g_normal          = normalize(frag_normal) * 0.5 + 0.5 ;
-	g_albedo_spec     = vec4((texture(texture_id, frag_uvcoord)*in_color).rgb,1.0);
+	g_albedo_spec     = vec4((texture(diffuse_map, frag_uvcoord)*color).rgb,1.0);
 }
