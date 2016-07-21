@@ -941,6 +941,8 @@ void material::load(resources_manager& resources,const std::string& path)
             m_uniform_view      = m_shader->get_shader_uniform_mat4("view");
         if(m_shader->get_uniform_id("projection") > -1)
             m_uniform_projection= m_shader->get_shader_uniform_mat4("projection");
+        if(m_shader->get_uniform_id("viewport") > -1)
+            m_uniform_viewport= m_shader->get_shader_uniform_vec4("viewport");
         //texture
         for(auto& utexture : parser.get_context().m_shader.m_textures)
         {

@@ -98,7 +98,7 @@ void app_basic::start(application& app)
     // build scene
     {
         //material
-        material_ptr box_mat = m_resources.get_material("baril_mat");
+        material_ptr box_mat = m_resources.get_material("wire_mat");
         //mesh
         mesh::ptr  cube_mesh = basic_meshs::cube( { 2., 2.0, 2. }, true );
         //add to render

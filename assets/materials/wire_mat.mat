@@ -1,0 +1,16 @@
+//cullface
+cullface false
+
+//blend
+blend false 
+
+//shader
+shader "wireframe"
+{
+    //costant uniforms
+    uniforms
+    {
+        color_lines vec4 (1.0,1.0,1.0,1.0)
+        line_size   vec2 (2.0,2.0)
+    }
+}

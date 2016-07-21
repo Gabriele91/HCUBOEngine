@@ -60,6 +60,9 @@ public:
         if(m_uniform_model)
             m_uniform_model->set_value(model);
         
+        if(m_uniform_viewport)
+            m_uniform_viewport->set_value(cam->get_viewport());
+        
         for(size_t i=0; i!=m_ints.size(); ++i)
         {
             m_uniform_ints[i]->set_value(m_ints[i]);
@@ -146,6 +149,7 @@ protected:
     uniform_mat4::ptr m_uniform_projection{ nullptr };
     uniform_mat4::ptr m_uniform_view{ nullptr };
     uniform_mat4::ptr m_uniform_model{ nullptr };
+    uniform_vec4::ptr m_uniform_viewport{ nullptr };
     //uniform textures
     std::vector< texture::ptr > m_textures;
     std::vector< uniform_texture::ptr > m_uniform_textures;
