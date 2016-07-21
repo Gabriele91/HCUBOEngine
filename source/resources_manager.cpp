@@ -25,15 +25,15 @@ void resources_manager::add_directory(const std::string& directory, bool recursi
         //types
         if(ext == ".png")
         {
-            get_texture(basename)->load(*this,directory+"/"+filename);
+			set_texture_path(basename, directory + "/" + filename);
         }
         else if(ext == ".glsl")
         {
-            get_shader(basename)->load(*this,directory+"/"+filename);
+			set_shader_path(basename, directory + "/" + filename);
         }
         else if(ext == ".mat")
         {
-            get_material(basename)->load(*this,directory+"/"+filename);
+			set_material_path(basename, directory + "/" + filename);
         }
         else if(ext == ".json")
         {
@@ -55,6 +55,31 @@ void resources_manager::add_directory(const std::string& directory, bool recursi
     }
 }
 
+void resources_manager::set_shader_path(const std::string& name, const std::string& path)
+{
+	//shader name
+	std::string resource_name = "shader:" + name;
+	//set path
+	m_resources_path_map[resource_name] = path;
+}
+
+void resources_manager::set_texture_path(const std::string& name, const std::string& path)
+{
+	//shader name
+	std::string resource_name = "texture:" + name;
+	//set path
+	m_resources_path_map[resource_name] = path;
+
+}
+
+void resources_manager::set_material_path(const std::string& name, const std::string& path)
+{
+	//shader name
+	std::string resource_name = "material:" + name;
+	//set path
+	m_resources_path_map[resource_name] = path;
+}
+
 shader::ptr resources_manager::get_shader(const std::string& name)
 {
     //shader name
@@ -66,6 +91,7 @@ shader::ptr resources_manager::get_shader(const std::string& name)
     {
         m_resources_map[shader_name] =  std::static_pointer_cast< resource >(shader::snew());
         resource_it = m_resources_map.find(shader_name);
+		resource_it->second->load(*this, m_resources_path_map[shader_name]);
     }
     //return
     return std::static_pointer_cast< shader >(resource_it->second);
@@ -82,6 +108,7 @@ texture::ptr resources_manager::get_texture(const std::string& name)
     {
         m_resources_map[texture_name] = std::static_pointer_cast< resource >(texture::snew());
         resource_it = m_resources_map.find(texture_name);
+		resource_it->second->load(*this, m_resources_path_map[texture_name]);
     }
     //return
     return std::static_pointer_cast< texture >(resource_it->second);
@@ -98,6 +125,7 @@ material_ptr resources_manager::get_material(const std::string& name)
     {
         m_resources_map[material_name] = std::static_pointer_cast< resource >(material_snew());
         resource_it = m_resources_map.find(material_name);
+		resource_it->second->load(*this, m_resources_path_map[material_name]);
     }
     //return
     return std::static_pointer_cast< material >(resource_it->second);

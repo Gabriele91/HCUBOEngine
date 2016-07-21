@@ -19,6 +19,7 @@ namespace filesystem
     bool is_readable(const std::string& filepath);
     bool is_writable(const std::string& filepath);
     //utilities files
+	std::string get_directory(const std::string& filepath);
     std::string get_filename(const std::string& filepath);
     std::string get_basename(const std::string& filepath);
     std::string get_extension(const std::string& filepath);

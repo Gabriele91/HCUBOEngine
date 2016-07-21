@@ -59,6 +59,16 @@ namespace filesystem
     
     
     //utilities files
+	std::string get_directory(const std::string& filepath)
+	{
+		//do it?
+		if (is_directory(filepath)) return filepath;
+		//get separetor
+		auto separetor = filepath.find_last_of("\\/");
+		//return sub path
+		return filepath.substr(0, separetor);
+	}
+
     std::string get_filename(const std::string& filepath)
     {
         //copy path
