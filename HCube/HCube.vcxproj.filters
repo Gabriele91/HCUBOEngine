@@ -28,6 +28,9 @@
     <Filter Include="File di risorse\assets\textures">
       <UniqueIdentifier>{4f6d4cf0-c98a-4131-a2a2-51d3ac46dba7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="File di risorse\assets\materials">
+      <UniqueIdentifier>{1df61f29-f59b-446c-840b-52378961f0c4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\application.h">
@@ -58,9 +61,6 @@
       <Filter>File di intestazione</Filter>
     </ClInclude>
     <ClInclude Include="..\include\shader.h">
-      <Filter>File di intestazione</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\shader_map.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
     <ClInclude Include="..\include\smart_pointers.h">
@@ -109,6 +109,9 @@
       <Filter>File di intestazione</Filter>
     </ClInclude>
     <ClInclude Include="..\include\rendering_pass_deferred.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\light.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
   </ItemGroup>
@@ -170,6 +173,9 @@
     <ClCompile Include="..\source\rendering_pass_deferred.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\material.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\source\cocoa_native_dialog.mm">
@@ -217,12 +223,57 @@
     <None Include="..\assets\shaders\deferred\base_texture_normal_specular.glsl">
       <Filter>File di risorse\assets\shaders\deferred</Filter>
     </None>
+    <None Include="..\assets\materials\baril_mat.mat">
+      <Filter>File di risorse\assets\materials</Filter>
+    </None>
+    <None Include="..\assets\materials\box_mat.mat">
+      <Filter>File di risorse\assets\materials</Filter>
+    </None>
+    <None Include="..\assets\materials\box2_mat.mat">
+      <Filter>File di risorse\assets\materials</Filter>
+    </None>
+    <None Include="..\assets\materials\wire_mat.mat">
+      <Filter>File di risorse\assets\materials</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\assets\textures\box.png">
       <Filter>File di risorse\assets\textures</Filter>
     </Image>
     <Image Include="..\assets\textures\font.png">
+      <Filter>File di risorse\assets\textures</Filter>
+    </Image>
+    <Image Include="..\assets\textures\baril.png">
+      <Filter>File di risorse\assets\textures</Filter>
+    </Image>
+    <Image Include="..\assets\textures\baril_normal.png">
+      <Filter>File di risorse\assets\textures</Filter>
+    </Image>
+    <Image Include="..\assets\textures\baril_specular.jpg">
+      <Filter>File di risorse\assets\textures</Filter>
+    </Image>
+    <Image Include="..\assets\textures\baril_specular.png">
+      <Filter>File di risorse\assets\textures</Filter>
+    </Image>
+    <Image Include="..\assets\textures\box_normal.png">
+      <Filter>File di risorse\assets\textures</Filter>
+    </Image>
+    <Image Include="..\assets\textures\box_specular.png">
+      <Filter>File di risorse\assets\textures</Filter>
+    </Image>
+    <Image Include="..\assets\textures\box2.png">
+      <Filter>File di risorse\assets\textures</Filter>
+    </Image>
+    <Image Include="..\assets\textures\box2_normal.png">
+      <Filter>File di risorse\assets\textures</Filter>
+    </Image>
+    <Image Include="..\assets\textures\box2_specular.png">
+      <Filter>File di risorse\assets\textures</Filter>
+    </Image>
+    <Image Include="..\assets\textures\box2_specular_2.png">
+      <Filter>File di risorse\assets\textures</Filter>
+    </Image>
+    <Image Include="..\assets\textures\NormalMap.png">
       <Filter>File di risorse\assets\textures</Filter>
     </Image>
   </ItemGroup>

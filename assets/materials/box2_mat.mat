@@ -17,9 +17,9 @@ shader "base_texture_normal_specular"
     //texture
     textures
     {
-        diffuse_map  "box"
-        specular_map "box_specular"
-        normal_map   "box_normal"
+        diffuse_map  "box2"
+        specular_map "box2_specular"
+        normal_map   "box2_normal"
     }
     //costant uniforms
     uniforms

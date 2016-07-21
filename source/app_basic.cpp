@@ -98,9 +98,9 @@ void app_basic::start(application& app)
     // build scene
     {
         //material
-        material_ptr box_mat = m_resources.get_material("wire_mat");
+        material_ptr box_mat = m_resources.get_material("box2_mat");
         //mesh
-        mesh::ptr  cube_mesh = basic_meshs::cube( { 2., 2.0, 2. }, true );
+        mesh::ptr  cube_mesh = basic_meshs::cube( { 2., 2., 2. }, true );
         //add to render
         m_render.add_entity(entity::snew(cube_mesh,box_mat));
         

@@ -7,6 +7,7 @@
 //
 #pragma once
 #include <memory>
+#include <string>
 
 class resources_manager;
 class resource

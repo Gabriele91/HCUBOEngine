@@ -9,6 +9,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <sstream>
+#include <iostream>
 #include <material.h>
 #include <filesystem.h>
 #include <resources_manager.h>

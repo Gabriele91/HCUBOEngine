@@ -11,6 +11,7 @@
 	#include <windows.h>
 	#include <direct.h>
 	#include <io.h>
+	#include <Shlwapi.h>
 	#define getcwd _getcwd
 	#define access _access
 	#define F_OK 00

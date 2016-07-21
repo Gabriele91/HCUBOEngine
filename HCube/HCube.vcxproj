@@ -94,7 +94,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(ProjectDir)../dependencies/$(Platform)/lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>OpenGL32.lib;GLU32.lib;glew32s.lib;glfw3.lib;libbz2.lib;zlibstatic.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>OpenGL32.lib;GLU32.lib;glew32s.lib;glfw3.lib;libbz2.lib;zlibstatic.lib;Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -110,7 +110,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(ProjectDir)../dependencies/$(Platform)/lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>OpenGL32.lib;GLU32.lib;glew32s.lib;glfw3.lib;libbz2.lib;zlibstatic.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>OpenGL32.lib;GLU32.lib;glew32s.lib;glfw3.lib;libbz2.lib;zlibstatic.lib;Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -130,7 +130,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(ProjectDir)../dependencies/$(Platform)/lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>OpenGL32.lib;GLU32.lib;glew32s.lib;glfw3.lib;libbz2.lib;zlibstatic.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>OpenGL32.lib;GLU32.lib;glew32s.lib;glfw3.lib;libbz2.lib;zlibstatic.lib;Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -150,7 +150,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(ProjectDir)../dependencies/$(Platform)/lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>OpenGL32.lib;GLU32.lib;glew32s.lib;glfw3.lib;libbz2.lib;zlibstatic.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>OpenGL32.lib;GLU32.lib;glew32s.lib;glfw3.lib;libbz2.lib;zlibstatic.lib;Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -163,6 +163,7 @@
     <ClInclude Include="..\include\entity.h" />
     <ClInclude Include="..\include\filesystem.h" />
     <ClInclude Include="..\include\g_buffer.h" />
+    <ClInclude Include="..\include\light.h" />
     <ClInclude Include="..\include\native_dialog.h" />
     <ClInclude Include="..\include\json11.h" />
     <ClInclude Include="..\include\material.h" />
@@ -176,7 +177,6 @@
     <ClInclude Include="..\include\resource.h" />
     <ClInclude Include="..\include\resources_manager.h" />
     <ClInclude Include="..\include\shader.h" />
-    <ClInclude Include="..\include\shader_map.h" />
     <ClInclude Include="..\include\smart_pointers.h" />
     <ClInclude Include="..\include\query_performance.h" />
     <ClInclude Include="..\include\texture.h" />
@@ -189,6 +189,7 @@
     <ClCompile Include="..\source\camera.cpp" />
     <ClCompile Include="..\source\filesystem.cpp" />
     <ClCompile Include="..\source\g_buffer.cpp" />
+    <ClCompile Include="..\source\material.cpp" />
     <ClCompile Include="..\source\native_dialog.cpp" />
     <ClCompile Include="..\source\json11.cpp" />
     <ClCompile Include="..\source\main.cpp" />
@@ -204,6 +205,10 @@
     <ClCompile Include="..\source\window_native_dialog.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\assets\materials\baril_mat.mat" />
+    <None Include="..\assets\materials\box2_mat.mat" />
+    <None Include="..\assets\materials\box_mat.mat" />
+    <None Include="..\assets\materials\wire_mat.mat" />
     <None Include="..\assets\shaders\deferred\base.glsl" />
     <None Include="..\assets\shaders\deferred\base_texture.glsl" />
     <None Include="..\assets\shaders\deferred\base_texture_normal.glsl" />
@@ -227,8 +232,19 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Image Include="..\assets\textures\baril.png" />
+    <Image Include="..\assets\textures\baril_normal.png" />
+    <Image Include="..\assets\textures\baril_specular.jpg" />
+    <Image Include="..\assets\textures\baril_specular.png" />
     <Image Include="..\assets\textures\box.png" />
+    <Image Include="..\assets\textures\box2.png" />
+    <Image Include="..\assets\textures\box2_normal.png" />
+    <Image Include="..\assets\textures\box2_specular.png" />
+    <Image Include="..\assets\textures\box2_specular_2.png" />
+    <Image Include="..\assets\textures\box_normal.png" />
+    <Image Include="..\assets\textures\box_specular.png" />
     <Image Include="..\assets\textures\font.png" />
+    <Image Include="..\assets\textures\NormalMap.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
