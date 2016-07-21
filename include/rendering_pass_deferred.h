@@ -20,13 +20,8 @@ public:
 	uniform_vec3::ptr m_view_pos;
 	uniform_vec4::ptr m_ambient_light;
 
-	struct light
+	struct uniform_light
 	{
-		glm::vec3 m_position;
-		glm::vec4 m_diffuse;
-		float     m_const{ 1.0 };
-		float     m_linear;
-		float     m_quadratic;
 
 		uniform_vec3::ptr  m_uniform_position;
 		uniform_vec4::ptr  m_uniform_diffuse;
@@ -35,14 +30,19 @@ public:
 		uniform_float::ptr m_uniform_quadratic;
 
 		void get_uniform(int i, shader::ptr shader);
-		void uniform();
+        void uniform(light_wptr light,const glm::mat4& model);
+        
 	};
-	std::vector < light > m_lights;
+	std::vector < uniform_light > m_uniform_lights;
 	//size lights
-	unsigned short m_n_lights_used{ 0 };
 	uniform_int::ptr  m_uniform_n_lights_used;
 	//pass
 	rendering_pass_deferred(camera::ptr camera, resources_manager& resources);
-	virtual void draw_pass(camera::ptr camera, std::vector< entity::ptr >& entities);
+    virtual void draw_pass(glm::vec4&  clear_color,
+                           glm::vec4&  ambient_color,
+                           camera::ptr camera,
+                           std::vector< entity::wptr >& lights,
+                           std::vector< entity::wptr >& renderables,
+                           std::vector< entity::ptr >& entities);
 
 };

@@ -70,6 +70,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		E0101B211D4094C300930372 /* light.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = light.h; sourceTree = "<group>"; };
 		E01461AA1D34D2EC008A2574 /* resources_manager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = resources_manager.cpp; sourceTree = "<group>"; };
 		E01461AD1D34D343008A2574 /* resource.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = resource.h; sourceTree = "<group>"; };
 		E01A2EDA1D22C24D00A8BA77 /* HCube */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = HCube; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -217,6 +218,7 @@
 				E03EDCB51D3418CF00C0C22A /* mesh.h */,
 				E03EDCC01D3418CF00C0C22A /* text_mesh.h */,
 				E03EDCAE1D3418CF00C0C22A /* basic_meshs.h */,
+				E0101B211D4094C300930372 /* light.h */,
 				E03EDCBB1D3418CF00C0C22A /* renderable.h */,
 				E03EDCBC1D3418CF00C0C22A /* rendering_system.h */,
 				E022AF4A1D3EB47E009F76D5 /* rendering_pass_deferred.h */,

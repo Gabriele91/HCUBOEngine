@@ -5,6 +5,7 @@
 //  Copyright � 2016 Gabriele. All rights reserved.
 //
 #include <filesystem.h>
+#include <sstream>
 #include <cstdlib>
 #ifdef _WIN32
 	#include <windows.h>
@@ -132,6 +133,87 @@ namespace filesystem
         //return
         return out;
     }
+    
+    
+    path_operation get_fullpath(const std::string& relative)
+    {
+#ifdef _WIN32
+        char fullpath[MAX_PATH];
+        if(GetFullPathNameA(relative.c_str(), MAX_PATH, fullpath, 0) == 0) return path_operation{ false, "" };
+        return path_operation{ true, std::string(fullpath) };
+#else
+        char realname[_POSIX_PATH_MAX];
+        if (realpath(relative.c_str(), realname) == 0) return path_operation{ false, "" };
+        return path_operation{ true, std::string(realname) };
+#endif
+    }
+    
+    std::vector<std::string> split(std::string str,const std::string& delimiter)
+    {
+        //temps
+        size_t pos = 0;
+        std::vector<std::string> tokens;
+        //search
+        while ((pos = str.find(delimiter)) != std::string::npos)
+        {
+            tokens.push_back( str.substr(0, pos) );
+            str.erase(0, pos + delimiter.length());
+        }
+        //add last
+        if(str.size()) tokens.push_back( str );
+        //return
+        return tokens;
+    }
+    
+    path_operation get_relative_to(const std::string& base,const std::string& path)
+    {
+        //get abs paths
+        path_operation absolute_base=get_fullpath(base); if(!absolute_base.m_success) return path_operation{ false, "" };
+        path_operation absolute_path=get_fullpath(path); if(!absolute_path.m_success) return path_operation{ false, "" };
+#ifdef _WIN32
+        char output_path[MAX_PATH];
+        
+        if( PathRelativePathToA(output_path,
+                                absolute_base.m_path.c_str(),
+                                FILE_ATTRIBUTE_DIRECTORY,
+                                absolute_path.m_path.c_str(),
+                                FILE_ATTRIBUTE_NORMAL) == 0) return path_operation{ false, "" };
+        
+        return path_operation{ true, output_path };
+#else
+        std::string output_path;
+        
+        //split
+        std::string separetor("/");
+        std::vector< std::string > base_directories = split(absolute_base.m_path,separetor);
+        std::vector< std::string > path_directories = split(absolute_path.m_path,separetor);
+        
+        //max loop
+        size_t max_size=std::min(base_directories.size(),path_directories.size());
+        
+        //start index
+        size_t i=0;
+        
+        //search dif
+        for(i=0; i != max_size; ++i)
+        {
+            if(base_directories[i]!=path_directories[i]) break;
+        }
+        
+        //back
+        for(size_t j=0; j < (max_size-i); ++i) output_path+="../";
+        
+        //next
+        for(i=max_size;i < path_directories.size();++i)
+        {
+            output_path+=path_directories[i]+"/";
+        }
+        
+        //ok
+        return path_operation{ true, output_path };
+#endif
+    }
+    
     
 #ifdef _WIN32
     bool is_directory(const std::string& directory)

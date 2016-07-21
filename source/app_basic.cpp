@@ -60,9 +60,6 @@ void app_basic::resize_event(application& application,const glm::ivec2& size)
     m_camera->set_perspective(m_fov, m_aspect, 0.01, 100.0);
 }
 
-
-rendering_pass_deferred::ptr __deff;
-
 void app_basic::start(application& app)
 {
 	//get info about window
@@ -71,8 +68,6 @@ void app_basic::start(application& app)
 		app.get_window_size(),
 		app.get_window_position()
 	};
-    //clear color
-    glClearColor(0,0,0,0);
     //do clear
     app.clear();
     //load shader
@@ -96,62 +91,56 @@ void app_basic::start(application& app)
 	//deferred alloc
 	m_resources.add_directory("assets/shaders/deferred");
 	auto rendering_pass = rendering_pass_deferred::snew(m_camera, m_resources);
-    
-	rendering_pass->m_lights[0].m_position  = { 0.0f, 1.0f, 0.0f };
-	rendering_pass->m_lights[0].m_diffuse   = { 0.0f, 0.0f, 1.0f, 1.0f };
-	rendering_pass->m_lights[0].m_linear    = 0.15;
-	rendering_pass->m_lights[0].m_const     = 0.9;
-	rendering_pass->m_lights[0].m_quadratic = 0.15;
-
-	rendering_pass->m_lights[1].m_position  = {-1.0f, -1.0f, 0.0f };
-	rendering_pass->m_lights[1].m_diffuse   = { 1.0f, 0.0f, 0.0f, 1.0f };
-	rendering_pass->m_lights[1].m_linear	= 0.15;
-	rendering_pass->m_lights[1].m_const     = 0.9;
-	rendering_pass->m_lights[1].m_quadratic = 0.15;
-
-	rendering_pass->m_lights[2].m_position  = { 1.0f,-1.0f, 0.0f };
-	rendering_pass->m_lights[2].m_diffuse   = { 0.0f, 1.0f, 0.0f, 1.0f };
-	rendering_pass->m_lights[2].m_linear    = 0.15;
-	rendering_pass->m_lights[2].m_const     = 0.9;
-	rendering_pass->m_lights[2].m_quadratic = 0.15;
-
-	rendering_pass->m_n_lights_used = 3;
-    //
-    __deff = rendering_pass;
-    //
 	m_render.add_rendering_pass(rendering_pass);
 #endif
     /////// /////// /////// /////// /////// /////// /////// /////// ///////
     // build scene
     {
         //material
-#if 0
-		base_texture_specular_material::ptr base_mat = base_texture_specular_material::snew(m_resources);
-		base_mat->set_texture(m_resources.get_texture("box"));
-		base_mat->set_specular(m_resources.get_texture("box_specular"));
-		base_mat->set_color({ 1,1,1,1 });
-#else
 		base_texture_normal_specular_material::ptr base_mat = base_texture_normal_specular_material::snew(m_resources);
         base_mat->set_texture(m_resources.get_texture("baril"));
 		base_mat->set_specular(m_resources.get_texture("baril_specular"));
 		base_mat->set_normal(m_resources.get_texture("baril_normal"));
         base_mat->set_color({ 1,1,1,1 });
-#endif
+        
         //mesh
         mesh::ptr  cube_mesh = basic_meshs::cube( { 2., 2.0, 2. }, true );
         //add to render
         m_render.add_entity(entity::snew(cube_mesh,base_mat));
-		//move
-        glm::mat4& model0 = m_render.get_entities()[0]->m_model;
-        model0 = glm::translate(glm::mat4(1), { 0.0f, -1.0f, 0.0f });
+        
+        //lights
+        light_ptr light0 = light_snew();
+        light_ptr light1 = light_snew();
+        light_ptr light2 = light_snew();
+        
+        light0->m_diffuse   = { 0.0f, 0.0f, 1.0f, 1.0f };
+        light0->m_linear    = 0.15;
+        light0->m_const     = 0.9;
+        light0->m_quadratic = 0.15;
+        
+        light1->m_diffuse   = { 1.0f, 0.0f, 0.0f, 1.0f };
+        light1->m_linear	= 0.15;
+        light1->m_const     = 0.9;
+        light1->m_quadratic = 0.15;
+        
+        light2->m_diffuse   = { 0.0f, 1.0f, 0.0f, 1.0f };
+        light2->m_linear    = 0.15;
+        light2->m_const     = 0.9;
+        light2->m_quadratic = 0.15;
+        
+        //add to render
+        m_render.add_entity(entity::snew(light0));
+        m_render.add_entity(entity::snew(light1));
+        m_render.add_entity(entity::snew(light2));
+        //ambient color
+        m_render.set_ambient_color(glm::vec4{ 0.16, 0.16, 0.16, 1.0 });
+        
     }
 }
 
 bool app_basic::run(application& app,double delta_time)
 {
 	//////////////////////////////////////////////////////////
-    //clear screen
-    app.clear();
     //angle
     static float angle = 0;
     //update angle
@@ -162,14 +151,16 @@ bool app_basic::run(application& app,double delta_time)
     model0 = glm::translate(glm::mat4(1), { 0.0f, 0.0f, 0.0f });
     model0 = glm::rotate(model0, float(glm::radians(angle*25.0)), glm::vec3(0.2, 0.8, 0.4));
     //for all
-    for(int i=0;i!=3;++i)
+    for(int i=1;i!=4;++i)
     {
-        __deff->m_lights[i].m_position = glm::vec3
+        glm::mat4& model_light = m_render.get_entities()[i]->m_model;
+        //applay translation
+        model_light = glm::translate(glm::mat4(1), glm::vec3
         {
-			std::sin((glm::pi<float>()*0.66)*(i + 1)+angle)*2.5,
+			std::sin((glm::pi<float>()*0.66)*i+angle)*2.5,
             0.0,
-            std::cos((glm::pi<float>()*0.66)*(i+1)+angle)*2.5,
-        };
+            std::cos((glm::pi<float>()*0.66)*i+angle)*2.5,
+        });
     }
     //draw
     m_render.draw();

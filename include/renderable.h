@@ -18,3 +18,4 @@ public:
 
 using renderable_ptr  = std::shared_ptr< renderable >;
 using renderable_uptr = std::unique_ptr< renderable >;
+using renderable_wptr = std::weak_ptr  < renderable >;
