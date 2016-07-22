@@ -136,7 +136,7 @@ void app_basic::start(application& app)
         m_render.add_entity(entity::snew(light2));
         
         //ambient color
-        m_render.set_ambient_color(glm::vec4{ 0.16, 0.16, 0.16, 1.0 });
+        m_render.set_ambient_color(glm::vec4{ 0.26, 0.26, 0.26, 1.0 });
         
     }
 }
@@ -152,7 +152,7 @@ bool app_basic::run(application& app,double delta_time)
     //update
     glm::mat4& model0 = m_render.get_entities()[0]->m_model;
 	model0 = glm::translate(glm::mat4(1), { 0.0f, 0.0f, 0.0f });
-    model0 = glm::rotate(model0, float(glm::radians(angle*25.0)), glm::vec3(0.2, 0.8, 0.4));
+    model0 = glm::rotate(model0, float(glm::radians(angle*25.0)), glm::vec3(-0.05, 0.9, -0.1));
 	model0 = glm::scale(model0, { 0.03f, 0.03f, 0.03f });
     //for all
     for(int i=1;i!=4;++i)

@@ -6,11 +6,12 @@
 
 	blend false
 
-	shader "base_texture_normal"
+	shader "base_texture_normal_specular"
 	{
 		textures
 		{
 			diffuse_map "vehicle_playerShip_dff"
+			specular_map "vehicle_playerShip_spc"
 			normal_map "vehicle_playerShip_nrm"
 		}
 
