@@ -39,7 +39,6 @@ struct light
 };
 uniform light lights[max_lights];
 
-
 void main()
 {
 	// Retrieve data from gbuffer

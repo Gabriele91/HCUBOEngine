@@ -1,5 +1,6 @@
 #include <basic_meshs.h>
 #include <glm/glm.hpp>
+#include <tangent_space_calculation.h>
 
 namespace basic_meshs
 {
@@ -18,7 +19,7 @@ namespace basic_meshs
         {
             struct vertex
             {
-                glm::vec3 m_vertex;
+                glm::vec3 m_position;
                 glm::vec3 m_normal;
                 glm::vec2 m_uvmap;
                 glm::vec3 m_tangent;
@@ -28,7 +29,7 @@ namespace basic_meshs
                        const glm::vec3& in_normal,
                        const glm::vec2& in_uvmap)
                 {
-                    m_vertex = in_vertex;
+                    m_position = in_vertex;
                     m_normal = in_normal;
                     m_uvmap  = in_uvmap;
                 }
@@ -39,7 +40,7 @@ namespace basic_meshs
                        const glm::vec3& in_tangent,
                        const glm::vec3& in_bitangent)
                 {
-                    m_vertex    = in_vertex;
+                    m_position    = in_vertex;
                     m_normal    = in_normal;
                     m_uvmap     = in_uvmap;
                     m_tangent   = in_tangent;
@@ -51,7 +52,7 @@ namespace basic_meshs
             {
                 mesh::input_layout
                 {
-                    mesh::input{ 0, sizeof(vertex), 3, offsetof(vertex, m_vertex)   },
+                    mesh::input{ 0, sizeof(vertex), 3, offsetof(vertex, m_position)   },
                     mesh::input{ 1, sizeof(vertex), 3, offsetof(vertex, m_normal)   },
                     mesh::input{ 2, sizeof(vertex), 2, offsetof(vertex, m_uvmap)    },
                     mesh::input{ 3, sizeof(vertex), 3, offsetof(vertex, m_tangent)  },
@@ -113,62 +114,7 @@ namespace basic_meshs
             };
             
             //compute tangent per vertex
-            for (unsigned int i=0; i < vertices.size(); i+=3)
-            {
-                
-                // Shortcuts for vertices
-                glm::vec3 & v0 = vertices[i+0].m_vertex;
-                glm::vec3 & v1 = vertices[i+1].m_vertex;
-                glm::vec3 & v2 = vertices[i+2].m_vertex;
-                
-                // Shortcuts for UVs
-                glm::vec2 & uv0 = vertices[i+0].m_uvmap;
-                glm::vec2 & uv1 = vertices[i+1].m_uvmap;
-                glm::vec2 & uv2 = vertices[i+2].m_uvmap;
-                
-                // Edges of the triangle : postion delta
-                glm::vec3 edge1 = v1-v0;
-                glm::vec3 edge2 = v2-v0;
-                
-                // UV delta
-                glm::vec2 delta_uv1 = uv1-uv0;
-                glm::vec2 delta_uv2 = uv2-uv0;
-                
-                //compute tanget & bitangent
-                float r = 1.0f / (delta_uv1.x * delta_uv2.y - delta_uv1.y * delta_uv2.x);
-                glm::vec3 tangent   = (edge1 * delta_uv2.y  - edge2 * delta_uv1.y)*r;
-                glm::vec3 bitangent = (edge2 * delta_uv1.x  - edge1 * delta_uv2.x)*r;
-                
-                //add tangent
-                vertices[i+0].m_tangent =
-                vertices[i+1].m_tangent =
-                vertices[i+2].m_tangent = glm::normalize(tangent);
-                
-                //add bitangent
-                vertices[i+0].m_bitangent =
-                vertices[i+1].m_bitangent =
-                vertices[i+2].m_bitangent = glm::normalize(bitangent);
-                
-            }
-            
-            // See "Going Further"
-            for (unsigned int i=0; i<vertices.size(); ++i )
-            {
-                glm::vec3& n = vertices[i].m_normal;
-                glm::vec3& t = vertices[i].m_tangent;
-                glm::vec3& b = vertices[i].m_bitangent;
-                
-                // Gram-Schmidt orthogonalize
-                t = glm::normalize(t - n * glm::dot(n, t));
-                
-                // Calculate handedness
-                if (glm::dot(glm::cross(n, t), b) < 0.0f)
-                {
-                    t = t * -1.0f;
-                }
-                
-            }
-            
+			tangent_space_calculation::compute_tangent_fast<vertex>(vertices);
             //resize
             vbuffer.resize(vertices.size()*sizeof(vertex));
             //copy buffer
@@ -179,7 +125,7 @@ namespace basic_meshs
             
             struct vertex
             {
-                glm::vec3 m_vertex;
+                glm::vec3 m_position;
                 glm::vec3 m_normal;
             };
             
@@ -187,7 +133,7 @@ namespace basic_meshs
             {
                 mesh::input_layout
                 {
-                    mesh::input{ 0, sizeof(vertex), 3, offsetof(vertex, m_vertex) },
+                    mesh::input{ 0, sizeof(vertex), 3, offsetof(vertex, m_position) },
                     mesh::input{ 1, sizeof(vertex), 3, offsetof(vertex, m_normal) }
                 },
                 GL_TRIANGLES,
@@ -232,7 +178,7 @@ namespace basic_meshs
             //compute normals
             for(vertex& v : vertices)
             {
-                v.m_normal = glm::normalize(v.m_vertex);
+                v.m_normal = glm::normalize(v.m_position);
             }
             
             //resize
@@ -261,7 +207,7 @@ namespace basic_meshs
 		{
 			struct vertex
 			{
-				glm::vec3 m_vertex;
+				glm::vec3 m_position;
 				glm::vec3 m_normal;
 				glm::vec2 m_uvmap;
 			};
@@ -270,7 +216,7 @@ namespace basic_meshs
 			{
 				mesh::input_layout
 				{
-					mesh::input{ 0, sizeof(vertex), 3, offsetof(vertex, m_vertex) },
+					mesh::input{ 0, sizeof(vertex), 3, offsetof(vertex, m_position) },
 					mesh::input{ 1, sizeof(vertex), 3, offsetof(vertex, m_normal) },
 					mesh::input{ 2, sizeof(vertex), 2, offsetof(vertex, m_uvmap) }
 				},
@@ -295,7 +241,7 @@ namespace basic_meshs
 
 			struct vertex
 			{
-				glm::vec3 m_vertex;
+				glm::vec3 m_position;
 				glm::vec3 m_normal;
 			};
 
@@ -303,7 +249,7 @@ namespace basic_meshs
 			{
 				mesh::input_layout
 				{
-					mesh::input{ 0, sizeof(vertex), 3, offsetof(vertex, m_vertex) },
+					mesh::input{ 0, sizeof(vertex), 3, offsetof(vertex, m_position) },
 					mesh::input{ 1, sizeof(vertex), 3, offsetof(vertex, m_normal) }
 				},
 				GL_TRIANGLE_STRIP,

@@ -1,6 +1,7 @@
 #include <mesh.h>
 #include <resources_manager.h>
 #include <static_model.h>
+#include <tangent_space_calculation.h>
 
 
 void static_model::draw(camera& cam, const glm::mat4& model_matrix, material_ptr material)
@@ -82,6 +83,7 @@ bool static_model::load(resources_manager& resources, const std::string& path)
 			std::fread(&vertices[v].m_tangent.x, sizeof(float), 3, model_file);
 			std::fread(&vertices[v].m_bitangent.x, sizeof(float), 3, model_file);
 		}
+
 		//copy to buffer
 		std::vector< mesh::byte > vbuffer(vertices.size() * sizeof(vertex));
 		//copy buffer

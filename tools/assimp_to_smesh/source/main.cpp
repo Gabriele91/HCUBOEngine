@@ -1,7 +1,10 @@
 #include <smesh.h>
 #include <iostream>
 #include <filesystem.h>
-
+#include <assimp/Exporter.hpp>
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
 
 void material::save(const std::string& path)
 {
@@ -12,36 +15,51 @@ void material::save(const std::string& path)
 	//write file
 	char buffer[2048] = { 0 };
 
+	//shader name
+	std::string name_shader;
+
+	//select shader
+	if (!m_specular.size() && !m_normal.size()) 
+		name_shader = "base_texture";
+	else if (!m_specular.size()) 
+		name_shader = "base_texture_normal";
+	else if (!m_normal.size())
+		name_shader = "base_texture_specular";
+	else
+		name_shader = "base_texture_normal_specular";
+
 	std::snprintf(buffer,1024,
 R"material(
-	cullface true
+cullface true
+{
+	mode back
+}
+
+blend false
+
+shader "%s"
+{
+	textures
 	{
-		mode back
+		%s
+		%s
+		%s
 	}
 
-	blend false
-
-	shader "base_texture_normal_specular"
+	uniforms
 	{
-		textures
-		{
-			%s
-			%s
-			%s
-		}
-
-		uniforms
-		{
-			color vec4(%f,%f,%f,%f)
-		}
+		color vec4(%f,%f,%f,%f)
 	}
+}
 )material",
+	name_shader.c_str(),
 	(m_diffuse.size() ? "diffuse_map \"" + m_diffuse + "\"" : std::string()).c_str(),
 	(m_specular.size() ? "specular_map \"" + m_specular + "\"" : std::string()).c_str(),
 	(m_normal.size() ? "normal_map \"" + m_normal + "\"" : std::string()).c_str(),
-	m_color.x,
-	m_color.y,
-	m_color.z);
+	m_color.r,
+	m_color.g,
+	m_color.b,
+	m_color.a);
 	//write
 	std::fwrite(buffer, std::strlen(buffer), 1, mat_file);
 	//close file
@@ -209,6 +227,13 @@ void process_model(const std::string& path, model& out_model)
 	}
 	// Process ASSIMP's root node recursively
 	process_node(scene->mRootNode, scene, out_model);
+	//save obj
+	#if 0
+	Assimp::Exporter exporter;
+	const aiExportFormatDesc* format = exporter.GetExportFormatDescription(0);
+	exporter.Export(scene, "obj", "test.obj");
+	std::cout << exporter.GetErrorString() << std::endl;
+	#endif
 }
 
 int main(int argc,char* argv[])

@@ -61,14 +61,6 @@ vec3 compute_normal()
     return tbn*text_normal;
 }
 
-vec4 gamma_correction_tex(sampler2D tex,vec2 coords)
-{
-    const vec3 gamma = vec3(2.2);
-    vec4 texturetex = texture(tex, coords);
-    vec3 diffuse = pow(texturetex.rgb, gamma);
-    return vec4(diffuse,texturetex.a);
-}
-
 void main()
 {
 	//coords
@@ -76,6 +68,6 @@ void main()
     //normal map
     g_normal      = compute_normal() * 0.5 + 0.5;
 	//albedo
-	vec3 color    = vec3(gamma_correction_tex(diffuse_map, frag_uvcoord)*color);
+	vec3 color    = vec3(texture(diffuse_map, frag_uvcoord)*color);
 	g_albedo_spec = vec4(color, 0.0);
 }
