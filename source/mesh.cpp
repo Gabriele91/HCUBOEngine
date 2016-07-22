@@ -16,7 +16,6 @@ void mesh::build(const mesh_layout& layout,
     m_layout = layout;
     build_index(indexs);
     build_vertex(vertex);
-    
 }
 
 void mesh::build(const mesh_layout& layout,
@@ -25,6 +24,25 @@ void mesh::build(const mesh_layout& layout,
     destoy();
     m_layout = layout;
     build_vertex(vertex);
+}
+
+void mesh::draw(camera& cam,
+				const glm::mat4& model,
+				material_ptr material)
+{
+	if (material)
+	{
+		material->bind_state();
+		material->bind(cam, model);
+	}
+
+	mesh::draw();
+
+	if (material)
+	{
+		material->unbind();
+		material->unbind_state();
+	}
 }
 
 void mesh::draw()

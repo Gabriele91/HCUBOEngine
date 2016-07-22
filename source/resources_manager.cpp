@@ -7,6 +7,7 @@
 //
 #include <resource.h>
 #include <resources_manager.h>
+#include <static_model.h>
 #include <filesystem.h>
 
 
@@ -27,14 +28,18 @@ void resources_manager::add_directory(const std::string& directory, bool recursi
         {
 			set_texture_path(basename, directory + "/" + filename);
         }
-        else if(ext == ".glsl")
+		else if (ext == ".glsl")
         {
 			set_shader_path(basename, directory + "/" + filename);
         }
-        else if(ext == ".mat")
-        {
+		else if (ext == ".mat")
+		{
 			set_material_path(basename, directory + "/" + filename);
-        }
+		}
+		else if (ext == ".smhc")
+		{
+			set_static_model_path(basename, directory + "/" + filename);
+		}
         else if(ext == ".json")
         {
             //none
@@ -79,6 +84,15 @@ void resources_manager::set_material_path(const std::string& name, const std::st
 	//set path
 	m_resources_path_map[resource_name] = path;
 }
+
+void resources_manager::set_static_model_path(const std::string& name, const std::string& path)
+{
+	//shader name
+	std::string resource_name = "static_model:" + name;
+	//set path
+	m_resources_path_map[resource_name] = path;
+}
+
 
 shader::ptr resources_manager::get_shader(const std::string& name)
 {
@@ -129,4 +143,22 @@ material_ptr resources_manager::get_material(const std::string& name)
     }
     //return
     return std::static_pointer_cast< material >(resource_it->second);
+}
+
+
+static_model::ptr resources_manager::get_static_model(const std::string& name)
+{
+	//shader name
+	std::string static_model_name = "static_model:" + name;
+	//rerouce
+	resources_map_it resource_it = m_resources_map.find(static_model_name);
+	//alloc
+	if (resource_it == m_resources_map.end())
+	{
+		m_resources_map[static_model_name] = std::static_pointer_cast< resource >(static_model::snew());
+		resource_it = m_resources_map.find(static_model_name);
+		resource_it->second->load(*this, m_resources_path_map[static_model_name]);
+	}
+	//return
+	return std::static_pointer_cast< static_model >(resource_it->second);
 }

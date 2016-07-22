@@ -59,8 +59,12 @@ public:
     
     void build(const mesh_layout& layout,
                const std::vector< byte >& points);
-    
-    void draw();
+
+	void draw();
+
+	void draw(camera& cam,
+			  const glm::mat4& model,
+		      material_ptr material);
     
     void destoy();
     

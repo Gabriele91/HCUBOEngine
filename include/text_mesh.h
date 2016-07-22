@@ -23,5 +23,8 @@ public:
     
     void set_text(const std::string& text);
     void set_text(const std::u32string& text);
-    void draw();
+	void draw();
+    void draw(camera& cam,
+			  const glm::mat4& model,
+		      material_ptr material);
 };

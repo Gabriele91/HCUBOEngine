@@ -7,12 +7,15 @@
 //
 #pragma once
 #include <smart_pointers.h>
+#include <material.h>
 
 class renderable
 {
 public:
-    
-    virtual void draw() {};
+
+	virtual void draw(camera& cam,
+					  const glm::mat4& model,
+					  material_ptr material) {};
     virtual ~renderable(){};
 };
 

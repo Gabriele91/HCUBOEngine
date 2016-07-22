@@ -63,9 +63,28 @@ void text_mesh::set_text(const std::string& text)
     set_text(u32text);
 }
 
+
+void text_mesh::draw(camera& cam,
+					 const glm::mat4& model,
+					 material_ptr material)
+{
+	if (material)
+	{
+		material->bind_state();
+		material->bind(cam, model);
+	}
+
+	text_mesh::draw();
+
+	if (material)
+	{
+		material->unbind();
+		material->unbind_state();
+	}
+}
+
 void text_mesh::draw()
 {
-#if 1
     const int attribute_location = 0;
     ////////////////////////////////////////////////////////
     //unbind index
@@ -80,5 +99,4 @@ void text_mesh::draw()
     ////////////////////////////////////////////////////////
     //unbind
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-#endif
 }

@@ -179,6 +179,7 @@
     <ClInclude Include="..\include\shader.h" />
     <ClInclude Include="..\include\smart_pointers.h" />
     <ClInclude Include="..\include\query_performance.h" />
+    <ClInclude Include="..\include\static_model.h" />
     <ClInclude Include="..\include\texture.h" />
     <ClInclude Include="..\include\text_mesh.h" />
   </ItemGroup>
@@ -200,6 +201,7 @@
     <ClCompile Include="..\source\rendering_system.cpp" />
     <ClCompile Include="..\source\resources_manager.cpp" />
     <ClCompile Include="..\source\shader.cpp" />
+    <ClCompile Include="..\source\static_model.cpp" />
     <ClCompile Include="..\source\texture.cpp" />
     <ClCompile Include="..\source\text_mesh.cpp" />
     <ClCompile Include="..\source\window_native_dialog.cpp" />

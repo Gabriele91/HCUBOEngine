@@ -11,6 +11,7 @@
 #include <shader.h>
 #include <texture.h>
 #include <material.h>
+#include <static_model.h>
 
 class resources_manager
 {
@@ -20,6 +21,7 @@ public:
     shader::ptr get_shader(const std::string& name);
     texture::ptr get_texture(const std::string& name);
 	material_ptr get_material(const std::string& name);
+	static_model::ptr get_static_model(const std::string& name);
 
     
 private:
@@ -36,5 +38,6 @@ private:
 	void set_shader_path(const std::string& name, const std::string& path);
 	void set_texture_path(const std::string& name, const std::string& path);
 	void set_material_path(const std::string& name, const std::string& path);
+	void set_static_model_path(const std::string& name, const std::string& path);
 
 };

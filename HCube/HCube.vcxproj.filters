@@ -114,6 +114,9 @@
     <ClInclude Include="..\include\light.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\static_model.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\application.cpp">
@@ -174,6 +177,9 @@
       <Filter>File di origine</Filter>
     </ClCompile>
     <ClCompile Include="..\source\material.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\static_model.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
   </ItemGroup>

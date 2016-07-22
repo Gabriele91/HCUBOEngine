@@ -1,0 +1,21 @@
+
+	cullface true
+	{
+		mode back
+	}
+
+	blend false
+
+	shader "base_texture_normal"
+	{
+		textures
+		{
+			diffuse_map "vehicle_playerShip_dff"
+			normal_map "vehicle_playerShip_nrm"
+		}
+
+		uniforms
+		{
+			color vec4(1.000000,1.000000,1.000000,0.000000)
+		}
+	}

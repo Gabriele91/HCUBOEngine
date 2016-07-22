@@ -62,11 +62,7 @@ void rendering_pass_deferred::draw_pass(glm::vec4&  clear_color,
     for (entity::wptr& weak_entity : renderables)
     {
         auto entity = weak_entity.lock();
-		entity->m_material->bind_state();
-		entity->m_material->bind(camera.get(), entity->m_model);
-		entity->m_renderable->draw();
-		entity->m_material->unbind();
-		entity->m_material->unbind_state();
+		entity->m_renderable->draw(*camera.get(), entity->m_model, entity->m_material);
 	}
 
 	m_g_buffer.unbind();

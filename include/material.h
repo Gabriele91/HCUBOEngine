@@ -47,21 +47,21 @@ public:
         m_blend_dst = dst;
     }
     
-    virtual void bind(camera* cam,const glm::mat4& model)
+    virtual void bind(camera& cam,const glm::mat4& model)
     {
         m_shader->bind();
         
         if(m_uniform_projection)
-            m_uniform_projection->set_value(cam->get_projection());
+            m_uniform_projection->set_value(cam.get_projection());
         
         if(m_uniform_view)
-            m_uniform_view->set_value(cam->get_view());
+            m_uniform_view->set_value(cam.get_view());
         
         if(m_uniform_model)
             m_uniform_model->set_value(model);
         
         if(m_uniform_viewport)
-            m_uniform_viewport->set_value(cam->get_viewport());
+            m_uniform_viewport->set_value(cam.get_viewport());
         
         for(size_t i=0; i!=m_ints.size(); ++i)
         {
@@ -129,7 +129,6 @@ public:
         if(m_cullface)
         {
             glDisable(GL_CULL_FACE);
-            glCullFace(m_cullmode);
         }
     }
 

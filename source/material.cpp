@@ -93,9 +93,9 @@ public:
     
     static GLenum cullface_from_string(const std::string& cullface,GLenum cullface_default)
     {
-        if(cullface=="back")           return GL_ONE;
-        if(cullface=="front")          return GL_ZERO;
-        if(cullface=="front_and_back") return GL_ONE_MINUS_DST_COLOR;
+        if(cullface=="back")           return GL_BACK;
+        if(cullface=="front")          return GL_FRONT;
+        if(cullface=="front_and_back") return GL_FRONT_AND_BACK;
         return cullface_default;
     }
     
@@ -783,6 +783,7 @@ protected:
     bool parse_name(const char* in,const char** cout,std::string& out)
     {
         if (!is_start_name(*in)) return false;
+		out = "";
         out+=*in;
         ++in;
         while(is_char_name(*in))

@@ -52,7 +52,12 @@ public:
         m_light    = arg_light;
         m_material = arg_material;
     }
-    
+
+	entity(renderable_ptr arg_renderable)
+	{
+		m_renderable = arg_renderable;
+	}
+
     entity(light_ptr arg_light)
     {
         m_light = arg_light;

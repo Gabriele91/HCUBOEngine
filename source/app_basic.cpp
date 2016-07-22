@@ -93,16 +93,22 @@ void app_basic::start(application& app)
 #endif
     //load assets
     m_resources.add_directory("assets/textures");
-    m_resources.add_directory("assets/materials");
+	m_resources.add_directory("assets/materials");
+	m_resources.add_directory("assets/ship");
     /////// /////// /////// /////// /////// /////// /////// /////// ///////
     // build scene
     {
+#if 0
         //material
         material_ptr box_mat = m_resources.get_material("baril_mat");
         //mesh
         mesh::ptr  cube_mesh = basic_meshs::cube( { 2., 2., 2. }, true );
-        //add to render
-        m_render.add_entity(entity::snew(cube_mesh,box_mat));
+		//add to render
+		m_render.add_entity(entity::snew(cube_mesh, box_mat));
+#else
+		//add to render
+		m_render.add_entity(entity::snew(m_resources.get_static_model("ship")));
+#endif
         
         //lights
         light_ptr light0 = light_snew();
@@ -145,8 +151,9 @@ bool app_basic::run(application& app,double delta_time)
     //////////////////////////////////////////////////////////
     //update
     glm::mat4& model0 = m_render.get_entities()[0]->m_model;
-    model0 = glm::translate(glm::mat4(1), { 0.0f, 0.0f, 0.0f });
+	model0 = glm::translate(glm::mat4(1), { 0.0f, 0.0f, 0.0f });
     model0 = glm::rotate(model0, float(glm::radians(angle*25.0)), glm::vec3(0.2, 0.8, 0.4));
+	model0 = glm::scale(model0, { 0.03f, 0.03f, 0.03f });
     //for all
     for(int i=1;i!=4;++i)
     {
@@ -154,9 +161,9 @@ bool app_basic::run(application& app,double delta_time)
         //applay translation
         model_light = glm::translate(glm::mat4(1), glm::vec3
         {
-			std::sin((glm::pi<float>()*0.66)*i+angle)*2.5,
+			std::sin((glm::pi<float>()*0.66)*i+angle)*3.,
             0.0,
-            std::cos((glm::pi<float>()*0.66)*i+angle)*2.5,
+            std::cos((glm::pi<float>()*0.66)*i+angle)*3.,
         });
     }
     //draw
