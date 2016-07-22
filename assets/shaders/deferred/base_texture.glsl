@@ -38,9 +38,17 @@ layout(location = 2) out vec4 g_albedo_spec;
 uniform vec4      color;
 uniform sampler2D diffuse_map;
 
+vec4 gamma_correction_tex(sampler2D tex,vec2 coords)
+{
+    const vec3 gamma = vec3(2.2);
+    vec4 texturetex = texture(tex, coords);
+    vec3 diffuse = pow(texturetex.rgb, gamma);
+    return vec4(diffuse,texturetex.a);
+}
+
 void main()
 {
 	g_vertex          = frag_vertex;
 	g_normal          = normalize(frag_normal) * 0.5 + 0.5 ;
-	g_albedo_spec     = vec4((texture(diffuse_map, frag_uvcoord)*color).rgb,1.0);
+	g_albedo_spec     = vec4((gamma_correction_tex(diffuse_map, frag_uvcoord)*color).rgb,1.0);
 }
