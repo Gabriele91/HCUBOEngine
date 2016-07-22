@@ -225,6 +225,9 @@
     <None Include="..\assets\shaders\forward\text.glsl" />
     <None Include="..\assets\shaders\forward\triangle_lines.glsl" />
     <None Include="..\assets\shaders\forward\wireframe.glsl" />
+    <None Include="..\assets\ship\ship.smhc" />
+    <None Include="..\assets\ship\vehicle_playerShip_glass_mat.mat" />
+    <None Include="..\assets\ship\vehicle_playerShip_metal_mat.mat" />
     <None Include="..\source\cocoa_native_dialog.mm">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <FileType>CppCode</FileType>
@@ -234,6 +237,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Image Include="..\assets\ship\vehicle_playerShip_dff.png" />
+    <Image Include="..\assets\ship\vehicle_playerShip_nrm.png" />
+    <Image Include="..\assets\ship\vehicle_playerShip_spc.png" />
     <Image Include="..\assets\textures\baril.png" />
     <Image Include="..\assets\textures\baril_normal.png" />
     <Image Include="..\assets\textures\baril_specular.jpg" />

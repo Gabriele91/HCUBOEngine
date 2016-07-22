@@ -75,7 +75,7 @@ void app_basic::start(application& app)
     glm::vec2 size = app.get_window_size();
     m_aspect       = float(size.x) / float(size.y);
     m_camera->set_viewport(glm::ivec4{0, 0, size.x, size.y});
-	m_camera->look_at(glm::vec3{ 0.0f, 4.0f, 6.0f },
+	m_camera->look_at(glm::vec3{ 0.0f, 6.9f, -45.0f },
 				  	  glm::vec3{ 0.0f,-1.0f, 0.0f },
 					  glm::vec3{ 0.0f, 1.0f, 0.0f });
     m_camera->set_perspective(m_fov, m_aspect, 0.01, 100.0);
@@ -95,6 +95,7 @@ void app_basic::start(application& app)
     m_resources.add_directory("assets/textures");
 	m_resources.add_directory("assets/materials");
 	m_resources.add_directory("assets/ship");
+	m_resources.add_directory("assets/asteroid"); 
     /////// /////// /////// /////// /////// /////// /////// /////// ///////
     // build scene
     {
@@ -107,7 +108,7 @@ void app_basic::start(application& app)
 		m_render.add_entity(entity::snew(cube_mesh, box_mat));
 #else
 		//add to render
-		m_render.add_entity(entity::snew(m_resources.get_static_model("ship")));
+		m_render.add_entity(entity::snew(m_resources.get_static_model("asteroid")));
 #endif
         
         //lights
@@ -115,20 +116,20 @@ void app_basic::start(application& app)
         light_ptr light1 = light_snew();
         light_ptr light2 = light_snew();
         
-        light0->m_diffuse   = { 0.0f, 0.0f, 1.0f, 1.0f };
-        light0->m_linear    = 0.15;
-        light0->m_const     = 0.9;
-        light0->m_quadratic = 0.15;
+        light0->m_diffuse   = { 0.0f, 1.0f, 0.0f, 1.0f };
+        light0->m_linear    = 0.01;
+        light0->m_const     = 0.45;
+        light0->m_quadratic = 0.01;
         
         light1->m_diffuse   = { 1.0f, 0.0f, 0.0f, 1.0f };
-        light1->m_linear	= 0.15;
-        light1->m_const     = 0.9;
-        light1->m_quadratic = 0.15;
+        light1->m_linear	= 0.01;
+        light1->m_const     = 0.45;
+        light1->m_quadratic = 0.01;
         
-        light2->m_diffuse   = { 0.0f, 1.0f, 0.0f, 1.0f };
-        light2->m_linear    = 0.15;
-        light2->m_const     = 0.9;
-        light2->m_quadratic = 0.15;
+        light2->m_diffuse   = { 0.0f, 0.0f, 1.0f, 1.0f };
+        light2->m_linear    = 0.01;
+        light2->m_const     = 0.45;
+        light2->m_quadratic = 0.01;
         
         //add to render
         m_render.add_entity(entity::snew(light0));
@@ -151,9 +152,10 @@ bool app_basic::run(application& app,double delta_time)
     //////////////////////////////////////////////////////////
     //update
     glm::mat4& model0 = m_render.get_entities()[0]->m_model;
-	model0 = glm::translate(glm::mat4(1), { 0.0f, 0.0f, 0.0f });
-    model0 = glm::rotate(model0, float(glm::radians(angle*25.0)), glm::vec3(-0.05, 0.9, -0.1));
-	model0 = glm::scale(model0, { 0.03f, 0.03f, 0.03f });
+	model0 = glm::translate(glm::mat4(1), { 0.0f, -5.0f, 0.0f });
+	model0 = glm::rotate(model0, float(glm::radians(angle*-10.0+180.0)), glm::vec3(0.0, 1.0, 0.0));
+	model0 = glm::rotate(model0, float(glm::radians(15.0)), glm::vec3(1.0, 0.0, 0.0));
+	model0 = glm::scale(model0, { 0.2f, 0.2f, 0.2f });
     //for all
     for(int i=1;i!=4;++i)
     {
@@ -161,9 +163,9 @@ bool app_basic::run(application& app,double delta_time)
         //applay translation
         model_light = glm::translate(glm::mat4(1), glm::vec3
         {
-			std::sin((glm::pi<float>()*0.66)*i+angle)*3.,
+			std::sin((glm::pi<float>()*0.66)*i+ glm::radians(angle*20.0))*15.,
             0.0,
-            std::cos((glm::pi<float>()*0.66)*i+angle)*3.,
+            std::cos((glm::pi<float>()*0.66)*i+ glm::radians(angle*20.0))*15.,
         });
     }
     //draw

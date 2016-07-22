@@ -10,9 +10,9 @@
 	{
 		textures
 		{
-			diffuse_map "vehicle_playerShip_dff"
-			specular_map "vehicle_playerShip_spc"
-			normal_map "vehicle_playerShip_nrm"
+			diffuse_map "prop_asteroid_03_dff"
+			specular_map "asteroid_03_spec"
+			normal_map "prop_asteroid_03_nrm"
 		}
 
 		uniforms

@@ -31,6 +31,9 @@
     <Filter Include="File di risorse\assets\materials">
       <UniqueIdentifier>{1df61f29-f59b-446c-840b-52378961f0c4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="File di risorse\assets\ship">
+      <UniqueIdentifier>{024b4634-fa25-4758-8a3e-810ee384c9bd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\application.h">
@@ -241,6 +244,15 @@
     <None Include="..\assets\materials\wire_mat.mat">
       <Filter>File di risorse\assets\materials</Filter>
     </None>
+    <None Include="..\assets\ship\ship.smhc">
+      <Filter>File di risorse\assets\ship</Filter>
+    </None>
+    <None Include="..\assets\ship\vehicle_playerShip_glass_mat.mat">
+      <Filter>File di risorse\assets\ship</Filter>
+    </None>
+    <None Include="..\assets\ship\vehicle_playerShip_metal_mat.mat">
+      <Filter>File di risorse\assets\ship</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\assets\textures\box.png">
@@ -281,6 +293,15 @@
     </Image>
     <Image Include="..\assets\textures\NormalMap.png">
       <Filter>File di risorse\assets\textures</Filter>
+    </Image>
+    <Image Include="..\assets\ship\vehicle_playerShip_dff.png">
+      <Filter>File di risorse\assets\ship</Filter>
+    </Image>
+    <Image Include="..\assets\ship\vehicle_playerShip_nrm.png">
+      <Filter>File di risorse\assets\ship</Filter>
+    </Image>
+    <Image Include="..\assets\ship\vehicle_playerShip_spc.png">
+      <Filter>File di risorse\assets\ship</Filter>
     </Image>
   </ItemGroup>
 </Project>
