@@ -42,5 +42,5 @@ void main()
 {
 	g_vertex          = frag_vertex;
 	g_normal          = normalize(frag_normal) * 0.5 + 0.5 ;
-	g_albedo_spec     = vec4(texture(diffuse_map, frag_uvcoord)*color).rgb,1.0);
+	g_albedo_spec     = vec4((texture(diffuse_map, frag_uvcoord)*color).rgb,1.0);
 }

@@ -9,7 +9,7 @@
 #include <fstream>
 #include <memory>
 #include <cstdlib>
-
+#include <filesystem.h>
 
 texture::texture()
 {
@@ -36,17 +36,19 @@ texture::texture(const attributes& attr,
 texture::texture(const attributes& attr,
                  const unsigned char* buffer,
                  unsigned long width,
-                 unsigned long height)
+                 unsigned long height,
+	             GLenum  type)
 {
-    build(attr,buffer,width,height);
+    build(attr,buffer,width,height,type);
 }
 
 texture::texture(const attributes& attr,
                  const std::vector< unsigned char >& buffer,
                  unsigned long width,
-                 unsigned long height)
+                 unsigned long height,
+	             GLenum  type)
 {
-    build(attr,buffer,width,height);
+    build(attr,buffer,width,height,type);
 }
 
 bool texture::load(const std::string& path)
@@ -56,12 +58,12 @@ bool texture::load(const std::string& path)
 }
 
 static void image_y_flip(std::vector<unsigned char>& bytes,
-                         unsigned long image_channels,
+                         unsigned long image_bytes_pixel,
                          unsigned long image_width,
                          unsigned long image_height)
 {
     //line size
-    size_t line_len=image_width*image_channels*sizeof(unsigned char);
+    size_t line_len=image_width * image_bytes_pixel * sizeof(unsigned char);
     //alloc
     unsigned char* line= new unsigned char[line_len];
     //for size
@@ -77,24 +79,6 @@ static void image_y_flip(std::vector<unsigned char>& bytes,
     delete [] line;
 }
 
-static bool read_bin_file(const std::string &path, std::vector<char>& output)
-{
-	/////////////////////////////////////////////////////////////////////
-	FILE* file = std::fopen(path.c_str(), "rb");
-	//bad case
-	if (!file) return false;
-	/////////////////////////////////////////////////////////////////////
-	std::fseek(file, 0, SEEK_END);
-	size_t size = std::ftell(file);
-	std::fseek(file, 0, SEEK_SET);
-	/////////////////////////////////////////////////////////////////////
-	output.resize(size, '\0');
-	std::fread((void*)&output[0], size, 1, file);
-	/////////////////////////////////////////////////////////////////////
-	std::fclose(file);
-	//return
-	return true;
-}
 
 bool texture::load(const attributes& attr,
                    const std::string& path)
@@ -105,39 +89,70 @@ bool texture::load(const attributes& attr,
                           const unsigned char* in_png,
                           size_t in_size,
                           bool convert_to_rgba32);
-	//buffer
-	std::vector<char> data_file;
+
+	bool decode_tga(std::vector<unsigned char>& out_image,
+					unsigned long& image_width,
+					unsigned long& image_height,
+					GLenum&	      open_gl_type,
+					const unsigned char* in_tga,
+					size_t in_size);
+	//get ext
+	std::string ext = filesystem::get_extension(path);
+	//test
+	if (ext != ".png" && ext != ".tga") return false;
 	//read all file
-    if(!read_bin_file(path, data_file)) return false;
+	std::vector<char> data_file = filesystem::file_read_all(path);
+	//fail to read?
+    if(!data_file.size()) return false;
     //decode
     unsigned long image_width;
     unsigned long image_height;
+	GLenum	      image_type;
     std::vector<unsigned char> image;
-    if(decode_png(image,
-                  image_width,
-                  image_height,
-                  (const unsigned char*)data_file.data(),
-                  data_file.size(),
-                  true)!=0)
-    return false;
-    //flip y
-    image_y_flip(image,4,image_width,image_height);
-    //build
-    return build(attr,image.data(),image_width,image_height);
+	//png
+	if(ext == ".png")
+	{
+		if(decode_png(image, image_width, image_height, 
+			         (const unsigned char*)data_file.data(), data_file.size(),  
+				     true)!=0)
+		return false;
+		//flip y
+		image_y_flip(image, 4, image_width, image_height);
+		//type
+		image_type = GL_RGBA;
+		//build
+		return build(attr, image.data(), image_width, image_height, image_type);
+	}
+	//tga
+	else
+	{
+		//exit attribute
+		attributes attr_tga = attr;
+		//decode
+		if (!decode_tga(image, image_width, image_height, image_type,
+			            (const unsigned char*)data_file.data(), data_file.size()))
+			return false;
+		//delete alpha channel from attributes (if needed)
+		attr_tga.m_type_image = image_type;
+		//build
+		return build(attr_tga, image.data(), image_width, image_height, image_type);
+	}
 }
 
 bool texture::build(const attributes& attr,
                     const std::vector< unsigned char >& buffer,
                     unsigned long width,
-                    unsigned long height)
+                    unsigned long height,
+	                GLenum  type)
 {
-    return build(attr,buffer.data(),width,height);
+    return build(attr,buffer.data(),width,height, type);
 }
 
 bool texture::build(const attributes& attr,
                     const unsigned char* buffer,
                     unsigned long width,
-                    unsigned long height)
+                    unsigned long height,
+	                GLenum  type)
 {
     //get last texture bind
     GLint tex_2d_bound_id;
@@ -156,7 +171,7 @@ bool texture::build(const attributes& attr,
     //send byte info
     glTexImage2D(GL_TEXTURE_2D,
                  0,
-                 attr.m_alpha_channel? GL_RGBA : GL_RGB,
+				 type,
                  (GLsizei)width,
                  (GLsizei)height,
                  0,

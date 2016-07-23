@@ -24,7 +24,7 @@ void resources_manager::add_directory(const std::string& directory, bool recursi
         std::string ext = filesystem::get_extension(filename);
         std::string basename = filesystem::get_basename(filename);
         //types
-        if(ext == ".png")
+        if(ext == ".png" || ext == ".tga")
         {
 			set_texture_path(basename, directory + "/" + filename);
         }

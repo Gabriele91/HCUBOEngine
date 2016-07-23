@@ -123,6 +123,9 @@
     <ClInclude Include="..\include\tangent_space_calculation.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\struct_attribute.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\application.cpp">
@@ -186,6 +189,9 @@
       <Filter>File di origine</Filter>
     </ClCompile>
     <ClCompile Include="..\source\static_model.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\tga.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
   </ItemGroup>

@@ -49,8 +49,12 @@ public:
     
     virtual void bind(camera& cam,const glm::mat4& model)
     {
-        m_shader->bind();
-        
+		if (!m_shader) 
+			return;
+
+		//bind shader
+		m_shader->bind();
+ 
         if(m_uniform_projection)
             m_uniform_projection->set_value(cam.get_projection());
         
@@ -101,6 +105,9 @@ public:
     
     virtual void unbind()
     {
+		if (!m_shader)
+			return;
+		//unbind shader
         m_shader->unbind();
     }
     

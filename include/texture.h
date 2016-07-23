@@ -28,28 +28,37 @@ public:
         int  m_mag_filter{ GL_NEAREST };
         bool m_clamp_to_border { false };
         bool m_build_mipmap    { false };
-        bool m_alpha_channel   { false };
+
+		bool have_alpha_channel()
+		{
+			switch (m_type_image)
+			{
+				case GL_RGBA: return true;
+				case GL_ALPHA: return true;
+				case GL_LUMINANCE_ALPHA: return true;
+				case GL_SRGB_ALPHA: return true;
+			    //* to do *//
+				default: return false;
+			}
+		}
         
         attributes(int  type_image,
                    int  min_filter      = GL_NEAREST,
                    int  mag_filter      = GL_NEAREST,
                    bool clamp_to_border = false,
-                   bool build_mipmap    = false,
-                   bool alpha_channel   = false)
+                   bool build_mipmap    = false)
         {
             m_type_image      = type_image;
             m_min_filter      = min_filter;
             m_mag_filter      = mag_filter;
             m_clamp_to_border = clamp_to_border;
             m_build_mipmap    = build_mipmap;
-            m_alpha_channel   = alpha_channel;
         }
         
         static attributes rgba(int  min_filter      = GL_NEAREST,
                                int  mag_filter      = GL_NEAREST,
                                bool clamp_to_border = false,
-                               bool build_mipmap    = false,
-                               bool alpha_channel   = true)
+                               bool build_mipmap    = false)
         {
             return
             {
@@ -57,8 +66,7 @@ public:
                 min_filter,
                 mag_filter,
                 clamp_to_border,
-                build_mipmap,
-                alpha_channel
+                build_mipmap
             };
         }
         
@@ -71,8 +79,7 @@ public:
                 GL_LINEAR,
                 GL_LINEAR,
                 clamp_to_border,
-                false,
-                alpha_channel
+                false
             };
         }
         
@@ -85,8 +92,7 @@ public:
                 GL_LINEAR_MIPMAP_LINEAR,
                 GL_LINEAR,
                 clamp_to_border,
-                true,
-                alpha_channel
+                true
             };
         }
     };
@@ -101,12 +107,14 @@ public:
     texture(const attributes& attr,
             const unsigned char* buffer,
             unsigned long width,
-            unsigned long height);
+            unsigned long height,
+		    GLenum  type);
     
     texture(const attributes& attr,
             const std::vector< unsigned char >& buffer,
             unsigned long width,
-            unsigned long height);
+            unsigned long height,
+		    GLenum  type);
     
     virtual ~texture();
     
@@ -124,12 +132,14 @@ public:
     bool build(const attributes& attr,
                const unsigned char* buffer,
                unsigned long width,
-               unsigned long height);
+               unsigned long height,
+			   GLenum  type);
     
     bool build(const attributes& attr,
                const std::vector< unsigned char >& buffer,
                unsigned long width,
-               unsigned long height);
+               unsigned long height,
+			   GLenum  type);
     
     unsigned int get_id() const;
     unsigned long get_width() const;

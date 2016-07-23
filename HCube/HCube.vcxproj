@@ -180,6 +180,7 @@
     <ClInclude Include="..\include\smart_pointers.h" />
     <ClInclude Include="..\include\query_performance.h" />
     <ClInclude Include="..\include\static_model.h" />
+    <ClInclude Include="..\include\struct_attribute.h" />
     <ClInclude Include="..\include\texture.h" />
     <ClInclude Include="..\include\text_mesh.h" />
     <ClInclude Include="..\include\tangent_space_calculation.h" />
@@ -205,6 +206,7 @@
     <ClCompile Include="..\source\static_model.cpp" />
     <ClCompile Include="..\source\texture.cpp" />
     <ClCompile Include="..\source\text_mesh.cpp" />
+    <ClCompile Include="..\source\tga.cpp" />
     <ClCompile Include="..\source\window_native_dialog.cpp" />
   </ItemGroup>
   <ItemGroup>
