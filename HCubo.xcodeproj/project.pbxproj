@@ -11,6 +11,7 @@
 		E0101B251D40C1AD00930372 /* material.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E0101B231D40B74900930372 /* material.cpp */; };
 		E01461AB1D34D2EC008A2574 /* resources_manager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E01461AA1D34D2EC008A2574 /* resources_manager.cpp */; };
 		E01461AC1D34D2EF008A2574 /* resources_manager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E01461AA1D34D2EC008A2574 /* resources_manager.cpp */; };
+		E015839C1D43990D0029D6F5 /* tga.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E015839B1D43990D0029D6F5 /* tga.cpp */; };
 		E01A2EEA1D22C50E00A8BA77 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E01A2EE91D22C50E00A8BA77 /* OpenGL.framework */; };
 		E01A2EEC1D22C51200A8BA77 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E01A2EEB1D22C51200A8BA77 /* Cocoa.framework */; };
 		E01A2EF71D22C58A00A8BA77 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E01A2EF61D22C58A00A8BA77 /* IOKit.framework */; };
@@ -78,6 +79,9 @@
 		E0101B231D40B74900930372 /* material.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = material.cpp; sourceTree = "<group>"; };
 		E01461AA1D34D2EC008A2574 /* resources_manager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = resources_manager.cpp; sourceTree = "<group>"; };
 		E01461AD1D34D343008A2574 /* resource.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = resource.h; sourceTree = "<group>"; };
+		E01583991D4399040029D6F5 /* struct_attribute.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = struct_attribute.h; sourceTree = "<group>"; };
+		E015839A1D4399040029D6F5 /* tangent_space_calculation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tangent_space_calculation.h; sourceTree = "<group>"; };
+		E015839B1D43990D0029D6F5 /* tga.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tga.cpp; sourceTree = "<group>"; };
 		E01A2EDA1D22C24D00A8BA77 /* HCube */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = HCube; sourceTree = BUILT_PRODUCTS_DIR; };
 		E01A2EE91D22C50E00A8BA77 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		E01A2EEB1D22C51200A8BA77 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
@@ -175,6 +179,7 @@
 				E03EDC821D34186900C0C22A /* shader.cpp */,
 				E03EDC841D34186900C0C22A /* texture.cpp */,
 				E03EDC7E1D34186900C0C22A /* pico_png.cpp */,
+				E015839B1D43990D0029D6F5 /* tga.cpp */,
 				E03EDC791D34186900C0C22A /* json11.cpp */,
 				E01461AA1D34D2EC008A2574 /* resources_manager.cpp */,
 				E03EDC801D34186900C0C22A /* rendering_system.cpp */,
@@ -213,6 +218,8 @@
 		E01A2EE41D22C2A900A8BA77 /* include */ = {
 			isa = PBXGroup;
 			children = (
+				E01583991D4399040029D6F5 /* struct_attribute.h */,
+				E015839A1D4399040029D6F5 /* tangent_space_calculation.h */,
 				E03EDCBF1D3418CF00C0C22A /* smart_pointers.h */,
 				E03EDCAB1D3418CF00C0C22A /* app_basic.h */,
 				E03EDCAC1D3418CF00C0C22A /* application.h */,
@@ -361,6 +368,7 @@
 				E03EDC971D34186900C0C22A /* texture.cpp in Sources */,
 				E0101B251D40C1AD00930372 /* material.cpp in Sources */,
 				E01461AB1D34D2EC008A2574 /* resources_manager.cpp in Sources */,
+				E015839C1D43990D0029D6F5 /* tga.cpp in Sources */,
 				E03EDC871D34186900C0C22A /* application.cpp in Sources */,
 				E022AF4C1D3EB487009F76D5 /* rendering_pass_deferred.cpp in Sources */,
 				E03EDC901D34186900C0C22A /* native_dialog.cpp in Sources */,

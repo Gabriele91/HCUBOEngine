@@ -1,4 +1,10 @@
-#pragma once
+//
+//  tga.cpp
+//  OGLHCubeView
+//
+//  Created by Gabriele on 05/07/16.
+//  Copyright © 2016 Gabriele. All rights reserved.
+//
 #include <vector>
 #include <OpenGL4.h>
 #include <struct_attribute.h>

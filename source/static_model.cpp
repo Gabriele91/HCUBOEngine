@@ -1,3 +1,10 @@
+//
+//  static_model.cpp
+//  OGLHCubeView
+//
+//  Created by Gabriele on 05/07/16.
+//  Copyright © 2016 Gabriele. All rights reserved.
+//
 #include <mesh.h>
 #include <resources_manager.h>
 #include <static_model.h>
