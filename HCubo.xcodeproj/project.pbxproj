@@ -12,6 +12,8 @@
 		E01461AB1D34D2EC008A2574 /* resources_manager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E01461AA1D34D2EC008A2574 /* resources_manager.cpp */; };
 		E01461AC1D34D2EF008A2574 /* resources_manager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E01461AA1D34D2EC008A2574 /* resources_manager.cpp */; };
 		E015839C1D43990D0029D6F5 /* tga.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E015839B1D43990D0029D6F5 /* tga.cpp */; };
+		E01583A11D43E9FE0029D6F5 /* transform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E01583A01D43E9FE0029D6F5 /* transform.cpp */; };
+		E01583A21D43E9FE0029D6F5 /* transform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E01583A01D43E9FE0029D6F5 /* transform.cpp */; };
 		E01A2EEA1D22C50E00A8BA77 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E01A2EE91D22C50E00A8BA77 /* OpenGL.framework */; };
 		E01A2EEC1D22C51200A8BA77 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E01A2EEB1D22C51200A8BA77 /* Cocoa.framework */; };
 		E01A2EF71D22C58A00A8BA77 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E01A2EF61D22C58A00A8BA77 /* IOKit.framework */; };
@@ -82,6 +84,10 @@
 		E01583991D4399040029D6F5 /* struct_attribute.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = struct_attribute.h; sourceTree = "<group>"; };
 		E015839A1D4399040029D6F5 /* tangent_space_calculation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tangent_space_calculation.h; sourceTree = "<group>"; };
 		E015839B1D43990D0029D6F5 /* tga.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tga.cpp; sourceTree = "<group>"; };
+		E015839D1D43AFDA0029D6F5 /* component.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = component.h; sourceTree = "<group>"; };
+		E015839E1D43D1710029D6F5 /* transform.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = transform.h; sourceTree = "<group>"; };
+		E015839F1D43DD680029D6F5 /* gameobject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = gameobject.h; sourceTree = "<group>"; };
+		E01583A01D43E9FE0029D6F5 /* transform.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = transform.cpp; sourceTree = "<group>"; };
 		E01A2EDA1D22C24D00A8BA77 /* HCube */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = HCube; sourceTree = BUILT_PRODUCTS_DIR; };
 		E01A2EE91D22C50E00A8BA77 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		E01A2EEB1D22C51200A8BA77 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
@@ -170,6 +176,7 @@
 				E03EDC731D34186900C0C22A /* app_basic.cpp */,
 				E03EDC741D34186900C0C22A /* application.cpp */,
 				E03EDC761D34186900C0C22A /* camera.cpp */,
+				E01583A01D43E9FE0029D6F5 /* transform.cpp */,
 				E03EDC7A1D34186900C0C22A /* main.cpp */,
 				E03EDC7C1D34186900C0C22A /* mesh.cpp */,
 				E03099BC1D4211CB001855A9 /* static_model.cpp */,
@@ -223,18 +230,21 @@
 				E03EDCBF1D3418CF00C0C22A /* smart_pointers.h */,
 				E03EDCAB1D3418CF00C0C22A /* app_basic.h */,
 				E03EDCAC1D3418CF00C0C22A /* application.h */,
+				E015839D1D43AFDA0029D6F5 /* component.h */,
 				E03EDCB11D3418CF00C0C22A /* entity.h */,
+				E015839F1D43DD680029D6F5 /* gameobject.h */,
+				E015839E1D43D1710029D6F5 /* transform.h */,
+				E0101B211D4094C300930372 /* light.h */,
+				E03EDCBB1D3418CF00C0C22A /* renderable.h */,
+				E03EDCB41D3418CF00C0C22A /* material.h */,
 				E03EDCAF1D3418CF00C0C22A /* camera.h */,
 				E03EDCAD1D3418CF00C0C22A /* arc_ball.h */,
 				E03EDCB91D3418CF00C0C22A /* picking.h */,
 				E03EDCB81D3418CF00C0C22A /* picking_rotation.h */,
-				E03EDCB41D3418CF00C0C22A /* material.h */,
-				E03EDCB51D3418CF00C0C22A /* mesh.h */,
 				E03099BF1D4211E0001855A9 /* static_model.h */,
+				E03EDCB51D3418CF00C0C22A /* mesh.h */,
 				E03EDCAE1D3418CF00C0C22A /* basic_meshs.h */,
 				E03EDCC01D3418CF00C0C22A /* text_mesh.h */,
-				E0101B211D4094C300930372 /* light.h */,
-				E03EDCBB1D3418CF00C0C22A /* renderable.h */,
 				E03EDCBC1D3418CF00C0C22A /* rendering_system.h */,
 				E022AF4A1D3EB47E009F76D5 /* rendering_pass_deferred.h */,
 				E03EDCB71D3418CF00C0C22A /* OpenGL4.h */,
@@ -374,6 +384,7 @@
 				E03EDC901D34186900C0C22A /* native_dialog.cpp in Sources */,
 				E022AF481D3DFF98009F76D5 /* g_buffer.cpp in Sources */,
 				E03EDC8B1D34186900C0C22A /* filesystem.cpp in Sources */,
+				E01583A11D43E9FE0029D6F5 /* transform.cpp in Sources */,
 				E03EDC8C1D34186900C0C22A /* json11.cpp in Sources */,
 				E03EDC881D34186900C0C22A /* basic_meshs.cpp in Sources */,
 				E03EDC961D34186900C0C22A /* text_mesh.cpp in Sources */,
@@ -399,6 +410,7 @@
 				E03EDC9A1D34187500C0C22A /* application.cpp in Sources */,
 				E03EDCA31D34187500C0C22A /* native_dialog.cpp in Sources */,
 				E022AF491D3E01BC009F76D5 /* g_buffer.cpp in Sources */,
+				E01583A21D43E9FE0029D6F5 /* transform.cpp in Sources */,
 				E03EDC9E1D34187500C0C22A /* filesystem.cpp in Sources */,
 				E03EDC9F1D34187500C0C22A /* json11.cpp in Sources */,
 				E03EDC9B1D34187500C0C22A /* basic_meshs.cpp in Sources */,

@@ -5,6 +5,9 @@
 //  Created by Gabriele on 02/07/16.
 //  Copyright � 2016 Gabriele. All rights reserved.
 //
+#include <transform.h>
+#include <camera.h>
+#include <entity.h>
 #include <rendering_system.h>
 
 
@@ -28,8 +31,8 @@ void rendering_system::add_entity(entity::ptr e)
     //add entity
 	m_entities.push_back(e);
     //add into queues
-    if(e->m_light)      m_lights.push_back(e);
-    if(e->m_renderable) m_renderables.push_back(e);
+    if(e->has_component<light>())      m_lights.push_back(e);
+    if(e->has_component<renderable>()) m_renderables.push_back(e);
 }
 
 void rendering_system::add_rendering_pass(rendering_pass_ptr pass)
@@ -54,7 +57,9 @@ void rendering_pass_base::draw_pass(glm::vec4&  clear_color,
 	for (entity::wptr& weak_entity : renderables)
 	{
         auto entity = weak_entity.lock();
-		entity->m_renderable->draw(*camera.get(), entity->m_model, entity->m_material);
+		entity->get_component<renderable>()->draw(*camera.get(),
+                                                  entity->get_component<transform>()->get_matrix(),
+                                                  entity->get_component<material>());
 	}
 }
 

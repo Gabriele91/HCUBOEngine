@@ -12,6 +12,8 @@
 #include <regex>
 #include <OpenGL4.h>
 #include <rendering_pass_deferred.h>
+#include <gameobject.h>
+#include <transform.h>
 
 
 void app_basic::key_event(application& app,int key, int scancode, int action, int mods)
@@ -107,8 +109,14 @@ void app_basic::start(application& app)
 		//add to render
 		m_render.add_entity(entity::snew(cube_mesh, box_mat));
 #else
-		//add to render
-		m_render.add_entity(entity::snew(m_resources.get_static_model("asteroid")));
+        entity::ptr  emodel = gameobject::node_new(m_resources.get_static_model("ship"));
+        auto         tmodel = emodel->get_component<transform>();
+        //set info
+        tmodel->position({ 0.0f, -5.0f, 0.0f });
+        tmodel->rotation(glm::quat({glm::radians(15.0), glm::radians(180.0), 0.0}));
+        tmodel->scale({ 0.2f, 0.2f, 0.2f });
+        //add to render
+        m_render.add_entity(emodel);
 #endif
         
         //lights
@@ -132,9 +140,9 @@ void app_basic::start(application& app)
         light2->m_quadratic = 0.01;
         
         //add to render
-        m_render.add_entity(entity::snew(light0));
-        m_render.add_entity(entity::snew(light1));
-        m_render.add_entity(entity::snew(light2));
+        m_render.add_entity(gameobject::node_new(light0));
+        m_render.add_entity(gameobject::node_new(light1));
+        m_render.add_entity(gameobject::node_new(light2));
         
         //ambient color
         m_render.set_ambient_color(glm::vec4{ 0.26, 0.26, 0.26, 1.0 });
@@ -151,22 +159,19 @@ bool app_basic::run(application& app,double delta_time)
     angle += 1.0f * delta_time;
     //////////////////////////////////////////////////////////
     //update
-    glm::mat4& model0 = m_render.get_entities()[0]->m_model;
-	model0 = glm::translate(glm::mat4(1), { 0.0f, -5.0f, 0.0f });
-	model0 = glm::rotate(model0, float(glm::radians(angle*-10.0+180.0)), glm::vec3(0.0, 1.0, 0.0));
-	model0 = glm::rotate(model0, float(glm::radians(15.0)), glm::vec3(1.0, 0.0, 0.0));
-	model0 = glm::scale(model0, { 0.2f, 0.2f, 0.2f });
+    entity::ptr  emodel = m_render.get_entities()[0];
+    auto         tmodel = emodel->get_component<transform>();
+    tmodel->turn(glm::quat{{0.0, glm::radians(-10.0*delta_time), 0.0}});
     //for all
     for(int i=1;i!=4;++i)
     {
-        glm::mat4& model_light = m_render.get_entities()[i]->m_model;
+        auto model_light = m_render.get_entities()[i]->get_component<transform>();
         //applay translation
-        model_light = glm::translate(glm::mat4(1), glm::vec3
-        {
-			std::sin((glm::pi<float>()*0.66)*i+ glm::radians(angle*20.0))*15.,
-            0.0,
-            std::cos((glm::pi<float>()*0.66)*i+ glm::radians(angle*20.0))*15.,
-        });
+        model_light->position({
+                                 std::sin((glm::pi<float>()*0.66)*i+ glm::radians(angle*20.0))*15.,
+                                 0.0,
+                                 std::cos((glm::pi<float>()*0.66)*i+ glm::radians(angle*20.0))*15.,
+                              });
     }
     //draw
     m_render.draw();

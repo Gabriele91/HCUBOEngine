@@ -6,13 +6,19 @@
 //  Copyright © 2016 Gabriele. All rights reserved.
 //
 #pragma once
+#include <component.h>
 #include <smart_pointers.h>
 #include <material.h>
 
-class renderable
+class renderable : public component
 {
+    
+    COMPONENT_DEC(renderable)
+    
 public:
 
+    renderable(){}
+    
 	virtual void draw(camera& cam,
 					  const glm::mat4& model,
 					  material_ptr material) {};

@@ -6,18 +6,24 @@
 //  Copyright © 2016 Gabriele. All rights reserved.
 //
 #pragma once
+#include <component.h>
 #include <smart_pointers.h>
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 
 
-class light
+class light : public component
 {
+    
+    COMPONENT_DEC(light)
+    
 public:
+    
     glm::vec4 m_diffuse;
     float     m_const{ 1.0 };
     float     m_linear;
     float     m_quadratic;
+
 };
 
 using light_ptr  = std::shared_ptr< light >;

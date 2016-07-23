@@ -7,6 +7,7 @@
 //
 #pragma once
 #include <OpenGL4.h>
+#include <component.h>
 #include <camera.h>
 #include <vector>
 #include <texture.h>
@@ -16,8 +17,11 @@
 #include <glm/vec4.hpp>
 #include <glm/mat4x4.hpp>
 
-class material : public resource
+class material : public component, public resource
 {
+    
+    COMPONENT_DEC(material)
+    
 public:
     
     bool load(resources_manager& resources,const std::string& path);

@@ -1,6 +1,6 @@
 #include <rendering_pass_deferred.h>
 #include <basic_meshs.h>
-
+#include <transform.h>
 
 void rendering_pass_deferred::uniform_light::get_uniform(int i, shader::ptr shader)
 {
@@ -49,7 +49,7 @@ void rendering_pass_deferred::draw_pass(glm::vec4&  clear_color,
                                         camera::ptr camera,
                                         std::vector< entity::wptr >& lights,
                                         std::vector< entity::wptr >& renderables,
-                                        std::vector< entity::ptr >& entities)
+                                        std::vector< entity::ptr >&  entities)
 {
 	const glm::vec4& viewport = camera->get_viewport();
     glViewport(viewport.x, viewport.y, viewport.z, viewport.w);
@@ -62,7 +62,9 @@ void rendering_pass_deferred::draw_pass(glm::vec4&  clear_color,
     for (entity::wptr& weak_entity : renderables)
     {
         auto entity = weak_entity.lock();
-		entity->m_renderable->draw(*camera.get(), entity->m_model, entity->m_material);
+		entity->get_component<renderable>()->draw(*camera.get(),
+                                                  entity->get_component<transform>()->get_matrix(),
+                                                  entity->get_component<material>());
 	}
 
 	m_g_buffer.unbind();
@@ -88,7 +90,8 @@ void rendering_pass_deferred::draw_pass(glm::vec4&  clear_color,
     for (unsigned i = 0; i != max_lights; ++i)
     {
         auto entity = lights[i].lock();
-		m_uniform_lights[i].uniform(entity->m_light,entity->m_model);
+		m_uniform_lights[i].uniform( entity->get_component<light>(),
+                                     entity->get_component<transform>()->get_matrix());
 	}
 	//draw squere
 	m_square->draw();
