@@ -81,8 +81,6 @@ private:
 	bool m_loop{ true };
     //shader map
     resources_manager m_resources;
-    //camera
-    camera::ptr      m_camera;
     //applay
 	rendering_system m_render;
     //aspect

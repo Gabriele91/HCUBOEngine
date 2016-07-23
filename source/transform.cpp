@@ -11,9 +11,9 @@
 
 void transform::look_at(const glm::vec3& eye,const glm::vec3& center,const glm::vec3& up)
 {
-    glm::mat4 look_at = glm::lookAt(eye,center,up);
-    glm::quat la_rotation = glm::quat(glm::mat3(look_at));
-    rotation(glm::inverse(la_rotation));
+    glm::mat4 l_look_at  = glm::lookAt(eye,center,up);
+    glm::quat l_rotation = glm::quat(glm::mat3(l_look_at));
+    rotation(l_rotation);
     position(eye);
 }
 

@@ -62,9 +62,11 @@ public:
 
 	void draw();
 
-	void draw(camera& cam,
-			  const glm::mat4& model,
-		      material_ptr material);
+    void draw(const glm::vec4& viewport,
+              const glm::mat4& projection,
+              const glm::mat4& view,
+              const glm::mat4& model,
+              material_ptr material);
     
     void destoy();
     

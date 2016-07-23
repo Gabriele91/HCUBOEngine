@@ -17,7 +17,7 @@ class rendering_pass
 public:
     virtual void draw_pass(glm::vec4&  clear_color,
                            glm::vec4&  ambient_color,
-                           camera::ptr camera,
+                           entity::ptr e_camera,
                            std::vector< entity::wptr >& lights,
                            std::vector< entity::wptr >& renderables,
                            std::vector< entity::ptr >& entities)= 0;
@@ -30,7 +30,7 @@ class rendering_pass_base : public rendering_pass, public smart_pointers< render
 public:
     virtual void draw_pass(glm::vec4&  clear_color,
                            glm::vec4&  ambient_color,
-                           camera::ptr camera,
+                           entity::ptr e_camera,
                            std::vector< entity::wptr >& lights,
                            std::vector< entity::wptr >& renderables,
                            std::vector< entity::ptr >& entities);
@@ -44,7 +44,7 @@ public:
     
     void set_ambient_color(const glm::vec4& ambient_color);
     
-	void set_camera(camera::ptr cam);
+	void set_camera(entity::ptr cam);
 
 	void add_entity(entity::ptr e);
 
@@ -56,7 +56,7 @@ public:
     
     const glm::vec4& get_ambient_color() const;
     
-	camera::ptr get_camera() const;
+	entity::ptr get_camera() const;
 
 	const std::vector< entity::ptr >& get_entities() const;
 
@@ -66,7 +66,7 @@ protected:
     
     glm::vec4                         m_clear_color;
     glm::vec4                         m_ambient_color;
-    camera::ptr						  m_camera;
+    entity::ptr						  m_camera;
     std::vector< entity::wptr >       m_lights;
     std::vector< entity::wptr >       m_renderables;
     std::vector< entity::ptr >	      m_entities;

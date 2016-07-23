@@ -24,7 +24,15 @@ void app_basic::key_event(application& app,int key, int scancode, int action, in
 		m_loop = false;
 		return;
 	}
-
+    
+    if(key == GLFW_KEY_UP) m_render.get_camera()->get_component<transform>()->translation({0,0,1});
+    if(key == GLFW_KEY_DOWN) m_render.get_camera()->get_component<transform>()->translation({0,0,-1});
+    if(key == GLFW_KEY_LEFT) m_render.get_camera()->get_component<transform>()->translation({1,0,0});
+    if(key == GLFW_KEY_RIGHT) m_render.get_camera()->get_component<transform>()->translation({-1,0,0});
+    if(key == GLFW_KEY_W)  m_render.get_entities()[0]->get_component<transform>()->translation({0,0,1});
+    if(key == GLFW_KEY_S)  m_render.get_entities()[0]->get_component<transform>()->translation({0,0,-1});
+    if(key == GLFW_KEY_A)  m_render.get_entities()[0]->get_component<transform>()->translation({1,0,0});
+    if(key == GLFW_KEY_D)  m_render.get_entities()[0]->get_component<transform>()->translation({-1,0,0});
 
     if((mods   == GLFW_MOD_SUPER   ||
         mods   == GLFW_MOD_CONTROL)&&
@@ -55,11 +63,13 @@ void app_basic::scroll_event(application& application,const glm::dvec2& scroll_o
 
 void app_basic::resize_event(application& application,const glm::ivec2& size)
 {
+#if 1
     m_aspect = float(size.x) / float(size.y);
     //viewport
-    m_camera->set_viewport(glm::ivec4{0, 0, size.x, size.y});
+    m_render.get_camera()->get_component<camera>()->set_viewport(glm::ivec4{0, 0, size.x, size.y});
     //new perspective
-    m_camera->set_perspective(m_fov, m_aspect, 0.01, 100.0);
+    m_render.get_camera()->get_component<camera>()->set_perspective(m_fov, m_aspect, 0.01, 100.0);
+#endif
 }
 
 void app_basic::start(application& app)
@@ -73,16 +83,18 @@ void app_basic::start(application& app)
     //do clear
     app.clear();
     //camera
-    m_camera       = camera::snew();
+    auto e_camera = gameobject::camera_new();
+    auto c_camera = e_camera->get_component<camera>();
+    auto t_camera = e_camera->get_component<transform>();
     glm::vec2 size = app.get_window_size();
     m_aspect       = float(size.x) / float(size.y);
-    m_camera->set_viewport(glm::ivec4{0, 0, size.x, size.y});
-	m_camera->look_at(glm::vec3{ 0.0f, 6.9f, -45.0f },
+    c_camera->set_viewport(glm::ivec4{0, 0, size.x, size.y});
+    c_camera->set_perspective(m_fov, m_aspect, 0.01, 100.0);
+	t_camera->look_at(glm::vec3{ 0.0f, 6.9f, -45.0f },
 				  	  glm::vec3{ 0.0f,-1.0f, 0.0f },
 					  glm::vec3{ 0.0f, 1.0f, 0.0f });
-    m_camera->set_perspective(m_fov, m_aspect, 0.01, 100.0);
     //set camera
-    m_render.set_camera(m_camera);
+    m_render.set_camera(e_camera);
     //set render pass
 #if 0
     m_resources.add_directory("assets/shaders/forward");
@@ -90,7 +102,7 @@ void app_basic::start(application& app)
 #else
     //deferred alloc
     m_resources.add_directory("assets/shaders/deferred");
-    auto rendering_pass = rendering_pass_deferred::snew(m_camera, m_resources);
+    auto rendering_pass = rendering_pass_deferred::snew(e_camera, m_resources);
     m_render.add_rendering_pass(rendering_pass);
 #endif
     //load assets

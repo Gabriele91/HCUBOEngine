@@ -26,14 +26,19 @@ void mesh::build(const mesh_layout& layout,
     build_vertex(vertex);
 }
 
-void mesh::draw(camera& cam,
-				const glm::mat4& model,
-				material_ptr material)
+void mesh::draw(const glm::vec4& viewport,
+                const glm::mat4& projection,
+                const glm::mat4& view,
+                const glm::mat4& model,
+                material_ptr material)
 {
 	if (material)
 	{
 		material->bind_state();
-		material->bind(cam, model);
+		material->bind(viewport,
+                       projection,
+                       view,
+                       model);
 	}
 
 	mesh::draw();

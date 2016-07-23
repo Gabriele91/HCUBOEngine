@@ -11,15 +11,25 @@
 #include <tangent_space_calculation.h>
 
 
-void static_model::draw(camera& cam, const glm::mat4& model_matrix, material_ptr material)
+void static_model::draw(const glm::vec4& viewport,
+                        const glm::mat4& projection_matrix,
+                        const glm::mat4& view_matrix,
+                        const glm::mat4& model_matrix,
+                        material_ptr material)
 {
 	if (material)
 	{
-		for (sub_model& model : m_sub_models) model.m_mesh->draw(cam, model_matrix, material);
+        for (sub_model& sub_model : m_sub_models)
+        {
+            sub_model.m_mesh->draw(viewport, projection_matrix, view_matrix, model_matrix, material);
+        }
 	}
 	else
 	{
-		for (sub_model& model : m_sub_models) model.m_mesh->draw(cam, model_matrix, model.m_material);
+        for (sub_model& model : m_sub_models)
+        {
+            model.m_mesh->draw(viewport, projection_matrix, view_matrix, model_matrix, model.m_material);
+        }
 	}
 }
 

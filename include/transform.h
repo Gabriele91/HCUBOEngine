@@ -38,7 +38,7 @@ public:
     {
         return get_matrix();
     }
-    
+     
 private:
     //info
     struct local_tranform
@@ -46,7 +46,7 @@ private:
         bool      m_change;
         glm::vec3 m_position;
         glm::quat m_rotation;
-        glm::vec3 m_scale;
+        glm::vec3 m_scale{ 1.0f, 1.0f, 1.0f };
     }
     m_tranform;
     //matrix

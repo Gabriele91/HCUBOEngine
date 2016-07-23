@@ -19,9 +19,14 @@ public:
 
     renderable(){}
     
-	virtual void draw(camera& cam,
+	virtual void draw(const glm::vec4& viewport,
+                      const glm::mat4& projection,
+                      const glm::mat4& view,
 					  const glm::mat4& model,
-					  material_ptr material) {};
+					  material_ptr material)
+    {
+        assert(0);
+    };
     virtual ~renderable(){};
 };
 

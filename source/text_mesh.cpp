@@ -64,14 +64,16 @@ void text_mesh::set_text(const std::string& text)
 }
 
 
-void text_mesh::draw(camera& cam,
-					 const glm::mat4& model,
-					 material_ptr material)
+void text_mesh::draw(const glm::vec4& viewport,
+                     const glm::mat4& projection,
+                     const glm::mat4& view,
+                     const glm::mat4& model,
+                     material_ptr material)
 {
 	if (material)
 	{
 		material->bind_state();
-		material->bind(cam, model);
+		material->bind(viewport, projection, view, model);
 	}
 
 	text_mesh::draw();

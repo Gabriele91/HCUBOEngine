@@ -22,9 +22,9 @@ void rendering_pass_deferred::uniform_light::uniform(light_wptr weak_light,const
 	m_uniform_quadratic->set_value(light->m_quadratic);
 }
 
-rendering_pass_deferred::rendering_pass_deferred(camera::ptr camera, resources_manager& resources)
+rendering_pass_deferred::rendering_pass_deferred(entity::ptr e_camera, resources_manager& resources)
 {
-	m_g_buffer.init(camera->get_viewport_size());
+	m_g_buffer.init(e_camera->get_component<camera>()->get_viewport_size());
 	m_square = basic_meshs::square3D({ 2.0,2.0 }, true);
 	m_shader = resources.get_shader("deferred_light");
 	m_vertex = m_shader->get_shader_uniform_int("g_vertex");
@@ -46,12 +46,14 @@ rendering_pass_deferred::rendering_pass_deferred(camera::ptr camera, resources_m
 
 void rendering_pass_deferred::draw_pass(glm::vec4&  clear_color,
                                         glm::vec4&  ambient_color,
-                                        camera::ptr camera,
+                                        entity::ptr e_camera,
                                         std::vector< entity::wptr >& lights,
                                         std::vector< entity::wptr >& renderables,
                                         std::vector< entity::ptr >&  entities)
 {
-	const glm::vec4& viewport = camera->get_viewport();
+    camera::ptr   c_camera = e_camera->get_component<camera>();
+    transform_ptr t_camera = e_camera->get_component<transform>();
+	const glm::vec4& viewport = c_camera->get_viewport();
     glViewport(viewport.x, viewport.y, viewport.z, viewport.w);
     glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
 
@@ -62,7 +64,9 @@ void rendering_pass_deferred::draw_pass(glm::vec4&  clear_color,
     for (entity::wptr& weak_entity : renderables)
     {
         auto entity = weak_entity.lock();
-		entity->get_component<renderable>()->draw(*camera.get(),
+        entity->get_component<renderable>()->draw(viewport,
+                                                  c_camera->get_projection(),
+                                                  t_camera->get_matrix_inv(),
                                                   entity->get_component<transform>()->get_matrix(),
                                                   entity->get_component<material>());
 	}
@@ -81,7 +85,7 @@ void rendering_pass_deferred::draw_pass(glm::vec4&  clear_color,
 	m_normal->set_value(1);
 	m_albedo->set_value(2);
 	//add info
-	m_view_pos->set_value(camera->get_position());
+	m_view_pos->set_value(-t_camera->get_position());
 	m_ambient_light->set_value(ambient_color);
     //compute max lights
     unsigned max_lights = std::min(m_max_lights,(unsigned)lights.size());

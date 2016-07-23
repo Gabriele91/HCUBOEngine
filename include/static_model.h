@@ -26,6 +26,10 @@ public:
 
 	std::vector< sub_model > m_sub_models;
 
-	void draw(camera& cam, const glm::mat4& model, material_ptr material);
+    void draw(const glm::vec4& viewport,
+              const glm::mat4& projection,
+              const glm::mat4& view,
+              const glm::mat4& model,
+              material_ptr material);
 	bool load(resources_manager& resources, const std::string& path);
 };

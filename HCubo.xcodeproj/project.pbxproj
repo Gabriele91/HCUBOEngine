@@ -14,6 +14,8 @@
 		E015839C1D43990D0029D6F5 /* tga.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E015839B1D43990D0029D6F5 /* tga.cpp */; };
 		E01583A11D43E9FE0029D6F5 /* transform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E01583A01D43E9FE0029D6F5 /* transform.cpp */; };
 		E01583A21D43E9FE0029D6F5 /* transform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E01583A01D43E9FE0029D6F5 /* transform.cpp */; };
+		E01583A41D43FCBC0029D6F5 /* entity.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E01583A31D43FCBC0029D6F5 /* entity.cpp */; };
+		E01583A51D43FCBC0029D6F5 /* entity.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E01583A31D43FCBC0029D6F5 /* entity.cpp */; };
 		E01A2EEA1D22C50E00A8BA77 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E01A2EE91D22C50E00A8BA77 /* OpenGL.framework */; };
 		E01A2EEC1D22C51200A8BA77 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E01A2EEB1D22C51200A8BA77 /* Cocoa.framework */; };
 		E01A2EF71D22C58A00A8BA77 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E01A2EF61D22C58A00A8BA77 /* IOKit.framework */; };
@@ -88,6 +90,7 @@
 		E015839E1D43D1710029D6F5 /* transform.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = transform.h; sourceTree = "<group>"; };
 		E015839F1D43DD680029D6F5 /* gameobject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = gameobject.h; sourceTree = "<group>"; };
 		E01583A01D43E9FE0029D6F5 /* transform.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = transform.cpp; sourceTree = "<group>"; };
+		E01583A31D43FCBC0029D6F5 /* entity.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = entity.cpp; sourceTree = "<group>"; };
 		E01A2EDA1D22C24D00A8BA77 /* HCube */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = HCube; sourceTree = BUILT_PRODUCTS_DIR; };
 		E01A2EE91D22C50E00A8BA77 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		E01A2EEB1D22C51200A8BA77 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
@@ -179,6 +182,7 @@
 				E01583A01D43E9FE0029D6F5 /* transform.cpp */,
 				E03EDC7A1D34186900C0C22A /* main.cpp */,
 				E03EDC7C1D34186900C0C22A /* mesh.cpp */,
+				E01583A31D43FCBC0029D6F5 /* entity.cpp */,
 				E03099BC1D4211CB001855A9 /* static_model.cpp */,
 				E03EDC751D34186900C0C22A /* basic_meshs.cpp */,
 				E03EDC831D34186900C0C22A /* text_mesh.cpp */,
@@ -388,6 +392,7 @@
 				E03EDC8C1D34186900C0C22A /* json11.cpp in Sources */,
 				E03EDC881D34186900C0C22A /* basic_meshs.cpp in Sources */,
 				E03EDC961D34186900C0C22A /* text_mesh.cpp in Sources */,
+				E01583A41D43FCBC0029D6F5 /* entity.cpp in Sources */,
 				E03EDC8A1D34186900C0C22A /* cocoa_native_dialog.mm in Sources */,
 				E03EDC8D1D34186900C0C22A /* main.cpp in Sources */,
 				E03EDC931D34186900C0C22A /* rendering_system.cpp in Sources */,
@@ -404,6 +409,7 @@
 			files = (
 				E03EDCA41D34187500C0C22A /* pico_png.cpp in Sources */,
 				E03EDC9C1D34187500C0C22A /* camera.cpp in Sources */,
+				E01583A51D43FCBC0029D6F5 /* entity.cpp in Sources */,
 				E03EDCA81D34187500C0C22A /* shader.cpp in Sources */,
 				E03EDCAA1D34187500C0C22A /* texture.cpp in Sources */,
 				E01461AC1D34D2EF008A2574 /* resources_manager.cpp in Sources */,

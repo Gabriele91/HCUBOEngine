@@ -19,16 +19,13 @@
 class entity : public smart_pointers< entity >
 {
 public:
+    
     //default
-    entity(){}
+    entity();
+    
     //component list
-    entity( std::initializer_list<component_ptr> components )
-    {
-        for(auto& c : components)
-        {
-            add_component(c);
-        }
-    }
+    entity( std::initializer_list<component_ptr> components );
+    
     //auto add component list
     template < typename ...Args >
     entity( component_ptr component, Args&& ... args ) : entity(args...)
@@ -42,13 +39,7 @@ public:
         static_assert(std::is_base_of<component,T>::value,"Must to be a component");
         return add_component(new T());
     }
-    
-    component_ptr add_component(component_ptr component_t)
-    {
-        component_t->on_attach(*this);
-        m_components[component_t->get_id()] = component_t;
-        return component_t;
-    }
+    component_ptr add_component(component_ptr component_t);
     
     template < class T >
     std::shared_ptr< T > get_component()
@@ -56,114 +47,41 @@ public:
         static_assert(std::is_base_of<component,T>::value,"Must to be a component");
         return std::static_pointer_cast< T >( m_components[T::type()] );
     }
-    
-    component_ptr get_component(component_id id)
-    {
-        return m_components[id];
-    }
+    component_ptr get_component(component_id id);
     
     template < class T >
     std::shared_ptr< T > remove_component()
     {
+        static_assert(std::is_base_of<component,T>::value,"Must to be a component");
         return std::static_pointer_cast<T>(remove_component(T::type()));
     }
-    
-    component_ptr remove_component(component_id id)
-    {
-        if(has_component(id))
-        {
-            auto it = m_components.find(id);
-            it->second->on_detach();
-            return m_components.erase(it)->second;
-        }
-        return nullptr;
-    }
-    
-    bool has_component(component_id id)
-    {
-        return m_components.find(id) != m_components.end();
-    }
+    component_ptr remove_component(component_id id);
     
     
     template < class T >
     bool has_component() const
     {
-        return m_components.find(T::type()) != m_components.end();
+        static_assert(std::is_base_of<component,T>::value,"Must to be a component");
+        return has_component(T::type());
     }
+    bool has_component(component_id id);
     
-    bool has_component(component_id id) const
-    {
-        return m_components.find(id) != m_components.end();
-    }
+    bool has_component(component_id id) const;
     
-    entity* parent() const
-    {
-        return m_parent;
-    }
+    entity* parent() const;
     
-    bool has_child(entity::ptr entity) const
-    {
-        return m_entities.find(entity.get()) != m_entities.end();
-    }
+    bool has_child(entity::ptr entity) const;
     
-    void add_child(entity::ptr entity)
-    {
-        if(!has_child(entity))
-        {
-            //ref to this
-            entity->m_parent = this;
-            //insert
-            m_entities[entity.get()]=entity;
-        }
-    }
+    void add_child(entity::ptr entity);
     
-    void remove_child(const entity::ptr entity)
-    {
-        if(has_child(entity))
-        {
-            //ref to this
-            entity->m_parent = nullptr;
-            //remove
-            m_entities.erase(m_entities.find(entity.get()));
-        }
-    }
+    void remove_child(const entity::ptr entity);
     
-    bool on_update(double deltatime)
-    {
-        //update status
-        bool state = true;
-        //all component
-        for(auto it_component : m_components)
-        {
-            state &= it_component.second->on_update(deltatime);
-        }
-        //update childs
-        for(auto it_entity : m_entities)
-        {
-            state &= it_entity.second->on_update(deltatime);
-        }
-        //return state
-        return state;
-    }
+    bool on_update(double deltatime);
     
-    void send_message_to_component(const message *message)
-    {
-        for(auto it_component : m_components)
-        {
-            it_component.second->on_message(message);
-        }
-    }
+    void send_message_to_component(const message *message);
     
-    void send_message_to_component_all(const message *message)
-    {
-        send_message_to_component(message);
-        
-        for(auto it_entity : m_entities)
-        {
-            it_entity.second->send_message_to_component_all(message);
-        }
-    }
-    
+    void send_message_to_component_all(const message *message);
+
 protected:
     
     //parent
@@ -171,7 +89,5 @@ protected:
     //list components
     std::unordered_map< component_id,component_ptr > m_components;
     std::unordered_map< entity*,entity::ptr > m_entities;
-    
-
     
 };

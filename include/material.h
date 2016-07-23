@@ -51,25 +51,29 @@ public:
         m_blend_dst = dst;
     }
     
-    virtual void bind(camera& cam,const glm::mat4& model)
+    virtual void bind(const glm::vec4& viewport,
+                      const glm::mat4& projection,
+                      const glm::mat4& view,
+                      const glm::mat4& model)
     {
 		if (!m_shader) 
 			return;
 
 		//bind shader
 		m_shader->bind();
- 
+        
+        //uniforms
         if(m_uniform_projection)
-            m_uniform_projection->set_value(cam.get_projection());
+            m_uniform_projection->set_value(projection);
         
         if(m_uniform_view)
-            m_uniform_view->set_value(cam.get_view());
+            m_uniform_view->set_value(view);
         
         if(m_uniform_model)
             m_uniform_model->set_value(model);
         
         if(m_uniform_viewport)
-            m_uniform_viewport->set_value(cam.get_viewport());
+            m_uniform_viewport->set_value(viewport);
         
         for(size_t i=0; i!=m_ints.size(); ++i)
         {

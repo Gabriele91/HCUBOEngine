@@ -21,7 +21,7 @@ void rendering_system::set_ambient_color(const glm::vec4& ambient_color)
     m_ambient_color = ambient_color;
 }
 
-void rendering_system::set_camera(camera::ptr cam)
+void rendering_system::set_camera(entity::ptr cam)
 {
 	m_camera = cam;
 }
@@ -43,12 +43,14 @@ void rendering_system::add_rendering_pass(rendering_pass_ptr pass)
 
 void rendering_pass_base::draw_pass(glm::vec4&  clear_color,
                                     glm::vec4&  ambient_color,
-                                    camera::ptr camera,
+                                    entity::ptr e_camera,
                                     std::vector< entity::wptr >& lights,
                                     std::vector< entity::wptr >& renderables,
                                     std::vector< entity::ptr >& entities)
 {
-    const glm::vec4& viewport = camera->get_viewport();
+    camera::ptr   ccamera = e_camera->get_component<camera>();
+    transform_ptr tcamera = e_camera->get_component<transform>();
+    const glm::vec4& viewport = ccamera->get_viewport();
     glViewport(viewport.x, viewport.y, viewport.z, viewport.w);
     glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -57,7 +59,9 @@ void rendering_pass_base::draw_pass(glm::vec4&  clear_color,
 	for (entity::wptr& weak_entity : renderables)
 	{
         auto entity = weak_entity.lock();
-		entity->get_component<renderable>()->draw(*camera.get(),
+		entity->get_component<renderable>()->draw(viewport,
+                                                  ccamera->get_projection(),
+                                                  tcamera->get_matrix_inv(),
                                                   entity->get_component<transform>()->get_matrix(),
                                                   entity->get_component<material>());
 	}
@@ -89,7 +93,7 @@ const glm::vec4& rendering_system::get_ambient_color() const
     return m_ambient_color;
 }
 
-camera::ptr rendering_system::get_camera() const
+entity::ptr rendering_system::get_camera() const
 {
 	return m_camera;
 }

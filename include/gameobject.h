@@ -7,6 +7,7 @@
 //
 #pragma once
 #include <transform.h>
+#include <camera.h>
 #include <light.h>
 #include <entity.h>
 #include <basic_meshs.h>
@@ -22,6 +23,11 @@ namespace gameobject
     static inline entity::ptr light_new()
     {
         return entity::snew(transform_snew(),light_snew());
+    }
+    
+    static inline entity::ptr camera_new()
+    {
+        return entity::snew(transform_snew(),camera::snew());
     }
     
     static inline entity::ptr cube_new(const glm::vec3& size)

@@ -37,10 +37,10 @@ public:
 	//size lights
 	uniform_int::ptr  m_uniform_n_lights_used;
 	//pass
-	rendering_pass_deferred(camera::ptr camera, resources_manager& resources);
+	rendering_pass_deferred(entity::ptr camera, resources_manager& resources);
     virtual void draw_pass(glm::vec4&  clear_color,
                            glm::vec4&  ambient_color,
-                           camera::ptr camera,
+                           entity::ptr camera,
                            std::vector< entity::wptr >& lights,
                            std::vector< entity::wptr >& renderables,
                            std::vector< entity::ptr >& entities);
