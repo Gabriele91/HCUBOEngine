@@ -11,6 +11,7 @@ namespace basic_meshs
 		mesh::ptr mesh_cube = mesh::snew();
         //data
         mesh::mesh_layout  layout;
+        mesh::draw_range   range;
         //buffer
         std::vector< mesh::byte > vbuffer;
         std::vector< unsigned int > ibuffer;
@@ -180,7 +181,8 @@ namespace basic_meshs
             {
                 v.m_normal = glm::normalize(v.m_position);
             }
-            
+            //set size
+            range.m_max = (unsigned int)vertices.size();
             //resize
             vbuffer.resize(vertices.size()*sizeof(vertex));
             //copy buffer
@@ -188,7 +190,7 @@ namespace basic_meshs
         }
         //build gpu cube
         if(ibuffer.size()) mesh_cube->build(layout, ibuffer, vbuffer);
-        else               mesh_cube->build(layout,vbuffer);
+        else               mesh_cube->build(layout, range, vbuffer);
 		//return cube
 		return mesh_cube;
 	}
@@ -200,6 +202,7 @@ namespace basic_meshs
 		mesh::ptr mesh_square = mesh::snew();
 		//data
 		mesh::mesh_layout  layout;
+        mesh::draw_range   range;
 		//buffer
 		std::vector< mesh::byte > vbuffer;
 		//build
@@ -230,7 +233,9 @@ namespace basic_meshs
 				{{-square_size_h.x, -square_size_h.y, 0.0f  },{ 0,0,1.0 }, {0.0f, 0.0f } },
 				{{ square_size_h.x,  square_size_h.y, 0.0f  },{ 0,0,1.0 }, {1.0f, 1.0f } },
 				{{ square_size_h.x, -square_size_h.y, 0.0f  },{ 0,0,1.0 }, {1.0f, 0.0f } }
-			};
+            };
+            //set size
+            range.m_max = (unsigned int)vertices.size();
 			//resize
 			vbuffer.resize(vertices.size() * sizeof(vertex));
 			//copy buffer
@@ -263,14 +268,15 @@ namespace basic_meshs
 				{ {  square_size_h.x,  square_size_h.y, 0.0f },{ 0,0,1.0 } },
 				{ {  square_size_h.x, -square_size_h.y, 0.0f },{ 0,0,1.0 } }
 			};
-			
+            //set size
+            range.m_max = (unsigned int)vertices.size();
 			//resize
 			vbuffer.resize(vertices.size() * sizeof(vertex));
 			//copy buffer
 			std::memcpy(&vbuffer[0], vertices.data(), vertices.size() * sizeof(vertex));
 		}
 		//build gpu quad
-		mesh_square->build(layout, vbuffer);
+        mesh_square->build(layout, range, vbuffer);
 		//return cube
 		return mesh_square;
 

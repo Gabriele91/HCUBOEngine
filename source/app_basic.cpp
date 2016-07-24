@@ -63,13 +63,11 @@ void app_basic::scroll_event(application& application,const glm::dvec2& scroll_o
 
 void app_basic::resize_event(application& application,const glm::ivec2& size)
 {
-#if 1
     m_aspect = float(size.x) / float(size.y);
     //viewport
     m_render.get_camera()->get_component<camera>()->set_viewport(glm::ivec4{0, 0, size.x, size.y});
     //new perspective
     m_render.get_camera()->get_component<camera>()->set_perspective(m_fov, m_aspect, 0.01, 100.0);
-#endif
 }
 
 void app_basic::start(application& app)

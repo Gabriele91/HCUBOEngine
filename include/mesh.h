@@ -36,14 +36,33 @@ public:
         int m_draw_mode;
         int m_buffer_mode;
     };
-    
+    //draw range (no indexed)
+    struct draw_range
+    {
+        unsigned int m_min{ 0 };
+        unsigned int m_max{ 0 };
+        
+        draw_range(){}
+        
+        draw_range(unsigned int max)
+        {
+            m_max = max;
+        }
+        
+        draw_range(unsigned int min,unsigned int max)
+        {
+            m_max = min;
+            m_max = max;
+        }
+    };
     
     mesh(){}
     
     mesh(const mesh_layout& layout,
+         const draw_range & draw_range,
          const std::vector< byte >& vertex)
     {
-        build(layout, vertex);
+        build(layout, draw_range, vertex);
     }
     
     mesh(const mesh_layout& layout,
@@ -58,6 +77,7 @@ public:
                const std::vector< byte >& points);
     
     void build(const mesh_layout& layout,
+               const draw_range & draw_range,
                const std::vector< byte >& points);
 
 	void draw();
@@ -79,6 +99,7 @@ protected:
     
     void set_buffer(unsigned int buffer,int attribute_location, int strip);
     
+    draw_range   m_range;
     mesh_layout  m_layout;
     unsigned int m_bvertex_size{ 0 };
     unsigned int m_bindex_size { 0 };

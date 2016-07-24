@@ -19,10 +19,12 @@ void mesh::build(const mesh_layout& layout,
 }
 
 void mesh::build(const mesh_layout& layout,
+                 const draw_range&  range,
                  const std::vector< byte >& vertex)
 {
     destoy();
     m_layout = layout;
+    m_range  = range;
     build_vertex(vertex);
 }
 
@@ -82,7 +84,7 @@ void mesh::draw()
         //unbind index
         glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, 0);
         //draw
-        glDrawArrays (m_layout.m_draw_mode, 0, m_bvertex_size);
+        glDrawArrays (m_layout.m_draw_mode, m_range.m_min, m_range.m_max);
         //unbind buffer
         glBindBuffer (GL_ARRAY_BUFFER, 0);
     }
