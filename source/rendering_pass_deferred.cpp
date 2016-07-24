@@ -84,7 +84,7 @@ void rendering_pass_deferred::draw_pass(glm::vec4&  clear_color,
 	m_normal->set_value(1);
 	m_albedo->set_value(2);
 	//add info
-	m_view_pos->set_value(-t_camera->get_position());
+	m_view_pos->set_value(t_camera->get_position());
 	m_ambient_light->set_value(ambient_color);
     //compute max lights
     unsigned max_lights = std::min(m_max_lights,(unsigned)lights.size());
