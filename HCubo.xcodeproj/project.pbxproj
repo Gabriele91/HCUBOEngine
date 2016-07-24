@@ -59,6 +59,8 @@
 		E03EDCAA1D34187500C0C22A /* texture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E03EDC841D34186900C0C22A /* texture.cpp */; };
 		E03EDCC21D3418F200C0C22A /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = E09799451D2E5DD2006D1F13 /* Info.plist */; };
 		E089AC0D1D2E5ECE009F0CDD /* assets in Resources */ = {isa = PBXBuildFile; fileRef = E089AC0B1D2E5ECE009F0CDD /* assets */; };
+		E08DB6B71D44AD7300EF554F /* system_manager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E08DB6B61D44AD7300EF554F /* system_manager.cpp */; };
+		E08DB6B81D44AD7300EF554F /* system_manager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E08DB6B61D44AD7300EF554F /* system_manager.cpp */; };
 		E09799411D2E5DD2006D1F13 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E09799401D2E5DD2006D1F13 /* Assets.xcassets */; };
 		E09799581D2E5E2D006D1F13 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E01A2EF61D22C58A00A8BA77 /* IOKit.framework */; };
 		E09799591D2E5E2D006D1F13 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E01A2EF41D22C57500A8BA77 /* CoreVideo.framework */; };
@@ -141,6 +143,8 @@
 		E03EDCC01D3418CF00C0C22A /* text_mesh.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = text_mesh.h; sourceTree = "<group>"; };
 		E03EDCC11D3418CF00C0C22A /* texture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = texture.h; sourceTree = "<group>"; };
 		E089AC0B1D2E5ECE009F0CDD /* assets */ = {isa = PBXFileReference; lastKnownFileType = folder; path = assets; sourceTree = "<group>"; };
+		E08DB6B51D44ABF400EF554F /* system_manager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = system_manager.h; sourceTree = "<group>"; };
+		E08DB6B61D44AD7300EF554F /* system_manager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = system_manager.cpp; sourceTree = "<group>"; };
 		E09799381D2E5DD2006D1F13 /* HCubo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HCubo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E09799401D2E5DD2006D1F13 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E09799451D2E5DD2006D1F13 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -192,6 +196,7 @@
 				E03EDC7E1D34186900C0C22A /* pico_png.cpp */,
 				E015839B1D43990D0029D6F5 /* tga.cpp */,
 				E03EDC791D34186900C0C22A /* json11.cpp */,
+				E08DB6B61D44AD7300EF554F /* system_manager.cpp */,
 				E01461AA1D34D2EC008A2574 /* resources_manager.cpp */,
 				E03EDC801D34186900C0C22A /* rendering_system.cpp */,
 				E022AF4B1D3EB487009F76D5 /* rendering_pass_deferred.cpp */,
@@ -249,6 +254,7 @@
 				E03EDCB51D3418CF00C0C22A /* mesh.h */,
 				E03EDCAE1D3418CF00C0C22A /* basic_meshs.h */,
 				E03EDCC01D3418CF00C0C22A /* text_mesh.h */,
+				E08DB6B51D44ABF400EF554F /* system_manager.h */,
 				E03EDCBC1D3418CF00C0C22A /* rendering_system.h */,
 				E022AF4A1D3EB47E009F76D5 /* rendering_pass_deferred.h */,
 				E03EDCB71D3418CF00C0C22A /* OpenGL4.h */,
@@ -376,6 +382,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E08DB6B71D44AD7300EF554F /* system_manager.cpp in Sources */,
 				E03EDC911D34186900C0C22A /* pico_png.cpp in Sources */,
 				E03EDC891D34186900C0C22A /* camera.cpp in Sources */,
 				E03EDC951D34186900C0C22A /* shader.cpp in Sources */,
@@ -422,6 +429,7 @@
 				E03EDC9B1D34187500C0C22A /* basic_meshs.cpp in Sources */,
 				E03EDCA91D34187500C0C22A /* text_mesh.cpp in Sources */,
 				E03EDC9D1D34187500C0C22A /* cocoa_native_dialog.mm in Sources */,
+				E08DB6B81D44AD7300EF554F /* system_manager.cpp in Sources */,
 				E03099BE1D4211D7001855A9 /* static_model.cpp in Sources */,
 				E03EDCA01D34187500C0C22A /* main.cpp in Sources */,
 				E03EDCA61D34187500C0C22A /* rendering_system.cpp in Sources */,

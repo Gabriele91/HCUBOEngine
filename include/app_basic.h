@@ -20,7 +20,7 @@
 //manager resources
 #include <resources_manager.h>
 //rendering system
-#include <rendering_system.h>
+#include <system_manager.h>
 
 enum class drag_state
 {
@@ -82,7 +82,10 @@ private:
     //shader map
     resources_manager m_resources;
     //applay
-	rendering_system m_render;
+	system_manager m_systems;
+    //refs
+    entity::ptr  m_camera;
+    entity::ptr  m_model;
     //aspect
     float m_fov     { 45.0f };
     float m_aspect  { 0.0f  };

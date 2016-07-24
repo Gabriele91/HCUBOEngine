@@ -48,8 +48,7 @@ void rendering_pass_deferred::draw_pass(glm::vec4&  clear_color,
                                         glm::vec4&  ambient_color,
                                         entity::ptr e_camera,
                                         std::vector< entity::wptr >& lights,
-                                        std::vector< entity::wptr >& renderables,
-                                        std::vector< entity::ptr >&  entities)
+                                        std::vector< entity::wptr >& renderables)
 {
     camera::ptr   c_camera = e_camera->get_component<camera>();
     transform_ptr t_camera = e_camera->get_component<transform>();

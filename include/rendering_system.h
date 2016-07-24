@@ -11,6 +11,7 @@
 #include <camera.h>
 #include <entity.h>
 #include <smart_pointers.h>
+#include <system_manager.h>
 
 class rendering_pass
 {
@@ -19,8 +20,7 @@ public:
                            glm::vec4&  ambient_color,
                            entity::ptr e_camera,
                            std::vector< entity::wptr >& lights,
-                           std::vector< entity::wptr >& renderables,
-                           std::vector< entity::ptr >& entities)= 0;
+                           std::vector< entity::wptr >& renderables)= 0;
 };
 using rendering_pass_ptr  = std::shared_ptr< rendering_pass >;
 using rendering_pass_uptr = std::unique_ptr< rendering_pass >;
@@ -32,21 +32,27 @@ public:
                            glm::vec4&  ambient_color,
                            entity::ptr e_camera,
                            std::vector< entity::wptr >& lights,
-                           std::vector< entity::wptr >& renderables,
-                           std::vector< entity::ptr >& entities);
+                           std::vector< entity::wptr >& renderables);
 };
 
-class rendering_system
+class rendering_system : public system_component, public smart_pointers< rendering_system >
 {
 public:
+    
+    
+    virtual void on_attach( system_manager& );
+    
+    virtual void on_detach();
+    
+    virtual void on_add_entity(entity::ptr);
+    
+    virtual void on_remove_entity(entity::ptr);
+    
+    virtual void on_update(double deltatime);
     
     void set_clear_color(const glm::vec4& clear_color);
     
     void set_ambient_color(const glm::vec4& ambient_color);
-    
-	void set_camera(entity::ptr cam);
-
-	void add_entity(entity::ptr e);
 
 	void add_rendering_pass(rendering_pass_ptr pass);
 
@@ -58,8 +64,6 @@ public:
     
 	entity::ptr get_camera() const;
 
-	const std::vector< entity::ptr >& get_entities() const;
-
 	const std::vector< rendering_pass_ptr >& get_rendering_pass() const;
         
 protected:
@@ -69,7 +73,6 @@ protected:
     entity::ptr						  m_camera;
     std::vector< entity::wptr >       m_lights;
     std::vector< entity::wptr >       m_renderables;
-    std::vector< entity::ptr >	      m_entities;
 	std::vector< rendering_pass_ptr > m_rendering_pass;
     
 };

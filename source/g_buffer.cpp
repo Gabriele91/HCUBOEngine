@@ -21,6 +21,24 @@ static std::string framebuffer_error_to_str(GLenum error)
         default:                                           return "GL_UNKNOW";
     }
 }
+
+//texture buffer type
+struct texture_type
+{
+    GLenum m_internal_format = GL_RGBA32F;
+    GLenum m_format          = GL_RGBA;
+    GLenum m_type            = GL_FLOAT;
+    
+    texture_type(){}
+    
+    texture_type(GLenum type_0,GLenum type_1,GLenum type_2)
+    {
+        m_internal_format = type_0;
+        m_format          = type_1;
+        m_type            = type_2;
+    }
+};
+
 bool g_buffer::init(const glm::ivec2& window_size)
 {
     return init(window_size.x,window_size.y);
@@ -42,11 +60,28 @@ bool g_buffer::init(unsigned int width, unsigned int height)
     
     // draw buffers to attach
     GLenum draw_buffers[G_BUFFER_NUM_TEXTURES] = {0};
+
+    //types
+    texture_type types[G_BUFFER_NUM_TEXTURES];
     
+    //specify type
+    types[G_BUFFER_TEXTURE_TYPE_POSITION] = texture_type( GL_RGB16F, GL_RGB,  GL_FLOAT );
+    types[G_BUFFER_TEXTURE_TYPE_NORMAL]   = texture_type( GL_RGB16F, GL_RGB,  GL_FLOAT );
+    types[G_BUFFER_TEXTURE_TYPE_ALBEDO]   = texture_type( GL_RGBA,   GL_RGBA, GL_UNSIGNED_BYTE );
+    
+    //create texture
     for (unsigned int i = 0 ; i != G_BUFFER_NUM_TEXTURES ; i++)
     {
         glBindTexture(GL_TEXTURE_2D, m_textures[i]);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_FLOAT, NULL);
+        glTexImage2D(GL_TEXTURE_2D,
+                     0,
+                     types[i].m_internal_format,
+                     width,
+                     height,
+                     0,
+                     types[i].m_format,
+                     types[i].m_type,
+                     NULL);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, m_textures[i], 0);

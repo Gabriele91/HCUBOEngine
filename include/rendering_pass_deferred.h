@@ -42,7 +42,6 @@ public:
                            glm::vec4&  ambient_color,
                            entity::ptr camera,
                            std::vector< entity::wptr >& lights,
-                           std::vector< entity::wptr >& renderables,
-                           std::vector< entity::ptr >& entities);
+                           std::vector< entity::wptr >& renderables);
 
 };

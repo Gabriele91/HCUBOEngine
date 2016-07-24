@@ -25,14 +25,14 @@ void app_basic::key_event(application& app,int key, int scancode, int action, in
 		return;
 	}
     
-    if(key == GLFW_KEY_UP) m_render.get_camera()->get_component<transform>()->translation({0,0,1});
-    if(key == GLFW_KEY_DOWN) m_render.get_camera()->get_component<transform>()->translation({0,0,-1});
-    if(key == GLFW_KEY_LEFT) m_render.get_camera()->get_component<transform>()->translation({1,0,0});
-    if(key == GLFW_KEY_RIGHT) m_render.get_camera()->get_component<transform>()->translation({-1,0,0});
-    if(key == GLFW_KEY_W)  m_render.get_entities()[0]->get_component<transform>()->translation({0,0,1});
-    if(key == GLFW_KEY_S)  m_render.get_entities()[0]->get_component<transform>()->translation({0,0,-1});
-    if(key == GLFW_KEY_A)  m_render.get_entities()[0]->get_component<transform>()->translation({1,0,0});
-    if(key == GLFW_KEY_D)  m_render.get_entities()[0]->get_component<transform>()->translation({-1,0,0});
+    if(key == GLFW_KEY_UP)   m_camera->get_component<transform>()->translation({0,0,1});
+    if(key == GLFW_KEY_DOWN) m_camera->get_component<transform>()->translation({0,0,-1});
+    if(key == GLFW_KEY_LEFT) m_camera->get_component<transform>()->translation({1,0,0});
+    if(key == GLFW_KEY_RIGHT)m_camera->get_component<transform>()->translation({-1,0,0});
+    if(key == GLFW_KEY_W)    m_model->get_component<transform>()->translation({0,0,1});
+    if(key == GLFW_KEY_S)    m_model->get_component<transform>()->translation({0,0,-1});
+    if(key == GLFW_KEY_A)    m_model->get_component<transform>()->translation({1,0,0});
+    if(key == GLFW_KEY_D)    m_model->get_component<transform>()->translation({-1,0,0});
 
     if((mods   == GLFW_MOD_SUPER   ||
         mods   == GLFW_MOD_CONTROL)&&
@@ -65,9 +65,9 @@ void app_basic::resize_event(application& application,const glm::ivec2& size)
 {
     m_aspect = float(size.x) / float(size.y);
     //viewport
-    m_render.get_camera()->get_component<camera>()->set_viewport(glm::ivec4{0, 0, size.x, size.y});
+    m_camera->get_component<camera>()->set_viewport(glm::ivec4{0, 0, size.x, size.y});
     //new perspective
-    m_render.get_camera()->get_component<camera>()->set_perspective(m_fov, m_aspect, 0.01, 100.0);
+    m_camera->get_component<camera>()->set_perspective(m_fov, m_aspect, 0.01, 100.0);
 }
 
 void app_basic::start(application& app)
@@ -78,12 +78,14 @@ void app_basic::start(application& app)
 		app.get_window_size(),
 		app.get_window_position()
 	};
-    //do clear
-    app.clear();
+    //alloc all systems
+    rendering_system::ptr m_rendering= rendering_system::snew();
+    //add into system
+    m_systems.add_system(m_rendering);
     //camera
-    auto e_camera = gameobject::camera_new();
-    auto c_camera = e_camera->get_component<camera>();
-    auto t_camera = e_camera->get_component<transform>();
+         m_camera = gameobject::camera_new();
+    auto c_camera = m_camera->get_component<camera>();
+    auto t_camera = m_camera->get_component<transform>();
     glm::vec2 size = app.get_window_size();
     m_aspect       = float(size.x) / float(size.y);
     c_camera->set_viewport(glm::ivec4{0, 0, size.x, size.y});
@@ -92,17 +94,11 @@ void app_basic::start(application& app)
 				  	  glm::vec3{ 0.0f,-1.0f, 0.0f },
 					  glm::vec3{ 0.0f, 1.0f, 0.0f });
     //set camera
-    m_render.set_camera(e_camera);
-    //set render pass
-#if 0
-    m_resources.add_directory("assets/shaders/forward");
-    m_render.add_rendering_pass(rendering_pass_base::snew());
-#else
+    m_systems.add_entity(m_camera);
     //deferred alloc
     m_resources.add_directory("assets/shaders/deferred");
-    auto rendering_pass = rendering_pass_deferred::snew(e_camera, m_resources);
-    m_render.add_rendering_pass(rendering_pass);
-#endif
+    auto rendering_pass = rendering_pass_deferred::snew(m_camera, m_resources);
+    m_rendering->add_rendering_pass(rendering_pass);
     //load assets
     m_resources.add_directory("assets/textures");
 	m_resources.add_directory("assets/materials");
@@ -111,23 +107,14 @@ void app_basic::start(application& app)
     /////// /////// /////// /////// /////// /////// /////// /////// ///////
     // build scene
     {
-#if 0
-        //material
-        material_ptr box_mat = m_resources.get_material("baril_mat");
-        //mesh
-        mesh::ptr  cube_mesh = basic_meshs::cube( { 2., 2., 2. }, true );
-		//add to render
-		m_render.add_entity(entity::snew(cube_mesh, box_mat));
-#else
-        entity::ptr  emodel = gameobject::node_new(m_resources.get_static_model("ship"));
-        auto         tmodel = emodel->get_component<transform>();
+             m_model = gameobject::node_new(m_resources.get_static_model("ship"));
+        auto t_model = m_model->get_component<transform>();
         //set info
-        tmodel->position({ 0.0f, -5.0f, 0.0f });
-        tmodel->rotation(glm::quat({glm::radians(15.0), glm::radians(180.0), 0.0}));
-        tmodel->scale({ 0.2f, 0.2f, 0.2f });
+        t_model->position({ 0.0f, -5.0f, 0.0f });
+        t_model->rotation(glm::quat({glm::radians(15.0), glm::radians(180.0), 0.0}));
+        t_model->scale({ 0.2f, 0.2f, 0.2f });
         //add to render
-        m_render.add_entity(emodel);
-#endif
+        m_systems.add_entity(m_model);
         
         //lights
         light_ptr light0 = light_snew();
@@ -150,12 +137,12 @@ void app_basic::start(application& app)
         light2->m_quadratic = 0.01;
         
         //add to render
-        m_render.add_entity(gameobject::node_new(light0));
-        m_render.add_entity(gameobject::node_new(light1));
-        m_render.add_entity(gameobject::node_new(light2));
+        m_systems.add_entity(gameobject::node_new(light0));
+        m_systems.add_entity(gameobject::node_new(light1));
+        m_systems.add_entity(gameobject::node_new(light2));
         
         //ambient color
-        m_render.set_ambient_color(glm::vec4{ 0.26, 0.26, 0.26, 1.0 });
+        m_rendering->set_ambient_color(glm::vec4{ 0.26, 0.26, 0.26, 1.0 });
         
     }
 }
@@ -169,13 +156,11 @@ bool app_basic::run(application& app,double delta_time)
     angle += 1.0f * delta_time;
     //////////////////////////////////////////////////////////
     //update
-    entity::ptr  emodel = m_render.get_entities()[0];
-    auto         tmodel = emodel->get_component<transform>();
-    tmodel->turn(glm::quat{{0.0, glm::radians(-10.0*delta_time), 0.0}});
+    m_model->get_component<transform>()->turn(glm::quat{{0.0, glm::radians(-10.0*delta_time), 0.0}});
     //for all
-    for(int i=1;i!=4;++i)
+    for(int i=2;i!=5;++i)
     {
-        auto model_light = m_render.get_entities()[i]->get_component<transform>();
+        auto model_light = m_systems.get_entities()[i]->get_component<transform>();
         //applay translation
         model_light->position({
                                  std::sin((glm::pi<float>()*0.66)*i+ glm::radians(angle*20.0))*15.,
@@ -184,7 +169,7 @@ bool app_basic::run(application& app,double delta_time)
                               });
     }
     //draw
-    m_render.draw();
+    m_systems.update(delta_time);
     //////////////////////////////////////////////////////////
     //do loop
     return m_loop;
