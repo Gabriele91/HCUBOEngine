@@ -115,7 +115,9 @@ namespace basic_meshs
             };
             
             //compute tangent per vertex
-			tangent_space_calculation::compute_tangent_fast<vertex>(vertices);
+            tangent_space_calculation::compute_tangent_fast<vertex>(vertices);
+            //set size
+            range.m_max = (unsigned int)vertices.size();
             //resize
             vbuffer.resize(vertices.size()*sizeof(vertex));
             //copy buffer
@@ -181,8 +183,6 @@ namespace basic_meshs
             {
                 v.m_normal = glm::normalize(v.m_position);
             }
-            //set size
-            range.m_max = (unsigned int)vertices.size();
             //resize
             vbuffer.resize(vertices.size()*sizeof(vertex));
             //copy buffer

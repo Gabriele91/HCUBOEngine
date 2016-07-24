@@ -30,9 +30,9 @@ namespace gameobject
         return entity::snew(transform_snew(),camera::snew());
     }
     
-    static inline entity::ptr cube_new(const glm::vec3& size)
+    static inline entity::ptr cube_new(const glm::vec3& size,bool uvmap=true)
     {
-        return entity::snew(transform_snew(),basic_meshs::cube(size));
+        return entity::snew(transform_snew(),basic_meshs::cube(size,uvmap));
     }
     
 }

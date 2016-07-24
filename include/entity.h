@@ -14,10 +14,14 @@
 #include <smart_pointers.h>
 #include <component.h>
 #include <type_traits>
-
-
+//owanner
+class system_manager;
+//entity
 class entity : public smart_pointers< entity >
 {
+    
+    friend class system_manager;
+    
 public:
     
     //default
@@ -68,7 +72,9 @@ public:
     
     bool has_component(component_id id) const;
     
-    entity* parent() const;
+    entity* get_parent() const;
+    
+    system_manager* get_system() const;
     
     bool has_child(entity::ptr entity) const;
     
@@ -78,14 +84,25 @@ public:
     
     bool on_update(double deltatime);
     
-    void send_message_to_component(const message *message);
+    void send_message_to_component(const message& message);
     
-    void send_message_to_component_all(const message *message);
+    void send_message_to_component_upwards(const message& message);
+    
+    void send_message_to_component_downwards(const message& message);
+    
+    void send_message_to_component(component_id id, const message& message);
+    
+    void send_message_to_component_upwards(component_id id,const message& message);
+    
+    void send_message_to_component_downwards(component_id id,const message& message);
 
 protected:
-    
+    //system events
+    virtual void on_attach( system_manager& );
+    virtual void on_detach();
     //parent
-    entity* m_parent;
+    system_manager* m_system{ nullptr };
+    entity* m_parent{ nullptr };
     //list components
     std::unordered_map< component_id,component_ptr > m_components;
     std::unordered_map< entity*,entity::ptr > m_entities;

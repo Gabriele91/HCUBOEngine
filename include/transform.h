@@ -19,6 +19,16 @@ class transform : public component
     
 public:
     
+    enum message_ids
+    {
+        MSG_DIRTY = 1,
+    };
+    
+    void on_attach( entity& ent );
+    void on_detach();
+    void on_message(const message& message);
+
+    
     void look_at(const glm::vec3& eye,const glm::vec3& center,const glm::vec3& up);
     void translation(const glm::vec3& vector);
     void turn(const glm::quat& rot);
@@ -30,6 +40,9 @@ public:
     glm::vec3 get_position() const;
     glm::quat get_rotation() const;
     glm::vec3 get_scale() const;
+    
+    glm::mat4 const& get_local_matrix();
+    glm::mat4 const& get_local_matrix_inv();
     
     glm::mat4 const& get_matrix();
     glm::mat4 const& get_matrix_inv();
@@ -43,15 +56,20 @@ private:
     //info
     struct local_tranform
     {
-        bool      m_change;
+        bool      m_dirty;
         glm::vec3 m_position;
         glm::quat m_rotation;
         glm::vec3 m_scale{ 1.0f, 1.0f, 1.0f };
     }
     m_tranform;
+    //send dirty
+    void    set_dirty();
+    void    send_dirty();
     //matrix
     glm::mat4  m_model_local;
     glm::mat4  m_model_local_inv;
+    glm::mat4  m_model_global;
+    glm::mat4  m_model_global_inv;
     //compute
     void compute_matrix();
     

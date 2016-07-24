@@ -40,6 +40,9 @@ struct message
 
 class component
 {
+    
+    friend class entity;
+    
 public:
     
     component() {}
@@ -49,7 +52,7 @@ public:
     virtual bool on_update( double deltaTime ){ return true; }
     virtual void on_attach( entity& ){ }
     virtual void on_detach(){ }
-    virtual void on_message(const message* message){ }
+    virtual void on_message(const message& message){ }
     
     /* methods */
     virtual bool on_activate()   { return false; }
@@ -62,10 +65,13 @@ public:
     
     void set_enabled( bool enabled ) { m_is_enabled = enabled; }
     
+    entity* get_entity() const { return m_entity; }
+    
 private:
     
-    bool m_is_active;   //is active from the on_activate
-    bool m_is_enabled;  //is enabled, more for debug purpose or if we need to disable just one component
+    entity* m_entity { nullptr };
+    bool m_is_active { true    };   //is active from the on_activate
+    bool m_is_enabled{ true    };  //is enabled, more for debug purpose or if we need to disable just one component
     
 };
 using component_ptr  = std::shared_ptr< component >;

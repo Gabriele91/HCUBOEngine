@@ -6,6 +6,7 @@
 //  Copyright © 2016 Gabriele. All rights reserved.
 //
 #include <transform.h>
+#include <entity.h>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/matrix_decompose.hpp>
 
@@ -19,32 +20,32 @@ void transform::look_at(const glm::vec3& eye,const glm::vec3& center,const glm::
 
 void transform::translation(const glm::vec3& vector)
 {
-    m_tranform.m_position += vector;
-    m_tranform.m_change    = true;
+    m_tranform.m_position+= vector;
+    set_dirty();
 }
 
 void transform::turn(const glm::quat& rot)
 {
-    m_tranform.m_rotation  = rot * m_tranform.m_rotation;
-    m_tranform.m_change    = true;
+    m_tranform.m_rotation = rot * m_tranform.m_rotation;
+    set_dirty();
 }
 
 void transform::position(const glm::vec3& pos)
 {
-    m_tranform.m_position  = pos;
-    m_tranform.m_change    = true;
+    m_tranform.m_position = pos;
+    set_dirty();
 }
 
 void transform::rotation(const glm::quat& rot)
 {
-    m_tranform.m_rotation  = rot;
-    m_tranform.m_change    = true;
+    m_tranform.m_rotation = rot;
+    set_dirty();
 }
 
 void transform::scale(const glm::vec3& scale)
 {
-    m_tranform.m_scale   = scale;
-    m_tranform.m_change  = true;
+    m_tranform.m_scale = scale;
+    set_dirty();
 }
 
 glm::vec3 transform::get_position() const
@@ -57,21 +58,64 @@ glm::quat transform::get_rotation() const
     return m_tranform.m_rotation;
 }
 
-
-glm::mat4 const& transform::get_matrix()
-{
-    compute_matrix();
-    return m_model_local;
-}
-glm::mat4 const& transform::get_matrix_inv()
+glm::mat4 const& transform::get_local_matrix()
 {
     compute_matrix();
     return m_model_local_inv;
 }
 
+glm::mat4 const& transform::get_local_matrix_inv()
+{
+    compute_matrix();
+    return m_model_local_inv;
+}
+
+glm::mat4 const& transform::get_matrix()
+{
+    compute_matrix();
+    return m_model_global;
+}
+glm::mat4 const& transform::get_matrix_inv()
+{
+    compute_matrix();
+    return m_model_global_inv;
+}
+
+void transform::on_attach( entity& ent )
+{
+    set_dirty();
+}
+
+void transform::on_detach()
+{
+    set_dirty();
+}
+
+void transform::set_dirty()
+{
+    if(!m_tranform.m_dirty)
+    {
+        m_tranform.m_dirty=true;
+        send_dirty();
+    }
+}
+
+void transform::send_dirty()
+{
+    if(get_entity())
+    {
+        get_entity()->send_message_to_component_downwards(type(),{ MSG_DIRTY });
+    }
+}
+
+void transform::on_message(const message& message)
+{
+    if(message.m_id == MSG_DIRTY) m_tranform.m_dirty=true;
+}
+
 void transform::compute_matrix()
 {
-    if(m_tranform.m_change)
+    if(m_tranform.m_dirty)
     {
         //T*R*S
         m_model_local = glm::translate(glm::mat4(1.0f),m_tranform.m_position);
@@ -79,5 +123,17 @@ void transform::compute_matrix()
         m_model_local = glm::scale(m_model_local, m_tranform.m_scale);
         //inverse
         m_model_local_inv = glm::inverse(m_model_local);
+        //global
+        if(get_entity() && get_entity()->get_parent())
+        {
+            m_model_global = get_entity()->get_parent()->get_component<transform>()->get_matrix() * m_model_local;
+            //inverse
+            m_model_global_inv = glm::inverse(m_model_global);
+        }
+        else
+        {
+            m_model_global     = m_model_local;
+            m_model_global_inv = m_model_local_inv;
+        }
     }
 }

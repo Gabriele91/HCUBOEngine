@@ -6,10 +6,6 @@ cullface true
 
 //blend
 blend false
-{
-    source one
-    destination zero
-}
 
 //shader
 shader "base_texture_normal_specular"

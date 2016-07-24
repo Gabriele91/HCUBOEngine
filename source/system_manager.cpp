@@ -34,8 +34,10 @@ void system_manager::add_entity(entity::ptr entity)
 {
     //add
     m_entities.push_back(entity);
-    //call event
+    //call event system
     for(auto sys : m_systems) sys->on_add_entity(entity);
+    //call event entity
+    entity->on_attach(*this);
 }
 
 void system_manager::remove_entity(entity::ptr entity)
@@ -45,7 +47,9 @@ void system_manager::remove_entity(entity::ptr entity)
     //remove
     if(it_entity!=m_entities.end())
     {
-        //call event
+        //call event entity
+        entity->on_detach();
+        //call event system
         for(auto sys : m_systems) sys->on_remove_entity(entity);
         //remove
         m_entities.erase(it_entity);

@@ -89,7 +89,7 @@ void app_basic::start(application& app)
     glm::vec2 size = app.get_window_size();
     m_aspect       = float(size.x) / float(size.y);
     c_camera->set_viewport(glm::ivec4{0, 0, size.x, size.y});
-    c_camera->set_perspective(m_fov, m_aspect, 0.01, 100.0);
+    c_camera->set_perspective(m_fov, m_aspect, 0.1, 1000.0);
 	t_camera->look_at(glm::vec3{ 0.0f, 6.9f, -45.0f },
 				  	  glm::vec3{ 0.0f,-1.0f, 0.0f },
 					  glm::vec3{ 0.0f, 1.0f, 0.0f });
@@ -111,35 +111,83 @@ void app_basic::start(application& app)
         auto t_model = m_model->get_component<transform>();
         //set info
         t_model->position({ 0.0f, -5.0f, 0.0f });
-        t_model->rotation(glm::quat({glm::radians(15.0), glm::radians(180.0), 0.0}));
+        t_model->rotation(glm::quat({glm::radians(15.0), glm::radians(0.0), 0.0}));
         t_model->scale({ 0.2f, 0.2f, 0.2f });
+        
+        auto e_model_light = gameobject::light_new();
+        auto l_model_light = e_model_light->get_component<light>();
+        auto t_model_light = e_model_light->get_component<transform>();
+        t_model_light->position(glm::vec3{0,-1,-75});
+        l_model_light->m_diffuse   = { 1.0f, 0.8f, 0.1f, 1.0f };
+        l_model_light->m_linear    = 0.001;
+        l_model_light->m_const     = 0.5;
+        l_model_light->m_quadratic = 0.05;
+        
+        //append to model
+        m_model->add_child(e_model_light);
         //add to render
         m_systems.add_entity(m_model);
-        
+        //cube
+        auto e_cube = gameobject::cube_new({1,1,1});
+             e_cube->add_component(m_resources.get_material("w_box_mat"));
+        auto t_cube = e_cube->get_component<transform>();
+        t_cube->position({0.,-10.0,0.});
+        t_cube->scale({70.,1.0,70.});
+        t_cube->get_matrix();
+        //add to render
+        m_systems.add_entity(e_cube);
         //lights
-        light_ptr light0 = light_snew();
-        light_ptr light1 = light_snew();
-        light_ptr light2 = light_snew();
+        entity::ptr e_lights[3] =
+        {
+            gameobject::light_new(),
+            gameobject::light_new(),
+            gameobject::light_new()
+        };
+        light_ptr l_lights[3] =
+        {
+            e_lights[0]->get_component<light>(),
+            e_lights[1]->get_component<light>(),
+            e_lights[2]->get_component<light>()
+        };
+        transform_ptr t_lights[3] =
+        {
+            e_lights[0]->get_component<transform>(),
+            e_lights[1]->get_component<transform>(),
+            e_lights[2]->get_component<transform>()
+        };
         
-        light0->m_diffuse   = { 0.0f, 1.0f, 0.0f, 1.0f };
-        light0->m_linear    = 0.01;
-        light0->m_const     = 0.45;
-        light0->m_quadratic = 0.01;
+        l_lights[0]->m_diffuse   = { 0.0f, 1.0f, 0.0f, 1.0f };
+        l_lights[0]->m_linear    = 0.001;
+        l_lights[0]->m_const     = 1.0;
+        l_lights[0]->m_quadratic = 0.002;
         
-        light1->m_diffuse   = { 1.0f, 0.0f, 0.0f, 1.0f };
-        light1->m_linear	= 0.01;
-        light1->m_const     = 0.45;
-        light1->m_quadratic = 0.01;
+        l_lights[1]->m_diffuse   = { 1.0f, 0.0f, 0.0f, 1.0f };
+        l_lights[1]->m_linear	 = 0.001;
+        l_lights[1]->m_const     = 1.0;
+        l_lights[1]->m_quadratic = 0.002;
         
-        light2->m_diffuse   = { 0.0f, 0.0f, 1.0f, 1.0f };
-        light2->m_linear    = 0.01;
-        light2->m_const     = 0.45;
-        light2->m_quadratic = 0.01;
+        l_lights[2]->m_diffuse   = { 0.0f, 0.0f, 1.0f, 1.0f };
+        l_lights[2]->m_linear    = 0.001;
+        l_lights[2]->m_const     = 1.0;
+        l_lights[2]->m_quadratic = 0.002;
+        
+        for(int i = 1; i!=4 ; ++i)
+        {
+            t_lights[i-1]->position({
+                std::sin((glm::pi<float>()*0.66)*i)*15.,
+                0.0,
+                std::cos((glm::pi<float>()*0.66)*i)*15.,
+            });
+        }
+        
+        //node lights
+        m_lights = gameobject::node_new();
+        m_lights->add_child(e_lights[0]);
+        m_lights->add_child(e_lights[1]);
+        m_lights->add_child(e_lights[2]);
         
         //add to render
-        m_systems.add_entity(gameobject::node_new(light0));
-        m_systems.add_entity(gameobject::node_new(light1));
-        m_systems.add_entity(gameobject::node_new(light2));
+        m_systems.add_entity(m_lights);
         
         //ambient color
         m_rendering->set_ambient_color(glm::vec4{ 0.26, 0.26, 0.26, 1.0 });
@@ -157,17 +205,8 @@ bool app_basic::run(application& app,double delta_time)
     //////////////////////////////////////////////////////////
     //update
     m_model->get_component<transform>()->turn(glm::quat{{0.0, glm::radians(-10.0*delta_time), 0.0}});
-    //for all
-    for(int i=2;i!=5;++i)
-    {
-        auto model_light = m_systems.get_entities()[i]->get_component<transform>();
-        //applay translation
-        model_light->position({
-                                 std::sin((glm::pi<float>()*0.66)*i+ glm::radians(angle*20.0))*15.,
-                                 0.0,
-                                 std::cos((glm::pi<float>()*0.66)*i+ glm::radians(angle*20.0))*15.,
-                              });
-    }
+    //for all lights
+    m_lights->get_component<transform>()->turn(glm::quat{{0.0, glm::radians(20.0*delta_time), 0.0}});
     //draw
     m_systems.update(delta_time);
     //////////////////////////////////////////////////////////

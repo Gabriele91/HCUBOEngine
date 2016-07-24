@@ -180,11 +180,11 @@
 		E00ABDB81D23C3BE004E4CFD /* source */ = {
 			isa = PBXGroup;
 			children = (
+				E03EDC7A1D34186900C0C22A /* main.cpp */,
 				E03EDC731D34186900C0C22A /* app_basic.cpp */,
 				E03EDC741D34186900C0C22A /* application.cpp */,
 				E03EDC761D34186900C0C22A /* camera.cpp */,
 				E01583A01D43E9FE0029D6F5 /* transform.cpp */,
-				E03EDC7A1D34186900C0C22A /* main.cpp */,
 				E03EDC7C1D34186900C0C22A /* mesh.cpp */,
 				E01583A31D43FCBC0029D6F5 /* entity.cpp */,
 				E03099BC1D4211CB001855A9 /* static_model.cpp */,
@@ -234,10 +234,10 @@
 		E01A2EE41D22C2A900A8BA77 /* include */ = {
 			isa = PBXGroup;
 			children = (
+				E03EDCAB1D3418CF00C0C22A /* app_basic.h */,
 				E01583991D4399040029D6F5 /* struct_attribute.h */,
 				E015839A1D4399040029D6F5 /* tangent_space_calculation.h */,
 				E03EDCBF1D3418CF00C0C22A /* smart_pointers.h */,
-				E03EDCAB1D3418CF00C0C22A /* app_basic.h */,
 				E03EDCAC1D3418CF00C0C22A /* application.h */,
 				E015839D1D43AFDA0029D6F5 /* component.h */,
 				E03EDCB11D3418CF00C0C22A /* entity.h */,
