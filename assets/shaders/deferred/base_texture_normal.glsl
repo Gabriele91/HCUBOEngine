@@ -46,6 +46,7 @@ layout(location = 1) out vec3 g_normal;
 layout(location = 2) out vec4 g_albedo_spec;
 //uniform
 uniform vec4      color;
+uniform float     mask = 0.0;
 uniform sampler2D diffuse_map;
 uniform sampler2D normal_map;
 //uniform matrix
@@ -63,11 +64,11 @@ vec3 compute_normal()
 
 void main()
 {
-	//coords
+	//color
+	vec4 texture_color = texture(diffuse_map, frag_uvcoord);
+	if (texture_color.a <= mask) discard;
+	//outputs
 	g_vertex      = frag_vertex;
-    //normal map
     g_normal      = compute_normal() * 0.5 + 0.5;
-	//albedo
-	vec3 color    = vec3(texture(diffuse_map, frag_uvcoord)*color);
-	g_albedo_spec = vec4(color, 0.0);
+	g_albedo_spec = vec4((texture_color*color).rgb, 1.0);
 }
