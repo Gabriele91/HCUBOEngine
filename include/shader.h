@@ -200,14 +200,17 @@ public:
     {
         set(&m4[0]);
     }
+
     operator const glm::mat4&() const
     {
         return *((glm::mat4*)(this->get()));
     }
+
     void set_value(const glm::mat4& m4)
     {
         set(&m4[0]);
     }
+
     const glm::mat4& operator = (const glm::mat4& m4)
     {
         set(&m4[0]);
@@ -218,109 +221,110 @@ public:
 class uniform_array_int : public uniform<uniform_array_int>
 {
 public:
-    void set(int i, size_t n)
+	
+    void set_value(int i, size_t n)
     {
-        uniform::set(&i, n, 1);
+        set(&i, n, 1);
     }
     
-    void set(int* i, size_t n)
+    void set_value(int* i, size_t n)
     {
-        uniform::set(i, 0, n);
+		set(i, 0, n);
     }
     
-    int get(size_t n) const
+    int get_value(size_t n) const
     {
-        return ((const int*)uniform::get())[n];
+        return ((const int*)get())[n];
     }
 };
 
 class uniform_array_float : public uniform<uniform_array_float>
 {
 public:
-    void set(float f, size_t n)
+    void set_value(float f, size_t n)
     {
-        uniform::set(&f, n, 1);
+		set(&f, n, 1);
     }
     
-    void set(float* f, size_t n)
+    void set_value(float* f, size_t n)
     {
-        uniform::set(f, 0, n);
+		set(f, 0, n);
     }
     
-    float get(size_t n) const
+    float get_value(size_t n) const
     {
-        return ((const float*)uniform::get())[n];
+        return ((const float*)get())[n];
     }
 };
 
 class uniform_array_vec2 : public uniform<uniform_array_vec2>
 {
 public:
-    void set(const glm::vec2& v2, size_t n)
+    void set_value(const glm::vec2& v2, size_t n)
     {
-        uniform::set(&v2, n, 1);
+		set(&v2, n, 1);
     }
     
-    void set(glm::vec2* v2, size_t n)
+    void set_value(glm::vec2* v2, size_t n)
     {
-        uniform::set(v2, 0, n);
+		set(v2, 0, n);
     }
     
-    glm::vec2 get(size_t n) const
+    glm::vec2 get_value(size_t n) const
     {
-        return ((const glm::vec2*)uniform::get())[n];
+        return ((const glm::vec2*)get())[n];
     }
 };
 
 class uniform_array_vec3 : public uniform<uniform_array_vec3>
 {
 public:
-    void set(const glm::vec3& v3, size_t n)
+    void set_value(const glm::vec3& v3, size_t n)
     {
-        uniform::set(&v3, n, 1);
+		set(&v3, n, 1);
     }
-    void set(glm::vec3* v3, size_t n)
+    void set_value(glm::vec3* v3, size_t n)
     {
-        uniform::set(v3, 0, n);
+		set(v3, 0, n);
     }
-    glm::vec3 get(size_t n) const
+    glm::vec3 get_value(size_t n) const
     {
-        return ((const glm::vec3*)uniform::get())[n];
+        return ((const glm::vec3*)get())[n];
     }
 };
 
 class uniform_array_vec4 : public uniform<uniform_array_vec3>
 {
 public:
-    void set(const glm::vec4& v4, size_t n)
+    void set_value(const glm::vec4& v4, size_t n)
     {
-        uniform::set(&v4, n, 1);
+		set(&v4, n, 1);
     }
-    void set(glm::vec4* v4, size_t n)
+    void set_value(glm::vec4* v4, size_t n)
     {
-        uniform::set(v4, 0, n);
+		set(v4, 0, n);
     }
-    glm::vec4 get(size_t n) const
+    glm::vec4 get_value(size_t n) const
     {
-        return ((const glm::vec4*)uniform::get())[n];
+        return ((const glm::vec4*)get())[n];
     }
 };
 class uniform_array_mat4 : public uniform<uniform_array_mat4>
 {
 public:
-    void set(const glm::mat4& v4, size_t n)
+    void set_value(const glm::mat4& v4, size_t n)
     {
-        uniform::set(&v4, n, 1);
+		set(&v4, n, 1);
     }
     
-    void set(glm::mat4* v4, size_t n)
+    void set_value(glm::mat4* v4, size_t n)
     {
-        uniform::set(v4, 0, n);
+		set(v4, 0, n);
     }
     
-    glm::mat4 get(size_t n) const
+    glm::mat4 get_value(size_t n) const
     {
-        return ((const glm::mat4*)uniform::get())[n];
+        return ((const glm::mat4*)get())[n];
     }
 };
 

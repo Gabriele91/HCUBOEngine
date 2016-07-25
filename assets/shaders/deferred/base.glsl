@@ -13,9 +13,9 @@ uniform mat4 model;
 void main()
 {
 	//vertex
-	vec4 world_vertex = model * vec4(vertex, 1.0);
-	frag_vertex = world_vertex.xyz;
-	gl_Position = projection * view * world_vertex;
+	vec4 view_vertex = view * model * vec4(vertex, 1.0);
+	frag_vertex = view_vertex.xyz;
+	gl_Position = projection *  view_vertex;
 	//normal
 	mat3 normal_matrix = transpose(inverse(mat3(model)));
 	frag_normal = normal_matrix * normal;
@@ -26,7 +26,7 @@ void main()
 in vec3 frag_vertex;
 in vec3 frag_normal;
 //out
-layout(location = 0) out vec3 g_vertex;
+layout(location = 0) out vec4 g_vertex;
 layout(location = 1) out vec3 g_normal;
 layout(location = 2) out vec4 g_albedo_spec;
 //uniform
@@ -34,7 +34,7 @@ uniform vec4 color;
 
 void main()
 {
-	g_vertex = frag_vertex;
+	g_vertex = vec4(frag_vertex, gl_FragCoord.z);
 	g_normal = normalize(frag_normal) * 0.5 + 0.5;
 	g_albedo_spec = vec4(color.rgb, 1.0);
 }

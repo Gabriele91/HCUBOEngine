@@ -25,14 +25,19 @@ void app_basic::key_event(application& app,int key, int scancode, int action, in
 		return;
 	}
     
-    if(key == GLFW_KEY_UP)   m_camera->get_component<transform>()->translation({0,0,1});
-    if(key == GLFW_KEY_DOWN) m_camera->get_component<transform>()->translation({0,0,-1});
-    if(key == GLFW_KEY_LEFT) m_camera->get_component<transform>()->translation({1,0,0});
-    if(key == GLFW_KEY_RIGHT)m_camera->get_component<transform>()->translation({-1,0,0});
-    if(key == GLFW_KEY_W)    m_model->get_component<transform>()->translation({0,0,1});
-    if(key == GLFW_KEY_S)    m_model->get_component<transform>()->translation({0,0,-1});
-    if(key == GLFW_KEY_A)    m_model->get_component<transform>()->translation({1,0,0});
-    if(key == GLFW_KEY_D)    m_model->get_component<transform>()->translation({-1,0,0});
+    if(key == GLFW_KEY_UP)          m_camera->get_component<transform>()->translation({0,0,1});
+    if(key == GLFW_KEY_DOWN)        m_camera->get_component<transform>()->translation({0,0,-1});
+    if(key == GLFW_KEY_LEFT)        m_camera->get_component<transform>()->translation({1,0,0});
+    if(key == GLFW_KEY_RIGHT)       m_camera->get_component<transform>()->translation({-1,0,0});
+	if (key == GLFW_KEY_PAGE_UP)    m_camera->get_component<transform>()->translation({ 0,1,0 });
+	if (key == GLFW_KEY_PAGE_DOWN)  m_camera->get_component<transform>()->translation({ 0,-1,0 });
+
+	if (key == GLFW_KEY_W)    m_model->get_component<transform>()->translation({ 0,0,1 });
+	if (key == GLFW_KEY_S)    m_model->get_component<transform>()->translation({ 0,0,-1 });
+	if (key == GLFW_KEY_A)    m_model->get_component<transform>()->translation({ 1,0,0 });
+	if (key == GLFW_KEY_D)    m_model->get_component<transform>()->translation({ -1,0,0 });
+	if (key == GLFW_KEY_R)    m_model->get_component<transform>()->translation({ 0,1,0 });
+	if (key == GLFW_KEY_F)    m_model->get_component<transform>()->translation({ 0,-1,0 });
 
     if((mods   == GLFW_MOD_SUPER   ||
         mods   == GLFW_MOD_CONTROL)&&
@@ -98,6 +103,7 @@ void app_basic::start(application& app)
     //deferred alloc
     m_resources.add_directory("assets/shaders/deferred");
     auto rendering_pass = rendering_pass_deferred::snew(m_camera, m_resources);
+	rendering_pass->set_ambient_occlusion(false);
     m_rendering->add_rendering_pass(rendering_pass);
     //load assets
     m_resources.add_directory("assets/textures");

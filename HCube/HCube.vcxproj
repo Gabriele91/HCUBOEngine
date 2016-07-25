@@ -181,6 +181,7 @@
     <ClInclude Include="..\include\shader.h" />
     <ClInclude Include="..\include\smart_pointers.h" />
     <ClInclude Include="..\include\query_performance.h" />
+    <ClInclude Include="..\include\ssao_technique.h" />
     <ClInclude Include="..\include\static_model.h" />
     <ClInclude Include="..\include\struct_attribute.h" />
     <ClInclude Include="..\include\system_manager.h" />
@@ -208,6 +209,7 @@
     <ClCompile Include="..\source\rendering_system.cpp" />
     <ClCompile Include="..\source\resources_manager.cpp" />
     <ClCompile Include="..\source\shader.cpp" />
+    <ClCompile Include="..\source\ssao_technique.cpp" />
     <ClCompile Include="..\source\static_model.cpp" />
     <ClCompile Include="..\source\system_manager.cpp" />
     <ClCompile Include="..\source\texture.cpp" />
@@ -227,6 +229,7 @@
     <None Include="..\assets\shaders\deferred\base_texture_normal_specular.glsl" />
     <None Include="..\assets\shaders\deferred\base_texture_specular.glsl" />
     <None Include="..\assets\shaders\deferred\deferred_light.glsl" />
+    <None Include="..\assets\shaders\deferred\ssao_pass.glsl" />
     <None Include="..\assets\shaders\deferred\text.glsl" />
     <None Include="..\assets\shaders\deferred\triangle_lines.glsl" />
     <None Include="..\assets\shaders\deferred\wireframe.glsl" />

@@ -22,12 +22,12 @@ out vec4 frag_color;
 uniform sampler2D g_vertex;
 uniform sampler2D g_normal;
 uniform sampler2D g_albedo_spec;
+uniform sampler2D g_occlusion;
 
 uniform vec3 view_pos;
 uniform vec4 ambient_light;
 uniform int n_lights_used = 0;
 
-const int max_lights = 32;
 
 struct light
 {
@@ -37,22 +37,24 @@ struct light
 	float m_linear;
 	float m_quadratic;
 };
+const int max_lights = 32;
 uniform light lights[max_lights];
 
 void main()
 {
 	// Retrieve data from gbuffer
-	vec3  vertex   = texture(g_vertex,      frag_uvcoord).rgb;
-	vec3  normal   = texture(g_normal,      frag_uvcoord).rgb;
-	vec3  diffuse  = texture(g_albedo_spec, frag_uvcoord).rgb;
-	float specular = texture(g_albedo_spec, frag_uvcoord).a;
+	vec3  vertex    = texture(g_vertex,      frag_uvcoord).rgb;
+	vec3  normal    = texture(g_normal,      frag_uvcoord).rgb;
+	vec3  diffuse   = texture(g_albedo_spec, frag_uvcoord).rgb;
+	float specular  = texture(g_albedo_spec, frag_uvcoord).a;
+	float occlusion = texture(g_occlusion,   frag_uvcoord).r;
 
 	//unpack
 	normal = normalize(normal * 2.0 - 1.0);
 
 	// Then calculate lighting as usual
-	vec3 lighting = diffuse * ambient_light.rgb;
-	vec3 view_dir = normalize(view_pos - vertex);
+	vec3 lighting = diffuse * ambient_light.rgb * occlusion;
+	vec3 view_dir = normalize(vec3(0.0) - vertex);
 
     //for size
     int n_lights = min(n_lights_used, max_lights);
@@ -60,7 +62,7 @@ void main()
 	for (int i = 0; i < n_lights; ++i)
 	{
 		// light distance vector
-		vec3 light_dist_v = lights[i].m_position - vertex;
+		vec3 light_dist_v = lights[i].m_position - vertex ;
 		// Diffuse
 		vec3 light_dir = normalize(light_dist_v);
 		vec3 ldiffuse  = vec3(max(dot(normal, light_dir), 0.0)) * diffuse * lights[i].m_diffuse.rgb;

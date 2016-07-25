@@ -9,9 +9,9 @@
 #include <typeindex>
 #include <smart_pointers.h>
 //class
-class entity;
-class component;
-class message;
+class  entity;
+class  component;
+struct message;
 //type
 using message_id   = unsigned;
 using component_id = std::type_index;

@@ -2,6 +2,7 @@
 #include <basic_meshs.h>
 #include <transform.h>
 
+
 void rendering_pass_deferred::uniform_light::get_uniform(int i, shader::ptr shader)
 {
 	std::string lights_i("lights[" + std::to_string(i) + "]");
@@ -25,13 +26,15 @@ void rendering_pass_deferred::uniform_light::uniform(light_wptr weak_light,const
 rendering_pass_deferred::rendering_pass_deferred(entity::ptr e_camera, resources_manager& resources)
 {
 	m_g_buffer.init(e_camera->get_component<camera>()->get_viewport_size());
+	m_ssao.init(e_camera, resources);
+
 	m_square = basic_meshs::square3D({ 2.0,2.0 }, true);
 	m_shader = resources.get_shader("deferred_light");
-	m_vertex = m_shader->get_shader_uniform_int("g_vertex");
-	m_normal = m_shader->get_shader_uniform_int("g_normal");
-	m_albedo = m_shader->get_shader_uniform_int("g_albedo_spec");
+	m_position  = m_shader->get_shader_uniform_int("g_vertex");
+	m_normal    = m_shader->get_shader_uniform_int("g_normal");
+	m_albedo    = m_shader->get_shader_uniform_int("g_albedo_spec");
+	m_occlusion = m_shader->get_shader_uniform_int("g_occlusion");
 	//uniforms
-	m_view_pos = m_shader->get_shader_uniform_vec3("view_pos");
 	m_ambient_light = m_shader->get_shader_uniform_vec4("ambient_light");
 	m_uniform_n_lights_used = m_shader->get_shader_uniform_int("n_lights_used");
 	//alloc lights
@@ -43,6 +46,19 @@ rendering_pass_deferred::rendering_pass_deferred(entity::ptr e_camera, resources
     }
 }
 
+void rendering_pass_deferred::set_ambient_occlusion(bool enable)
+{
+	if (m_enable_ambient_occlusion && !enable)
+	{
+		m_ssao.clear();
+	}
+	m_enable_ambient_occlusion = enable;
+}
+
+bool rendering_pass_deferred::is_enable_ambient_occlusion() const
+{
+	return m_enable_ambient_occlusion;
+}
 
 void rendering_pass_deferred::draw_pass(glm::vec4&  clear_color,
                                         glm::vec4&  ambient_color,
@@ -58,6 +74,7 @@ void rendering_pass_deferred::draw_pass(glm::vec4&  clear_color,
 
 	m_g_buffer.bind();
     
+	glClearColor(ambient_color.r, ambient_color.g, ambient_color.b, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
     for (entity::wptr& weak_entity : renderables)
@@ -71,20 +88,31 @@ void rendering_pass_deferred::draw_pass(glm::vec4&  clear_color,
 	}
 
 	m_g_buffer.unbind();
-    
+	////////////////////////////////////////////////////////////////////////////////
+	//clear frame buffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    
+	////////////////////////////////////////////////////////////////////////////////
+	//ssao pass
+	if(m_enable_ambient_occlusion)
+	{
+		m_ssao.bind(e_camera, m_g_buffer);
+		m_square->draw();
+		m_ssao.unbind(e_camera, m_g_buffer);
+	}
+	////////////////////////////////////////////////////////////////////////////////
 	m_shader->bind();
-	//set texture
+	//set texture g_buffer
 	m_g_buffer.set_texture_buffer(g_buffer::G_BUFFER_TEXTURE_TYPE_POSITION);
 	m_g_buffer.set_texture_buffer(g_buffer::G_BUFFER_TEXTURE_TYPE_NORMAL);
 	m_g_buffer.set_texture_buffer(g_buffer::G_BUFFER_TEXTURE_TYPE_ALBEDO);
+	//set texture ssao
+	m_ssao.set_texture(3);
 	//set uniform id
-	m_vertex->set_value(0);
+	m_position->set_value(0);
 	m_normal->set_value(1);
 	m_albedo->set_value(2);
+	m_occlusion->set_value(3);
 	//add info
-	m_view_pos->set_value(t_camera->get_position());
 	m_ambient_light->set_value(ambient_color);
     //compute max lights
     unsigned max_lights = std::min(m_max_lights,(unsigned)lights.size());
@@ -94,10 +122,16 @@ void rendering_pass_deferred::draw_pass(glm::vec4&  clear_color,
     {
         auto entity = lights[i].lock();
 		m_uniform_lights[i].uniform( entity->get_component<light>(),
-                                     entity->get_component<transform>()->get_matrix());
+									 t_camera->get_matrix_inv()*entity->get_component<transform>()->get_matrix());
 	}
 	//draw squere
 	m_square->draw();
+	//unbind texture
+	m_g_buffer.disable_texture(g_buffer::G_BUFFER_TEXTURE_TYPE_POSITION);
+	m_g_buffer.disable_texture(g_buffer::G_BUFFER_TEXTURE_TYPE_NORMAL);
+	m_g_buffer.disable_texture(g_buffer::G_BUFFER_TEXTURE_TYPE_ALBEDO);
+	m_ssao.disable_texture();
 	//bind
 	m_shader->unbind();
+	////////////////////////////////////////////////////////////////////////////////
 }

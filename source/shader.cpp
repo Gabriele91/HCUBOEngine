@@ -541,8 +541,6 @@ uniform_gl_class(uniform_gl_vec2, float, glUniform2fv)
 uniform_gl_class(uniform_gl_vec3, float, glUniform3fv)
 uniform_gl_class(uniform_gl_vec4, float, glUniform4fv)
 
-
-
 class uniform_gl_texture : public uniform_texture
 {
     GLint     m_unform_id{-1};
@@ -682,9 +680,9 @@ uniform_vec3::ptr shader::get_shader_uniform_vec3(const char *name){ return get_
 uniform_vec4::ptr shader::get_shader_uniform_vec4(const char *name){ return get_uniform_vec4(name)->shared(); }
 uniform_mat4::ptr shader::get_shader_uniform_mat4(const char *name){ return get_uniform_mat4(name)->shared(); }
 
-uniform_array_int::ptr shader::get_shader_uniform_array_int(const char *name){ return get_shader_uniform_array_int(name)->shared(); }
-uniform_array_float::ptr shader::get_shader_uniform_array_float(const char *name){ return get_shader_uniform_array_float(name)->shared(); }
-uniform_array_vec2::ptr shader::get_shader_uniform_array_vec2(const char *name){ return get_shader_uniform_array_vec2(name)->shared(); }
-uniform_array_vec3::ptr shader::get_shader_uniform_array_vec3(const char *name){ return get_shader_uniform_array_vec3(name)->shared(); }
-uniform_array_vec4::ptr shader::get_shader_uniform_array_vec4(const char *name){ return get_shader_uniform_array_vec4(name)->shared(); }
-uniform_array_mat4::ptr shader::get_shader_uniform_array_mat4(const char *name){ return get_shader_uniform_array_mat4(name)->shared(); }
+uniform_array_int::ptr shader::get_shader_uniform_array_int(const char *name){ return get_uniform_array_int(name)->shared(); }
+uniform_array_float::ptr shader::get_shader_uniform_array_float(const char *name){ return get_uniform_array_float(name)->shared(); }
+uniform_array_vec2::ptr shader::get_shader_uniform_array_vec2(const char *name){ return get_uniform_array_vec2(name)->shared(); }
+uniform_array_vec3::ptr shader::get_shader_uniform_array_vec3(const char *name){ return get_uniform_array_vec3(name)->shared(); }
+uniform_array_vec4::ptr shader::get_shader_uniform_array_vec4(const char *name){ return get_uniform_array_vec4(name)->shared(); }
+uniform_array_mat4::ptr shader::get_shader_uniform_array_mat4(const char *name){ return get_uniform_array_mat4(name)->shared(); }

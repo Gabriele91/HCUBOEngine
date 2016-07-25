@@ -23,12 +23,14 @@ public:
     
 	g_buffer() {}
     
-	~g_buffer() {}
-    
+	virtual ~g_buffer() { destoy(); }
+	
     bool init(const glm::ivec2& window_size);
     
     bool init(unsigned int width, unsigned int height);
-    
+
+	void destoy();
+
     void bind_for_writing();
 
 	void bind();
@@ -40,10 +42,14 @@ public:
     void set_read_buffer(G_BUFFER_TEXTURE_TYPE texture_type);
     
     void set_texture_buffer(G_BUFFER_TEXTURE_TYPE texture_type);
+
+	void disable_texture(G_BUFFER_TEXTURE_TYPE texture_type);
     
     void set_read_buffer_depth();
     
-    void set_texture_buffer_depth(unsigned int n_texture=0);
+    void set_texture_buffer_depth(GLenum n_texture=0);
+
+	void disable_depth_texture();
 
     unsigned int get_width() const;
     
@@ -56,8 +62,9 @@ private:
     unsigned int m_width    { 0 };
     unsigned int m_height   { 0 };
     
-    GLuint m_fbo;
-    GLuint m_textures[G_BUFFER_NUM_TEXTURES];
-    GLuint m_depth_texture;
+	GLuint m_fbo{ 0 };
+	GLuint m_textures[G_BUFFER_NUM_TEXTURES]{ 0 };
+	GLuint m_depth_texture		{ 0 };
+	GLenum m_last_depth_n_text  { 0 };
 };
 

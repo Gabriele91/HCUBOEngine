@@ -16,10 +16,10 @@ uniform mat4 model;
 
 void main()
 {
-    //vertex
-    vec4 world_vertex = model * vec4(vertex, 1.0);
-	frag_vertex = world_vertex.xyz;
-    gl_Position = projection * view * world_vertex;
+	//vertex
+	vec4 view_vertex = view * model * vec4(vertex, 1.0);
+	frag_vertex = view_vertex.xyz;
+	gl_Position = projection * view_vertex;
     //normal
     mat3 normal_mat = transpose(inverse(mat3(model)));
     //pass T/B/N
@@ -41,7 +41,7 @@ in vec2 frag_uvcoord;
 in mat3 tbn;
 
 //out
-layout(location = 0) out vec3 g_vertex;
+layout(location = 0) out vec4 g_vertex;
 layout(location = 1) out vec3 g_normal;
 layout(location = 2) out vec4 g_albedo_spec;
 //uniform
@@ -68,7 +68,7 @@ void main()
 	vec4 texture_color = texture(diffuse_map, frag_uvcoord);
 	if (texture_color.a <= mask) discard;
 	//outputs
-	g_vertex      = frag_vertex;
+	g_vertex      = vec4(frag_vertex, gl_FragCoord.z);
     g_normal      = compute_normal() * 0.5 + 0.5;
 	g_albedo_spec = vec4((texture_color*color).rgb, 1.0);
 }

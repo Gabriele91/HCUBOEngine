@@ -65,7 +65,7 @@ bool g_buffer::init(unsigned int width, unsigned int height)
     texture_type types[G_BUFFER_NUM_TEXTURES];
     
     //specify type
-    types[G_BUFFER_TEXTURE_TYPE_POSITION] = texture_type( GL_RGB16F, GL_RGB,  GL_FLOAT );
+    types[G_BUFFER_TEXTURE_TYPE_POSITION] = texture_type( GL_RGBA32F, GL_RGBA,  GL_FLOAT );
     types[G_BUFFER_TEXTURE_TYPE_NORMAL]   = texture_type( GL_RGB16F, GL_RGB,  GL_FLOAT );
     types[G_BUFFER_TEXTURE_TYPE_ALBEDO]   = texture_type( GL_RGBA,   GL_RGBA, GL_UNSIGNED_BYTE );
     
@@ -84,6 +84,8 @@ bool g_buffer::init(unsigned int width, unsigned int height)
                      NULL);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, m_textures[i], 0);
         draw_buffers[i] = GL_COLOR_ATTACHMENT0 + i;
     }
@@ -118,6 +120,24 @@ bool g_buffer::init(unsigned int width, unsigned int height)
     
     //success?
     return status == GL_FRAMEBUFFER_COMPLETE;
+}
+
+void g_buffer::destoy()
+{
+	if (m_fbo) glDeleteFramebuffers(1, &m_fbo);
+	for (unsigned int i = 0; i != G_BUFFER_NUM_TEXTURES; i++)
+	{
+		if(m_textures[i]) glDeleteTextures(1, &m_textures[i]);
+		m_textures[i] = 0;
+	}
+	if (m_depth_texture) glDeleteTextures(1, &m_depth_texture);
+
+	m_fbo = 0;
+	m_depth_texture = 0;
+	m_last_depth_n_text = 0;
+	m_width  = 0 ;
+	m_height = 0 ;
+
 }
 
 void g_buffer::bind_for_writing()
@@ -173,16 +193,52 @@ void g_buffer::set_texture_buffer(G_BUFFER_TEXTURE_TYPE texture_type)
 
 }
 
+void g_buffer::disable_texture(G_BUFFER_TEXTURE_TYPE texture_type)
+{
+	switch (texture_type)
+	{
+	case G_BUFFER_TEXTURE_TYPE_POSITION:
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, 0);
+	break;
+
+	case G_BUFFER_TEXTURE_TYPE_NORMAL:
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, 0);
+	break;
+
+	case G_BUFFER_TEXTURE_TYPE_ALBEDO:
+		glActiveTexture(GL_TEXTURE2);
+		glBindTexture(GL_TEXTURE_2D, 0);
+	break;
+
+	case g_buffer::G_BUFFER_NUM_TEXTURES:
+	default:
+		assert(0);
+	break;
+	}
+
+}
+
 void g_buffer::set_read_buffer_depth()
 {
     glReadBuffer(GL_DEPTH_ATTACHMENT);
 }
 
-void g_buffer::set_texture_buffer_depth(unsigned int n_texture)
+void g_buffer::set_texture_buffer_depth(GLenum n_texture)
 {
-    glActiveTexture(GL_TEXTURE0+(GLenum)n_texture);
+	m_last_depth_n_text = n_texture;
+    glActiveTexture(GL_TEXTURE0+n_texture);
     glBindTexture(GL_TEXTURE_2D, m_depth_texture);
+}	
+
+void g_buffer::disable_depth_texture()
+{
+	glActiveTexture(GL_TEXTURE0 + m_last_depth_n_text);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	m_last_depth_n_text = 0;
 }
+
 
 unsigned int g_buffer::get_width() const
 {

@@ -24,8 +24,13 @@
 	#define _OPENGL_PRINT_DEBUG_ \
 	{\
 		GLenum gl_err = GL_NO_ERROR;\
+		bool print_file = false;\
 		while ((gl_err = glGetError()) != GL_NO_ERROR)\
-			std::cout << "OpenGL error: " << __LINE__<< " : " << gl_err << " : " << gluErrorString(gl_err) << std::endl;\
+		{\
+			if(!print_file) { std::cout << "At file: " << __FILE__ << " :" << std::endl; }\
+			const char* gl_err_str = (const char*)gluErrorString(gl_err);\
+			std::cout << "OpenGL error: " << __LINE__<< " : " << gl_err << " : " << (gl_err_str ? gl_err_str : "unknow") << std::endl;\
+		}\
 	}
 #else
 	#define _OPENGL_PRINT_DEBUG_
