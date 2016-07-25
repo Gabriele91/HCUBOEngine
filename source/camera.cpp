@@ -20,6 +20,17 @@ void camera::set_perspective(float fov,float aspect,float near,float far)
     m_projection_inv = glm::inverse(m_projection);
 }
 
+glm::vec2 camera::get_near_and_far() const
+{
+    float m22 = -m_projection[2][2];
+    float m32 = -m_projection[3][2];
+    
+    float far  = (2.0f*m32)/(2.0f*m22-2.0f);
+    float near = ((m22-1.0f)*far)/(m22+1.0);
+    
+    return glm::vec2(near,far);
+}
+
 const glm::ivec2  camera::get_viewport_size() const
 {
     return glm::ivec2{ m_viewport.z - m_viewport.x, m_viewport.w - m_viewport.y };

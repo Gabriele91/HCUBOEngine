@@ -21,6 +21,7 @@ public:
     
     void set_viewport(const glm::ivec4& viewport);
     void set_perspective(float fov,float aspect,float near,float far);
+    glm::vec2 get_near_and_far() const;
     
     const glm::ivec2  get_viewport_size() const;
     const glm::ivec4& get_viewport() const;
