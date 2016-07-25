@@ -19,7 +19,9 @@ void material::save(const std::string& path)
 	std::string name_shader;
 
 	//select shader
-	if (!m_specular.size() && !m_normal.size()) 
+	if (!m_diffuse.size())
+		name_shader = "base";
+	else if (!m_specular.size() && !m_normal.size())
 		name_shader = "base_texture";
 	else if (!m_specular.size()) 
 		name_shader = "base_texture_normal";
@@ -211,14 +213,17 @@ void process_node(aiNode* node, const aiScene* scene, model& out_model)
 	}
 }   
 
+extern bool compute_tangent_space(model& m);
+
 void process_model(const std::string& path, model& out_model)
 {
 	// Read file via ASSIMP
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(path, 
-		aiProcess_Triangulate | 
-	  //aiProcess_FlipUVs | 
-		aiProcess_CalcTangentSpace);
+		  aiProcess_Triangulate 
+	  //| aiProcess_FlipUVs
+	  //| aiProcess_CalcTangentSpace
+	);
 	// Check for errors
 	if (!scene || scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) // if is Not Zero
 	{
@@ -227,12 +232,17 @@ void process_model(const std::string& path, model& out_model)
 	}
 	// Process ASSIMP's root node recursively
 	process_node(scene->mRootNode, scene, out_model);
+	// Compute tangent space
+	if (!compute_tangent_space(out_model))
+	{
+		std::cout << "ERROR::COMPUTE::TANGENT::SPACE " << "texture coordinates include NAN" << std::endl;
+	}
 	//save obj
 	#if 0
-	Assimp::Exporter exporter;
-	const aiExportFormatDesc* format = exporter.GetExportFormatDescription(0);
-	exporter.Export(scene, "obj", "test.obj");
-	std::cout << exporter.GetErrorString() << std::endl;
+		Assimp::Exporter exporter;
+		const aiExportFormatDesc* format = exporter.GetExportFormatDescription(0);
+		exporter.Export(scene, "obj", "test.obj");
+		std::cout << exporter.GetErrorString() << std::endl;
 	#endif
 }
 
