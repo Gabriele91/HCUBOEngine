@@ -68,27 +68,179 @@ inline bool compare_and_jmp_keyword(const char*& str,const char* keyword)
     return false;
 }
 
-bool shader::load(const std::string& effect_file,  const std::vector<std::string>& defines)
+inline bool parse_cstring(const char* in_out,std::string& out,size_t& line)
 {
-    //read file
-    std::istringstream effect(filesystem::text_file_read_all(effect_file));
-    //parsing
-    std::string vertex;
-    std::string fragment;
-    std::string geometry;
-    //state
-    enum parsing_state
+    const char *tmp=in_out;
+    out="";
+    //start parse
+    if((*tmp)=='\"')  //["...."]
     {
-        P_NONE,
-        P_VERTEX,
-        P_FRAGMENT,
-        P_GEOMETRY
-    };
-    parsing_state state = P_NONE;
+        ++tmp;  //[...."]
+        while((*tmp)!='\"'&&(*tmp)!='\n')
+        {
+            if((*tmp)=='\\') //[\.]
+            {
+                ++tmp;  //[.]
+                switch(*tmp)
+                {
+                    case 'n':
+                        out+='\n';
+                        break;
+                    case 't':
+                        out+='\t';
+                        break;
+                    case 'b':
+                        out+='\b';
+                        break;
+                    case 'r':
+                        out+='\r';
+                        break;
+                    case 'f':
+                        out+='\f';
+                        break;
+                    case 'a':
+                        out+='\a';
+                        break;
+                    case '\\':
+                        out+='\\';
+                        break;
+                    case '?':
+                        out+='\?';
+                        break;
+                    case '\'':
+                        out+='\'';
+                        break;
+                    case '\"':
+                        out+='\"';
+                        break;
+                    case '\n': /* jump unix */
+                        ++line;
+                        break;
+                    case '\r': /* jump mac */
+                        ++line;
+                        if((*(tmp+1))=='\n') ++tmp; /* jump window (\r\n)*/
+                        break;
+                    default:
+                        return true;
+                        break;
+                }
+            }
+            else
+            {
+                if((*tmp)!='\0') out+=(*tmp);
+                else return false;
+            }
+            ++tmp;//next char
+        }
+        if((*tmp)=='\n') return false;
+        in_out=tmp+1;
+        return true;
+    }
+    return false;
+}
+
+inline bool process_include(std::string& output,
+                            const std::string& path_file,
+                            size_t& n_files,
+                            size_t level = 1)
+{
+    //cicle test
+    if(level > 16)
+    {
+        std::cout << "effect shader, header inclusion depth limit reached:" << std::endl
+                  << "might be caused by cyclic header inclusion"          << std::endl;
+        return false;
+    }
+    //get base dir
+    std::string filedir = filesystem::get_directory(path_file);
+    //read file
+    std::string text_of_file = filesystem::text_file_read_all(path_file);
+    text_of_file+="\n";
+    //stream
+    std::istringstream effect(text_of_file);
     //line buffer
     std::string effect_line;
     //count line
-    size_t      line = 0;
+    size_t   line = 0;
+    //inc n file
+    size_t this_file = ++n_files;
+    //start line
+    output += "#line 1 "+std::to_string(n_files)+"\n";
+    //start to parse
+    while (std::getline(effect, effect_line))
+    {
+        //line count
+        ++line;
+        //ptr to line
+        const char* c_effect_line = effect_line.c_str();
+        //pragma
+        if(compare_and_jmp_keyword(c_effect_line,"#pragma"))
+        {
+            //jmp space
+            jmp_spaces(c_effect_line);
+            //include?
+            if(compare_and_jmp_keyword(c_effect_line,"include"))
+            {
+                //jmp space
+                jmp_spaces(c_effect_line);
+                //path
+                std::string path_include;
+                //path
+                std::string output_include;
+                //get path
+                if(!parse_cstring(c_effect_line, path_include,line))
+                {
+                    return false;
+                }
+                //add include
+                if(!process_include(output_include,filedir+"/"+path_include,n_files,level+1))
+                {
+                    return false;
+                }
+                output+= output_include;
+                output+= "#line "+std::to_string(line+1)+" "+std::to_string(this_file)+"\n";
+                continue;
+            }
+        }
+        //lines
+        output += effect_line; output+="\n";
+    }
+    return true;
+}
+
+
+bool shader::load(const std::string& effect_file,
+                  const std::vector<std::string>& defines)
+{
+    //state
+    enum parsing_state
+    {
+        P_ALL,
+        P_VERTEX,
+        P_FRAGMENT,
+        P_GEOMETRY,
+        P_SIZE
+    };
+    //strings
+    std::string buffers[P_SIZE];
+    //get base dir
+    std::string filedir = filesystem::get_directory(effect_file);
+    //read file
+    std::istringstream effect(filesystem::text_file_read_all(effect_file));
+    //parsing
+    std::string& all      = buffers[P_ALL];
+    std::string& vertex   = buffers[P_VERTEX];
+    std::string& fragment = buffers[P_FRAGMENT];
+    std::string& geometry = buffers[P_GEOMETRY];
+    //start state
+    parsing_state state = P_ALL;
+    //line buffer
+    std::string effect_line;
+    //count line
+    size_t  line = 0;
+    //count files
+    size_t  this_file = 0;
+    size_t  n_files   = this_file;
     //start to parse
     while (std::getline(effect, effect_line))
     {
@@ -107,33 +259,53 @@ bool shader::load(const std::string& effect_file,  const std::vector<std::string
             if(compare_and_jmp_keyword(c_effect_line,"vertex"))
             {
                 state = P_VERTEX;
-                vertex+="#line "+std::to_string(line+1)+"\n";
+                vertex+="#line "+std::to_string(line+1)+" "+std::to_string(this_file)+"\n";
                 continue;
             }
             else if(compare_and_jmp_keyword(c_effect_line,"fragment"))
             {
                 state = P_FRAGMENT;
-                fragment+="#line "+std::to_string(line+1)+"\n";
+                fragment+="#line "+std::to_string(line+1)+" "+std::to_string(this_file)+"\n";
                 continue;
             }
             else if(compare_and_jmp_keyword(c_effect_line,"geometry"))
             {
                 state = P_GEOMETRY;
-                geometry+="#line "+std::to_string(line+1)+"\n";
+                geometry+="#line "+std::to_string(line+1)+" "+std::to_string(this_file)+"\n";
+                continue;
+            }
+            else if(compare_and_jmp_keyword(c_effect_line,"include"))
+            {
+                //jmp space
+                jmp_spaces(c_effect_line);
+                //path
+                std::string path_include;
+                //path
+                std::string output_include;
+                //get path
+                if(!parse_cstring(c_effect_line, path_include,line))
+                {
+                    return false;
+                }
+                //add include
+                if(!process_include(output_include,filedir+"/"+path_include,n_files))
+                {
+                    return false;
+                }
+                //levels
+                buffers[state]+= output_include;
+                buffers[state]+="#line "+std::to_string(line+1)+" "+std::to_string(this_file)+"\n";
                 continue;
             }
         }
-        
-        switch (state)
-        {
-            case P_VERTEX:    vertex   += effect_line; vertex+="\n";   break;
-            case P_FRAGMENT:  fragment += effect_line; fragment+="\n"; break;
-            case P_GEOMETRY:  geometry += effect_line; geometry+="\n"; break;
-            default:   break;
-        }
+        //append to a buffer
+        buffers[state] += effect_line; buffers[state]+="\n";
     }
     //load shader
-    return load_shader  ( vertex, 0,  fragment, 0, geometry, 0, defines  );
+    return load_shader  ( all+vertex, 0,
+                          all+fragment, 0,
+                          all+geometry, 0,
+                          defines  );
 }
 
 

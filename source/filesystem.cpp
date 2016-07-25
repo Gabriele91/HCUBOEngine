@@ -137,7 +137,7 @@ namespace filesystem
         size_t size = std::ftell(file);
         std::fseek(file, 0, SEEK_SET);
         /////////////////////////////////////////////////////////////////////
-        out.resize(size+1,'\0');
+        out.resize(size);
         std::fread(&out[0], size, 1, file);
         /////////////////////////////////////////////////////////////////////
         std::fclose(file);
