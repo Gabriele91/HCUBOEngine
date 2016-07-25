@@ -38,8 +38,12 @@ public:
     void bind_for_reading();
     
     void set_read_buffer(G_BUFFER_TEXTURE_TYPE texture_type);
-	
-	void set_texture_buffer(G_BUFFER_TEXTURE_TYPE texture_type);
+    
+    void set_texture_buffer(G_BUFFER_TEXTURE_TYPE texture_type);
+    
+    void set_read_buffer_depth();
+    
+    void set_texture_buffer_depth(unsigned int n_texture=0);
 
     unsigned int get_width() const;
     

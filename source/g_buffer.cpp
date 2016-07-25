@@ -173,6 +173,17 @@ void g_buffer::set_texture_buffer(G_BUFFER_TEXTURE_TYPE texture_type)
 
 }
 
+void g_buffer::set_read_buffer_depth()
+{
+    glReadBuffer(GL_DEPTH_ATTACHMENT);
+}
+
+void g_buffer::set_texture_buffer_depth(unsigned int n_texture)
+{
+    glActiveTexture(GL_TEXTURE0+(GLenum)n_texture);
+    glBindTexture(GL_TEXTURE_2D, m_depth_texture);
+}
+
 unsigned int g_buffer::get_width() const
 {
     return m_width;
