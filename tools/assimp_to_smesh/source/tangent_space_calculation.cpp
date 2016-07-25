@@ -1,5 +1,7 @@
 #include <smesh.h>
 #include <TangentSpaceCalculation.h>
+#define BY_TRIS 
+/* #define REPLACE_NORMAL */
 
 struct smesh_triangle_proxy : public ITriangleInputProxy
 {
@@ -66,6 +68,37 @@ bool compute_tangent_space(model& ml)
 		CTangentSpaceCalculation<smesh_triangle_proxy> c_tan_space;
 		success &= c_tan_space.CalculateTangentSpace(proxy) == 0;
 		//get...
+#ifdef BY_TRIS
+		for (unsigned int t = 0; t != proxy.GetTriangleCount(); ++t)
+		{
+			unsigned int baseIndices[3];
+			c_tan_space.GetTriangleBaseIndices(t, baseIndices);
+
+			for (unsigned int i = 0; i != 3; ++i)
+			{
+				//get
+				float tangent[3];
+				float bitangent[3];
+				float normal[3];
+				c_tan_space.GetBase(baseIndices[i], tangent, bitangent, normal);
+
+				//put values into model vertex
+				vertex& vx = nd.m_vertex[ nd.m_index[t*3+i] ];
+#ifdef REPLACE_NORMAL
+				vx.m_normal.x = normal[0];
+				vx.m_normal.y = normal[1];
+				vx.m_normal.z = normal[2];
+#endif
+				vx.m_tangent.x = tangent[0];
+				vx.m_tangent.y = tangent[1];
+				vx.m_tangent.z = tangent[2];
+
+				vx.m_bitangent.x = bitangent[0];
+				vx.m_bitangent.y = bitangent[1];
+				vx.m_bitangent.z = bitangent[2];
+			}
+		}
+#else
 		for (unsigned int i = 0; i != c_tan_space.GetBaseCount(); ++i)
 		{
 			//get
@@ -73,20 +106,24 @@ bool compute_tangent_space(model& ml)
 			float bitangent[3];
 			float normal[3];
 			c_tan_space.GetBase(i, tangent, bitangent, normal);
-#if 0
-			//put
-			nd.m_vertex[i].m_normal.x = n[0];
-			nd.m_vertex[i].m_normal.y = n[1];
-			nd.m_vertex[i].m_normal.z = n[2];
-#endif
-			nd.m_vertex[i].m_tangent.x = tangent[0];
-			nd.m_vertex[i].m_tangent.y = tangent[1];
-			nd.m_vertex[i].m_tangent.z = tangent[2];
 
-			nd.m_vertex[i].m_bitangent.x = bitangent[0];
-			nd.m_vertex[i].m_bitangent.y = bitangent[1];
-			nd.m_vertex[i].m_bitangent.z = bitangent[2];
+			//put values into model vertex
+			vertex& vx = nd.m_vertex[i];
+	#ifdef REPLACE_NORMAL
+			vx.m_normal.x = normal[0];
+			vx.m_normal.y = normal[1];
+			vx.m_normal.z = normal[2];
+	#endif
+			vx.m_tangent.x = tangent[0];
+			vx.m_tangent.y = tangent[1];
+			vx.m_tangent.z = tangent[2];
+
+			vx.m_bitangent.x = bitangent[0];
+			vx.m_bitangent.y = bitangent[1];
+			vx.m_bitangent.z = bitangent[2];
 		}
+#endif	
+
 	}
 	return success;
 }
