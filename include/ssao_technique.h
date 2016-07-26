@@ -24,7 +24,9 @@ public:
 
 	void disable_texture();
 
-	void set_kernel_size(unsigned int kernel_size=64);
+	void set_kernel_size(unsigned int kernel_size = 64);
+
+	void set_radius(float radius = 1.0);
 
 private:
 
@@ -34,7 +36,7 @@ private:
 	GLuint      m_ssao_texture { 0 };
 	GLuint      m_noise_texture{ 0 };
 	GLuint		m_kernel_size  { 0 };
-
+	GLfloat     m_radius       { 1.0f };
 
 	std::vector< glm::vec3 > m_kernel;
 
@@ -45,6 +47,7 @@ private:
 	uniform_vec2::ptr       m_uniform_near_far;
 	uniform_mat4::ptr       m_uniform_projection;
 	uniform_int::ptr        m_uniform_kernel_size;
+	uniform_float::ptr      m_uniform_radius;
 
 	uniform_int::ptr  m_position;
 	uniform_int::ptr  m_normal;

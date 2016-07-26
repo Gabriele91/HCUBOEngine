@@ -27,6 +27,8 @@ rendering_pass_deferred::rendering_pass_deferred(entity::ptr e_camera, resources
 {
 	m_g_buffer.init(e_camera->get_component<camera>()->get_viewport_size());
 	m_ssao.init(e_camera, resources);
+	m_ssao.set_kernel_size(16);
+	m_ssao.set_radius(2.5);
 
 	m_square    = basic_meshs::square3D({ 2.0,2.0 }, true);
 	m_shader    = resources.get_shader("deferred_light");

@@ -12,6 +12,7 @@ void ssao_technique::init(entity::ptr e_camera, resources_manager& resources)
 	m_uniform_near_far = m_shader->get_shader_uniform_vec2("near_far");
 	m_uniform_projection = m_shader->get_shader_uniform_mat4("projection");
 	m_uniform_kernel_size = m_shader->get_shader_uniform_int("kernel_size");
+	m_uniform_radius = m_shader->get_shader_uniform_float("radius");
 	m_position = m_shader->get_shader_uniform_int("g_position");
 	m_normal = m_shader->get_shader_uniform_int("g_normal");
 	m_noise = m_shader->get_shader_uniform_int("t_noise");
@@ -111,6 +112,7 @@ void ssao_technique::applay(entity::ptr e_camera, g_buffer& buffer, mesh::ptr sq
 	m_uniform_near_far->set_value(c_camera->get_near_and_far());
 	m_uniform_noise_scale->set_value((glm::vec2)c_camera->get_viewport_size() / glm::vec2(4, 4));
 	m_uniform_kernel_size->set_value(m_kernel_size);
+	m_uniform_radius->set_value(m_radius);
 	//set g_buffer 
 	buffer.set_texture_buffer(g_buffer::G_BUFFER_TEXTURE_TYPE_POSITION);//0
 	buffer.set_texture_buffer(g_buffer::G_BUFFER_TEXTURE_TYPE_NORMAL);  //1
@@ -235,4 +237,9 @@ void ssao_technique::set_kernel_size(unsigned int kernel_size)
 		sample *= scale;
 		m_kernel.push_back(sample);
 	}
+}
+
+void ssao_technique::set_radius(float radius)
+{
+	m_radius = radius;
 }

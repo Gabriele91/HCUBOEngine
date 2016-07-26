@@ -15,7 +15,6 @@ void main()
 #pragma fragment
 //consts
 const int max_kernel_size = 64;
-float radius = 1.0;
 //in
 in vec2 frag_uvcoord;
 //out
@@ -30,6 +29,7 @@ uniform vec3 samples[max_kernel_size];
 uniform vec2 noise_scale;
 uniform vec2 near_far;
 uniform int kernel_size = 64;
+uniform float radius = 2.0;
 
 
 float linear_z(float depth)
