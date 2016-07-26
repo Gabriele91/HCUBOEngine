@@ -19,7 +19,7 @@ void main()
 	frag_vertex = view_vertex.xyz;
 	gl_Position = projection * view_vertex;
 	//normal
-	mat3 normal_matrix = transpose(inverse(mat3(model)));
+	mat3 normal_matrix = transpose(inverse(mat3(view * model)));
 	frag_normal = normal_matrix * normal;
 	//uvmap
 	frag_uvcoord = uvcoord;

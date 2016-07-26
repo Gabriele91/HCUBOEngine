@@ -109,7 +109,8 @@ void app_basic::start(application& app)
     m_resources.add_directory("assets/textures");
 	m_resources.add_directory("assets/materials");
 	m_resources.add_directory("assets/ship");
-	m_resources.add_directory("assets/asteroid"); 
+	m_resources.add_directory("assets/asteroid");
+	m_resources.add_directory("assets/sponza");
     /////// /////// /////// /////// /////// /////// /////// /////// ///////
     // build scene
     {
@@ -123,7 +124,7 @@ void app_basic::start(application& app)
         auto e_model_light = gameobject::light_new();
         auto l_model_light = e_model_light->get_component<light>();
         auto t_model_light = e_model_light->get_component<transform>();
-        t_model_light->position(glm::vec3{0,10,-80});
+        t_model_light->position(glm::vec3{0,5,-80});
         l_model_light->m_diffuse   = { 1.0f, 0.8f, 0.1f, 1.0f };
         l_model_light->m_linear    = 0.001;
         l_model_light->m_const     = 0.5;
@@ -134,14 +135,25 @@ void app_basic::start(application& app)
         //add to render
         m_systems.add_entity(m_model);
         //cube
+#if 0
         auto e_cube = gameobject::cube_new({1,1,1});
              e_cube->add_component(m_resources.get_material("w_box_mat"));
-        auto t_cube = e_cube->get_component<transform>();
-        t_cube->position({0.,-10.0,0.});
-        t_cube->scale({70.,1.0,70.});
-        t_cube->get_matrix();
-        //add to render
-        m_systems.add_entity(e_cube);
+		auto t_cube = e_cube->get_component<transform>();
+		t_cube->position({ 0.,-10.0,0. });
+		t_cube->scale({ 70.,1.0,70. });
+		t_cube->get_matrix();
+		//add to render
+		m_systems.add_entity(e_cube);
+#else
+		auto e_sponza = gameobject::node_new(m_resources.get_static_model("sponza"));
+		auto t_sponza = e_sponza->get_component<transform>();
+		t_sponza->position({ 5.,-10.0, -99. });
+		t_sponza->scale({ 0.12,0.12,0.12 });
+		t_sponza->rotation(glm::quat({ 0, glm::radians(90.0), 0.0 }));
+		t_sponza->get_matrix();
+		//add to render
+		m_systems.add_entity(e_sponza);
+#endif
         //lights
         entity::ptr e_lights[3] =
         {

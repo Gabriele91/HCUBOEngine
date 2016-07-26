@@ -21,7 +21,7 @@ void main()
 	frag_vertex = view_vertex.xyz;
 	gl_Position = projection * view_vertex;
     //normal
-    mat3 normal_mat = transpose(inverse(mat3(model)));
+    mat3 normal_mat = transpose(inverse(mat3(view * model)));
     //pass T/B/N
     vec3 t_pixel = normalize(normal_mat * tangent);
     vec3 n_pixel = normalize(normal_mat * normal);

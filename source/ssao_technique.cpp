@@ -65,8 +65,8 @@ void ssao_technique::init(entity::ptr e_camera, resources_manager& resources)
 	{
 		noise_buffer.push_back(glm::vec3
 		{
-			(float)std::rand() / RAND_MAX * 2.0 - 1.0,
-			(float)std::rand() / RAND_MAX * 2.0 - 1.0,
+			((float)std::rand() / RAND_MAX) * 2.0 - 1.0,
+			((float)std::rand() / RAND_MAX) * 2.0 - 1.0,
 			0.0f
 		});
 	}
@@ -225,11 +225,12 @@ void ssao_technique::set_kernel_size(unsigned int kernel_size)
 	//build kernel
 	for (unsigned int i = 0; i != m_kernel_size; ++i)
 	{
-		glm::vec3 sample((float)std::rand() / RAND_MAX * 2.0 - 1.0,
-						 (float)std::rand() / RAND_MAX * 2.0 - 1.0,
-						 (float)std::rand() / RAND_MAX);
+		glm::vec3 sample(((float)std::rand() / RAND_MAX) * 2.0 - 1.0,
+						 ((float)std::rand() / RAND_MAX) * 2.0 - 1.0,
+						 ((float)std::rand() / RAND_MAX) 
+		);
 		sample = glm::normalize(sample);
-		sample *= (float)std::rand() / RAND_MAX;
+		sample *= ((float)std::rand() / RAND_MAX);
 		GLfloat scale = GLfloat(i) / m_kernel_size;
 
 		// Scale samples s.t. they're more aligned to center of kernel
