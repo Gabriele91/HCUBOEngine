@@ -229,6 +229,7 @@
     <None Include="..\assets\shaders\deferred\base_texture_normal_specular.glsl" />
     <None Include="..\assets\shaders\deferred\base_texture_specular.glsl" />
     <None Include="..\assets\shaders\deferred\deferred_light.glsl" />
+    <None Include="..\assets\shaders\deferred\ssao_blur.glsl" />
     <None Include="..\assets\shaders\deferred\ssao_pass.glsl" />
     <None Include="..\assets\shaders\deferred\text.glsl" />
     <None Include="..\assets\shaders\deferred\triangle_lines.glsl" />

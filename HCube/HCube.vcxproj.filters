@@ -292,6 +292,9 @@
     <None Include="..\assets\shaders\deferred\ssao_pass.glsl">
       <Filter>File di risorse\assets\shaders\deferred</Filter>
     </None>
+    <None Include="..\assets\shaders\deferred\ssao_blur.glsl">
+      <Filter>File di risorse\assets\shaders\deferred</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\assets\textures\box.png">

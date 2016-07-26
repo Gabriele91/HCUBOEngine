@@ -28,8 +28,8 @@ rendering_pass_deferred::rendering_pass_deferred(entity::ptr e_camera, resources
 	m_g_buffer.init(e_camera->get_component<camera>()->get_viewport_size());
 	m_ssao.init(e_camera, resources);
 
-	m_square = basic_meshs::square3D({ 2.0,2.0 }, true);
-	m_shader = resources.get_shader("deferred_light");
+	m_square    = basic_meshs::square3D({ 2.0,2.0 }, true);
+	m_shader    = resources.get_shader("deferred_light");
 	m_position  = m_shader->get_shader_uniform_int("g_vertex");
 	m_normal    = m_shader->get_shader_uniform_int("g_normal");
 	m_albedo    = m_shader->get_shader_uniform_int("g_albedo_spec");
@@ -95,9 +95,7 @@ void rendering_pass_deferred::draw_pass(glm::vec4&  clear_color,
 	//ssao pass
 	if(m_enable_ambient_occlusion)
 	{
-		m_ssao.bind(e_camera, m_g_buffer);
-		m_square->draw();
-		m_ssao.unbind(e_camera, m_g_buffer);
+		m_ssao.applay(e_camera, m_g_buffer, m_square);
 	}
 	////////////////////////////////////////////////////////////////////////////////
 	m_shader->bind();

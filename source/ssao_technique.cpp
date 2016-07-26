@@ -1,19 +1,24 @@
 #include <OpenGL4.h>
 #include <ssao_technique.h>
+#include <cmath>
 
 void ssao_technique::init(entity::ptr e_camera, resources_manager& resources)
 {
 	glm::ivec2 w_size = e_camera->get_component<camera>()->get_viewport_size();
-	//load shader
+	//load shader ssao
 	m_shader = resources.get_shader("ssao_pass");
 	m_uniform_kernel = m_shader->get_shader_uniform_array_vec3("samples[0]");
 	m_uniform_noise_scale = m_shader->get_shader_uniform_vec2("noise_scale");
 	m_uniform_near_far = m_shader->get_shader_uniform_vec2("near_far");
 	m_uniform_projection = m_shader->get_shader_uniform_mat4("projection");
+	m_uniform_kernel_size = m_shader->get_shader_uniform_int("kernel_size");
 	m_position = m_shader->get_shader_uniform_int("g_position");
 	m_normal = m_shader->get_shader_uniform_int("g_normal");
 	m_noise = m_shader->get_shader_uniform_int("t_noise");
-	
+	//load shader blur ssao
+	m_shader_blur = resources.get_shader("ssao_blur");
+	m_uniform_ssoa_input = m_shader->get_shader_uniform_int("g_ssao_input");
+	////////////////////////////////////////////////////////////////////////////////////////////////////
 	//fbo
 	glGenFramebuffers(1, &m_fbo);
 	glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
@@ -30,23 +35,29 @@ void ssao_technique::init(entity::ptr e_camera, resources_manager& resources)
 	glClear(GL_COLOR_BUFFER_BIT);
 	//unbind
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	
+	////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////
+	//fbo_blur
+	glGenFramebuffers(1, &m_fbo_blur);
+	glBindFramebuffer(GL_FRAMEBUFFER, m_fbo_blur);
+	//gen texture
+	glGenTextures(1, &m_ssao_blur_texture);
+	glBindTexture(GL_TEXTURE_2D, m_ssao_blur_texture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, w_size.x, w_size.y, 0, GL_RGB, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	//create frame buffer texture
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_ssao_blur_texture, 0);
+	//clear
+	glClearColor(1.0, 1.0, 1.0, 1.0);
+	glClear(GL_COLOR_BUFFER_BIT);
+	//unbind
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	////////////////////////////////////////////////////////////////////////////////////////////////////
 	//build kernel
-	for (unsigned int i = 0; i != 64; ++i)
-	{
-		glm::vec3 sample((float)std::rand() / RAND_MAX * 2.0 - 1.0,
-			(float)std::rand() / RAND_MAX * 2.0 - 1.0,
-			(float)std::rand() / RAND_MAX);
-		sample = glm::normalize(sample);
-		sample *= (float)std::rand() / RAND_MAX;
-		GLfloat scale = GLfloat(i) / 64.0;
-
-		// Scale samples s.t. they're more aligned to center of kernel
-		scale = glm::mix(0.1f, 1.0f, scale * scale);
-		sample *= scale;
-		m_kernel.push_back(sample);
-	}
-
+	set_kernel_size(m_max_kernel_size);
+	////////////////////////////////////////////////////////////////////////////////////////////////////
 	//noise texture
 	std::vector<glm::vec3> noise_buffer;
 	for (GLuint i = 0; i < 16; i++)
@@ -68,6 +79,7 @@ void ssao_technique::init(entity::ptr e_camera, resources_manager& resources)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	//unbind texture
 	glBindTexture(GL_TEXTURE_2D, 0);
+	////////////////////////////////////////////////////////////////////////////////////////////////////
 }
 
 void ssao_technique::clear()
@@ -83,7 +95,7 @@ void ssao_technique::clear()
 	}
 }
 
-void ssao_technique::bind(entity::ptr e_camera, g_buffer& buffer)
+void ssao_technique::applay(entity::ptr e_camera, g_buffer& buffer, mesh::ptr square)
 {
 	camera::ptr   c_camera = e_camera->get_component<camera>();
 	//enable fbo
@@ -94,10 +106,11 @@ void ssao_technique::bind(entity::ptr e_camera, g_buffer& buffer)
 	m_shader->bind();
 	//////////////////////////////////////////////////////////////////////////////////////////////////////
 	//bind kernel/proj/scale noise
-	m_uniform_kernel->set_value(&m_kernel[0], m_kernel.size());
+	m_uniform_kernel->set_value(&m_kernel[0], m_kernel_size);
 	m_uniform_projection->set_value(c_camera->get_projection());
 	m_uniform_near_far->set_value(c_camera->get_near_and_far());
 	m_uniform_noise_scale->set_value((glm::vec2)c_camera->get_viewport_size() / glm::vec2(4, 4));
+	m_uniform_kernel_size->set_value(m_kernel_size);
 	//set g_buffer 
 	buffer.set_texture_buffer(g_buffer::G_BUFFER_TEXTURE_TYPE_POSITION);//0
 	buffer.set_texture_buffer(g_buffer::G_BUFFER_TEXTURE_TYPE_NORMAL);  //1
@@ -108,51 +121,90 @@ void ssao_technique::bind(entity::ptr e_camera, g_buffer& buffer)
 	m_position->set_value(0);
 	m_normal->set_value(1);
 	m_noise->set_value(2);
-	//////////////////////////////////////////////////////////////////////////////////////////////////////
-}
-
-void ssao_technique::destoy()
-{
-	if (m_shader) m_shader = nullptr;
-	
-	if (m_ssao_texture) glDeleteTextures(1, &m_ssao_texture);
-	
-	if (m_noise_texture) glDeleteTextures(1, &m_noise_texture);
-	
-	if (m_fbo) glDeleteFramebuffers(1, &m_fbo);
-
-	m_last_n_text = 0;
-	m_ssao_texture = 0;
-	m_noise_texture = 0;
-	m_ssao_texture = 0;
-	m_uniform_kernel = nullptr;
-	m_uniform_near_far = nullptr;
-	m_uniform_noise_scale = nullptr;
-	m_uniform_projection = nullptr;
-	m_position = nullptr;
-	m_normal = nullptr;
-	m_noise = nullptr;
-}
-
-void ssao_technique::unbind(entity::ptr e_camera, g_buffer& buffer)
-{
+	//////////////////////////////////////////////////////////////////////////////////////////////////////	
+	square->draw();
+	//////////////////////////////////////////////////////////////////////////////////////////////////////	
 	//unbind
 	m_shader->unbind();
 	//disable g_buffer 
 	buffer.disable_texture(g_buffer::G_BUFFER_TEXTURE_TYPE_POSITION);//0
 	buffer.disable_texture(g_buffer::G_BUFFER_TEXTURE_TYPE_NORMAL);  //1
-	//disable noise												
+																	 //disable noise												
 	glActiveTexture(GL_TEXTURE0 + 2);//2
 	glBindTexture(GL_TEXTURE_2D, 0);
 	//disable fbo
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	//////////////////////////////////////
+	//   ____   __     _    _   ____    //
+	//  | |\ \ | |    | |  | | | |\ \   //
+	//	| |/ / | |    | |  | | | |/ /   //
+	//  | |\ \ | |__  | |__| | | |\ \   //
+	//  |_|/_/ |____| |______| |_| \_\  //
+	//                                  //
+	//////////////////////////////////////	
+	//enable fbo
+	glBindFramebuffer(GL_FRAMEBUFFER, m_fbo_blur);
+	glClearColor(1.0, 1.0, 1.0, 1.0);
+	glClear(GL_COLOR_BUFFER_BIT);
+	//bind shader
+	m_shader_blur->bind();	
+	//bind ssao texture
+	glActiveTexture(GL_TEXTURE0);//0
+	glBindTexture(GL_TEXTURE_2D, m_ssao_texture);
+	//uniform id texture
+	m_uniform_ssoa_input->set_value(0);
+	//draw
+	square->draw();
+	//unbind
+	m_shader_blur->unbind();
+	//disable ssao texture
+	glActiveTexture(GL_TEXTURE0);//0
+	glBindTexture(GL_TEXTURE_2D, 0);
+	//disable fbo
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+}
+
+void ssao_technique::destoy()
+{
+	if (m_shader) m_shader = nullptr;
+
+	if (m_shader) m_shader_blur = nullptr;
+
+	if (m_fbo) glDeleteFramebuffers(1, &m_fbo);
+
+	if (m_fbo_blur) glDeleteFramebuffers(1, &m_fbo_blur);
+
+	if (m_ssao_texture) glDeleteTextures(1, &m_ssao_texture);
+
+	if (m_ssao_blur_texture) glDeleteTextures(1, &m_ssao_blur_texture);
+	
+	if (m_noise_texture) glDeleteTextures(1, &m_noise_texture);
+
+	m_fbo = 0;
+	m_fbo_blur = 0;
+	m_last_n_text = 0;
+	m_ssao_texture = 0;
+	m_noise_texture = 0;
+	m_ssao_blur_texture = 0;
+	m_uniform_kernel = nullptr;
+	m_uniform_near_far = nullptr;
+	m_uniform_noise_scale = nullptr;
+	m_uniform_projection = nullptr;
+	m_uniform_kernel_size = nullptr;
+	m_uniform_ssoa_input = nullptr;
+	m_position = nullptr;
+	m_normal = nullptr;
+	m_noise = nullptr;
+
+	m_kernel_size = m_max_kernel_size;
 }
 
 void ssao_technique::set_texture(GLenum n_tex)
 {
 	m_last_n_text = n_tex;
 	glActiveTexture(GL_TEXTURE0 + n_tex);
-	glBindTexture(GL_TEXTURE_2D, m_ssao_texture);
+	glBindTexture(GL_TEXTURE_2D, m_ssao_blur_texture);
 }
 
 void ssao_technique::disable_texture()
@@ -162,3 +214,25 @@ void ssao_technique::disable_texture()
 	m_last_n_text = 0;
 }
 
+void ssao_technique::set_kernel_size(unsigned int kernel_size)
+{
+	m_kernel_size = kernel_size < m_max_kernel_size ? kernel_size : m_max_kernel_size;
+	//clear kernel
+	m_kernel.clear();
+	m_kernel.reserve(m_kernel_size);
+	//build kernel
+	for (unsigned int i = 0; i != m_kernel_size; ++i)
+	{
+		glm::vec3 sample((float)std::rand() / RAND_MAX * 2.0 - 1.0,
+						 (float)std::rand() / RAND_MAX * 2.0 - 1.0,
+						 (float)std::rand() / RAND_MAX);
+		sample = glm::normalize(sample);
+		sample *= (float)std::rand() / RAND_MAX;
+		GLfloat scale = GLfloat(i) / m_kernel_size;
+
+		// Scale samples s.t. they're more aligned to center of kernel
+		scale = glm::mix(0.1f, 1.0f, scale * scale);
+		sample *= scale;
+		m_kernel.push_back(sample);
+	}
+}

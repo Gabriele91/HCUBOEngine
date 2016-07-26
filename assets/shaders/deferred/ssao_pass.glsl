@@ -13,6 +13,9 @@ void main()
 }
 
 #pragma fragment
+//consts
+const int max_kernel_size = 64;
+float radius = 1.0;
 //in
 in vec2 frag_uvcoord;
 //out
@@ -23,13 +26,11 @@ uniform sampler2D g_normal;
 uniform sampler2D t_noise;
 
 uniform mat4 projection;
-uniform vec3 samples[64];
+uniform vec3 samples[max_kernel_size];
 uniform vec2 noise_scale;
 uniform vec2 near_far;
+uniform int kernel_size = 64;
 
-//consts
-int kernel_size = 64;
-float radius    = 1.0;
 
 float linear_z(float depth)
 {
@@ -38,7 +39,6 @@ float linear_z(float depth)
 	float z = depth * 2.0 - 1.0;
     return (2.0 * near * far) / (far + near - z * (far - near));  
 }	
-
 
 void main()
 {

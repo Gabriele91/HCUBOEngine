@@ -103,7 +103,7 @@ void app_basic::start(application& app)
     //deferred alloc
     m_resources.add_directory("assets/shaders/deferred");
     auto rendering_pass = rendering_pass_deferred::snew(m_camera, m_resources);
-	rendering_pass->set_ambient_occlusion(false);
+	rendering_pass->set_ambient_occlusion(true);
     m_rendering->add_rendering_pass(rendering_pass);
     //load assets
     m_resources.add_directory("assets/textures");
@@ -123,7 +123,7 @@ void app_basic::start(application& app)
         auto e_model_light = gameobject::light_new();
         auto l_model_light = e_model_light->get_component<light>();
         auto t_model_light = e_model_light->get_component<transform>();
-        t_model_light->position(glm::vec3{0,-1,-75});
+        t_model_light->position(glm::vec3{0,10,-80});
         l_model_light->m_diffuse   = { 1.0f, 0.8f, 0.1f, 1.0f };
         l_model_light->m_linear    = 0.001;
         l_model_light->m_const     = 0.5;
