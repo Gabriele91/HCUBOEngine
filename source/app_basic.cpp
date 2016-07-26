@@ -135,7 +135,7 @@ void app_basic::start(application& app)
         //add to render
         m_systems.add_entity(m_model);
         //cube
-#if 0
+#if 1
         auto e_cube = gameobject::cube_new({1,1,1});
              e_cube->add_component(m_resources.get_material("w_box_mat"));
 		auto t_cube = e_cube->get_component<transform>();

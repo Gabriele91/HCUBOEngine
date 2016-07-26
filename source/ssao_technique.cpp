@@ -7,9 +7,7 @@ void ssao_technique::init(entity::ptr e_camera, resources_manager& resources)
 	glm::ivec2 w_size = e_camera->get_component<camera>()->get_viewport_size();
 	//load shader ssao
 	m_shader = resources.get_shader("ssao_pass");
-	m_uniform_kernel = m_shader->get_shader_uniform_array_vec3("samples[0]");
 	m_uniform_noise_scale = m_shader->get_shader_uniform_vec2("noise_scale");
-	m_uniform_near_far = m_shader->get_shader_uniform_vec2("near_far");
 	m_uniform_projection = m_shader->get_shader_uniform_mat4("projection");
 	m_uniform_kernel_size = m_shader->get_shader_uniform_int("kernel_size");
 	m_uniform_radius = m_shader->get_shader_uniform_float("radius");
@@ -107,9 +105,7 @@ void ssao_technique::applay(entity::ptr e_camera, g_buffer& buffer, mesh::ptr sq
 	m_shader->bind();
 	//////////////////////////////////////////////////////////////////////////////////////////////////////
 	//bind kernel/proj/scale noise
-	m_uniform_kernel->set_value(&m_kernel[0], m_kernel_size);
 	m_uniform_projection->set_value(c_camera->get_projection());
-	m_uniform_near_far->set_value(c_camera->get_near_and_far());
 	m_uniform_noise_scale->set_value((glm::vec2)c_camera->get_viewport_size() / glm::vec2(4, 4));
 	m_uniform_kernel_size->set_value(m_kernel_size);
 	m_uniform_radius->set_value(m_radius);
@@ -131,7 +127,7 @@ void ssao_technique::applay(entity::ptr e_camera, g_buffer& buffer, mesh::ptr sq
 	//disable g_buffer 
 	buffer.disable_texture(g_buffer::G_BUFFER_TEXTURE_TYPE_POSITION);//0
 	buffer.disable_texture(g_buffer::G_BUFFER_TEXTURE_TYPE_NORMAL);  //1
-																	 //disable noise												
+    //disable noise
 	glActiveTexture(GL_TEXTURE0 + 2);//2
 	glBindTexture(GL_TEXTURE_2D, 0);
 	//disable fbo
@@ -189,8 +185,6 @@ void ssao_technique::destoy()
 	m_ssao_texture = 0;
 	m_noise_texture = 0;
 	m_ssao_blur_texture = 0;
-	m_uniform_kernel = nullptr;
-	m_uniform_near_far = nullptr;
 	m_uniform_noise_scale = nullptr;
 	m_uniform_projection = nullptr;
 	m_uniform_kernel_size = nullptr;
@@ -219,25 +213,6 @@ void ssao_technique::disable_texture()
 void ssao_technique::set_kernel_size(unsigned int kernel_size)
 {
 	m_kernel_size = kernel_size < m_max_kernel_size ? kernel_size : m_max_kernel_size;
-	//clear kernel
-	m_kernel.clear();
-	m_kernel.reserve(m_kernel_size);
-	//build kernel
-	for (unsigned int i = 0; i != m_kernel_size; ++i)
-	{
-		glm::vec3 sample(((float)std::rand() / RAND_MAX) * 2.0 - 1.0,
-						 ((float)std::rand() / RAND_MAX) * 2.0 - 1.0,
-						 ((float)std::rand() / RAND_MAX) 
-		);
-		sample = glm::normalize(sample);
-		sample *= ((float)std::rand() / RAND_MAX);
-		GLfloat scale = GLfloat(i) / m_kernel_size;
-
-		// Scale samples s.t. they're more aligned to center of kernel
-		scale = glm::mix(0.1f, 1.0f, scale * scale);
-		sample *= scale;
-		m_kernel.push_back(sample);
-	}
 }
 
 void ssao_technique::set_radius(float radius)

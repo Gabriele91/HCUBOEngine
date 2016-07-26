@@ -13,6 +13,8 @@ void main()
 }
 
 #pragma fragment
+//include ssao kernel
+#pragma include "ssao_kernel.glsl"
 //consts
 const int max_kernel_size = 64;
 //in
@@ -25,23 +27,9 @@ uniform sampler2D g_normal;
 uniform sampler2D t_noise;
 
 uniform mat4 projection;
-uniform vec3 samples[max_kernel_size];
 uniform vec2 noise_scale;
-uniform vec2 near_far;
 uniform int kernel_size = 64;
 uniform float radius = 2.0;
-
-#define USE_ZBUFFER
-
-#ifdef USE_ZBUFFER
-float linear_z(float depth)
-{
-	float near = near_far.x;
-	float far = near_far.y;
-	float z = depth * 2.0 - 1.0;
-    return (2.0 * near * far) / (far + near - z * (far - near));  
-}	
-#endif
 
 void main()
 {
@@ -65,7 +53,7 @@ void main()
 	for (int i = 0; i < kernel_size; ++i)
 	{
 		// get sample position
-		vec3 sample_k = normalize(TBN * samples[i]); // From tangent to view-space
+		vec3 sample_k = normalize(TBN * kernel[i]); // From tangent to view-space
 		sample_k = position + sample_k * radius;
 
 		// project sample position (to sample texture) (to get position on screen/texture)
@@ -75,12 +63,9 @@ void main()
 		offset.xyz  = offset.xyz * 0.5 + 0.5; // transform to range 0.0 - 1.0
 
 		// get sample depth
-#ifdef USE_ZBUFFER
-		float sample_depth = -linear_z(texture(g_position, offset.xy).w); // Get depth value of kernel sample
-#else
 		float sample_depth = texture(g_position, offset.xy).z;
-#endif
-		// range check & accumulate
+
+        // range check & accumulate
 		float range_check = smoothstep(0.0, 1.0, radius / abs(position.z - sample_depth));
 		occlusion += (sample_depth >= sample_k.z ? 1.0 : 0.0) * range_check;
 	}

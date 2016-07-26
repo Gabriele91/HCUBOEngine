@@ -26,7 +26,7 @@ void main()
 in vec3 frag_vertex;
 in vec3 frag_normal;
 //out
-layout(location = 0) out vec4 g_vertex;
+layout(location = 0) out vec3 g_vertex;
 layout(location = 1) out vec3 g_normal;
 layout(location = 2) out vec4 g_albedo_spec;
 //uniform
@@ -34,7 +34,7 @@ uniform vec4 color;
 
 void main()
 {
-	g_vertex = vec4(frag_vertex, gl_FragCoord.z);
+	g_vertex = frag_vertex;
 	g_normal = normalize(frag_normal) * 0.5 + 0.5;
 	g_albedo_spec = vec4(color.rgb, 1.0);
 }

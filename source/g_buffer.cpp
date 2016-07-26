@@ -65,8 +65,8 @@ bool g_buffer::init(unsigned int width, unsigned int height)
     texture_type types[G_BUFFER_NUM_TEXTURES];
     
     //specify type
-    types[G_BUFFER_TEXTURE_TYPE_POSITION] = texture_type( GL_RGBA32F, GL_RGBA,  GL_FLOAT );
-    types[G_BUFFER_TEXTURE_TYPE_NORMAL]   = texture_type( GL_RGB16F, GL_RGB,  GL_FLOAT );
+    types[G_BUFFER_TEXTURE_TYPE_POSITION] = texture_type( GL_RGB16F, GL_RGB,  GL_FLOAT );
+    types[G_BUFFER_TEXTURE_TYPE_NORMAL]   = texture_type( GL_RGB,    GL_RGB,  GL_UNSIGNED_BYTE );
     types[G_BUFFER_TEXTURE_TYPE_ALBEDO]   = texture_type( GL_RGBA,   GL_RGBA, GL_UNSIGNED_BYTE );
     
     //create texture

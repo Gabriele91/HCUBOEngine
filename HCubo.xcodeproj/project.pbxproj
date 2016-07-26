@@ -66,6 +66,8 @@
 		E09799591D2E5E2D006D1F13 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E01A2EF41D22C57500A8BA77 /* CoreVideo.framework */; };
 		E097995A1D2E5E2D006D1F13 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E01A2EEB1D22C51200A8BA77 /* Cocoa.framework */; };
 		E097995B1D2E5E2D006D1F13 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E01A2EE91D22C50E00A8BA77 /* OpenGL.framework */; };
+		E0E8EC461D4804CA00BE1432 /* ssao_technique.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E0E8EC451D4804CA00BE1432 /* ssao_technique.cpp */; };
+		E0E8EC481D4804D700BE1432 /* ssao_technique.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E0E8EC451D4804CA00BE1432 /* ssao_technique.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -149,6 +151,8 @@
 		E09799401D2E5DD2006D1F13 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E09799451D2E5DD2006D1F13 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E0B02EDD1D34BDCE0058D09B /* resources_manager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = resources_manager.h; sourceTree = "<group>"; };
+		E0E8EC451D4804CA00BE1432 /* ssao_technique.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ssao_technique.cpp; sourceTree = "<group>"; };
+		E0E8EC471D4804D000BE1432 /* ssao_technique.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ssao_technique.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -180,6 +184,7 @@
 		E00ABDB81D23C3BE004E4CFD /* source */ = {
 			isa = PBXGroup;
 			children = (
+				E0E8EC451D4804CA00BE1432 /* ssao_technique.cpp */,
 				E03EDC7A1D34186900C0C22A /* main.cpp */,
 				E03EDC731D34186900C0C22A /* app_basic.cpp */,
 				E03EDC741D34186900C0C22A /* application.cpp */,
@@ -234,6 +239,7 @@
 		E01A2EE41D22C2A900A8BA77 /* include */ = {
 			isa = PBXGroup;
 			children = (
+				E0E8EC471D4804D000BE1432 /* ssao_technique.h */,
 				E03EDCAB1D3418CF00C0C22A /* app_basic.h */,
 				E01583991D4399040029D6F5 /* struct_attribute.h */,
 				E015839A1D4399040029D6F5 /* tangent_space_calculation.h */,
@@ -392,6 +398,7 @@
 				E015839C1D43990D0029D6F5 /* tga.cpp in Sources */,
 				E03EDC871D34186900C0C22A /* application.cpp in Sources */,
 				E022AF4C1D3EB487009F76D5 /* rendering_pass_deferred.cpp in Sources */,
+				E0E8EC461D4804CA00BE1432 /* ssao_technique.cpp in Sources */,
 				E03EDC901D34186900C0C22A /* native_dialog.cpp in Sources */,
 				E022AF481D3DFF98009F76D5 /* g_buffer.cpp in Sources */,
 				E03EDC8B1D34186900C0C22A /* filesystem.cpp in Sources */,
@@ -420,6 +427,7 @@
 				E03EDCA81D34187500C0C22A /* shader.cpp in Sources */,
 				E03EDCAA1D34187500C0C22A /* texture.cpp in Sources */,
 				E01461AC1D34D2EF008A2574 /* resources_manager.cpp in Sources */,
+				E0E8EC481D4804D700BE1432 /* ssao_technique.cpp in Sources */,
 				E03EDC9A1D34187500C0C22A /* application.cpp in Sources */,
 				E03EDCA31D34187500C0C22A /* native_dialog.cpp in Sources */,
 				E022AF491D3E01BC009F76D5 /* g_buffer.cpp in Sources */,
