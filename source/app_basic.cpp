@@ -141,7 +141,6 @@ void app_basic::start(application& app)
 		auto t_cube = e_cube->get_component<transform>();
 		t_cube->position({ 0.,-10.0,0. });
 		t_cube->scale({ 70.,1.0,70. });
-		t_cube->get_matrix();
 		//add to render
 		m_systems.add_entity(e_cube);
 #else
@@ -150,7 +149,6 @@ void app_basic::start(application& app)
 		t_sponza->position({ 5.,-10.0, -99. });
 		t_sponza->scale({ 0.12,0.12,0.12 });
 		t_sponza->rotation(glm::quat({ 0, glm::radians(90.0), 0.0 }));
-		t_sponza->get_matrix();
 		//add to render
 		m_systems.add_entity(e_sponza);
 #endif

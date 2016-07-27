@@ -134,7 +134,7 @@ void entity::on_detach()
     m_system = nullptr;
 }
 
-void entity::send_message_to_component(const message& message)
+void entity::send_message_to_components(const message& message)
 {
     for(auto it_component : m_components)
     {
@@ -142,23 +142,23 @@ void entity::send_message_to_component(const message& message)
     }
 }
 
-void entity::send_message_to_component_upwards(const message& message)
+void entity::send_message_to_components_upwards(const message& message)
 {
-    send_message_to_component(message);
+    send_message_to_components(message);
     
     if(m_parent)
     {
-        m_parent->send_message_to_component_upwards(message);
+        m_parent->send_message_to_components_upwards(message);
     }
 }
 
-void entity::send_message_to_component_downwards(const message& message)
+void entity::send_message_to_components_downwards(const message& message)
 {
-    send_message_to_component(message);
+    send_message_to_components(message);
     
     for(auto it_entity : m_entities)
     {
-        it_entity.second->send_message_to_component_downwards(message);
+        it_entity.second->send_message_to_components_downwards(message);
     }
 }
 
