@@ -48,8 +48,6 @@ void system_manager::send_message_to_system(system_component_id id, const messag
 	if (sys != m_systems.end()) sys->second->on_message(message);
 }
 
-void send_message_to_system(system_component_id id, const message& message);
-
 void system_manager::add_entity(entity::ptr entity)
 {
     //add
