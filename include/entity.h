@@ -74,7 +74,7 @@ public:
     
     entity* get_parent() const;
     
-    system_manager* get_system() const;
+    system_manager* get_systems() const;
     
     bool has_child(entity::ptr entity) const;
     
@@ -101,7 +101,7 @@ protected:
     virtual void on_attach( system_manager& );
     virtual void on_detach();
     //parent
-    system_manager* m_system{ nullptr };
+    system_manager* m_systems{ nullptr };
     entity* m_parent{ nullptr };
     //list components
     std::unordered_map< component_id,component_ptr > m_components;

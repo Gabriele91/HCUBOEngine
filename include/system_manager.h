@@ -60,6 +60,8 @@ public:
     void add_entity(entity::ptr);
 
     void remove_entity(entity::ptr);
+
+	void send_message_to_entities(const message& message);
     
     void update(double deltatime);
     

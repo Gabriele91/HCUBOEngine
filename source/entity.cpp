@@ -63,9 +63,9 @@ entity* entity::get_parent() const
     return m_parent;
 }
 
-system_manager* entity::get_system() const
+system_manager* entity::get_systems() const
 {
-    return m_system;
+    return m_systems;
 }
 
 bool entity::has_child(entity::ptr entity) const
@@ -82,7 +82,7 @@ void entity::add_child(entity::ptr new_child)
         //insert
         m_entities[new_child.get()] = new_child;
         //add to sys
-        if(get_system()) get_system()->add_entity(new_child);
+        if(get_systems()) get_systems()->add_entity(new_child);
     }
 }
 
@@ -95,7 +95,7 @@ void entity::remove_child(const entity::ptr old_child)
         //remove
         m_entities.erase(m_entities.find(old_child.get()));
         //remove from sys
-        if(get_system()) get_system()->add_entity(old_child);
+        if(get_systems()) get_systems()->add_entity(old_child);
     }
 }
 
@@ -121,7 +121,7 @@ bool entity::on_update(double deltatime)
 void entity::on_attach( system_manager& sys )
 {
     //attach
-    m_system = &sys;
+    m_systems = &sys;
     //add child
     for(auto child:m_entities) sys.add_entity(child.second);
 }
@@ -129,9 +129,9 @@ void entity::on_attach( system_manager& sys )
 void entity::on_detach()
 {
     //remove childs
-    for(auto child:m_entities) m_system->remove_entity(child.second);
+    for(auto child:m_entities) m_systems->remove_entity(child.second);
     //remove
-    m_system = nullptr;
+    m_systems = nullptr;
 }
 
 void entity::send_message_to_components(const message& message)

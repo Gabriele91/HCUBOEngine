@@ -74,6 +74,11 @@ void system_manager::remove_entity(entity::ptr entity)
     }
 }
 
+void system_manager::send_message_to_entities(const message& message)
+{
+	for (auto entity : m_entities) entity->send_message_to_components(message);
+}
+
 void system_manager::update(double deltatime)
 {
     for(auto sys : m_systems) sys.second->on_update(deltatime);
