@@ -58,15 +58,15 @@ void ssao_technique::init(entity::ptr e_camera, resources_manager& resources)
 	set_kernel_size(m_max_kernel_size);
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	//noise texture
-	std::vector<glm::vec3> noise_buffer;
-	for (GLuint i = 0; i < 16; i++)
+	std::vector<glm::vec3> noise_buffer(16);
+	for (size_t i = 0; i != noise_buffer.size(); ++i)
 	{
-		noise_buffer.push_back(glm::vec3
+		noise_buffer[i] = glm::vec3
 		{
 			((float)std::rand() / RAND_MAX) * 2.0 - 1.0,
 			((float)std::rand() / RAND_MAX) * 2.0 - 1.0,
 			0.0f
-		});
+		};
 	}
 	//build noise texture
 	glGenTextures(1, &m_noise_texture);
