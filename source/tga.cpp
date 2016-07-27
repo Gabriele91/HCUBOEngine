@@ -131,7 +131,7 @@ bool decode_tga(std::vector<unsigned char>& out_image,
 	tga_header*		     header = (tga_header*)in_tga;
 	const unsigned char* data = in_tga + sizeof(tga_header);
 	//only rgb supported
-    if (header->m_imagetype != TGA_RGB ||
+    if (header->m_imagetype != TGA_RGB &&
         header->m_imagetype != TGA_RLE) return false;
 	//return size
 	image_width  = header->m_width;

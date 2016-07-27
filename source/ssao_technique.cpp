@@ -96,11 +96,17 @@ void ssao_technique::clear()
 
 void ssao_technique::applay(entity::ptr e_camera, g_buffer& buffer, mesh::ptr square)
 {
+	//disabl depth test
+	glDisable(GL_DEPTH_TEST);
+	//draw
 	camera::ptr   c_camera = e_camera->get_component<camera>();
 	//enable fbo
 	glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
+	//clear buffer not necessary (?)
+#if 1
 	glClearColor(1.0, 1.0, 1.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT);
+#endif
 	//bind shader
 	m_shader->bind();
 	//////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -142,8 +148,11 @@ void ssao_technique::applay(entity::ptr e_camera, g_buffer& buffer, mesh::ptr sq
 	//////////////////////////////////////	
 	//enable fbo
 	glBindFramebuffer(GL_FRAMEBUFFER, m_fbo_blur);
+	//clear buffer not necessary
+#if 0
 	glClearColor(1.0, 1.0, 1.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT);
+#endif
 	//bind shader
 	m_shader_blur->bind();	
 	//bind ssao texture
@@ -160,7 +169,8 @@ void ssao_technique::applay(entity::ptr e_camera, g_buffer& buffer, mesh::ptr sq
 	glBindTexture(GL_TEXTURE_2D, 0);
 	//disable fbo
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
+	//renable depth test
+	glEnable(GL_DEPTH_TEST);
 }
 
 void ssao_technique::destoy()
