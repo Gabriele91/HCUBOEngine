@@ -71,7 +71,7 @@ bool decode_tga(std::vector<unsigned char>& out_image,
 	//opengl type
 	switch (header->m_bits)
 	{
-		case 8:   open_gl_type = GL_R;      break;
+		case 8:   open_gl_type = GL_R8;     break;
 		case 16:  open_gl_type = GL_RGB565; break;
 		case 24:  open_gl_type = GL_RGB;    break;
 		case 32:  open_gl_type = GL_RGBA;   break;

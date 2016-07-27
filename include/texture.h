@@ -32,11 +32,26 @@ public:
 		bool have_alpha_channel()
 		{
 			switch (m_type_image)
-			{
-				case GL_RGBA: return true;
-				case GL_ALPHA: return true;
-				case GL_LUMINANCE_ALPHA: return true;
-				case GL_SRGB_ALPHA: return true;
+            {
+                case GL_ALPHA:        return true;
+                case GL_RGBA:         return true;
+                case GL_RGBA4:        return true;
+                case GL_RGBA8:        return true;
+                case GL_RGBA8I:       return true;
+                case GL_RGBA16I:      return true;
+                case GL_RGBA32I:      return true;
+                case GL_RGBA8UI:      return true;
+                case GL_RGBA16UI:     return true;
+                case GL_RGBA32UI:     return true;
+                case GL_RGBA16F:      return true;
+                case GL_RGBA32F:      return true;
+                case GL_RGBA_INTEGER: return true;
+                case GL_RGB5_A1:      return true;
+                case GL_RGB10_A2:     return true;
+                case GL_RGB10_A2UI:   return true;
+                case GL_RGBA8_SNORM:  return true;
+                case GL_SRGB_ALPHA:   return true;
+                case GL_SRGB8_ALPHA8: return true;
 			    //* to do *//
 				default: return false;
 			}
