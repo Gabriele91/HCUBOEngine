@@ -141,6 +141,8 @@ bool application::execute(const window_size& size,
     GLuint global_vertex_array_id;
     glGenVertexArrays(1, &global_vertex_array_id);
     glBindVertexArray(global_vertex_array_id);
+	//disable vSync
+	glfwSwapInterval(0);
     //default state 
     glEnable (GL_DEPTH_TEST);
     glDepthFunc (GL_LESS);

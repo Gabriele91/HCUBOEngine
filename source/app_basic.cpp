@@ -72,7 +72,7 @@ void app_basic::resize_event(application& application,const glm::ivec2& size)
     //viewport
     m_camera->get_component<camera>()->set_viewport(glm::ivec4{0, 0, size.x, size.y});
     //new perspective
-    m_camera->get_component<camera>()->set_perspective(m_fov, m_aspect, 0.01, 100.0);
+    m_camera->get_component<camera>()->set_perspective(m_fov, m_aspect, 0.1, 1000.0);
 }
 
 void app_basic::start(application& app)
