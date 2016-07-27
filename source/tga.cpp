@@ -13,11 +13,13 @@
 
 enum tga_image_type
 {
-	TGA_NONE,
-	TGA_INDEXED,
-	TGA_RGB,
-	TGA_GREY,
-	TGA_RLE = 8
+	TGA_NONE    = 0,
+	TGA_INDEXED = 1,
+	TGA_RGB     = 2,
+	TGA_GREY    = 3,
+	TGA_INDEXED_RLE = 9,
+	TGA_RGB_RLE     = 10,
+	TGA_GREY_RLE    = 11,
 };
 
 PACKED(struct tga_header
@@ -53,7 +55,7 @@ static void decoder_rle(unsigned long width,
     //length of chunk
     size_t i=0;
     //length of chunk
-    unsigned char length=0;
+    unsigned char length_chunk =0;
     // Decode
     while(i < out_image.size())
     {
@@ -61,11 +63,11 @@ static void decoder_rle(unsigned long width,
         if(*c_ptr & 0x80)
         {
             //length
-            length = *c_ptr - 127;
+			length_chunk = *c_ptr - 127;
             //pixel
             ++c_ptr;
             //copy
-            for(; length; ++i, --length)
+            for(; length_chunk; i += image_bytes_pixel, --length_chunk)
                 std::memcpy((void*)&buffer_out[i],c_ptr,image_bytes_pixel);
             //next chunk
             c_ptr += image_bytes_pixel;
@@ -74,15 +76,16 @@ static void decoder_rle(unsigned long width,
         else
         {
             //length
-            length = *c_ptr + 1;
+			length_chunk = *c_ptr + 1;
             //pixel
             ++c_ptr;
             //copy
-            std::memcpy((void*)&buffer_out[i],c_ptr,image_bytes_pixel*length);
+            std::memcpy((void*)&buffer_out[i],c_ptr,image_bytes_pixel*length_chunk);
             //offset
-            c_ptr += image_bytes_pixel*length;
+            c_ptr += image_bytes_pixel*length_chunk;
+			i     += image_bytes_pixel*length_chunk;
             //length to 0
-            length = 0;
+			length_chunk = 0;
         }
     }
 }
@@ -132,7 +135,7 @@ bool decode_tga(std::vector<unsigned char>& out_image,
 	const unsigned char* data = in_tga + sizeof(tga_header);
 	//only rgb supported
     if (header->m_imagetype != TGA_RGB &&
-        header->m_imagetype != TGA_RLE) return false;
+        header->m_imagetype != TGA_RGB_RLE) return false;
 	//return size
 	image_width  = header->m_width;
 	image_height = header->m_height;
@@ -146,7 +149,7 @@ bool decode_tga(std::vector<unsigned char>& out_image,
 		default: return false; break;
 	}
 	//copy data
-	if(header->m_imagetype == TGA_RLE)
+	if(header->m_imagetype == TGA_RGB_RLE)
     {
         decoder_rle(image_width, image_height, header->m_bits/8, data, out_image);
     }
