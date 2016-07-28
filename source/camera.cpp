@@ -51,3 +51,11 @@ const glm::mat4& camera::get_projection_inv() const
     return m_projection_inv;
 }
 
+component_ptr camera::copy() const
+{
+	auto ocamera = camera::snew();
+	ocamera->m_viewport = m_viewport;
+	ocamera->m_projection = m_projection;
+	ocamera->m_projection_inv = m_projection_inv;
+	return ocamera;
+}

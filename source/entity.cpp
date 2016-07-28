@@ -52,7 +52,6 @@ bool entity::has_component(component_id id)
     return m_components.find(id) != m_components.end();
 }
 
-
 bool entity::has_component(component_id id) const
 {
     return m_components.find(id) != m_components.end();
@@ -185,4 +184,23 @@ void entity::send_message_to_component_downwards(component_id id,const message& 
     {
         it_entity.second->send_message_to_component_downwards(id,message);
     }
+}
+
+//copy
+entity::ptr entity::copy() const
+{
+	auto oentity = entity::snew();
+	//copy all component
+	for (auto it_component : m_components)
+	{
+		auto cpycomponent = it_component.second->copy();
+		oentity->add_component(cpycomponent);
+	}
+	//copy childs
+	for (auto it_entity : m_entities)
+	{
+		auto cpyentity = it_entity.second->copy();
+		oentity->add_child(cpyentity);
+	}
+	return oentity;
 }

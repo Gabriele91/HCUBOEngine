@@ -8,7 +8,7 @@
 #pragma once
 #include <memory>
 template < class T >
-class smart_pointers
+class smart_pointers : public std::enable_shared_from_this< T >
 {
 public:
     

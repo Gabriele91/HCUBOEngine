@@ -96,6 +96,8 @@ public:
     
     void send_message_to_component_downwards(component_id id,const message& message);
 
+	entity::ptr copy() const;
+
 protected:
     //system events
     virtual void on_attach( system_manager& );

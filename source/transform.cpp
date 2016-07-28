@@ -75,6 +75,7 @@ glm::mat4 const& transform::get_matrix()
     compute_matrix();
     return m_model_global;
 }
+
 glm::mat4 const& transform::get_matrix_inv()
 {
     compute_matrix();
@@ -111,6 +112,18 @@ void transform::send_dirty()
 void transform::on_message(const message& message)
 {
     if(message.m_id == MSG_DIRTY) m_tranform.m_dirty=true;
+}
+
+component_ptr transform::copy() const
+{
+	auto cpytransform = transform_snew();
+	cpytransform->m_tranform = m_tranform;
+	cpytransform->m_model_local = m_model_local;
+	cpytransform->m_model_local_inv = m_model_local_inv;
+	cpytransform->m_model_global = m_model_global;
+	cpytransform->m_model_global_inv = m_model_global_inv;
+	cpytransform->m_tranform.m_dirty = true;
+	return cpytransform;
 }
 
 void transform::compute_matrix()

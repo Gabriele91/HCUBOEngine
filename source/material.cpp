@@ -898,7 +898,7 @@ protected:
     
 };
 
-
+material::~material() {};
 
 bool material::load(resources_manager& resources,const std::string& path)
 {
@@ -985,4 +985,167 @@ bool material::load(resources_manager& resources,const std::string& path)
         }
     }
     return true;
+}
+
+void material::cullface(bool face)
+{
+	m_cullface = face;
+}
+
+void material::cullmode(int mode)
+{
+	m_cullmode = mode;
+}
+
+void material::blend(bool b)
+{
+	m_blend = b;
+}
+
+void material::blend_src(int src)
+{
+	m_blend_src = src;
+}
+
+void material::blend_dst(int dst)
+{
+	m_blend_dst = dst;
+}
+
+void material::bind(const glm::vec4& viewport,
+					const glm::mat4& projection,
+					const glm::mat4& view,
+					const glm::mat4& model)
+{
+	if (!m_shader)
+		return;
+
+	//bind shader
+	m_shader->bind();
+
+	//uniforms
+	if (m_uniform_projection)
+		m_uniform_projection->set_value(projection);
+
+	if (m_uniform_view)
+		m_uniform_view->set_value(view);
+
+	if (m_uniform_model)
+		m_uniform_model->set_value(model);
+
+	if (m_uniform_viewport)
+		m_uniform_viewport->set_value(viewport);
+
+	for (size_t i = 0; i != m_ints.size(); ++i)
+	{
+		m_uniform_ints[i]->set_value(m_ints[i]);
+	}
+
+	for (size_t i = 0; i != m_floats.size(); ++i)
+	{
+		m_uniform_floats[i]->set_value(m_floats[i]);
+	}
+
+	for (size_t i = 0; i != m_textures.size(); ++i)
+	{
+		m_uniform_textures[i]->set_value(m_textures[i]);
+	}
+
+	for (size_t i = 0; i != m_vec2s.size(); ++i)
+	{
+		m_uniform_vec2s[i]->set_value(m_vec2s[i]);
+	}
+
+	for (size_t i = 0; i != m_vec3s.size(); ++i)
+	{
+		m_uniform_vec3s[i]->set_value(m_vec3s[i]);
+	}
+
+	for (size_t i = 0; i != m_vec4s.size(); ++i)
+	{
+		m_uniform_vec4s[i]->set_value(m_vec4s[i]);
+	}
+
+	for (size_t i = 0; i != m_mat4s.size(); ++i)
+	{
+		m_uniform_mat4s[i]->set_value(m_mat4s[i]);
+	}
+}
+
+void material::unbind()
+{
+	if (!m_shader)
+		return;
+	//unbind shader
+	m_shader->unbind();
+}
+
+
+void material::bind_state()
+{
+	if (m_cullface)
+	{
+		glEnable(GL_CULL_FACE);
+		glCullFace(m_cullmode);
+	}
+	if (m_blend)
+	{
+		glEnable(GL_BLEND);
+		glBlendFunc(m_blend_src, m_blend_dst);
+	}
+}
+
+void material::unbind_state()
+{
+	if (m_blend)
+	{
+		glDisable(GL_BLEND);
+	}
+	if (m_cullface)
+	{
+		glDisable(GL_CULL_FACE);
+	}
+}
+
+component_ptr material::copy() const
+{
+	auto omaterial = material_snew();
+
+	//cullface
+	omaterial->m_cullface = m_cullface;
+	omaterial->m_cullmode = m_cullmode;
+	//blend
+	omaterial->m_blend = m_blend;
+	omaterial->m_blend_src = m_blend_src;
+	omaterial->m_blend_dst = m_blend_dst;
+	//shader
+	omaterial->m_shader = m_shader;
+	//standard uniform
+	omaterial->m_uniform_projection = m_uniform_projection;
+	omaterial->m_uniform_view = m_uniform_view;
+	omaterial->m_uniform_model = m_uniform_model;
+	omaterial->m_uniform_viewport = m_uniform_viewport;
+	//uniform textures
+	omaterial->m_textures = m_textures;
+	omaterial->m_uniform_textures = m_uniform_textures;
+	//uniform float
+	omaterial->m_floats = m_floats;
+	omaterial->m_uniform_textures = m_uniform_textures;
+	//uniform int
+	omaterial->m_ints = m_ints;
+	omaterial->m_uniform_ints = m_uniform_ints;
+	//uniform vec2
+	omaterial->m_vec2s = m_vec2s;
+	omaterial->m_uniform_vec2s = m_uniform_vec2s;
+	//uniform vec3
+	omaterial->m_vec3s = m_vec3s;
+	omaterial->m_uniform_vec3s = m_uniform_vec3s;
+	//uniform vec4
+	omaterial->m_vec4s = m_vec4s;
+	omaterial->m_uniform_vec4s = m_uniform_vec4s;
+	//uniform mat4
+	omaterial->m_mat4s = m_mat4s;
+	omaterial->m_uniform_mat4s = m_uniform_mat4s;
+
+	return omaterial;
 }

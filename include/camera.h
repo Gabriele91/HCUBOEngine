@@ -27,7 +27,9 @@ public:
     const glm::ivec4& get_viewport() const;
     const glm::mat4&  get_projection() const;
     const glm::mat4&  get_projection_inv() const;
-    
+
+	virtual component_ptr copy() const;
+
 protected:
     
     glm::ivec4 m_viewport;

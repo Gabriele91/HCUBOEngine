@@ -33,7 +33,6 @@ void static_model::draw(const glm::vec4& viewport,
 	}
 }
 
-
 bool static_model::load(resources_manager& resources, const std::string& path)
 {
 	//struct of a vertex
@@ -112,4 +111,18 @@ bool static_model::load(resources_manager& resources, const std::string& path)
 	std::fclose(model_file);
 
 	return true;
+}
+
+component_ptr static_model::copy() const
+{
+	auto ostatic_model = static_model::snew();
+	//alloc
+	ostatic_model->m_sub_models.resize(m_sub_models.size());
+	//read and copy all
+	for (unsigned int i = 0; i != m_sub_models.size(); ++i)
+	{
+		ostatic_model->m_sub_models[i].m_material = std::static_pointer_cast<material>(m_sub_models[i].m_material->copy());
+		ostatic_model->m_sub_models[i].m_mesh     = std::static_pointer_cast<mesh>(m_sub_models[i].m_mesh->copy());
+	}
+	return ostatic_model;
 }

@@ -31,5 +31,8 @@ public:
               const glm::mat4& view,
               const glm::mat4& model,
               material_ptr material);
+
 	bool load(resources_manager& resources, const std::string& path);
+
+	virtual component_ptr copy() const;
 };

@@ -215,7 +215,7 @@ void app_basic::start(application& app)
         
         //add to render
         m_systems.add_entity(m_lights);
-        
+
         //ambient color
         m_rendering->set_ambient_color(glm::vec4{ 0.26, 0.26, 0.26, 1.0 });
         

@@ -38,6 +38,10 @@ struct message
     public: component_id get_id() const { return type(); }\
     private:
 
+using component_ptr = std::shared_ptr< component >;
+using component_uptr = std::unique_ptr< component >;
+using component_wptr = std::weak_ptr  < component >;
+
 class component
 {
     
@@ -48,11 +52,12 @@ public:
     component() {}
     virtual ~component() {}
     
-    /* virtual  */
+    /* interface */
     virtual bool on_update( double deltaTime ){ return true; }
     virtual void on_attach( entity& ){ }
     virtual void on_detach(){ }
     virtual void on_message(const message& message){ }
+	virtual component_ptr copy() const = 0;
     
     /* methods */
     virtual bool on_activate()   { return false; }
@@ -67,6 +72,7 @@ public:
     
     entity* get_entity() const { return m_entity; }
     
+
 private:
     
     entity* m_entity { nullptr };
@@ -74,8 +80,5 @@ private:
     bool m_is_enabled{ true    };  //is enabled, more for debug purpose or if we need to disable just one component
     
 };
-using component_ptr  = std::shared_ptr< component >;
-using component_uptr = std::unique_ptr< component >;
-using component_wptr = std::weak_ptr  < component >;
 
 

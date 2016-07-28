@@ -91,13 +91,13 @@ public:
     void destoy();
     
     virtual ~mesh();
+
+	virtual component_ptr copy() const;
     
 protected:
     
     void build_index(const std::vector< unsigned int >& indexs);
     void build_vertex(const std::vector< byte >& points);
-    
-    void set_buffer(unsigned int buffer,int attribute_location, int strip);
     
     draw_range   m_range;
     mesh_layout  m_layout;

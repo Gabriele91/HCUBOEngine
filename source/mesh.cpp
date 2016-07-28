@@ -8,6 +8,11 @@
 #include <mesh.h>
 #include <OpenGL4.h>
 
+mesh::~mesh()
+{
+	destoy();
+}
+
 void mesh::build(const mesh_layout& layout,
                  const std::vector< unsigned int >& indexs,
                  const std::vector< byte >& vertex)
@@ -129,7 +134,71 @@ void mesh::build_vertex(const std::vector< byte >& points)
     glBindBuffer (GL_ARRAY_BUFFER, 0);
 }
 
-mesh::~mesh()
+static void vbo_mode_draw_to_copy(int mode,int& new_mode)
 {
-    destoy();
+	switch (mode)
+	{
+		case GL_STATIC_DRAW:
+		case GL_STATIC_READ:   new_mode = GL_STATIC_COPY; break;
+		case GL_STREAM_DRAW:
+		case GL_STREAM_READ:   new_mode = GL_STREAM_COPY; break;
+		case GL_DYNAMIC_DRAW:
+		case GL_DYNAMIC_READ:  new_mode = GL_DYNAMIC_COPY; break;
+		default: 
+			new_mode = mode; 
+		break;
+	}
+}
+
+static void vbo_copy(unsigned int vbo_in,unsigned int size, int b_mode, unsigned int& vbo_out)
+{
+	//alloc new buffer
+	glGenBuffers(1, &vbo_out);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo_out);
+	glBufferData(GL_ARRAY_BUFFER, size, nullptr, b_mode);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	//vbo_in copy into vbo_out
+	glBindBuffer(GL_ARRAY_BUFFER, vbo_in);
+	glBindBuffer(GL_COPY_WRITE_BUFFER, vbo_out);
+	glCopyBufferSubData(GL_ARRAY_BUFFER, GL_COPY_WRITE_BUFFER, 0, 0, size);
+	//unbind
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_COPY_WRITE_BUFFER, 0);
+}
+
+component_ptr mesh::copy() const
+{
+#if 1
+	return (((mesh*)this)->shared_from_this());
+#else
+	auto omesh = mesh::snew();
+	//real copy
+	omesh->m_range = m_range;
+	omesh->m_layout = m_layout;
+	omesh->m_bvertex_size = m_bvertex_size;
+	omesh->m_bindex_size = m_bindex_size;
+	//copy gpu buffers
+	if (m_bindex||m_bvertex)
+	{
+		//DRAW to COPY
+		vbo_mode_draw_to_copy(m_layout.m_buffer_mode, omesh->m_layout.m_buffer_mode);
+		//copy index buffer
+		if (m_bindex)
+			vbo_copy(
+				m_bindex,
+				m_bindex_size * sizeof(unsigned int),
+				omesh->m_layout.m_buffer_mode,
+				omesh->m_bindex
+			);
+		//copy vertex buffer
+		if (m_bvertex)
+			vbo_copy(
+				m_bvertex,
+				m_bvertex_size,
+				omesh->m_layout.m_buffer_mode,
+				omesh->m_bvertex
+			);
+	}
+	return omesh;
+#endif
 }

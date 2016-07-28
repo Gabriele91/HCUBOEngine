@@ -23,129 +23,33 @@ class material : public component, public resource
     COMPONENT_DEC(material)
     
 public:
-    
+
+	virtual ~material();
+
     bool load(resources_manager& resources,const std::string& path);
     
-    void cullface(bool face)
-    {
-        m_cullface = face;
-    }
+	void cullface(bool face);
     
-    void cullmode(int mode)
-    {
-        m_cullmode = mode;
-    }
+	void cullmode(int mode);
     
-    void blend(bool b)
-    {
-        m_blend = b;
-    }
+	void blend(bool b);
     
-    void blend_src(int src)
-    {
-        m_blend_src = src;
-    }
+	void blend_src(int src);
     
-    void blend_dst(int dst)
-    {
-        m_blend_dst = dst;
-    }
+	void blend_dst(int dst);
     
-    virtual void bind(const glm::vec4& viewport,
-                      const glm::mat4& projection,
-                      const glm::mat4& view,
-                      const glm::mat4& model)
-    {
-		if (!m_shader) 
-			return;
+	virtual void bind(const glm::vec4& viewport,
+					  const glm::mat4& projection,
+					  const glm::mat4& view,
+					  const glm::mat4& model);
+    
+	virtual void unbind();
+            
+	void  bind_state();
+    
+	void unbind_state();
 
-		//bind shader
-		m_shader->bind();
-        
-        //uniforms
-        if(m_uniform_projection)
-            m_uniform_projection->set_value(projection);
-        
-        if(m_uniform_view)
-            m_uniform_view->set_value(view);
-        
-        if(m_uniform_model)
-            m_uniform_model->set_value(model);
-        
-        if(m_uniform_viewport)
-            m_uniform_viewport->set_value(viewport);
-        
-        for(size_t i=0; i!=m_ints.size(); ++i)
-        {
-            m_uniform_ints[i]->set_value(m_ints[i]);
-        }
-        
-        for(size_t i=0; i!=m_floats.size(); ++i)
-        {
-            m_uniform_floats[i]->set_value(m_floats[i]);
-        }
-        
-        for(size_t i=0; i!=m_textures.size(); ++i)
-        {
-            m_uniform_textures[i]->set_value(m_textures[i]);
-        }
-        
-        for(size_t i=0; i!=m_vec2s.size(); ++i)
-        {
-            m_uniform_vec2s[i]->set_value(m_vec2s[i]);
-        }
-        
-        for(size_t i=0; i!=m_vec3s.size(); ++i)
-        {
-            m_uniform_vec3s[i]->set_value(m_vec3s[i]);
-        }
-        
-        for(size_t i=0; i!=m_vec4s.size(); ++i)
-        {
-            m_uniform_vec4s[i]->set_value(m_vec4s[i]);
-        }
-        
-        for(size_t i=0; i!=m_mat4s.size(); ++i)
-        {
-            m_uniform_mat4s[i]->set_value(m_mat4s[i]);
-        }
-    }
-    
-    virtual void unbind()
-    {
-		if (!m_shader)
-			return;
-		//unbind shader
-        m_shader->unbind();
-    }
-    
-    virtual ~material(){};
-        
-    void  bind_state()
-    {
-        if(m_cullface)
-        {
-            glEnable(GL_CULL_FACE);
-            glCullFace(m_cullmode);
-        }
-        if(m_blend)
-        {
-            glEnable(GL_BLEND);
-            glBlendFunc(m_blend_src, m_blend_dst);
-        }
-    }
-    
-    void unbind_state()
-    {
-        if(m_blend)
-        {
-            glDisable(GL_BLEND);
-        }
-        if(m_cullface)
-        {
-            glDisable(GL_CULL_FACE);
-        }
-    }
+	component_ptr material::copy() const;
 
 protected:
 

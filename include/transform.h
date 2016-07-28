@@ -51,6 +51,8 @@ public:
     {
         return get_matrix();
     }
+
+	virtual component_ptr copy() const;
      
 private:
     //info
