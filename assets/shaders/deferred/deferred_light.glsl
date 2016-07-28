@@ -33,9 +33,9 @@ struct light
 {
 	vec3  m_position;
 	vec4  m_diffuse;
-	float m_const;
-	float m_linear;
-	float m_quadratic;
+	float m_max_radius;
+	float m_min_radius;
+	float m_inv_intensity;
 };
 const int max_lights = 32;
 uniform light lights[max_lights];
@@ -74,12 +74,11 @@ void main()
 
 		// Attenuation
 		float ldistance    = length(light_dist_v);
-		float lattenuation = 1.0 / (  lights[i].m_const 
-									+ lights[i].m_linear * ldistance
-									+ lights[i].m_quadratic * ldistance * ldistance);
-		ldiffuse  *= lattenuation;
-		lspecular *= lattenuation;
-		lighting  += ldiffuse+lspecular;
+        float lattenuation = pow(smoothstep(lights[i].m_max_radius, lights[i].m_min_radius, ldistance), lights[i].m_inv_intensity);
+
+        ldiffuse  *= lattenuation;
+        lspecular *= lattenuation;
+        lighting  += ldiffuse+lspecular;
 	}
     //output
 	frag_color = vec4(lighting, 1.0);

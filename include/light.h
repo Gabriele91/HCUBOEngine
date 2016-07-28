@@ -20,24 +20,24 @@ class light : public component
 public:
     
     glm::vec4 m_diffuse;
-    float     m_const	 { 1.0 };
-	float     m_linear   { 0.0 };
-	float     m_quadratic{ 0.0 };
+    float     m_intensity	 { 1.0 };
+    float     m_min_radius   { 0.0 };
+	float     m_max_radius   { 0.0 };
 	//default
 	light() {}
 	//init params
 	light
 	(
 		glm::vec4 diffuse,
-		float     constant,
-		float     linear,
-		float     quadratic
+		float     intensity,
+		float     min_radius,
+		float     max_radius
 	) 
 	{
 		m_diffuse   = diffuse;
-		m_const     = constant;
-		m_linear    = linear;
-		m_quadratic = quadratic;
+		m_intensity  = intensity;
+		m_min_radius = min_radius;
+		m_max_radius = max_radius;
 	}
 	//copy
 	virtual component_ptr copy() const;
@@ -57,8 +57,8 @@ inline component_ptr light::copy() const
 {
 	return light_snew(light{
 		m_diffuse,
-		m_const,
-		m_linear,
-		m_quadratic
+		m_intensity,
+		m_min_radius,
+		m_max_radius
 	});
 }

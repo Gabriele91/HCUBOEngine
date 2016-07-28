@@ -6,7 +6,8 @@
 #include <rendering_system.h>
 #include <resources_manager.h>
 
-class rendering_pass_deferred : public rendering_pass, public smart_pointers< rendering_pass_deferred >
+class rendering_pass_deferred : public rendering_pass,
+                                public smart_pointers< rendering_pass_deferred >
 {
 public:
 	//limits
@@ -47,9 +48,9 @@ protected:
 
 		uniform_vec3::ptr  m_uniform_position;
 		uniform_vec4::ptr  m_uniform_diffuse;
-		uniform_float::ptr m_uniform_const;
-		uniform_float::ptr m_uniform_linear;
-		uniform_float::ptr m_uniform_quadratic;
+		uniform_float::ptr m_uniform_inv_intensity;
+		uniform_float::ptr m_uniform_max_radius;
+		uniform_float::ptr m_uniform_min_radius;
 
 		void get_uniform(int i, shader::ptr shader);
         void uniform(light_wptr light,const glm::mat4& model);

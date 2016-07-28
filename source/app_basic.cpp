@@ -135,11 +135,11 @@ void app_basic::start(application& app)
         auto e_model_light = gameobject::light_new();
         auto l_model_light = e_model_light->get_component<light>();
         auto t_model_light = e_model_light->get_component<transform>();
-        t_model_light->position(glm::vec3{0,5,-80});
+        t_model_light->position(glm::vec3{0,6.0f,-80});
         l_model_light->m_diffuse   = { 1.0f, 0.8f, 0.1f, 1.0f };
-        l_model_light->m_linear    = 0.001;
-        l_model_light->m_const     = 0.5;
-        l_model_light->m_quadratic = 0.05;
+        l_model_light->m_intensity = 1.5;
+        l_model_light->m_min_radius= 0.1;
+        l_model_light->m_max_radius= 3.0;
         
         //append to model
         m_model->add_child(e_model_light);
@@ -184,19 +184,15 @@ void app_basic::start(application& app)
         };
         
         l_lights[0]->m_diffuse   = { 0.0f, 1.0f, 0.0f, 1.0f };
-        l_lights[0]->m_linear    = 0.001;
-        l_lights[0]->m_const     = 1.0;
-        l_lights[0]->m_quadratic = 0.002;
-        
         l_lights[1]->m_diffuse   = { 1.0f, 0.0f, 0.0f, 1.0f };
-        l_lights[1]->m_linear	 = 0.001;
-        l_lights[1]->m_const     = 1.0;
-        l_lights[1]->m_quadratic = 0.002;
-        
         l_lights[2]->m_diffuse   = { 0.0f, 0.0f, 1.0f, 1.0f };
-        l_lights[2]->m_linear    = 0.001;
-        l_lights[2]->m_const     = 1.0;
-        l_lights[2]->m_quadratic = 0.002;
+        
+        for(short i=0;i!=3;++i)
+        {
+            l_lights[i]->m_intensity  = 0.62;
+            l_lights[i]->m_min_radius = 1.0;
+            l_lights[i]->m_max_radius = 70.0;
+        }
         
         for(int i = 1; i!=4 ; ++i)
         {

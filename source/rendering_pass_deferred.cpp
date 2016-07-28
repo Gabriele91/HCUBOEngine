@@ -8,9 +8,9 @@ void rendering_pass_deferred::uniform_light::get_uniform(int i, shader::ptr shad
 	std::string lights_i("lights[" + std::to_string(i) + "]");
 	m_uniform_position = shader->get_shader_uniform_vec3((lights_i + ".m_position").c_str());
 	m_uniform_diffuse = shader->get_shader_uniform_vec4((lights_i + ".m_diffuse").c_str());
-	m_uniform_const = shader->get_shader_uniform_float((lights_i + ".m_const").c_str());
-	m_uniform_linear = shader->get_shader_uniform_float((lights_i + ".m_linear").c_str());
-	m_uniform_quadratic = shader->get_shader_uniform_float((lights_i + ".m_quadratic").c_str());
+	m_uniform_inv_intensity = shader->get_shader_uniform_float((lights_i + ".m_inv_intensity").c_str());
+	m_uniform_max_radius = shader->get_shader_uniform_float((lights_i + ".m_max_radius").c_str());
+	m_uniform_min_radius = shader->get_shader_uniform_float((lights_i + ".m_min_radius").c_str());
 }
 
 void rendering_pass_deferred::uniform_light::uniform(light_wptr weak_light,const glm::mat4& model)
@@ -18,9 +18,9 @@ void rendering_pass_deferred::uniform_light::uniform(light_wptr weak_light,const
     auto light = weak_light.lock();
     m_uniform_position->set_value((glm::vec3)(model * glm::vec4(0,0,0,1.0)));
 	m_uniform_diffuse->set_value(light->m_diffuse);
-	m_uniform_const->set_value(light->m_const);
-	m_uniform_linear->set_value(light->m_linear);
-	m_uniform_quadratic->set_value(light->m_quadratic);
+	m_uniform_inv_intensity->set_value(1.0f/light->m_intensity);
+	m_uniform_max_radius->set_value(light->m_max_radius);
+	m_uniform_min_radius->set_value(light->m_min_radius);
 }
 
 rendering_pass_deferred::rendering_pass_deferred(entity::ptr e_camera, resources_manager& resources)
