@@ -91,6 +91,13 @@ void ssao_technique::clear()
 		glClear(GL_COLOR_BUFFER_BIT);
 		//unbind
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		//clear blurred texture
+		glBindFramebuffer(GL_FRAMEBUFFER, m_fbo_blur);
+		//clear
+		glClearColor(1.0, 1.0, 1.0, 1.0);
+		glClear(GL_COLOR_BUFFER_BIT);
+		//unbind
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 }
 

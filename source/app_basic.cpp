@@ -24,24 +24,35 @@ void app_basic::key_event(application& app,int key, int scancode, int action, in
 		m_loop = false;
 		return;
 	}
-    
-    if(key == GLFW_KEY_UP)          m_camera->get_component<transform>()->translation({0,0,1});
-    if(key == GLFW_KEY_DOWN)        m_camera->get_component<transform>()->translation({0,0,-1});
-    if(key == GLFW_KEY_LEFT)        m_camera->get_component<transform>()->translation({1,0,0});
-    if(key == GLFW_KEY_RIGHT)       m_camera->get_component<transform>()->translation({-1,0,0});
-	if (key == GLFW_KEY_PAGE_UP)    m_camera->get_component<transform>()->translation({ 0,1,0 });
-	if (key == GLFW_KEY_PAGE_DOWN)  m_camera->get_component<transform>()->translation({ 0,-1,0 });
-
-	if (key == GLFW_KEY_W)    m_model->get_component<transform>()->translation({ 0,0,1 });
-	if (key == GLFW_KEY_S)    m_model->get_component<transform>()->translation({ 0,0,-1 });
-	if (key == GLFW_KEY_A)    m_model->get_component<transform>()->translation({ 1,0,0 });
-	if (key == GLFW_KEY_D)    m_model->get_component<transform>()->translation({ -1,0,0 });
-	if (key == GLFW_KEY_R)    m_model->get_component<transform>()->translation({ 0,1,0 });
-	if (key == GLFW_KEY_F)    m_model->get_component<transform>()->translation({ 0,-1,0 });
-
-    if((mods   == GLFW_MOD_SUPER   ||
-        mods   == GLFW_MOD_CONTROL)&&
-       action == GLFW_PRESS)
+	else if (key == GLFW_KEY_O)
+	{
+		rendering_system*	r_system = m_systems.get_system<rendering_system>();
+		rendering_pass_ptr	d_pass = r_system->get_rendering_pass()[0];
+		auto p_deferred = std::static_pointer_cast<rendering_pass_deferred>(d_pass);
+		p_deferred->set_ambient_occlusion(true);
+	}
+	else if (key == GLFW_KEY_K)
+	{
+		rendering_system*	r_system = m_systems.get_system<rendering_system>();
+		rendering_pass_ptr	d_pass = r_system->get_rendering_pass()[0];
+		auto p_deferred = std::static_pointer_cast<rendering_pass_deferred>(d_pass);
+		p_deferred->set_ambient_occlusion(false);
+	}
+	else if(key == GLFW_KEY_UP)          m_camera->get_component<transform>()->translation({0,0,1});
+	else if(key == GLFW_KEY_DOWN)        m_camera->get_component<transform>()->translation({0,0,-1});
+	else if(key == GLFW_KEY_LEFT)        m_camera->get_component<transform>()->translation({1,0,0});
+	else if(key == GLFW_KEY_RIGHT)       m_camera->get_component<transform>()->translation({-1,0,0});
+	else if (key == GLFW_KEY_PAGE_UP)    m_camera->get_component<transform>()->translation({ 0,1,0 });
+	else if (key == GLFW_KEY_PAGE_DOWN)  m_camera->get_component<transform>()->translation({ 0,-1,0 });
+	else if (key == GLFW_KEY_W)    m_model->get_component<transform>()->translation({ 0,0,1 });
+	else if (key == GLFW_KEY_S)    m_model->get_component<transform>()->translation({ 0,0,-1 });
+	else if (key == GLFW_KEY_A)    m_model->get_component<transform>()->translation({ 1,0,0 });
+	else if (key == GLFW_KEY_D)    m_model->get_component<transform>()->translation({ -1,0,0 });
+	else if (key == GLFW_KEY_R)    m_model->get_component<transform>()->translation({ 0,1,0 });
+	else if (key == GLFW_KEY_F)    m_model->get_component<transform>()->translation({ 0,-1,0 });
+	else if((mods   == GLFW_MOD_SUPER   ||
+             mods   == GLFW_MOD_CONTROL)&&
+             action == GLFW_PRESS)
     {
 		if (key == GLFW_KEY_F)
 		{
