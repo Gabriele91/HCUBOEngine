@@ -49,7 +49,7 @@ public:
     
 	void unbind_state();
 
-	component_ptr material::copy() const;
+	component_ptr copy() const;
 
 protected:
 
