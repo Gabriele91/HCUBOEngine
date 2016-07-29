@@ -129,7 +129,7 @@ void app_basic::start(application& app)
         auto t_model = m_model->get_component<transform>();
         //set info
         t_model->position({ 0.0f, -5.0f, 0.0f });
-        t_model->rotation(glm::quat({glm::radians(15.0), glm::radians(0.0), 0.0}));
+        t_model->rotation(glm::quat({glm::radians(15.0), glm::radians(180.0), 0.0}));
         t_model->scale({ 0.2f, 0.2f, 0.2f });
         
         auto e_model_light = gameobject::light_new();
@@ -141,7 +141,28 @@ void app_basic::start(application& app)
         l_model_light->m_min_radius= 0.1;
         l_model_light->m_max_radius= 3.0;
         
+        auto e_model_light1 = gameobject::light_new();
+        auto l_model_light1 = e_model_light1->get_component<light>();
+        auto t_model_light1 = e_model_light1->get_component<transform>();
+        t_model_light1->position(glm::vec3{-16.4,9.0f,18.0});
+        l_model_light1->spot({ 1.0f, 0.8f, 0.1f, 1.0f },
+                             1.0,
+                             0.5,
+                             5.0,
+                             glm::radians(45.0),0.005);
+        
+        auto e_model_light2 = gameobject::light_new();
+        auto l_model_light2 = e_model_light2->get_component<light>();
+        auto t_model_light2 = e_model_light2->get_component<transform>();
+        t_model_light2->position(glm::vec3{16.4,8.5f,19});
+        l_model_light2->spot({ 1.0f, 0.8f, 0.1f, 1.0f },
+                             1.0,
+                             0.5,
+                             5.0,
+                             glm::radians(50.0),0.005);
         //append to model
+        m_model->add_child(e_model_light1);
+        m_model->add_child(e_model_light2);
         m_model->add_child(e_model_light);
         //add to render
         m_systems.add_entity(m_model);
@@ -187,7 +208,7 @@ void app_basic::start(application& app)
         l_lights[1]->m_diffuse   = { 1.0f, 0.0f, 0.0f, 1.0f };
         l_lights[2]->m_diffuse   = { 0.0f, 0.0f, 1.0f, 1.0f };
         
-        for(short i=0;i!=3;++i)
+        for(short i=0;i!=3; ++i)
         {
             l_lights[i]->m_intensity  = 0.62;
             l_lights[i]->m_min_radius = 1.0;
@@ -227,7 +248,7 @@ bool app_basic::run(application& app,double delta_time)
     angle += 1.0f * delta_time;
     //////////////////////////////////////////////////////////
     //update
-    m_model->get_component<transform>()->turn(glm::quat{{0.0, glm::radians(-10.0*delta_time), 0.0}});
+    m_model->get_component<transform>()->turn(glm::quat{{0.0, glm::radians(5.0*delta_time), 0.0}});
     //for all lights
     m_lights->get_component<transform>()->turn(glm::quat{{0.0, glm::radians(20.0*delta_time), 0.0}});
     //draw

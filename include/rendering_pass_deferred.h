@@ -49,11 +49,15 @@ protected:
 		uniform_vec3::ptr  m_uniform_position;
 		uniform_vec4::ptr  m_uniform_diffuse;
 		uniform_float::ptr m_uniform_inv_intensity;
-		uniform_float::ptr m_uniform_max_radius;
-		uniform_float::ptr m_uniform_min_radius;
+        uniform_float::ptr m_uniform_max_radius;
+        uniform_float::ptr m_uniform_min_radius;
+        uniform_vec3::ptr  m_uniform_view_dir;
+        uniform_float::ptr m_uniform_cutoff;
+        uniform_float::ptr m_uniform_exponent;
+        uniform_int::ptr   m_uniform_type;
 
 		void get_uniform(int i, shader::ptr shader);
-        void uniform(light_wptr light,const glm::mat4& model);
+        void uniform(light_wptr light,const glm::mat4& view,const glm::mat4& model);
         
 	};
 	std::vector < uniform_light > m_uniform_lights;

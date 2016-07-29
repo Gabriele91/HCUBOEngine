@@ -82,6 +82,20 @@ public:
     
     void remove_child(const entity::ptr entity);
     
+    const std::string& get_name() const { return m_name; }
+    
+    void set_name(const std::string& name){ m_name = name; }
+    
+    std::vector < entity::ptr > get_child_by_name(const std::string& name)
+    {
+        std::vector < entity::ptr > m_select_es;
+        for(auto it_entity:m_entities)
+        {
+            if(it_entity.second->get_name() == name) m_select_es.push_back(it_entity.second);
+        }
+        return m_select_es;
+    }
+    
     bool on_update(double deltatime);
     
     void send_message_to_components(const message& message);
@@ -105,6 +119,8 @@ protected:
     //parent
     system_manager* m_systems{ nullptr };
     entity* m_parent{ nullptr };
+    //entity name
+    std::string m_name;
     //list components
     std::unordered_map< component_id,component_ptr > m_components;
     std::unordered_map< entity*,entity::ptr > m_entities;

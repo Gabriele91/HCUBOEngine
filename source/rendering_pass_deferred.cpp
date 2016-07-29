@@ -5,22 +5,32 @@
 
 void rendering_pass_deferred::uniform_light::get_uniform(int i, shader::ptr shader)
 {
-	std::string lights_i("lights[" + std::to_string(i) + "]");
+    std::string lights_i("lights[" + std::to_string(i) + "]");
+    m_uniform_type     = shader->get_shader_uniform_int((lights_i + ".m_type").c_str());
+    
 	m_uniform_position = shader->get_shader_uniform_vec3((lights_i + ".m_position").c_str());
-	m_uniform_diffuse = shader->get_shader_uniform_vec4((lights_i + ".m_diffuse").c_str());
+	m_uniform_diffuse  = shader->get_shader_uniform_vec4((lights_i + ".m_diffuse").c_str());
 	m_uniform_inv_intensity = shader->get_shader_uniform_float((lights_i + ".m_inv_intensity").c_str());
-	m_uniform_max_radius = shader->get_shader_uniform_float((lights_i + ".m_max_radius").c_str());
-	m_uniform_min_radius = shader->get_shader_uniform_float((lights_i + ".m_min_radius").c_str());
+	m_uniform_max_radius    = shader->get_shader_uniform_float((lights_i + ".m_max_radius").c_str());
+    m_uniform_min_radius    = shader->get_shader_uniform_float((lights_i + ".m_min_radius").c_str());
+    
+    m_uniform_view_dir = shader->get_shader_uniform_vec3((lights_i + ".m_view_dir").c_str());
+    m_uniform_cutoff   = shader->get_shader_uniform_float((lights_i + ".m_cutoff").c_str());
+    m_uniform_exponent = shader->get_shader_uniform_float((lights_i + ".m_exponent").c_str());
 }
 
-void rendering_pass_deferred::uniform_light::uniform(light_wptr weak_light,const glm::mat4& model)
+void rendering_pass_deferred::uniform_light::uniform(light_wptr weak_light,const glm::mat4& view,const glm::mat4& model)
 {
     auto light = weak_light.lock();
-    m_uniform_position->set_value((glm::vec3)(model * glm::vec4(0,0,0,1.0)));
+    m_uniform_type->set_value(light->m_type);
+    m_uniform_position->set_value((glm::vec3)(view * model * glm::vec4(0,0,0,1.0)));
 	m_uniform_diffuse->set_value(light->m_diffuse);
 	m_uniform_inv_intensity->set_value(1.0f/light->m_intensity);
 	m_uniform_max_radius->set_value(light->m_max_radius);
 	m_uniform_min_radius->set_value(light->m_min_radius);
+    m_uniform_view_dir->set_value((glm::vec3)(view * model * glm::vec4(0,0,1.0,0.0)));
+    m_uniform_cutoff->set_value(light->m_spot_cutoff);
+    m_uniform_exponent->set_value(light->m_spot_exponent);
 }
 
 rendering_pass_deferred::rendering_pass_deferred(entity::ptr e_camera, resources_manager& resources)
@@ -122,7 +132,8 @@ void rendering_pass_deferred::draw_pass(glm::vec4&  clear_color,
     {
         auto entity = lights[i].lock();
 		m_uniform_lights[i].uniform( entity->get_component<light>(),
-									 t_camera->get_matrix_inv()*entity->get_component<transform>()->get_matrix());
+									 t_camera->get_matrix_inv(),
+                                     entity->get_component<transform>()->get_matrix());
 	}
 	//draw squere
 	m_square->draw();
