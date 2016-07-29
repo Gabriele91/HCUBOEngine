@@ -173,6 +173,7 @@
     <ClInclude Include="..\include\OpenGL4.h" />
     <ClInclude Include="..\include\picking.h" />
     <ClInclude Include="..\include\picking_rotation.h" />
+    <ClInclude Include="..\include\prefab.h" />
     <ClInclude Include="..\include\renderable.h" />
     <ClInclude Include="..\include\rendering_pass_deferred.h" />
     <ClInclude Include="..\include\rendering_system.h" />

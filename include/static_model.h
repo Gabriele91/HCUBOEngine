@@ -10,10 +10,9 @@
 #include <mesh.h>
 #include <material.h>
 #include <resource.h>
+#include <prefab.h>
 
-class static_model : public smart_pointers< static_model >,
-				     public resource,
-					 public renderable
+class static_model : public prefab, public smart_pointers< static_model >
 {
 public:
 
@@ -26,13 +25,9 @@ public:
 
 	std::vector< sub_model > m_sub_models;
 
-    void draw(const glm::vec4& viewport,
-              const glm::mat4& projection,
-              const glm::mat4& view,
-              const glm::mat4& model,
-              material_ptr material);
-
 	bool load(resources_manager& resources, const std::string& path);
 
-	virtual component_ptr copy() const;
+	virtual entity::ptr instantiate();
+
+	virtual prefab_ptr static_model::copy() const;
 };

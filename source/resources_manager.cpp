@@ -38,7 +38,7 @@ void resources_manager::add_directory(const std::string& directory, bool recursi
 		}
 		else if (ext == ".smhc")
 		{
-			set_static_model_path(basename, directory + "/" + filename);
+			set_prefab_path(basename, directory + "/" + filename);
 		}
         else if(ext == ".json")
         {
@@ -85,14 +85,38 @@ void resources_manager::set_material_path(const std::string& name, const std::st
 	m_resources_path_map[resource_name] = path;
 }
 
-void resources_manager::set_static_model_path(const std::string& name, const std::string& path)
+void resources_manager::set_prefab_path(const std::string& name, const std::string& path)
 {
 	//shader name
-	std::string resource_name = "static_model:" + name;
+	std::string resource_name = "prefab:" + name;
 	//set path
 	m_resources_path_map[resource_name] = path;
 }
 
+const std::string& resources_manager::get_shader_path(const std::string& name)
+{
+	auto it_path = m_resources_path_map.find("shader:"+name);
+	if (it_path != m_resources_path_map.end()) return it_path->second;
+	return "";
+}
+const std::string& resources_manager::get_texture_path(const std::string& name)
+{
+	auto it_path = m_resources_path_map.find("texture:" + name);
+	if (it_path != m_resources_path_map.end()) return it_path->second;
+	return "";
+}
+const std::string& resources_manager::get_material_path(const std::string& name)
+{
+	auto it_path = m_resources_path_map.find("material:" + name);
+	if (it_path != m_resources_path_map.end()) return it_path->second;
+	return "";
+}
+const std::string& resources_manager::get_prefab_path(const std::string& name)
+{
+	auto it_path = m_resources_path_map.find("prefab:" + name);
+	if (it_path != m_resources_path_map.end()) return it_path->second;
+	return "";
+}
 
 shader::ptr resources_manager::get_shader(const std::string& name)
 {
@@ -146,10 +170,10 @@ material_ptr resources_manager::get_material(const std::string& name)
 }
 
 
-static_model::ptr resources_manager::get_static_model(const std::string& name)
+prefab_ptr resources_manager::get_prefab(const std::string& name)
 {
 	//shader name
-	std::string static_model_name = "static_model:" + name;
+	std::string static_model_name = "prefab:" + name;
 	//rerouce
 	resources_map_it resource_it = m_resources_map.find(static_model_name);
 	//alloc

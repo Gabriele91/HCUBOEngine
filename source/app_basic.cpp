@@ -125,7 +125,7 @@ void app_basic::start(application& app)
     /////// /////// /////// /////// /////// /////// /////// /////// ///////
     // build scene
     {
-             m_model = gameobject::node_new(m_resources.get_static_model("ship"));
+             m_model = m_resources.get_prefab("ship")->instantiate();
         auto t_model = m_model->get_component<transform>();
         //set info
         t_model->position({ 0.0f, -5.0f, 0.0f });
@@ -184,7 +184,7 @@ void app_basic::start(application& app)
 		//add to render
 		m_systems.add_entity(e_cube);
 #else
-		auto e_sponza = gameobject::node_new(m_resources.get_static_model("sponza"));
+		auto e_sponza = m_resources.get_prefab("sponza")->instantiate();
 		auto t_sponza = e_sponza->get_component<transform>();
 		t_sponza->position({ 5.,-10.0, -99. });
 		t_sponza->scale({ 0.12,0.12,0.12 });

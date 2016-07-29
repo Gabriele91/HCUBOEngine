@@ -9,28 +9,19 @@
 #include <resources_manager.h>
 #include <static_model.h>
 #include <tangent_space_calculation.h>
+#include <gameobject.h>
 
 
-void static_model::draw(const glm::vec4& viewport,
-                        const glm::mat4& projection_matrix,
-                        const glm::mat4& view_matrix,
-                        const glm::mat4& model_matrix,
-                        material_ptr material)
+entity::ptr static_model::instantiate()
 {
-	if (material)
+	//make root
+	entity::ptr root = gameobject::node_new();
+	//add childs
+	for (sub_model& model : m_sub_models)
 	{
-        for (sub_model& sub_model : m_sub_models)
-        {
-            sub_model.m_mesh->draw(viewport, projection_matrix, view_matrix, model_matrix, material);
-        }
+		root->add_child(gameobject::node_new(model.m_mesh, model.m_material));
 	}
-	else
-	{
-        for (sub_model& model : m_sub_models)
-        {
-            model.m_mesh->draw(viewport, projection_matrix, view_matrix, model_matrix, model.m_material);
-        }
-	}
+	return root;
 }
 
 bool static_model::load(resources_manager& resources, const std::string& path)
@@ -113,7 +104,7 @@ bool static_model::load(resources_manager& resources, const std::string& path)
 	return true;
 }
 
-component_ptr static_model::copy() const
+prefab_ptr static_model::copy() const
 {
 	auto ostatic_model = static_model::snew();
 	//alloc
@@ -124,5 +115,5 @@ component_ptr static_model::copy() const
 		ostatic_model->m_sub_models[i].m_material = std::static_pointer_cast<material>(m_sub_models[i].m_material->copy());
 		ostatic_model->m_sub_models[i].m_mesh     = std::static_pointer_cast<mesh>(m_sub_models[i].m_mesh->copy());
 	}
-	return ostatic_model;
+	return std::static_pointer_cast<prefab>(ostatic_model);
 }

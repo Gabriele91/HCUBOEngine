@@ -1,6 +1,7 @@
 #pragma once
 #include <shader.h>
 #include <entity.h>
+#include <mesh.h>
 #include <g_buffer.h>
 #include <resources_manager.h>
 
