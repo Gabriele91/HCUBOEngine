@@ -64,7 +64,9 @@ public:
 	void send_message_to_entities(const message& message);
     
     void update(double deltatime);
-    
+
+	std::vector < entity::ptr > get_entities_by_name(const std::string& name);
+
     const list_entities& get_entities() const;
 
     const map_systems& get_systems() const;

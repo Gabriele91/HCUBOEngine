@@ -116,6 +116,26 @@ bool entity::on_update(double deltatime)
     return state;
 }
 
+const std::string& entity::get_name() const 
+{
+	return m_name;
+}
+
+void entity::set_name(const std::string& name) 
+{ 
+	m_name = name; 
+}
+
+std::vector < entity::ptr > entity::get_childs_by_name(const std::string& name)
+{
+	std::vector < entity::ptr > m_select_es;
+	for (auto it_entity : m_entities)
+	{
+		if (it_entity.second->get_name() == name) m_select_es.push_back(it_entity.second);
+	}
+	return m_select_es;
+}
+
 //system events
 void entity::on_attach( system_manager& sys )
 {

@@ -84,6 +84,17 @@ void system_manager::update(double deltatime)
     for(auto sys : m_systems) sys.second->on_update(deltatime);
 }
 
+std::vector < entity::ptr > system_manager::get_entities_by_name(const std::string& name)
+{
+	std::vector < entity::ptr > m_select_es;
+	for (auto it_entity : m_entities)
+	{
+		if (it_entity->get_name() == name) m_select_es.push_back(it_entity);
+	}
+	return m_select_es;
+}
+
+
 const system_manager::list_entities& system_manager::get_entities() const
 {
     return m_entities;

@@ -14,7 +14,7 @@
 #include <rendering_pass_deferred.h>
 #include <gameobject.h>
 #include <transform.h>
-
+#include <iostream>
 
 void app_basic::key_event(application& app,int key, int scancode, int action, int mods)
 {
@@ -175,7 +175,7 @@ void app_basic::start(application& app)
         //add to render
         m_systems.add_entity(m_model);
         //cube
-#if 1
+#if 0
         auto e_cube = gameobject::cube_new({1,1,1});
              e_cube->add_component(m_resources.get_material("w_box_mat"));
 		auto t_cube = e_cube->get_component<transform>();
@@ -275,7 +275,7 @@ bool app_basic::run(application& app,double delta_time)
     m_lights->get_component<transform>()->turn(glm::quat{{0.0, glm::radians(20.0*delta_time), 0.0}});
     //////////////////////////////////////////////////////////
     m_lights
-    ->get_child_by_name("light_red")[0]
+    ->get_childs_by_name("light_red")[0]
     ->get_component<light>()
     ->set_quadratic_attenuation_from_radius(fabsf(sinf(angle))*9.+1.,0.001);
     //////////////////////////////////////////////////////////

@@ -82,19 +82,11 @@ public:
     
     void remove_child(const entity::ptr entity);
     
-    const std::string& get_name() const { return m_name; }
+	const std::string& get_name() const;
     
-    void set_name(const std::string& name){ m_name = name; }
+	void set_name(const std::string& name);
     
-    std::vector < entity::ptr > get_child_by_name(const std::string& name)
-    {
-        std::vector < entity::ptr > m_select_es;
-        for(auto it_entity:m_entities)
-        {
-            if(it_entity.second->get_name() == name) m_select_es.push_back(it_entity.second);
-        }
-        return m_select_es;
-    }
+	std::vector < entity::ptr > get_childs_by_name(const std::string& name);
     
     bool on_update(double deltatime);
     
