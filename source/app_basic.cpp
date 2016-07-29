@@ -136,33 +136,41 @@ void app_basic::start(application& app)
         auto l_model_light = e_model_light->get_component<light>();
         auto t_model_light = e_model_light->get_component<transform>();
         t_model_light->position(glm::vec3{0,6.0f,-80});
-        l_model_light->m_diffuse   = { 1.0f, 0.8f, 0.1f, 1.0f };
-        l_model_light->m_intensity = 1.5;
-        l_model_light->m_min_radius= 0.1;
-        l_model_light->m_max_radius= 3.0;
+        l_model_light->m_diffuse   = { 1.0f, 0.8f, 0.1f };
+        l_model_light->m_specular  = { 1.0f, 0.8f, 0.1f };
+        l_model_light->m_constant  = 0.5;
+        l_model_light->m_linear    = 0.1;
+        l_model_light->m_quadratic = 0.1;
         
         auto e_model_light1 = gameobject::light_new();
         auto l_model_light1 = e_model_light1->get_component<light>();
         auto t_model_light1 = e_model_light1->get_component<transform>();
         t_model_light1->position(glm::vec3{-16.4,9.0f,18.0});
-        l_model_light1->spot({ 1.0f, 0.8f, 0.1f, 1.0f },
-                             1.0,
+        t_model_light1->rotation(glm::quat({glm::radians(10.0), glm::radians(0.0), 0.0}));
+        l_model_light1->spot({ 1.0f, 0.8f, 0.1f },
+                             { 1.0f, 1.0f, 1.0f },
                              0.5,
-                             5.0,
-                             glm::radians(45.0),0.005);
+                             0.1,
+                             0.2,
+                             glm::radians(10.0),
+                             glm::radians(15.0));
+        m_model->add_child(e_model_light1);
         
         auto e_model_light2 = gameobject::light_new();
         auto l_model_light2 = e_model_light2->get_component<light>();
         auto t_model_light2 = e_model_light2->get_component<transform>();
         t_model_light2->position(glm::vec3{16.4,8.5f,19});
-        l_model_light2->spot({ 1.0f, 0.8f, 0.1f, 1.0f },
-                             1.0,
+        t_model_light2->rotation(glm::quat({glm::radians(10.0), glm::radians(0.0), 0.0}));
+        l_model_light2->spot({ 1.0f, 0.8f, 0.1f },
+                             { 1.0f, 1.0f, 1.0f },
                              0.5,
-                             5.0,
-                             glm::radians(50.0),0.005);
-        //append to model
-        m_model->add_child(e_model_light1);
+                             0.1,
+                             0.2,
+                             glm::radians(10.0),
+                             glm::radians(15.0));
         m_model->add_child(e_model_light2);
+
+        //append to model
         m_model->add_child(e_model_light);
         //add to render
         m_systems.add_entity(m_model);
@@ -204,16 +212,27 @@ void app_basic::start(application& app)
             e_lights[2]->get_component<transform>()
         };
         
-        l_lights[0]->m_diffuse   = { 0.0f, 1.0f, 0.0f, 1.0f };
-        l_lights[1]->m_diffuse   = { 1.0f, 0.0f, 0.0f, 1.0f };
-        l_lights[2]->m_diffuse   = { 0.0f, 0.0f, 1.0f, 1.0f };
+        l_lights[0]->m_diffuse   = { 0.0f, 1.0f, 0.0f };
+        l_lights[0]->m_specular  = { 0.0f, 1.0f, 0.0f };
+        
+        l_lights[1]->m_diffuse   = { 1.0f, 0.0f, 0.0f };
+        l_lights[1]->m_specular  = { 1.0f, 0.0f, 0.0f };
+        
+        l_lights[2]->m_diffuse   = { 0.0f, 0.0f, 1.0f };
+        l_lights[2]->m_specular  = { 0.0f, 0.0f, 1.0f };
         
         for(short i=0;i!=3; ++i)
         {
-            l_lights[i]->m_intensity  = 0.62;
-            l_lights[i]->m_min_radius = 1.0;
-            l_lights[i]->m_max_radius = 70.0;
+#if 0
+            l_lights[i]->m_constant  = 1.0;
+            l_lights[i]->m_linear    = 0.001;
+            l_lights[i]->m_quadratic = 0.002;
+#else
+            l_lights[i]->set_quadratic_attenuation_from_radius(10.0,0.001);
+            std::cout << "l["<<i<<"].radius = "<<l_lights[i]->get_radius_factor()<<std::endl;
+#endif
         }
+        
         
         for(int i = 1; i!=4 ; ++i)
         {
