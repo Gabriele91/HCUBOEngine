@@ -214,13 +214,16 @@ void app_basic::start(application& app)
         
         l_lights[0]->m_diffuse   = { 0.0f, 1.0f, 0.0f };
         l_lights[0]->m_specular  = { 0.0f, 1.0f, 0.0f };
+        e_lights[0]->set_name("light_green");
         
         l_lights[1]->m_diffuse   = { 1.0f, 0.0f, 0.0f };
         l_lights[1]->m_specular  = { 1.0f, 0.0f, 0.0f };
-        
+        e_lights[1]->set_name("light_red");
+
         l_lights[2]->m_diffuse   = { 0.0f, 0.0f, 1.0f };
         l_lights[2]->m_specular  = { 0.0f, 0.0f, 1.0f };
-        
+        e_lights[2]->set_name("light_blue");
+
         for(short i=0;i!=3; ++i)
         {
 #if 0
@@ -270,6 +273,12 @@ bool app_basic::run(application& app,double delta_time)
     m_model->get_component<transform>()->turn(glm::quat{{0.0, glm::radians(5.0*delta_time), 0.0}});
     //for all lights
     m_lights->get_component<transform>()->turn(glm::quat{{0.0, glm::radians(20.0*delta_time), 0.0}});
+    //////////////////////////////////////////////////////////
+    m_lights
+    ->get_child_by_name("light_red")[0]
+    ->get_component<light>()
+    ->set_quadratic_attenuation_from_radius(fabsf(sinf(angle))*9.+1.,0.001);
+    //////////////////////////////////////////////////////////
     //draw
     m_systems.update(delta_time);
     //////////////////////////////////////////////////////////
