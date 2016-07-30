@@ -122,6 +122,7 @@ void app_basic::start(application& app)
 	m_resources.add_directory("assets/ship");
 	m_resources.add_directory("assets/asteroid");
 	m_resources.add_directory("assets/sponza");
+    m_resources.add_directory("tools/assimp_to_smesh/output");
     /////// /////// /////// /////// /////// /////// /////// /////// ///////
     // build scene
     {
@@ -175,7 +176,7 @@ void app_basic::start(application& app)
         //add to render
         m_systems.add_entity(m_model);
         //cube
-#if 0
+#if 1
         auto e_cube = gameobject::cube_new({1,1,1});
              e_cube->add_component(m_resources.get_material("w_box_mat"));
 		auto t_cube = e_cube->get_component<transform>();
@@ -183,6 +184,14 @@ void app_basic::start(application& app)
 		t_cube->scale({ 70.,1.0,70. });
 		//add to render
 		m_systems.add_entity(e_cube);
+
+        auto e_nanosuit = m_resources.get_prefab("nanosuit")->instantiate();
+        auto t_nanosuit = e_nanosuit->get_component<transform>();
+        t_nanosuit->position({ 0.,-10.0,0. });
+        t_nanosuit->scale({ 1.0, 1.0, 1.0 });
+        t_nanosuit->rotation(glm::quat({glm::radians(0.0), glm::radians(180.0), 0.0}));
+        //add to render
+        m_systems.add_entity(e_nanosuit);
 #else
 		auto e_sponza = m_resources.get_prefab("sponza")->instantiate();
 		auto t_sponza = e_sponza->get_component<transform>();

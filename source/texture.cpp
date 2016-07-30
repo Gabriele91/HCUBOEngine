@@ -57,45 +57,31 @@ bool texture::load(const std::string& path)
                 path);
 }
 
-static void image_y_flip(std::vector<unsigned char>& bytes,
-                         unsigned long image_bytes_pixel,
-                         unsigned long image_width,
-                         unsigned long image_height)
+extern "C"
 {
-    //line size
-    size_t line_len=image_width * image_bytes_pixel * sizeof(unsigned char);
-    //alloc
-    unsigned char* line= new unsigned char[line_len];
-    //for size
-    size_t half_height=image_height / 2;
-    //for all lines
-    for(size_t y=0; y!=half_height; ++y)
-    {
-        std::memcpy(line,&bytes[line_len*y],line_len);
-        std::memcpy(&bytes[line_len*y],&bytes[line_len*(image_height-y-1)],line_len);
-        std::memcpy(&bytes[line_len*(image_height-y-1)],line,line_len);
-    }
-    //dealloc
-    delete [] line;
+    unsigned char* stbi_load_from_memory
+    (
+         unsigned char const *buffer,
+         int len,
+         int *x,
+         int *y,
+         int *comp,
+         int req_comp
+    );
+    void stbi_image_free(void* image);
+    void stbi_set_flip_vertically_on_load(int flag_true_if_should_flip);
 }
 
+bool decode_tga(std::vector<unsigned char>& out_image,
+                unsigned long& image_width,
+                unsigned long& image_height,
+                GLenum&	      open_gl_type,
+                const unsigned char* in_tga,
+                size_t in_size);
 
 bool texture::load(const attributes& attr,
                    const std::string& path)
 {
-    extern int decode_png(std::vector<unsigned char>& out_image,
-                          unsigned long& image_width,
-                          unsigned long& image_height,
-                          const unsigned char* in_png,
-                          size_t in_size,
-                          bool convert_to_rgba32);
-
-	bool decode_tga(std::vector<unsigned char>& out_image,
-					unsigned long& image_width,
-					unsigned long& image_height,
-					GLenum&	      open_gl_type,
-					const unsigned char* in_tga,
-					size_t in_size);
 	//get ext
 	std::string ext = filesystem::get_extension(path);
 	//test
@@ -105,23 +91,54 @@ bool texture::load(const attributes& attr,
 	//fail to read?
     if(!data_file.size()) return false;
     //decode
-    unsigned long image_width;
-    unsigned long image_height;
+    unsigned long image_width  =0;
+    unsigned long image_height =0;
 	GLenum	      image_type;
     std::vector<unsigned char> image;
 	//png
 	if(ext == ".png")
-	{
-		if(decode_png(image, image_width, image_height, 
-			         (const unsigned char*)data_file.data(), data_file.size(),  
-				     true)!=0)
-		return false;
-		//flip y
-		image_y_flip(image, 4, image_width, image_height);
-		//type
-		image_type = GL_RGBA;
+    {
+        stbi_set_flip_vertically_on_load(true);
+        //rgb/rgba attribute
+        attributes attr_png = attr;
+        unsigned char* data = nullptr;
+        int width = 0;
+        int height = 0;
+        int components = 0;
+        //decoder
+        data = stbi_load_from_memory((const unsigned char*)data_file.data(),
+                                     (int)data_file.size(),
+                                     &width,
+                                     &height,
+                                     &components,
+                                     0);
+        if(!data) return false;
+        //to ulong
+        image_width  = width;
+        image_height = height;
+        //save
+        switch (components)
+        {
+            case 1: image_type = GL_R8;  break;
+            case 2: image_type = GL_RG8; break;
+            case 3: image_type = GL_RGB; break;
+            case 4: image_type = GL_RGBA; break;
+            default:
+                stbi_image_free(data);
+                return false;
+            break;
+        }
+        //delete alpha channel from attributes (if needed)
+        attr_png.m_type_image = image_type;
+        //copyt into C++ buffer
+        image.resize(width*height*components);
+        std::memcpy(&image[0],data, image.size());
 		//build
-		return build(attr, image.data(), image_width, image_height, image_type);
+		bool builded = build(attr_png, image.data(), image_width, image_height, image_type);
+        //free stb image
+        stbi_image_free(data);
+        //return
+        return builded;
 	}
 	//tga
 	else

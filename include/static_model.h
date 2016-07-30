@@ -29,5 +29,5 @@ public:
 
 	virtual entity::ptr instantiate();
 
-	virtual prefab_ptr static_model::copy() const;
+	virtual prefab_ptr copy() const;
 };

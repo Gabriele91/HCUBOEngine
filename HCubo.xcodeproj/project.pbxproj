@@ -35,7 +35,7 @@
 		E03EDC8D1D34186900C0C22A /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E03EDC7A1D34186900C0C22A /* main.cpp */; };
 		E03EDC8F1D34186900C0C22A /* mesh.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E03EDC7C1D34186900C0C22A /* mesh.cpp */; };
 		E03EDC901D34186900C0C22A /* native_dialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E03EDC7D1D34186900C0C22A /* native_dialog.cpp */; };
-		E03EDC911D34186900C0C22A /* pico_png.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E03EDC7E1D34186900C0C22A /* pico_png.cpp */; };
+		E03EDC911D34186900C0C22A /* stb_image.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E03EDC7E1D34186900C0C22A /* stb_image.cpp */; };
 		E03EDC921D34186900C0C22A /* query_performance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E03EDC7F1D34186900C0C22A /* query_performance.cpp */; };
 		E03EDC931D34186900C0C22A /* rendering_system.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E03EDC801D34186900C0C22A /* rendering_system.cpp */; };
 		E03EDC951D34186900C0C22A /* shader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E03EDC821D34186900C0C22A /* shader.cpp */; };
@@ -51,7 +51,7 @@
 		E03EDCA01D34187500C0C22A /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E03EDC7A1D34186900C0C22A /* main.cpp */; };
 		E03EDCA21D34187500C0C22A /* mesh.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E03EDC7C1D34186900C0C22A /* mesh.cpp */; };
 		E03EDCA31D34187500C0C22A /* native_dialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E03EDC7D1D34186900C0C22A /* native_dialog.cpp */; };
-		E03EDCA41D34187500C0C22A /* pico_png.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E03EDC7E1D34186900C0C22A /* pico_png.cpp */; };
+		E03EDCA41D34187500C0C22A /* stb_image.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E03EDC7E1D34186900C0C22A /* stb_image.cpp */; };
 		E03EDCA51D34187500C0C22A /* query_performance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E03EDC7F1D34186900C0C22A /* query_performance.cpp */; };
 		E03EDCA61D34187500C0C22A /* rendering_system.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E03EDC801D34186900C0C22A /* rendering_system.cpp */; };
 		E03EDCA81D34187500C0C22A /* shader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E03EDC821D34186900C0C22A /* shader.cpp */; };
@@ -116,7 +116,7 @@
 		E03EDC7A1D34186900C0C22A /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		E03EDC7C1D34186900C0C22A /* mesh.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mesh.cpp; sourceTree = "<group>"; };
 		E03EDC7D1D34186900C0C22A /* native_dialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = native_dialog.cpp; sourceTree = "<group>"; };
-		E03EDC7E1D34186900C0C22A /* pico_png.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = pico_png.cpp; sourceTree = "<group>"; };
+		E03EDC7E1D34186900C0C22A /* stb_image.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = stb_image.cpp; sourceTree = "<group>"; };
 		E03EDC7F1D34186900C0C22A /* query_performance.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = query_performance.cpp; sourceTree = "<group>"; };
 		E03EDC801D34186900C0C22A /* rendering_system.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = rendering_system.cpp; sourceTree = "<group>"; };
 		E03EDC821D34186900C0C22A /* shader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = shader.cpp; sourceTree = "<group>"; };
@@ -198,7 +198,7 @@
 				E0101B231D40B74900930372 /* material.cpp */,
 				E03EDC821D34186900C0C22A /* shader.cpp */,
 				E03EDC841D34186900C0C22A /* texture.cpp */,
-				E03EDC7E1D34186900C0C22A /* pico_png.cpp */,
+				E03EDC7E1D34186900C0C22A /* stb_image.cpp */,
 				E015839B1D43990D0029D6F5 /* tga.cpp */,
 				E03EDC791D34186900C0C22A /* json11.cpp */,
 				E08DB6B61D44AD7300EF554F /* system_manager.cpp */,
@@ -389,7 +389,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E08DB6B71D44AD7300EF554F /* system_manager.cpp in Sources */,
-				E03EDC911D34186900C0C22A /* pico_png.cpp in Sources */,
+				E03EDC911D34186900C0C22A /* stb_image.cpp in Sources */,
 				E03EDC891D34186900C0C22A /* camera.cpp in Sources */,
 				E03EDC951D34186900C0C22A /* shader.cpp in Sources */,
 				E03EDC971D34186900C0C22A /* texture.cpp in Sources */,
@@ -421,7 +421,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E03EDCA41D34187500C0C22A /* pico_png.cpp in Sources */,
+				E03EDCA41D34187500C0C22A /* stb_image.cpp in Sources */,
 				E03EDC9C1D34187500C0C22A /* camera.cpp in Sources */,
 				E01583A51D43FCBC0029D6F5 /* entity.cpp in Sources */,
 				E03EDCA81D34187500C0C22A /* shader.cpp in Sources */,

@@ -1,6 +1,7 @@
 #include <OpenGL4.h>
 #include <ssao_technique.h>
 #include <cmath>
+#include <cstdlib>
 
 void ssao_technique::init(entity::ptr e_camera, resources_manager& resources)
 {

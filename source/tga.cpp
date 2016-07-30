@@ -123,6 +123,32 @@ static void rga_swap_r_and_b_24_32(unsigned char* bytes,
 	}
 }
 
+
+
+#if 0
+static void image_y_flip(std::vector<unsigned char>& bytes,
+                         unsigned long image_bytes_pixel,
+                         unsigned long image_width,
+                         unsigned long image_height)
+{
+    //line size
+    size_t line_len=image_width * image_bytes_pixel * sizeof(unsigned char);
+    //alloc
+    unsigned char* line= new unsigned char[line_len];
+    //for size
+    size_t half_height=image_height / 2;
+    //for all lines
+    for(size_t y=0; y!=half_height; ++y)
+    {
+        std::memcpy(line,&bytes[line_len*y],line_len);
+        std::memcpy(&bytes[line_len*y],&bytes[line_len*(image_height-y-1)],line_len);
+        std::memcpy(&bytes[line_len*(image_height-y-1)],line,line_len);
+    }
+    //dealloc
+    delete [] line;
+}
+#endif
+
 bool decode_tga(std::vector<unsigned char>& out_image,
 		   	    unsigned long& image_width,
 			    unsigned long& image_height,
