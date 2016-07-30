@@ -184,7 +184,7 @@ void app_basic::start(application& app)
 		t_cube->scale({ 70.,1.0,70. });
 		//add to render
 		m_systems.add_entity(e_cube);
-
+#if 1
         auto e_nanosuit = m_resources.get_prefab("nanosuit")->instantiate();
         auto t_nanosuit = e_nanosuit->get_component<transform>();
         t_nanosuit->position({ 0.,-10.0,0. });
@@ -192,6 +192,8 @@ void app_basic::start(application& app)
         t_nanosuit->rotation(glm::quat({glm::radians(0.0), glm::radians(180.0), 0.0}));
         //add to render
         m_systems.add_entity(e_nanosuit);
+#endif
+        
 #else
 		auto e_sponza = m_resources.get_prefab("sponza")->instantiate();
 		auto t_sponza = e_sponza->get_component<transform>();
