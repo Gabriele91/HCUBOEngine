@@ -35,6 +35,12 @@
 #include <vector>									// STL vector<> 
 #include <map>										// STL map<,,> multimap<>
 
+#ifdef _MSC_VER
+    //...
+#else
+    #define _isnan isnan
+#endif
+
 // derive your proxy from this class
 // not virtual to save the call overhead
 struct ITriangleInputProxy
@@ -398,7 +404,7 @@ unsigned int CTangentSpaceCalculation<InputProxy>::CalculateTangentSpace( const 
 
 	// adjust the base vectors per vertex -------------------------------------------
 	{
-		std::vector<CBase33>::iterator it;
+		typename std::vector<CBase33>::iterator it;
 		
 		for(it=m_BaseVectors.begin();it!=m_BaseVectors.end();++it)
 		{
@@ -445,7 +451,7 @@ unsigned int CTangentSpaceCalculation<InputProxy>::AddUV2Base( std::multimap<CBa
 	Indx.m_dwPosNo=indwPosNo;
 	Indx.m_dwNormNo=indwNormNo;
 
-	std::multimap<CBaseIndex,unsigned int,CBaseIndexOrder>::iterator iFind,iFindEnd;
+	typename std::multimap<CBaseIndex,unsigned int,CBaseIndexOrder>::iterator iFind,iFindEnd;
 		
 	iFind = inMap.lower_bound(Indx);
 
@@ -525,7 +531,7 @@ void CTangentSpaceCalculation<InputProxy>::AddNormal2Base( std::multimap<CBaseIn
 	Indx.m_dwPosNo=indwPosNo;
 	Indx.m_dwNormNo=indwNormNo;
 
-	std::multimap<CBaseIndex,unsigned int,CBaseIndexOrder>::iterator iFind = inMap.find(Indx);
+	typename std::multimap<CBaseIndex,unsigned int,CBaseIndexOrder>::iterator iFind = inMap.find(Indx);
 
 	unsigned int dwBaseNIndex;
 

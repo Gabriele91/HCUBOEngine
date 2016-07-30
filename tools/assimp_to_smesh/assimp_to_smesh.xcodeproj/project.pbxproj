@@ -1,0 +1,301 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		E07D6ECB1D4CE48E005A6763 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E07D6EC51D4CE48E005A6763 /* main.cpp */; };
+		E07D6ECC1D4CE48E005A6763 /* obb.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E07D6EC61D4CE48E005A6763 /* obb.cpp */; };
+		E07D6ECD1D4CE48E005A6763 /* process_model.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E07D6EC71D4CE48E005A6763 /* process_model.cpp */; };
+		E07D6ECE1D4CE48E005A6763 /* smesh.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E07D6EC81D4CE48E005A6763 /* smesh.cpp */; };
+		E07D6ECF1D4CE48E005A6763 /* tangent_space_calculation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E07D6EC91D4CE48E005A6763 /* tangent_space_calculation.cpp */; };
+		E07D6ED01D4CE48E005A6763 /* filesystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E07D6ECA1D4CE48E005A6763 /* filesystem.cpp */; };
+		E07D6ED81D4CE8E5005A6763 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = E07D6ED71D4CE8E5005A6763 /* libz.tbd */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		E07D6EB91D4CE3EA005A6763 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		E07D6EBB1D4CE3EA005A6763 /* assimp_to_smesh */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = assimp_to_smesh; sourceTree = BUILT_PRODUCTS_DIR; };
+		E07D6EC51D4CE48E005A6763 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = source/main.cpp; sourceTree = SOURCE_ROOT; };
+		E07D6EC61D4CE48E005A6763 /* obb.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = obb.cpp; path = source/obb.cpp; sourceTree = SOURCE_ROOT; };
+		E07D6EC71D4CE48E005A6763 /* process_model.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = process_model.cpp; path = source/process_model.cpp; sourceTree = SOURCE_ROOT; };
+		E07D6EC81D4CE48E005A6763 /* smesh.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = smesh.cpp; path = source/smesh.cpp; sourceTree = SOURCE_ROOT; };
+		E07D6EC91D4CE48E005A6763 /* tangent_space_calculation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = tangent_space_calculation.cpp; path = source/tangent_space_calculation.cpp; sourceTree = SOURCE_ROOT; };
+		E07D6ECA1D4CE48E005A6763 /* filesystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = filesystem.cpp; path = source/filesystem.cpp; sourceTree = SOURCE_ROOT; };
+		E07D6ED21D4CE4B1005A6763 /* eigenvalues_jacobi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = eigenvalues_jacobi.h; sourceTree = "<group>"; };
+		E07D6ED31D4CE4B1005A6763 /* obb.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = obb.h; sourceTree = "<group>"; };
+		E07D6ED41D4CE4B1005A6763 /* TangentSpaceCalculation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TangentSpaceCalculation.h; sourceTree = "<group>"; };
+		E07D6ED51D4CE4B1005A6763 /* smesh.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smesh.h; sourceTree = "<group>"; };
+		E07D6ED61D4CE4B1005A6763 /* filesystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = filesystem.h; sourceTree = "<group>"; };
+		E07D6ED71D4CE8E5005A6763 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		E07D6EB81D4CE3EA005A6763 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E07D6ED81D4CE8E5005A6763 /* libz.tbd in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		E07D6EB21D4CE3EA005A6763 = {
+			isa = PBXGroup;
+			children = (
+				E07D6ED71D4CE8E5005A6763 /* libz.tbd */,
+				E07D6ED11D4CE492005A6763 /* include */,
+				E07D6EBD1D4CE3EA005A6763 /* source */,
+				E07D6EBC1D4CE3EA005A6763 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		E07D6EBC1D4CE3EA005A6763 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E07D6EBB1D4CE3EA005A6763 /* assimp_to_smesh */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		E07D6EBD1D4CE3EA005A6763 /* source */ = {
+			isa = PBXGroup;
+			children = (
+				E07D6EC51D4CE48E005A6763 /* main.cpp */,
+				E07D6EC61D4CE48E005A6763 /* obb.cpp */,
+				E07D6EC71D4CE48E005A6763 /* process_model.cpp */,
+				E07D6EC81D4CE48E005A6763 /* smesh.cpp */,
+				E07D6EC91D4CE48E005A6763 /* tangent_space_calculation.cpp */,
+				E07D6ECA1D4CE48E005A6763 /* filesystem.cpp */,
+			);
+			path = source;
+			sourceTree = "<group>";
+		};
+		E07D6ED11D4CE492005A6763 /* include */ = {
+			isa = PBXGroup;
+			children = (
+				E07D6ED21D4CE4B1005A6763 /* eigenvalues_jacobi.h */,
+				E07D6ED31D4CE4B1005A6763 /* obb.h */,
+				E07D6ED41D4CE4B1005A6763 /* TangentSpaceCalculation.h */,
+				E07D6ED51D4CE4B1005A6763 /* smesh.h */,
+				E07D6ED61D4CE4B1005A6763 /* filesystem.h */,
+			);
+			path = include;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		E07D6EBA1D4CE3EA005A6763 /* assimp_to_smesh */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E07D6EC21D4CE3EA005A6763 /* Build configuration list for PBXNativeTarget "assimp_to_smesh" */;
+			buildPhases = (
+				E07D6EB71D4CE3EA005A6763 /* Sources */,
+				E07D6EB81D4CE3EA005A6763 /* Frameworks */,
+				E07D6EB91D4CE3EA005A6763 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = assimp_to_smesh;
+			productName = assimp_to_mesh;
+			productReference = E07D6EBB1D4CE3EA005A6763 /* assimp_to_smesh */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		E07D6EB31D4CE3EA005A6763 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0730;
+				ORGANIZATIONNAME = Gabriele;
+				TargetAttributes = {
+					E07D6EBA1D4CE3EA005A6763 = {
+						CreatedOnToolsVersion = 7.3.1;
+					};
+				};
+			};
+			buildConfigurationList = E07D6EB61D4CE3EA005A6763 /* Build configuration list for PBXProject "assimp_to_smesh" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = E07D6EB21D4CE3EA005A6763;
+			productRefGroup = E07D6EBC1D4CE3EA005A6763 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				E07D6EBA1D4CE3EA005A6763 /* assimp_to_smesh */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		E07D6EB71D4CE3EA005A6763 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E07D6ECB1D4CE48E005A6763 /* main.cpp in Sources */,
+				E07D6ECD1D4CE48E005A6763 /* process_model.cpp in Sources */,
+				E07D6ED01D4CE48E005A6763 /* filesystem.cpp in Sources */,
+				E07D6ECF1D4CE48E005A6763 /* tangent_space_calculation.cpp in Sources */,
+				E07D6ECE1D4CE48E005A6763 /* smesh.cpp in Sources */,
+				E07D6ECC1D4CE48E005A6763 /* obb.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		E07D6EC01D4CE3EA005A6763 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SOURCE_ROOT)/include",
+					"$(SOURCE_ROOT)/dependencies/osx/include",
+				);
+				LIBRARY_SEARCH_PATHS = "$(SOURCE_ROOT)/dependencies/osx/lib/Debug";
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = "-lassimp";
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		E07D6EC11D4CE3EA005A6763 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SOURCE_ROOT)/include",
+					"$(SOURCE_ROOT)/dependencies/osx/include",
+				);
+				LIBRARY_SEARCH_PATHS = "$(SOURCE_ROOT)/dependencies/osx/lib//Release";
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_LDFLAGS = "-lassimp";
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		E07D6EC31D4CE3EA005A6763 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = assimp_to_smesh;
+			};
+			name = Debug;
+		};
+		E07D6EC41D4CE3EA005A6763 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = assimp_to_smesh;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		E07D6EB61D4CE3EA005A6763 /* Build configuration list for PBXProject "assimp_to_smesh" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E07D6EC01D4CE3EA005A6763 /* Debug */,
+				E07D6EC11D4CE3EA005A6763 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E07D6EC21D4CE3EA005A6763 /* Build configuration list for PBXNativeTarget "assimp_to_smesh" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E07D6EC31D4CE3EA005A6763 /* Debug */,
+				E07D6EC41D4CE3EA005A6763 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = E07D6EB31D4CE3EA005A6763 /* Project object */;
+}

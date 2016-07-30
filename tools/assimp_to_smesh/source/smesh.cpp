@@ -98,7 +98,7 @@ void material::save(const std::string& path)
 			name_shader.c_str(),
 			diffuse_map.c_str(),
 			specular_map.c_str(),
-			m_normal.c_str(),
+			normal_map.c_str(),
 			m_color.r,
 			m_color.g,
 			m_color.b,
