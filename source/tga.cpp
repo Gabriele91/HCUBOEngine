@@ -175,6 +175,10 @@ bool decode_tga(std::vector<unsigned char>& out_image,
         default:
         break;
     }
+	/* 
+	// Bit 5 from byte 17
+	bool origin_not_btlf = ((header->m_descriptor & 0x20) == 0x20 ? true : false);
+	*/
 	//success
 	return true;
 }

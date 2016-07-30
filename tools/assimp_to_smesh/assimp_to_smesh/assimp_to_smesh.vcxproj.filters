@@ -24,6 +24,12 @@
     <ClInclude Include="..\include\TangentSpaceCalculation.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\eigenvalues_jacobi.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\obb.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\main.cpp">
@@ -33,6 +39,15 @@
       <Filter>File di origine</Filter>
     </ClCompile>
     <ClCompile Include="..\source\tangent_space_calculation.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\smesh.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\process_model.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\obb.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
   </ItemGroup>

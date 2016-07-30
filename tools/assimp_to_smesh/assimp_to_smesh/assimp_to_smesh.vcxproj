@@ -158,13 +158,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\include\eigenvalues_jacobi.h" />
     <ClInclude Include="..\include\filesystem.h" />
+    <ClInclude Include="..\include\obb.h" />
     <ClInclude Include="..\include\smesh.h" />
     <ClInclude Include="..\include\TangentSpaceCalculation.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\filesystem.cpp" />
     <ClCompile Include="..\source\main.cpp" />
+    <ClCompile Include="..\source\obb.cpp" />
+    <ClCompile Include="..\source\process_model.cpp" />
+    <ClCompile Include="..\source\smesh.cpp" />
     <ClCompile Include="..\source\tangent_space_calculation.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
