@@ -27,6 +27,7 @@ int main(int argc,char* argv[])
 	/* debug */
 	model obb_model;
 	build_obb_model(l_model, obb_model);
+	obb_model.compute_obbs();
 	obb_model.save(argv[2]);
 #endif
 	//end
