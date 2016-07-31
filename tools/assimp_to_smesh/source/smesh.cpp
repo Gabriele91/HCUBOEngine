@@ -5,7 +5,6 @@
 static const char* mat_template[]
 {
 	//NO TEXTURE TEMPLATE
-	"material("
 	"cullface true\n"
 	"{\n"
 	"	mode back\n"
@@ -17,11 +16,11 @@ static const char* mat_template[]
 	"{\n"
 	"	uniforms\n"
 	"	{\n"
+    "       mask float(-1.0)\n"
 	"		color vec4(%f,%f,%f,%f)\n"
 	"	}\n"
 	"}\n",
 	//TEXTURE TEMPLATE
-	"material("
 	"cullface true\n"
 	"{\n"
 	"	mode back\n"
@@ -39,7 +38,8 @@ static const char* mat_template[]
 	"	}\n"
 	"	\n"
 	"	uniforms\n"
-	"	{\n"
+    "	{\n"
+    "       mask float(-1.0)\n"
 	"		color vec4(%f,%f,%f,%f)\n"
 	"	}\n"
 	"}\n"
