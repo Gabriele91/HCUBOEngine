@@ -8,6 +8,7 @@
 #include <glm/mat4x4.hpp>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <obb.h>
 
 struct vertex
 {
@@ -33,10 +34,12 @@ struct node
 	material m_material;
 	std::vector< unsigned int > m_index;
 	std::vector< vertex > m_vertex;
+	obb	m_obb;
 };
 
 struct model
 {
 	std::vector< node > m_nodes;
+	void compute_obbs();
 	void save(const std::string& path);
 };

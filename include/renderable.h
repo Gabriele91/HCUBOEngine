@@ -9,6 +9,7 @@
 #include <component.h>
 #include <smart_pointers.h>
 #include <material.h>
+#include <obb.h>
 
 class renderable : public component
 {
@@ -18,6 +19,8 @@ class renderable : public component
 public:
 
     renderable(){}
+
+	virtual ~renderable() {};
     
 	virtual void draw(const glm::vec4& viewport,
                       const glm::mat4& projection,
@@ -27,7 +30,23 @@ public:
     {
         assert(0);
     };
-    virtual ~renderable(){};
+
+	bool has_support_culling() const
+	{
+		return m_support_culling;
+	}
+
+	virtual const obb& get_bounding_box() 
+	{ 
+		return m_bounding_box;
+	}
+
+
+protected:
+
+	obb  m_bounding_box;
+	bool m_support_culling{ false };
+
 };
 
 using renderable_ptr  = std::shared_ptr< renderable >;

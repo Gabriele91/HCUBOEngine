@@ -12,9 +12,6 @@ namespace basic_meshs
         //data
         mesh::mesh_layout  layout;
         mesh::draw_range   range;
-        //buffer
-        std::vector< mesh::byte > vbuffer;
-        std::vector< unsigned int > ibuffer;
 		//build
         if(use_uvmap)
         {
@@ -53,11 +50,14 @@ namespace basic_meshs
             {
                 mesh::input_layout
                 {
-                    mesh::input{ 0, sizeof(vertex), 3, offsetof(vertex, m_position)   },
-                    mesh::input{ 1, sizeof(vertex), 3, offsetof(vertex, m_normal)   },
-                    mesh::input{ 2, sizeof(vertex), 2, offsetof(vertex, m_uvmap)    },
-                    mesh::input{ 3, sizeof(vertex), 3, offsetof(vertex, m_tangent)  },
-                    mesh::input{ 4, sizeof(vertex), 3, offsetof(vertex, m_bitangent)}
+					sizeof(vertex),
+					{
+						mesh::input{ 0, 3, offsetof(vertex, m_position), true },
+						mesh::input{ 1, 3, offsetof(vertex, m_normal)         },
+						mesh::input{ 2, 2, offsetof(vertex, m_uvmap)          },
+						mesh::input{ 3, 3, offsetof(vertex, m_tangent)        },
+						mesh::input{ 4, 3, offsetof(vertex, m_bitangent)      }
+					}
                 },
                 GL_TRIANGLES,
                 GL_STATIC_DRAW
@@ -119,9 +119,9 @@ namespace basic_meshs
             //set size
             range.m_max = (unsigned int)vertices.size();
             //resize
-            vbuffer.resize(vertices.size()*sizeof(vertex));
-            //copy buffer
-            std::memcpy(&vbuffer[0], vertices.data(), vertices.size()*sizeof(vertex));
+			//build mesh
+			mesh_cube->build(layout,range,
+				             (const mesh::byte*)vertices.data(), vertices.size() * sizeof(vertex));
         }
         else
         {
@@ -135,15 +135,18 @@ namespace basic_meshs
             layout = mesh::mesh_layout
             {
                 mesh::input_layout
-                {
-                    mesh::input{ 0, sizeof(vertex), 3, offsetof(vertex, m_position) },
-                    mesh::input{ 1, sizeof(vertex), 3, offsetof(vertex, m_normal) }
-                },
+				{   
+					sizeof(vertex),
+					{
+						mesh::input{ 0, 3, offsetof(vertex, m_position), true },
+						mesh::input{ 1, 3, offsetof(vertex, m_normal)         }
+					}
+				},
                 GL_TRIANGLES,
                 GL_STATIC_DRAW
             };
             
-            ibuffer = std::vector< unsigned int >
+			std::vector< unsigned int > ibuffer
             {
                 // front
                 0, 1, 2,
@@ -183,18 +186,14 @@ namespace basic_meshs
             {
                 v.m_normal = glm::normalize(v.m_position);
             }
-            //resize
-            vbuffer.resize(vertices.size()*sizeof(vertex));
-            //copy buffer
-            std::memcpy(&vbuffer[0], vertices.data(), vertices.size()*sizeof(vertex));
+			//build mesh
+			mesh_cube->build(layout,
+							 ibuffer.data(), ibuffer.size(), 
+				             (const mesh::byte*)vertices.data(), vertices.size() * sizeof(vertex));
         }
-        //build gpu cube
-        if(ibuffer.size()) mesh_cube->build(layout, ibuffer, vbuffer);
-        else               mesh_cube->build(layout, range, vbuffer);
 		//return cube
 		return mesh_cube;
 	}
-
 	mesh::ptr square3D(const glm::vec2& square_size, bool use_uvmap)
 	{
 		const glm::vec2& square_size_h = square_size * 0.5f;
@@ -203,8 +202,6 @@ namespace basic_meshs
 		//data
 		mesh::mesh_layout  layout;
         mesh::draw_range   range;
-		//buffer
-		std::vector< mesh::byte > vbuffer;
 		//build
 		if (use_uvmap)
 		{
@@ -219,9 +216,12 @@ namespace basic_meshs
 			{
 				mesh::input_layout
 				{
-					mesh::input{ 0, sizeof(vertex), 3, offsetof(vertex, m_position) },
-					mesh::input{ 1, sizeof(vertex), 3, offsetof(vertex, m_normal) },
-					mesh::input{ 2, sizeof(vertex), 2, offsetof(vertex, m_uvmap) }
+					sizeof(vertex),
+					{
+						mesh::input{ 0, 3, offsetof(vertex, m_position), true },
+						mesh::input{ 1, 3, offsetof(vertex, m_normal)         },
+						mesh::input{ 2, 2, offsetof(vertex, m_uvmap)          }
+					}
 				},
 				GL_TRIANGLE_STRIP,
 				GL_STATIC_DRAW
@@ -236,10 +236,8 @@ namespace basic_meshs
             };
             //set size
             range.m_max = (unsigned int)vertices.size();
-			//resize
-			vbuffer.resize(vertices.size() * sizeof(vertex));
-			//copy buffer
-			std::memcpy(&vbuffer[0], vertices.data(), vertices.size() * sizeof(vertex));
+			//build
+			mesh_square->build(layout, range, (mesh::byte*)vertices.data(), vertices.size() * sizeof(vertex));
 		}
 		else
 		{
@@ -254,8 +252,11 @@ namespace basic_meshs
 			{
 				mesh::input_layout
 				{
-					mesh::input{ 0, sizeof(vertex), 3, offsetof(vertex, m_position) },
-					mesh::input{ 1, sizeof(vertex), 3, offsetof(vertex, m_normal) }
+					sizeof(vertex),
+					{
+						mesh::input{ 0, 3, offsetof(vertex, m_position), true },
+						mesh::input{ 1, 3, offsetof(vertex, m_normal) }
+					}
 				},
 				GL_TRIANGLE_STRIP,
 				GL_STATIC_DRAW
@@ -270,13 +271,10 @@ namespace basic_meshs
 			};
             //set size
             range.m_max = (unsigned int)vertices.size();
-			//resize
-			vbuffer.resize(vertices.size() * sizeof(vertex));
-			//copy buffer
-			std::memcpy(&vbuffer[0], vertices.data(), vertices.size() * sizeof(vertex));
+			//build
+			mesh_square->build(layout, range, 
+							   (const mesh::byte*)vertices.data(), vertices.size() * sizeof(vertex));
 		}
-		//build gpu quad
-        mesh_square->build(layout, range, vbuffer);
 		//return cube
 		return mesh_square;
 

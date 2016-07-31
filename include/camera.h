@@ -11,6 +11,7 @@
 #include <glm/vec3.hpp>
 #include <glm/mat4x4.hpp>
 #include <glm/gtc/quaternion.hpp>
+#include <frustum.h>
 
 class camera :  public component, public smart_pointers< camera >
 {
@@ -28,10 +29,15 @@ public:
     const glm::mat4&  get_projection() const;
     const glm::mat4&  get_projection_inv() const;
 
+	frustum& get_frustum();
+    const frustum& get_frustum() const;
+	void update_view_frustum();
+
 	virtual component_ptr copy() const;
 
 protected:
     
+	frustum	   m_frustum;
     glm::ivec4 m_viewport;
     glm::mat4  m_projection;
     glm::mat4  m_projection_inv;

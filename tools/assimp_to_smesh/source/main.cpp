@@ -2,6 +2,8 @@
 #include <smesh.h>
 #include <filesystem.h>
 extern void process_model(const std::string& path, model& out_model);
+extern bool build_obb_model(const model& in_model, model& out_model);
+#include <obb.h>
 
 int main(int argc,char* argv[])
 {
@@ -16,8 +18,17 @@ int main(int argc,char* argv[])
 	model l_model;
 	//load
 	process_model(argv[1], l_model);
+	//compute obb
+	l_model.compute_obbs();
 	//save
+#if 1
 	l_model.save(argv[2]);
+#else
+	/* debug */
+	model obb_model;
+	build_obb_model(l_model, obb_model);
+	obb_model.save(argv[2]);
+#endif
 	//end
 	return 0;
 }

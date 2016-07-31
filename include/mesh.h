@@ -22,19 +22,48 @@ public:
     //layout field
     struct input
     {
-        int m_attribute;
-        int m_size;
-        int m_strip;
+        int    m_attribute;
+        int    m_strip;
         size_t m_offset;
+		bool   m_is_position;
+
+		input(int   attribute,
+		  	  int   strip,
+			  size_t offset)
+		{
+			m_attribute = attribute;
+			m_strip = strip;
+			m_offset = offset;
+			m_is_position = false;
+		}
+
+		input(int   attribute,
+			  int   strip,
+			  size_t offset,
+			  bool   is_position)
+		{
+			m_attribute = attribute;
+			m_strip = strip;
+			m_offset = offset;
+			m_is_position = is_position;
+		}
     };
     //layout
-    using input_layout = std::vector< input >;
+	struct input_layout
+	{
+		int m_size;
+		std::vector< input > m_fields;
+	};
     //mesh layout
     struct mesh_layout
     {
         input_layout m_input_layout;
         int m_draw_mode;
         int m_buffer_mode;
+
+		bool has_a_position() const;
+		size_t position_offset() const;
+
     };
     //draw range (no indexed)
     struct draw_range
@@ -57,28 +86,51 @@ public:
     };
     
     mesh(){}
-    
+
+	virtual ~mesh();
+
     mesh(const mesh_layout& layout,
          const draw_range & draw_range,
-         const std::vector< byte >& vertex)
+         const std::vector< byte >& vertex,
+		 bool compute_obb = true)
     {
-        build(layout, draw_range, vertex);
+        build(layout, draw_range, vertex, compute_obb);
     }
     
     mesh(const mesh_layout& layout,
          const std::vector< unsigned int >& indexs,
-         const std::vector< byte >& vertex)
+         const std::vector< byte >& vertex,
+		 bool compute_obb = true)
     {
-        build(layout, indexs, vertex);
+        build(layout, indexs, vertex, compute_obb);
     }
     
     void build(const mesh_layout& layout,
                const std::vector< unsigned int >& indexs,
-               const std::vector< byte >& points);
-    
-    void build(const mesh_layout& layout,
-               const draw_range & draw_range,
-               const std::vector< byte >& points);
+               const std::vector< byte >& points,
+		       bool compute_obb = true);
+
+	void build(const mesh_layout& layout,
+			   const draw_range & draw_range,
+		       const std::vector< byte >& points,
+		       bool compute_obb = true);
+
+	void build(const mesh_layout& layout,
+		       const unsigned int* indexs,
+		       size_t isize,
+		       const byte* points,
+		       size_t vsize,
+		       bool compute_obb = true);
+
+	void build(const mesh_layout& layout,
+		       const draw_range & draw_range,
+		       const byte* points,
+			   size_t size,
+		       bool compute_obb = true);
+	
+	void set_bounding_box(const obb& box);
+
+	void disable_support_culling();
 
 	void draw();
 
@@ -90,14 +142,22 @@ public:
     
     void destoy();
     
-    virtual ~mesh();
-
 	virtual component_ptr copy() const;
-    
+	    
 protected:
-    
-    void build_index(const std::vector< unsigned int >& indexs);
-    void build_vertex(const std::vector< byte >& points);
+
+	bool compute_bounding_box(const unsigned int* indexs,
+							  size_t size,
+							  const byte* points, 
+							  size_t vsize);
+
+	bool compute_bounding_box(const byte* points, 
+							  size_t vsize);
+
+	void build_index(const std::vector< unsigned int >& indexs);
+	void build_vertex(const std::vector< byte >& points);
+	void build_index(const unsigned int* indexs,size_t size);
+	void build_vertex(const byte* points,size_t size);
     
     draw_range   m_range;
     mesh_layout  m_layout;

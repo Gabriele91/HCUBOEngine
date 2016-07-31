@@ -23,7 +23,10 @@ class entity : public smart_pointers< entity >
     friend class system_manager;
     
 public:
-    
+
+	using components_map = std::unordered_map< component_id, component_ptr >;
+	using entities_map   = std::unordered_map< entity*, entity::ptr >;
+
     //default
     entity();
     
@@ -61,7 +64,6 @@ public:
     }
     component_ptr remove_component(component_id id);
     
-    
     template < class T >
     bool has_component() const
     {
@@ -79,8 +81,10 @@ public:
     bool has_child(entity::ptr entity) const;
     
     void add_child(entity::ptr entity);
-    
-    void remove_child(const entity::ptr entity);
+
+	const entities_map& get_childs() const;
+
+	void remove_child(const entity::ptr entity);
     
 	const std::string& get_name() const;
     

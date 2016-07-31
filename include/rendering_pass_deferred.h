@@ -28,6 +28,10 @@ public:
 
 	bool is_enable_ambient_occlusion() const;
 
+	void stop_update_frustum(bool stop_update);
+
+	void stop_frustum_culling(bool stop_culling);
+
 protected:
 
 	g_buffer          m_g_buffer;
@@ -42,6 +46,8 @@ protected:
 	uniform_vec4::ptr m_ambient_light;
 
 	bool m_enable_ambient_occlusion{ true };
+	bool m_update_frustum{ true };
+	bool m_stop_frustum_culling{ false };
 
 	struct uniform_light
 	{

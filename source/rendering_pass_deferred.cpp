@@ -41,8 +41,8 @@ rendering_pass_deferred::rendering_pass_deferred(entity::ptr e_camera, resources
 {
 	m_g_buffer.init(e_camera->get_component<camera>()->get_viewport_size());
 	m_ssao.init(e_camera, resources);
-	m_ssao.set_kernel_size(16);
-	m_ssao.set_radius(2.5);
+	m_ssao.set_kernel_size(8);
+	m_ssao.set_radius(2.0);
 
 	m_square    = basic_meshs::square3D({ 2.0,2.0 }, true);
 	m_shader    = resources.get_shader("deferred_light");
@@ -76,6 +76,17 @@ bool rendering_pass_deferred::is_enable_ambient_occlusion() const
 	return m_enable_ambient_occlusion;
 }
 
+
+void rendering_pass_deferred::stop_update_frustum(bool stop_update)
+{
+	m_update_frustum = !stop_update;
+}
+
+void rendering_pass_deferred::stop_frustum_culling(bool stop_culling)
+{
+	m_stop_frustum_culling = stop_culling;
+}
+
 void rendering_pass_deferred::draw_pass(glm::vec4&  clear_color,
                                         glm::vec4&  ambient_color,
                                         entity::ptr e_camera,
@@ -92,15 +103,39 @@ void rendering_pass_deferred::draw_pass(glm::vec4&  clear_color,
     
 	glClearColor(ambient_color.r, ambient_color.g, ambient_color.b, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    
+
+	//update view frustum
+	if(m_update_frustum)
+		c_camera->get_frustum().update_frustum(c_camera->get_projection()*
+											   t_camera->get_matrix_inv());
+
+	//draw
     for (entity::wptr& weak_entity : renderables)
     {
-        auto entity = weak_entity.lock();
-        entity->get_component<renderable>()->draw(viewport,
-                                                  c_camera->get_projection(),
-                                                  t_camera->get_matrix_inv(),
-                                                  entity->get_component<transform>()->get_matrix(),
-                                                  entity->get_component<material>());
+        auto entity   = weak_entity.lock();
+		auto t_entity = entity->get_component<transform>();
+		auto r_entity = entity->get_component<renderable>();
+
+		if (r_entity->is_enabled())
+		{
+			if 
+			(	
+				m_stop_frustum_culling ||
+				!r_entity->has_support_culling() ||
+				c_camera->get_frustum().test_obb(r_entity->get_bounding_box(), 
+												 t_entity->get_matrix())
+			)
+			{
+				r_entity->draw
+				(  
+					viewport,
+					c_camera->get_projection(),
+					t_camera->get_matrix_inv(),
+					t_entity->get_matrix(),
+					entity->get_component<material>()
+				);
+			}
+		}
 	}
 
 	m_g_buffer.unbind();

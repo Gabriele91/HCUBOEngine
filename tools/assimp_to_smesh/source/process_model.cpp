@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include <smesh.h>
+#include <obb.h>
 #include <filesystem.h>
 #include <assimp/Exporter.hpp>
 #include <assimp/Importer.hpp>
@@ -140,4 +141,72 @@ void process_model(const std::string& path, model& out_model)
 	exporter.Export(scene, "obj", "test.obj");
 	std::cout << exporter.GetErrorString() << std::endl;
 #endif
+}
+
+/* debug */
+bool build_obb_model(const model& in_model, model& out_model)
+{
+	//cache points
+	std::vector< glm::vec3 > points;
+	//alloc new nodes
+	out_model.m_nodes.resize(in_model.m_nodes.size());
+	//for all nodes
+	for (size_t n = 0; n != in_model.m_nodes.size(); ++n)
+	{
+		node& out_node = out_model.m_nodes[n];
+		const node& in_node = in_model.m_nodes[n];
+		//alloc obb
+		obb node_obb;
+		//build obb
+		node_obb.build_from_triangles
+		( 
+			(const unsigned char*)in_node.m_vertex.data(),
+			offsetof(vertex,m_position),
+			sizeof(vertex),
+			in_node.m_vertex.size(),
+			in_node.m_index.data(),
+			in_node.m_index.size()
+		);
+		//build box mesh
+		node_obb.get_bounding_box(points);
+		//alloc
+		out_node.m_vertex.resize(points.size());
+		//push
+		for (size_t v = 0; v != points.size(); ++v)
+		{
+			out_node.m_vertex[v].m_position = points[v];
+		}
+		//math
+		out_node.m_material.m_name = "node" + std::to_string(n);
+		out_node.m_material.m_color = glm::vec4
+		{
+			float(std::rand()) / RAND_MAX,
+			float(std::rand()) / RAND_MAX,
+			float(std::rand()) / RAND_MAX,
+			1.0
+		};
+		//indexs
+		out_node.m_index = std::vector< unsigned int >
+		{
+			// front
+			0, 1, 2,
+			2, 3, 0,
+			// top
+			1, 5, 6,
+			6, 2, 1,
+			// back
+			7, 6, 5,
+			5, 4, 7,
+			// bottom
+			4, 0, 3,
+			3, 7, 4,
+			// left
+			4, 5, 1,
+			1, 0, 4,
+			// right
+			3, 2, 6,
+			6, 7, 3
+		};
+	}
+	return true;
 }

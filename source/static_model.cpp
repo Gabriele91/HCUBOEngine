@@ -40,11 +40,14 @@ bool static_model::load(resources_manager& resources, const std::string& path)
 	{
 		mesh::input_layout
 		{
-			mesh::input{ 0, sizeof(vertex), 3, offsetof(vertex, m_position) },
-			mesh::input{ 1, sizeof(vertex), 3, offsetof(vertex, m_normal) },
-			mesh::input{ 2, sizeof(vertex), 2, offsetof(vertex, m_uvmap) },
-			mesh::input{ 3, sizeof(vertex), 3, offsetof(vertex, m_tangent) },
-			mesh::input{ 4, sizeof(vertex), 3, offsetof(vertex, m_bitangent) }
+			sizeof(vertex),
+			{
+				mesh::input{ 0, 3, offsetof(vertex, m_position), true },
+				mesh::input{ 1, 3, offsetof(vertex, m_normal) },
+				mesh::input{ 2, 2, offsetof(vertex, m_uvmap) },
+				mesh::input{ 3, 3, offsetof(vertex, m_tangent) },
+				mesh::input{ 4, 3, offsetof(vertex, m_bitangent) }
+			}
 		},
 		GL_TRIANGLES,
 		GL_STATIC_DRAW
@@ -90,14 +93,30 @@ bool static_model::load(resources_manager& resources, const std::string& path)
 			std::fread(&vertices[v].m_tangent.x, sizeof(float), 3, model_file);
 			std::fread(&vertices[v].m_bitangent.x, sizeof(float), 3, model_file);
 		}
-
-		//copy to buffer
-		std::vector< mesh::byte > vbuffer(vertices.size() * sizeof(vertex));
-		//copy buffer
-		std::memcpy(&vbuffer[0], vertices.data(), vertices.size() * sizeof(vertex));
 		//create mesh
 		m_sub_models[i].m_mesh = mesh::snew();
-		m_sub_models[i].m_mesh->build(layout, ibuffer, vbuffer);
+		m_sub_models[i].m_mesh->build(
+			layout,
+			ibuffer.data(),
+			ibuffer.size(),
+			(const mesh::byte*)vertices.data(),
+			vertices.size() * sizeof(vertex),
+			//compute OBB is if versione 1
+			version == 1
+		);
+		//is versione 2? Load OBB
+		if (version == 2)
+		{
+			glm::mat3 obb_rot;
+			glm::vec3 obb_pos;
+			glm::vec3 obb_ext;
+			std::fread(&obb_rot[0].x, sizeof(float), 3, model_file);
+			std::fread(&obb_rot[1].x, sizeof(float), 3, model_file);
+			std::fread(&obb_rot[2].x, sizeof(float), 3, model_file);
+			std::fread(&obb_pos.x, sizeof(float), 3, model_file);
+			std::fread(&obb_ext.x, sizeof(float), 3, model_file);
+			m_sub_models[i].m_mesh->set_bounding_box(obb(obb_rot,obb_pos,obb_ext));
+		}
 	}
 	std::fclose(model_file);
 

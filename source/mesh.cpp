@@ -8,6 +8,23 @@
 #include <mesh.h>
 #include <OpenGL4.h>
 
+
+bool mesh::mesh_layout::has_a_position() const
+{
+	for (auto& in : m_input_layout.m_fields)
+		if (in.m_is_position)
+			return true;
+}
+
+size_t mesh::mesh_layout::position_offset() const
+{
+	for (auto& in : m_input_layout.m_fields)
+		if (in.m_is_position)
+			return in.m_offset;
+	return ~(size_t)0;
+}
+
+
 mesh::~mesh()
 {
 	destoy();
@@ -15,22 +32,113 @@ mesh::~mesh()
 
 void mesh::build(const mesh_layout& layout,
                  const std::vector< unsigned int >& indexs,
-                 const std::vector< byte >& vertex)
+                 const std::vector< byte >& vertex,
+	             bool compute_obb)
 {
     destoy();
     m_layout = layout;
     build_index(indexs);
     build_vertex(vertex);
+	if (compute_obb) compute_bounding_box(indexs.data(), indexs.size(), vertex.data(), vertex.size());
 }
 
 void mesh::build(const mesh_layout& layout,
                  const draw_range&  range,
-                 const std::vector< byte >& vertex)
+                 const std::vector< byte >& vertex,
+	             bool compute_obb)
 {
     destoy();
     m_layout = layout;
     m_range  = range;
     build_vertex(vertex);
+	if (compute_obb) compute_bounding_box(vertex.data(), vertex.size());
+}
+
+void mesh::build(const mesh_layout& layout,
+	             const  unsigned int* indexs,
+				 size_t isize,
+				 const byte* vertex,
+				 size_t vsize,
+			     bool compute_obb)
+{
+	destoy();
+	m_layout = layout;
+	build_index(indexs,isize);
+	build_vertex(vertex,vsize);
+	if (compute_obb) compute_bounding_box(indexs, isize, vertex, vsize);
+}
+
+void mesh::build(const mesh_layout& layout,
+				 const draw_range & range,
+				 const byte* vertex,
+				 size_t size,
+				 bool compute_obb)
+{
+	destoy();
+	m_layout = layout;
+	m_range = range;
+	build_vertex(vertex,size);
+	if (compute_obb) compute_bounding_box(vertex, size);
+}
+
+bool mesh::compute_bounding_box(const unsigned int* indexs,
+						        size_t isize,
+								const byte* points,
+								size_t vsize)
+{
+	if (!m_layout.has_a_position()) return false;
+	//compute box
+	m_bounding_box.build_from_triangles(
+		(const unsigned char*)points,
+		(size_t)m_layout.position_offset(),
+		(size_t)m_layout.m_input_layout.m_size,
+		vsize / m_layout.m_input_layout.m_size,
+		indexs,
+		isize
+	);
+	//enable culling
+	m_support_culling = true;
+	//end
+	return true;
+}
+
+bool mesh::compute_bounding_box(const byte* points, size_t vsize)
+{
+	if (!m_layout.has_a_position()) return false;
+	//compute box
+	if (m_layout.m_draw_mode == GL_TRIANGLES)
+	{
+		m_bounding_box.build_from_sequenzial_triangles(
+			(const unsigned char*)points,
+			(size_t)m_layout.position_offset(),
+			(size_t)m_layout.m_input_layout.m_size,
+			vsize / m_layout.m_input_layout.m_size
+		);
+	}
+	else
+	{
+		m_bounding_box.build_from_points(
+			(const unsigned char*)points,
+			(size_t)m_layout.position_offset(),
+			(size_t)m_layout.m_input_layout.m_size,
+			vsize / m_layout.m_input_layout.m_size
+		);
+	}
+	//enable culling
+	m_support_culling = true;
+	//end
+	return true;
+}
+
+void mesh::set_bounding_box(const obb& box)
+{
+	m_bounding_box = box;
+	m_support_culling = true;
+}
+
+void mesh::disable_support_culling()
+{
+	m_support_culling = false;
 }
 
 void mesh::draw(const glm::vec4& viewport,
@@ -57,20 +165,22 @@ void mesh::draw(const glm::vec4& viewport,
 	}
 }
 
+
+
 void mesh::draw()
 {
     //bind buffer
     glBindBuffer (GL_ARRAY_BUFFER, m_bvertex);
     
     //enable all attribute
-    for(const input& data : m_layout.m_input_layout)
+    for(const input& data : m_layout.m_input_layout.m_fields)
     {
         glEnableVertexAttribArray(data.m_attribute);
         glVertexAttribPointer (data.m_attribute,
                                data.m_strip,
                                GL_FLOAT,
                                GL_FALSE,
-                               data.m_size,
+							   m_layout.m_input_layout.m_size,
                                ((char *)NULL + (data.m_offset)));
     }
     
@@ -95,7 +205,7 @@ void mesh::draw()
     }
     
     //disable all attribute
-    for(const input& data : m_layout.m_input_layout)
+    for(const input& data : m_layout.m_input_layout.m_fields)
     {
         glDisableVertexAttribArray(data.m_attribute);
     }
@@ -132,6 +242,28 @@ void mesh::build_vertex(const std::vector< byte >& points)
     glBindBuffer (GL_ARRAY_BUFFER, m_bvertex);
     glBufferData (GL_ARRAY_BUFFER, points.size(), points.data(), m_layout.m_buffer_mode);
     glBindBuffer (GL_ARRAY_BUFFER, 0);
+}
+
+void mesh::build_index(const unsigned int* indexs, size_t size)
+{
+	//save size
+	m_bindex_size = (unsigned int)size;
+	//create buffer
+	glGenBuffers(1, &m_bindex);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_bindex);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, size * sizeof(unsigned int), indexs, m_layout.m_buffer_mode);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+}
+
+void mesh::build_vertex(const byte* points, size_t size)
+{
+	//save size
+	m_bvertex_size = (unsigned int)size;
+	//create buffer
+	glGenBuffers(1, &m_bvertex);
+	glBindBuffer(GL_ARRAY_BUFFER, m_bvertex);
+	glBufferData(GL_ARRAY_BUFFER, size, points, m_layout.m_buffer_mode);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 static void vbo_mode_draw_to_copy(int mode,int& new_mode)
@@ -173,6 +305,8 @@ component_ptr mesh::copy() const
 #else
 	auto omesh = mesh::snew();
 	//real copy
+	omesh->m_bounding_box = m_bounding_box;
+	omesh->m_support_culling = m_support_culling;
 	omesh->m_range = m_range;
 	omesh->m_layout = m_layout;
 	omesh->m_bvertex_size = m_bvertex_size;

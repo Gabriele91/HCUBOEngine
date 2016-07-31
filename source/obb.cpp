@@ -9,8 +9,8 @@
 
 void obb::build_from_attributes(const glm::mat3& rotation, const glm::vec3& position, const glm::vec3& extension)
 {
-	m_rotation = rotation;
-	m_position = position;
+	m_rotation  = rotation;
+	m_position  = position;
 	m_extension = extension;
 }
 
@@ -65,9 +65,9 @@ void obb::build_from_sequenzial_triangles(const std::vector< glm::vec3 >& points
 }
 
 void obb::build_from_sequenzial_triangles(const unsigned char* points,
-	size_t pos_offset,
-	size_t vertex_size,
-	size_t n_points)
+										  size_t pos_offset,
+										  size_t vertex_size,
+										  size_t n_points)
 {
 	float Ai = 0.0;
 	float Am = 0.0;
@@ -79,11 +79,11 @@ void obb::build_from_sequenzial_triangles(const unsigned char* points,
 	// mean location
 	for (int i = 0; i<(int)n_points; i += 3)
 	{
-#define att_vertex(i) (*(const glm::vec3*)(points+vertex_size*(i)+pos_offset))
+		#define att_vertex(i) (*(const glm::vec3*)(points+vertex_size*(i)+pos_offset))
 		const glm::vec3& p = att_vertex(i + 0);
 		const glm::vec3& q = att_vertex(i + 1);
 		const glm::vec3& r = att_vertex(i + 2);
-#undef att_vertex
+		#undef att_vertex
 		mui = (p + q + r) / 3.0f;
 
 		//compute len( triangle  dir/norm )
@@ -169,12 +169,12 @@ void obb::build_from_triangles(const std::vector< glm::vec3 >& points, const  st
 	build_from_covariance_matrix(C, points);
 }
 
-void obb::build_from_triangles(const unsigned char* points,
-	size_t pos_offset,
-	size_t vertex_size,
-	size_t n_points,
-	const unsigned int* triangles,
-	size_t size)
+void obb::build_from_triangles(const unsigned char* points, 
+							   size_t pos_offset, 
+							   size_t vertex_size,
+							   size_t n_points,
+							   const unsigned int* triangles, 
+							   size_t size)
 {
 	float Ai = 0.0;
 	float Am = 0.0;
@@ -186,11 +186,11 @@ void obb::build_from_triangles(const unsigned char* points,
 	// mean location
 	for (int i = 0; i<(int)size; i += 3)
 	{
-#define att_vertex(i) (*(const glm::vec3*)(points+vertex_size*(i)+pos_offset))
+		#define att_vertex(i) (*(const glm::vec3*)(points+vertex_size*(i)+pos_offset))
 		const glm::vec3& p = att_vertex(triangles[i + 0]);
 		const glm::vec3& q = att_vertex(triangles[i + 1]);
 		const glm::vec3& r = att_vertex(triangles[i + 2]);
-#undef att_vertex
+		#undef att_vertex
 		mui = (p + q + r) / 3.0f;
 
 		//compute len( triangle  dir/norm )
@@ -267,15 +267,15 @@ void obb::build_from_points(const std::vector< glm::vec3 >& points)
 }
 
 void obb::build_from_points(const unsigned char* points,
-	size_t pos_offset,
-	size_t vertex_size,
-	size_t n_points)
+							size_t pos_offset,
+							size_t vertex_size,
+							size_t n_points)
 
 {
 	glm::vec3 mu(0.0, 0.0, 0.0);
 	glm::mat3 C;
 
-#define att_vertex(i) (*(const glm::vec3*)(points+vertex_size*(i)+pos_offset))
+	#define att_vertex(i) (*(const glm::vec3*)(points+vertex_size*(i)+pos_offset))
 	// loop over the points to find the mean point
 	// location
 	for (int i = 0; i < (int)n_points; i++)
@@ -304,7 +304,7 @@ void obb::build_from_points(const unsigned char* points,
 		cyz += p.y*p.z - mu.y*mu.z;
 		czz += p.z*p.z - mu.z*mu.z;
 	}
-#undef att_vertex
+	#undef att_vertex
 	// now build the covariance matrix
 	C[0][0] = cxx; C[0][1] = cxy; C[0][2] = cxz;
 	C[1][0] = cxy; C[1][1] = cyy; C[1][2] = cyz;
@@ -375,7 +375,7 @@ void obb::build_from_covariance_matrix(const glm::mat3& C, const std::vector< gl
 	build_from_covariance_matrix(C, (const unsigned char*)points.data(), 0, sizeof(glm::vec3), points.size());
 }
 
-void obb::build_from_covariance_matrix(const glm::mat3& C, const std::vector< glm::vec3 >& points, size_t size)
+void obb::build_from_covariance_matrix(const glm::mat3& C, const std::vector< glm::vec3 >& points,size_t size)
 {
 	build_from_covariance_matrix(C, (const unsigned char*)points.data(), 0, sizeof(glm::vec3), size);
 }
@@ -411,11 +411,11 @@ void obb::build_from_covariance_matrix(
 
 	for (int i = 0; i<(int)size; i++)
 	{
-#define att_vertex(i) (*(const glm::vec3*)(points+vertex_size*(i)+pos_offset))
+		#define att_vertex(i) (*(const glm::vec3*)(points+vertex_size*(i)+pos_offset))
 		glm::vec3 p_prime(glm::dot(r, att_vertex(i)),
-			glm::dot(u, att_vertex(i)),
-			glm::dot(f, att_vertex(i)));
-#undef att_vertex
+						  glm::dot(u, att_vertex(i)),
+						  glm::dot(f, att_vertex(i)));
+		#undef att_vertex
 
 		minim = glm::min(minim, p_prime);
 		maxim = glm::max(maxim, p_prime);

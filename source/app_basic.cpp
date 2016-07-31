@@ -15,6 +15,7 @@
 #include <gameobject.h>
 #include <transform.h>
 #include <iostream>
+#include <frustum.h>
 
 void app_basic::key_event(application& app,int key, int scancode, int action, int mods)
 {
@@ -37,6 +38,34 @@ void app_basic::key_event(application& app,int key, int scancode, int action, in
 		rendering_pass_ptr	d_pass = r_system->get_rendering_pass()[0];
 		auto p_deferred = std::static_pointer_cast<rendering_pass_deferred>(d_pass);
 		p_deferred->set_ambient_occlusion(false);
+	}
+	else if (key == GLFW_KEY_U)
+	{
+		rendering_system*	r_system = m_systems.get_system<rendering_system>();
+		rendering_pass_ptr	d_pass = r_system->get_rendering_pass()[0];
+		auto p_deferred = std::static_pointer_cast<rendering_pass_deferred>(d_pass);
+		p_deferred->stop_update_frustum(false);
+	}
+	else if (key == GLFW_KEY_H)
+	{
+		rendering_system*	r_system = m_systems.get_system<rendering_system>();
+		rendering_pass_ptr	d_pass = r_system->get_rendering_pass()[0];
+		auto p_deferred = std::static_pointer_cast<rendering_pass_deferred>(d_pass);
+		p_deferred->stop_update_frustum(true);
+	}
+	else if (key == GLFW_KEY_I)
+	{
+		rendering_system*	r_system = m_systems.get_system<rendering_system>();
+		rendering_pass_ptr	d_pass = r_system->get_rendering_pass()[0];
+		auto p_deferred = std::static_pointer_cast<rendering_pass_deferred>(d_pass);
+		p_deferred->stop_frustum_culling(false);
+	}
+	else if (key == GLFW_KEY_J)
+	{
+		rendering_system*	r_system = m_systems.get_system<rendering_system>();
+		rendering_pass_ptr	d_pass = r_system->get_rendering_pass()[0];
+		auto p_deferred = std::static_pointer_cast<rendering_pass_deferred>(d_pass);
+		p_deferred->stop_frustum_culling(true);
 	}
 	else if(key == GLFW_KEY_UP)          m_camera->get_component<transform>()->translation({0,0,1});
 	else if(key == GLFW_KEY_DOWN)        m_camera->get_component<transform>()->translation({0,0,-1});
@@ -105,7 +134,7 @@ void app_basic::start(application& app)
     glm::vec2 size = app.get_window_size();
     m_aspect       = float(size.x) / float(size.y);
     c_camera->set_viewport(glm::ivec4{0, 0, size.x, size.y});
-    c_camera->set_perspective(m_fov, m_aspect, 0.1, 1000.0);
+    c_camera->set_perspective(m_fov, m_aspect, 0.1, 500.0);
 	t_camera->look_at(glm::vec3{ 0.0f, 6.9f, -45.0f },
 				  	  glm::vec3{ 0.0f,-1.0f, 0.0f },
 					  glm::vec3{ 0.0f, 1.0f, 0.0f });
@@ -121,8 +150,8 @@ void app_basic::start(application& app)
 	m_resources.add_directory("assets/materials");
 	m_resources.add_directory("assets/ship");
 	m_resources.add_directory("assets/asteroid");
+	m_resources.add_directory("tools/assimp_to_smesh/output");
 	m_resources.add_directory("assets/sponza");
-    m_resources.add_directory("tools/assimp_to_smesh/output");
     /////// /////// /////// /////// /////// /////// /////// /////// ///////
     // build scene
     {
@@ -176,7 +205,7 @@ void app_basic::start(application& app)
         //add to render
         m_systems.add_entity(m_model);
         //cube
-#if 1
+#if 0
         auto e_cube = gameobject::cube_new({1,1,1});
              e_cube->add_component(m_resources.get_material("w_box_mat"));
 		auto t_cube = e_cube->get_component<transform>();
@@ -202,6 +231,16 @@ void app_basic::start(application& app)
 		t_sponza->rotation(glm::quat({ 0, glm::radians(90.0), 0.0 }));
 		//add to render
 		m_systems.add_entity(e_sponza);
+#if 0
+		auto e_sponza_obb = m_resources.get_prefab("sponza_obb")->instantiate();
+		auto t_sponza_obb = e_sponza_obb->get_component<transform>();
+		t_sponza_obb->position({ 5.,-10.0, -99. });
+		t_sponza_obb->scale({ 0.12,0.12,0.12 });
+		t_sponza_obb->rotation(glm::quat({ 0, glm::radians(90.0), 0.0 }));
+		//add to render
+		m_systems.add_entity(e_sponza_obb);
+		
+#endif 
 #endif
         //lights
         entity::ptr e_lights[3] =
@@ -276,9 +315,9 @@ bool app_basic::run(application& app,double delta_time)
 {
 	//////////////////////////////////////////////////////////
     //angle
-    static float angle = 0;
+    static float acc_delta_time = 0;
     //update angle
-    angle += 1.0f * delta_time;
+    acc_delta_time += 1.0f * delta_time;
     //////////////////////////////////////////////////////////
     //update
     m_model->get_component<transform>()->turn(glm::quat{{0.0, glm::radians(5.0*delta_time), 0.0}});
@@ -288,7 +327,7 @@ bool app_basic::run(application& app,double delta_time)
     m_lights
     ->get_childs_by_name("light_red")[0]
     ->get_component<light>()
-    ->set_quadratic_attenuation_from_radius(fabsf(sinf(angle))*9.+1.,0.001);
+    ->set_quadratic_attenuation_from_radius(fabsf(sinf(acc_delta_time))*9.+1.,0.001);
     //////////////////////////////////////////////////////////
     //draw
     m_systems.update(delta_time);

@@ -29,7 +29,6 @@ component_ptr entity::add_component(component_ptr component_t)
     return component_t;
 }
 
-
 component_ptr entity::get_component(component_id id)
 {
     return m_components[id];
@@ -83,6 +82,11 @@ void entity::add_child(entity::ptr new_child)
         //add to sys
         if(get_systems()) get_systems()->add_entity(new_child);
     }
+}
+
+const entity::entities_map& entity::get_childs() const
+{
+	return m_entities;
 }
 
 void entity::remove_child(const entity::ptr old_child)

@@ -2,6 +2,8 @@
 #include <string>
 #include <smesh.h>
 #include <filesystem.h>
+#define SAVE_OBBS
+
 static const char* mat_template[]
 {
 	//NO TEXTURE TEMPLATE
@@ -117,9 +119,17 @@ void model::save(const std::string& path)
 	FILE* model_file = fopen(path.c_str(), "wb");
 	//test open
 	if (!model_file) return;
+
+#ifdef SAVE_OBBS
+	//version
+	unsigned int version = 2;
+	std::fwrite(&version, sizeof(unsigned int), 1, model_file);
+#else
 	//version
 	unsigned int version = 1;
 	std::fwrite(&version, sizeof(unsigned int), 1, model_file);
+#endif 
+
 	//n save geometry
 	unsigned int size_nodes = m_nodes.size();
 	std::fwrite(&size_nodes, sizeof(unsigned int), 1, model_file);
@@ -146,6 +156,13 @@ void model::save(const std::string& path)
 			std::fwrite(&v.m_tangent.x, sizeof(float), 3, model_file);
 			std::fwrite(&v.m_bitangent.x, sizeof(float), 3, model_file);
 		}
+#ifdef SAVE_OBBS
+		std::fwrite(&node.m_obb.get_rotation_matrix()[0].x, sizeof(float), 3, model_file);
+		std::fwrite(&node.m_obb.get_rotation_matrix()[1].x, sizeof(float), 3, model_file);
+		std::fwrite(&node.m_obb.get_rotation_matrix()[2].x, sizeof(float), 3, model_file);
+		std::fwrite(&node.m_obb.get_position().x, sizeof(float), 3, model_file);
+		std::fwrite(&node.m_obb.get_extension().x, sizeof(float), 3, model_file);
+#endif
 	}
 	//close file
 	std::fclose(model_file);
@@ -158,4 +175,20 @@ void model::save(const std::string& path)
 		node.m_material.save(directory + "/" + filename);
 	}
 
+}
+
+void model::compute_obbs()
+{
+	for (size_t n = 0; n != m_nodes.size(); ++n)
+	{
+		m_nodes[n].m_obb.build_from_triangles
+		(
+			(const unsigned char*)m_nodes[n].m_vertex.data(),
+			offsetof(vertex, m_position),
+			sizeof(vertex),
+			m_nodes[n].m_vertex.size(),
+			m_nodes[n].m_index.data(),
+			m_nodes[n].m_index.size()
+		);
+	}
 }
