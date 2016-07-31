@@ -151,6 +151,7 @@ void app_basic::start(application& app)
 	m_resources.add_directory("assets/ship");
 	m_resources.add_directory("assets/asteroid");
 	m_resources.add_directory("tools/assimp_to_smesh/output");
+	m_resources.add_directory("assets/sponza/sponza_obb");
 	m_resources.add_directory("assets/sponza");
     /////// /////// /////// /////// /////// /////// /////// /////// ///////
     // build scene
