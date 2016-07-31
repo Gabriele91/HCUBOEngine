@@ -204,7 +204,6 @@
     <ClCompile Include="..\source\json11.cpp" />
     <ClCompile Include="..\source\main.cpp" />
     <ClCompile Include="..\source\mesh.cpp" />
-    <ClCompile Include="..\source\pico_png.cpp" />
     <ClCompile Include="..\source\query_performance.cpp" />
     <ClCompile Include="..\source\rendering_pass_deferred.cpp" />
     <ClCompile Include="..\source\rendering_system.cpp" />
@@ -212,6 +211,7 @@
     <ClCompile Include="..\source\shader.cpp" />
     <ClCompile Include="..\source\ssao_technique.cpp" />
     <ClCompile Include="..\source\static_model.cpp" />
+    <ClCompile Include="..\source\stb_image.cpp" />
     <ClCompile Include="..\source\system_manager.cpp" />
     <ClCompile Include="..\source\texture.cpp" />
     <ClCompile Include="..\source\text_mesh.cpp" />
