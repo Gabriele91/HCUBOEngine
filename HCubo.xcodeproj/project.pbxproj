@@ -66,6 +66,8 @@
 		E09799591D2E5E2D006D1F13 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E01A2EF41D22C57500A8BA77 /* CoreVideo.framework */; };
 		E097995A1D2E5E2D006D1F13 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E01A2EEB1D22C51200A8BA77 /* Cocoa.framework */; };
 		E097995B1D2E5E2D006D1F13 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E01A2EE91D22C50E00A8BA77 /* OpenGL.framework */; };
+		E0D8F21E1D4E6B2D006EA26C /* frustum.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E0D8F21C1D4E6B2D006EA26C /* frustum.cpp */; };
+		E0D8F21F1D4E6B2D006EA26C /* obb.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E0D8F21D1D4E6B2D006EA26C /* obb.cpp */; };
 		E0E8EC461D4804CA00BE1432 /* ssao_technique.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E0E8EC451D4804CA00BE1432 /* ssao_technique.cpp */; };
 		E0E8EC481D4804D700BE1432 /* ssao_technique.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E0E8EC451D4804CA00BE1432 /* ssao_technique.cpp */; };
 /* End PBXBuildFile section */
@@ -151,6 +153,12 @@
 		E09799401D2E5DD2006D1F13 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E09799451D2E5DD2006D1F13 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E0B02EDD1D34BDCE0058D09B /* resources_manager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = resources_manager.h; sourceTree = "<group>"; };
+		E0D8F21C1D4E6B2D006EA26C /* frustum.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = frustum.cpp; sourceTree = "<group>"; };
+		E0D8F21D1D4E6B2D006EA26C /* obb.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = obb.cpp; sourceTree = "<group>"; };
+		E0D8F2201D4E6B39006EA26C /* eigenvalues_jacobi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = eigenvalues_jacobi.h; sourceTree = "<group>"; };
+		E0D8F2211D4E6B39006EA26C /* frustum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = frustum.h; sourceTree = "<group>"; };
+		E0D8F2221D4E6B39006EA26C /* obb.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = obb.h; sourceTree = "<group>"; };
+		E0D8F2231D4E6B39006EA26C /* prefab.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = prefab.h; sourceTree = "<group>"; };
 		E0E8EC451D4804CA00BE1432 /* ssao_technique.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ssao_technique.cpp; sourceTree = "<group>"; };
 		E0E8EC471D4804D000BE1432 /* ssao_technique.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ssao_technique.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -184,6 +192,8 @@
 		E00ABDB81D23C3BE004E4CFD /* source */ = {
 			isa = PBXGroup;
 			children = (
+				E0D8F21C1D4E6B2D006EA26C /* frustum.cpp */,
+				E0D8F21D1D4E6B2D006EA26C /* obb.cpp */,
 				E03EDC731D34186900C0C22A /* app_basic.cpp */,
 				E0E8EC451D4804CA00BE1432 /* ssao_technique.cpp */,
 				E03EDC7A1D34186900C0C22A /* main.cpp */,
@@ -239,6 +249,10 @@
 		E01A2EE41D22C2A900A8BA77 /* include */ = {
 			isa = PBXGroup;
 			children = (
+				E0D8F2201D4E6B39006EA26C /* eigenvalues_jacobi.h */,
+				E0D8F2211D4E6B39006EA26C /* frustum.h */,
+				E0D8F2221D4E6B39006EA26C /* obb.h */,
+				E0D8F2231D4E6B39006EA26C /* prefab.h */,
 				E0E8EC471D4804D000BE1432 /* ssao_technique.h */,
 				E03EDCAB1D3418CF00C0C22A /* app_basic.h */,
 				E01583991D4399040029D6F5 /* struct_attribute.h */,
@@ -399,6 +413,7 @@
 				E03EDC871D34186900C0C22A /* application.cpp in Sources */,
 				E022AF4C1D3EB487009F76D5 /* rendering_pass_deferred.cpp in Sources */,
 				E0E8EC461D4804CA00BE1432 /* ssao_technique.cpp in Sources */,
+				E0D8F21F1D4E6B2D006EA26C /* obb.cpp in Sources */,
 				E03EDC901D34186900C0C22A /* native_dialog.cpp in Sources */,
 				E022AF481D3DFF98009F76D5 /* g_buffer.cpp in Sources */,
 				E03EDC8B1D34186900C0C22A /* filesystem.cpp in Sources */,
@@ -411,6 +426,7 @@
 				E03EDC8D1D34186900C0C22A /* main.cpp in Sources */,
 				E03EDC931D34186900C0C22A /* rendering_system.cpp in Sources */,
 				E03EDC921D34186900C0C22A /* query_performance.cpp in Sources */,
+				E0D8F21E1D4E6B2D006EA26C /* frustum.cpp in Sources */,
 				E03EDC8F1D34186900C0C22A /* mesh.cpp in Sources */,
 				E03EDC861D34186900C0C22A /* app_basic.cpp in Sources */,
 				E03099BD1D4211CB001855A9 /* static_model.cpp in Sources */,

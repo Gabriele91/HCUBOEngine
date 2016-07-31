@@ -14,6 +14,7 @@ bool mesh::mesh_layout::has_a_position() const
 	for (auto& in : m_input_layout.m_fields)
 		if (in.m_is_position)
 			return true;
+    return false;
 }
 
 size_t mesh::mesh_layout::position_offset() const
