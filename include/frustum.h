@@ -16,6 +16,9 @@ public:
 	//test point
 	testing_result test_point(const glm::vec3& point) const;
 
+	//test sphere
+	testing_result test_sphere(const glm::vec3& point,float radius) const;
+
 	//test obb
 	testing_result test_obb(const obb& box) const;
 

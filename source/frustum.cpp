@@ -43,9 +43,57 @@ frustum::testing_result frustum::test_point(const glm::vec3& point) const
 	return INSIDE;
 }
 
+//test sphere
+frustum::testing_result frustum::test_sphere(const glm::vec3& point, float radius) const
+{
+	float center_distance;
+	testing_result result = INSIDE;
+
+	for (int i = 0; i != N_PLANES; i++)
+	{
+		//calc distance
+		center_distance = plane_distance(m_planes[i], point);
+		//test
+			 if (center_distance < -radius) return OUTSIDE;
+		else if (center_distance <= radius) result = INTERSECT;
+	}
+
+	return result;
+}
+
 //test obb
 frustum::testing_result frustum::test_obb(const obb& box) const
 {
+#if 1
+	// Project the box onto the line defined by the plane center and normal.
+	// See "3D Game Engine Design" chapter 4.3.2.
+	frustum::testing_result result = INSIDE;
+	//refs
+	const glm::mat3& rotation = glm::transpose(box.get_rotation_matrix());
+	const glm::vec3& position = box.get_position();
+	//axis
+	auto& axis_0 = rotation[0];//glm::column(rotation, 0);
+	auto& axis_1 = rotation[1];//glm::column(rotation, 1);
+	auto& axis_2 = rotation[2];//glm::column(rotation, 2);
+
+	for (int i = 0; i != N_PLANES; ++i)
+	{
+		// plane normal 
+		const glm::vec3 norm = ((glm::vec3)m_planes[i]);
+		// get extension
+		const glm::vec3& ext = box.get_extension();
+		// distance
+		float dist = ext.x * fabs(glm::dot(axis_0, norm)) +
+			ext.y * fabs(glm::dot(axis_1, norm)) +
+			ext.z * fabs(glm::dot(axis_2, norm));
+		//compute distance
+		float distance_box = plane_distance(m_planes[i], position);
+		//like sphere 
+		if (distance_box < -dist) return OUTSIDE;
+		else if (distance_box <= dist) result = INTERSECT;
+	}
+	return result;
+#else
 	/* todo: use normals */
 	frustum::testing_result result = INSIDE;
 	// get points
@@ -70,11 +118,42 @@ frustum::testing_result frustum::test_obb(const obb& box) const
 		else if (out) result = INTERSECT;
 	}
 	return result;
+#endif
 }
 
 //test obb
 frustum::testing_result frustum::test_obb(const obb& box, const glm::mat4& model) const
 {
+#if 1
+	// Project the box onto the line defined by the plane center and normal.
+	// See "3D Game Engine Design" chapter 4.3.2.
+	frustum::testing_result result = INSIDE;
+	//rotation/position in global world
+	glm::mat3 rotation = glm::mat3(model)*glm::transpose( box.get_rotation_matrix() );
+	glm::vec3 position = (glm::vec3)(model*glm::vec4(box.get_position(), 1.0));
+	//axis
+	auto& axis_0 = rotation[0];//glm::column(rotation, 0);
+	auto& axis_1 = rotation[1];//glm::column(rotation, 1);
+	auto& axis_2 = rotation[2];//glm::column(rotation, 2);
+
+	for (int i = 0; i != N_PLANES; ++i)
+	{
+		// plane normal 
+		const glm::vec3 norm = ((glm::vec3)m_planes[i]);
+		// get extension
+		const glm::vec3& ext = box.get_extension();
+		// distance
+		float dist = ext.x * fabs(glm::dot(axis_0, norm)) +
+					 ext.y * fabs(glm::dot(axis_1, norm)) +
+				     ext.z * fabs(glm::dot(axis_2, norm));
+		//compute distance
+		float distance_box = plane_distance(m_planes[i], position);
+		//like sphere 
+			 if (distance_box < -dist) return OUTSIDE;
+	    else if (distance_box <= dist) result = INTERSECT;
+	}
+	return result;
+#else
 	/* todo: use normals */
 	frustum::testing_result result = INSIDE;
 	// get points
@@ -90,13 +169,14 @@ frustum::testing_result frustum::test_obb(const obb& box, const glm::mat4& model
 		for (int k = 0; k != points.size() && (in == 0 || out == 0); ++k)
 		{
 			// is the corner outside or inside
-			if (plane_distance(m_planes[i], points[k]) < 0) out++;
-			else in++;
+			if (plane_distance(m_planes[i], points[k]) < 0) ++out;
+			else ++in;
 		}
 		//if all corners are out
-		if (!in) return (OUTSIDE);
+		if (!in) return OUTSIDE;
 		// if some corners are out and others are in
 		else if (out) result = INTERSECT;
 	}
 	return result;
+#endif
 }
