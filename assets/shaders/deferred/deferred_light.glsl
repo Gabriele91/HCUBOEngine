@@ -96,7 +96,17 @@ void calc_point_light(in    light light0,
     float spec        = pow(max(dot(view_dir, reflect_dir), 0.0), shininess);
     // Attenuation
     float light_distance = length(light0.m_position - frag_position);
-    float attenuation    = 1.0f / (light0.m_constant + light0.m_linear * light_distance + light0.m_quadratic * (light_distance * light_distance));
+#if 0
+    float attenuation    = 1.0f / (light0.m_constant + 
+								   light0.m_linear * light_distance + 
+								   light0.m_quadratic * (light_distance * light_distance));
+#else
+	float attenuation = clamp(
+		min((1.0f / light0.m_constant), 1.0)
+		- (light_distance / (light0.m_linear*light0.m_linear))
+		- ((light_distance * light_distance) / (light0.m_quadratic*light0.m_quadratic)), 0.0, 1.0);
+	attenuation *= attenuation;
+#endif
     // Combine results
     results.m_diffuse  = light0.m_diffuse  * diff * diffuse * attenuation;
     results.m_specular = light0.m_specular * spec * specular * attenuation;
@@ -120,7 +130,17 @@ void calc_spot_light(in    light light0,
     float spec        = pow(max(dot(view_dir, reflect_dir), 0.0), shininess);
     // Attenuation
     float light_distance = length(light0.m_position - frag_position);
-    float attenuation    = 1.0f / (light0.m_constant + light0.m_linear * light_distance + light0.m_quadratic * (light_distance * light_distance));
+#if 0
+	float attenuation = 1.0f / (light0.m_constant +
+		light0.m_linear * light_distance +
+		light0.m_quadratic * (light_distance * light_distance));
+#else
+	float attenuation = clamp(
+		  min((1.0f / light0.m_constant),1.0)
+		- (light_distance / (light0.m_linear*light0.m_linear))
+		- ((light_distance * light_distance) / (light0.m_quadratic*light0.m_quadratic)), 0.0, 1.0);
+	attenuation *= attenuation;
+#endif
     // Spotlight intensity
     float theta = dot(light_dir, normalize(-light0.m_direction));
     float epsilon = light0.m_inner_cut_off - light0.m_outer_cut_off;
