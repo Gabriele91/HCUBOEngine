@@ -90,8 +90,7 @@ void rendering_pass_deferred::stop_frustum_culling(bool stop_culling)
 void rendering_pass_deferred::draw_pass(glm::vec4&  clear_color,
                                         glm::vec4&  ambient_color,
                                         entity::ptr e_camera,
-                                        std::vector< entity::wptr >& lights,
-                                        std::vector< entity::wptr >& renderables)
+										render_queues& queues)
 {
     camera::ptr   c_camera = e_camera->get_component<camera>();
     transform_ptr t_camera = e_camera->get_component<transform>();
@@ -110,7 +109,7 @@ void rendering_pass_deferred::draw_pass(glm::vec4&  clear_color,
 											   t_camera->get_matrix_inv());
 
 	//draw
-    for (entity::wptr& weak_entity : renderables)
+    for (entity::wptr& weak_entity : queues.m_opaque)
     {
         auto entity     = weak_entity.lock();
 		auto t_entity   = entity->get_component<transform>();
@@ -176,12 +175,12 @@ void rendering_pass_deferred::draw_pass(glm::vec4&  clear_color,
 	//add info
 	m_ambient_light->set_value(ambient_color);
     //compute max lights
-    unsigned max_lights = std::min(m_max_lights,(unsigned)lights.size());
+    unsigned max_lights = std::min(m_max_lights,(unsigned)queues.m_lights.size());
 	m_uniform_n_lights_used->set_value(max_lights);
 	//uniform lights
     for (unsigned i = 0; i != max_lights; ++i)
     {
-        auto entity = lights[i].lock();
+        auto entity = queues.m_lights[i].lock();
 		m_uniform_lights[i].uniform( entity->get_component<light>(),
 									 t_camera->get_matrix_inv(),
                                      entity->get_component<transform>()->get_matrix());

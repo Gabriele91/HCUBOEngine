@@ -10,6 +10,57 @@
 #include <entity.h>
 #include <rendering_system.h>
 
+
+void render_queues::clear()
+{
+	m_lights.clear();
+	m_opaque.clear();
+}
+
+void render_queues::remove(entity::ptr e)
+{
+	//search light and remove
+	for (auto it_light  = m_lights.begin();
+		      it_light != m_lights.end();
+		    ++it_light)
+	{
+		if (it_light->lock() == e)
+		{
+			m_lights.erase(it_light);
+			break;
+		}
+	}
+	//search opaque renderable object and remove
+	for (auto it_renderable  = m_opaque.begin();
+	   	      it_renderable != m_opaque.end();
+		    ++it_renderable)
+	{
+		if (it_renderable->lock() == e)
+		{
+			m_opaque.erase(it_renderable);
+			break;
+		}
+	}
+	//search translucent renderable object and remove
+	for (auto it_renderable  = m_translucent.begin();
+		      it_renderable != m_translucent.end();
+		    ++it_renderable)
+	{
+		if (it_renderable->lock() == e)
+		{
+			m_translucent.erase(it_renderable);
+			break;
+		}
+	}
+}
+
+void render_queues::push(entity::ptr e)
+{
+	if (e->has_component<light>())      m_lights.push_back(e);
+	if (e->has_component<renderable>()) m_opaque.push_back(e);
+	//else in m_translucent
+}
+
 void rendering_system::on_attach( system_manager& sm )
 {
     for(auto& e : sm.get_entities()) on_add_entity(e);
@@ -18,44 +69,22 @@ void rendering_system::on_attach( system_manager& sm )
 void rendering_system::on_detach()
 {
     m_camera = nullptr;
-    m_lights.clear();
-    m_renderables.clear();
+	m_queue.clear();
 }
 
 void rendering_system::on_add_entity(entity::ptr e)
 {
     //copy ref
     if(e->has_component<camera>())     m_camera = e;
-    if(e->has_component<light>())      m_lights.push_back(e);
-    if(e->has_component<renderable>()) m_renderables.push_back(e);
+	else							   m_queue.push(e);
 }
 
 void rendering_system::on_remove_entity(entity::ptr e)
 {
     //remove camera
     if(m_camera == e) m_camera = nullptr;
-    //search light and remove
-    for(auto it_light  = m_lights.begin();
-             it_light != m_lights.end();
-           ++it_light)
-    {
-        if(it_light->lock() == e)
-        {
-            m_lights.erase(it_light);
-            break;
-        }
-    }
-    //search renderable and remove
-    for(auto it_renderable  = m_lights.begin();
-             it_renderable != m_lights.end();
-           ++it_renderable)
-    {
-        if(it_renderable->lock() == e)
-        {
-            m_renderables.erase(it_renderable);
-            break;
-        }
-    }
+	//remove obj
+	else              m_queue.remove(e);
 }
 
 void rendering_system::on_update(double deltatime)
@@ -83,8 +112,7 @@ void rendering_system::add_rendering_pass(rendering_pass_ptr pass)
 void rendering_pass_base::draw_pass(glm::vec4&  clear_color,
                                     glm::vec4&  ambient_color,
                                     entity::ptr e_camera,
-                                    std::vector< entity::wptr >& lights,
-                                    std::vector< entity::wptr >& renderables)
+									render_queues& queues)
 {
     camera::ptr   ccamera = e_camera->get_component<camera>();
     transform_ptr tcamera = e_camera->get_component<transform>();
@@ -94,7 +122,7 @@ void rendering_pass_base::draw_pass(glm::vec4&  clear_color,
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
     
-	for (entity::wptr& weak_entity : renderables)
+	for (entity::wptr& weak_entity : queues.m_opaque)
 	{
         auto entity   = weak_entity.lock();
 		auto material = entity->get_component<renderable>()->get_material();
@@ -129,8 +157,7 @@ void rendering_system::draw()
             m_clear_color,
             m_ambient_color,
             m_camera,
-            m_lights,
-            m_renderables
+            m_queue
         );
     }
 }

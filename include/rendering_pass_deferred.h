@@ -21,8 +21,7 @@ public:
 	virtual void draw_pass(glm::vec4&  clear_color,
 						   glm::vec4&  ambient_color,
 						   entity::ptr camera,
-						   std::vector< entity::wptr >& lights,
-						   std::vector< entity::wptr >& renderables);
+						   render_queues& queues);
 
 	void set_ambient_occlusion(bool enable = true);
 

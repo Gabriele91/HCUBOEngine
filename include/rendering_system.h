@@ -13,14 +13,25 @@
 #include <smart_pointers.h>
 #include <system_manager.h>
 
+class render_queues
+{
+public:
+	std::vector < entity::wptr > m_lights;
+	std::vector < entity::wptr > m_opaque;
+	std::vector < entity::wptr > m_translucent;
+
+	void clear();
+	void push(entity::ptr e);
+	void remove(entity::ptr e);
+};
+
 class rendering_pass
 {
 public:
     virtual void draw_pass(glm::vec4&  clear_color,
                            glm::vec4&  ambient_color,
                            entity::ptr e_camera,
-                           std::vector< entity::wptr >& lights,
-                           std::vector< entity::wptr >& renderables)= 0;
+                           render_queues& queues)= 0;
 };
 using rendering_pass_ptr  = std::shared_ptr< rendering_pass >;
 using rendering_pass_uptr = std::unique_ptr< rendering_pass >;
@@ -31,9 +42,9 @@ public:
     virtual void draw_pass(glm::vec4&  clear_color,
                            glm::vec4&  ambient_color,
                            entity::ptr e_camera,
-                           std::vector< entity::wptr >& lights,
-                           std::vector< entity::wptr >& renderables);
+						   render_queues& queues);
 };
+
 
 class rendering_system : public system_component, public smart_pointers< rendering_system >
 {
@@ -74,8 +85,7 @@ protected:
     glm::vec4                         m_clear_color;
     glm::vec4                         m_ambient_color;
     entity::ptr						  m_camera;
-    std::vector< entity::wptr >       m_lights;
-    std::vector< entity::wptr >       m_renderables;
+	render_queues					  m_queue;
 	std::vector< rendering_pass_ptr > m_rendering_pass;
     
 };
