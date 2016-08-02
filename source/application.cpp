@@ -50,6 +50,15 @@ glm::dvec2 application::get_mouse_position() const
     return glm::dvec2{ xpos, ypos };
 }
 
+void application::set_mouse_position(const glm::dvec2& pos) const
+{
+	glfwSetCursorPos(m_window, pos.x, pos.y);
+}
+
+double application::get_last_delta_time() const
+{
+	return m_last_delta_time;
+}
 //get attr
 instance* application::get_instance()
 {
@@ -115,6 +124,8 @@ bool application::execute(const window_size& size,
     glfwSetWindowUserPointer(m_window, this);
     //test
     if(!m_window) return false;
+	//disable cursor
+	//glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     //make current
     glfwMakeContextCurrent(m_window);
     glfwSwapInterval(1); 
@@ -202,8 +213,10 @@ bool application::execute(const window_size& size,
         //compute delta time
         old_time  = last_time;
         last_time = query_performance::get_time();
+		//update delta time
+		m_last_delta_time = std::max(last_time - old_time, 0.0001);
         //update
-        if(!m_instance->run(*this,std::max(last_time-old_time,0.0001))) break;
+        if(!m_instance->run(*this, m_last_delta_time)) break;
         //print
 		_OPENGL_PRINT_DEBUG_
         //swap

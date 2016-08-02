@@ -8,6 +8,7 @@
 #include <app_basic.h>
 #include <glm/vec2.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/quaternion.hpp>
 #include <basic_meshs.h>
 #include <regex>
 #include <OpenGL4.h>
@@ -93,8 +94,9 @@ void app_basic::key_event(application& app,int key, int scancode, int action, in
     }
 }
 
-void app_basic::cursor_position_event(application& app,const glm::dvec2& pos)
+void app_basic::cursor_position_event(application& app,const glm::dvec2& in_mouse_pos)
 {
+	camera_look_around(app);
 }
 
 void app_basic::mouse_button_event(application& app,int button, int action, int mods)
@@ -113,6 +115,49 @@ void app_basic::resize_event(application& application,const glm::ivec2& size)
     m_camera->get_component<camera>()->set_viewport(glm::ivec4{0, 0, size.x, size.y});
     //new perspective
     m_camera->get_component<camera>()->set_perspective(m_fov, m_aspect, 0.1, 1000.0);
+}
+
+void app_basic::camera_look_around(application& app)
+{
+	//statics
+	static glm::dvec2 half_wsize((glm::dvec2)app.get_window_size()*0.5);
+	static glm::dvec2 mouse_last_pos(half_wsize);
+	static glm::dvec2 angles;
+	//mouse pos
+	glm::dvec2 mouse_pos = app.get_mouse_position();
+	//fail case
+	if (mouse_pos == mouse_last_pos) return;
+	//compute speed
+	double mouse_speed = glm::length(mouse_last_pos - mouse_pos) * 0.01;
+	//max speed
+	if (mouse_speed > 0.75) { return; }
+	//update
+	mouse_last_pos = mouse_pos;
+	//reset pos
+	app.set_mouse_position((glm::dvec2)app.get_window_size()*0.5);
+	//update 
+	angles += mouse_speed * app.get_last_delta_time() * (half_wsize - mouse_pos);
+	std::swap(angles.x, angles.y);
+	//dir cam
+	glm::dvec3 direction
+	(
+		std::cos(angles.y) * std::sin(angles.x),
+		std::sin(angles.y),
+		std::cos(angles.y) * std::cos(angles.x)
+	);
+	glm::dvec3 right
+	(
+		sin(angles.x - glm::pi<double>() / 2.0),
+		0,
+		cos(angles.x - glm::pi<double>() / 2.0)
+	);
+	glm::dvec3 up = glm::cross(right, direction);
+	//position
+	glm::dvec3 position = m_camera->get_component<transform>()->get_position();
+	//target
+	glm::dvec3 target = position + direction;
+	//update camera
+	m_camera->get_component<transform>()->look_at(position, target, up);
 }
 
 void app_basic::start(application& app)
@@ -136,7 +181,7 @@ void app_basic::start(application& app)
     c_camera->set_viewport(glm::ivec4{0, 0, size.x, size.y});
     c_camera->set_perspective(m_fov, m_aspect, 0.1, 500.0);
 	t_camera->look_at(glm::vec3{ 0.0f, 6.9f, -45.0f },
-				  	  glm::vec3{ 0.0f,-1.0f, 0.0f },
+				  	  glm::vec3{ 0.0f, 1.0f, 0.0f },
 					  glm::vec3{ 0.0f, 1.0f, 0.0f });
     //set camera
     m_systems.add_entity(m_camera);
@@ -160,7 +205,7 @@ void app_basic::start(application& app)
         auto t_model = m_model->get_component<transform>();
         //set info
         t_model->position({ 0.0f, -5.0f, 0.0f });
-        t_model->rotation(glm::quat({glm::radians(15.0), glm::radians(180.0), 0.0}));
+        t_model->rotation(glm::quat({glm::radians(15.0), glm::radians(0.0), 0.0}));
         t_model->scale({ 0.2f, 0.2f, 0.2f });
         
         auto e_model_light = gameobject::light_new();
@@ -332,6 +377,7 @@ bool app_basic::run(application& app,double delta_time)
     //////////////////////////////////////////////////////////
     //draw
     m_systems.update(delta_time);
+	//////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////
     //do loop
     return m_loop;

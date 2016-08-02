@@ -52,9 +52,9 @@ public:
 
 class application
 {
-    GLFWwindow* m_window  { nullptr };
-    instance*   m_instance{ nullptr };
-    
+    GLFWwindow* m_window   { nullptr };
+    instance*   m_instance { nullptr };
+	double		m_last_delta_time{ 0 };
 public:
     
     application();
@@ -65,7 +65,10 @@ public:
     //info
 	glm::ivec2 get_window_size() const;
 	glm::ivec2 get_window_position() const;
-    glm::dvec2 get_mouse_position() const;
+	glm::dvec2 get_mouse_position() const;
+	double get_last_delta_time() const;
+	//set
+	void set_mouse_position(const glm::dvec2& pos) const;
     //get attr
     instance* get_instance();
     GLFWwindow* get_window();

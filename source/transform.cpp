@@ -12,10 +12,15 @@
 
 void transform::look_at(const glm::vec3& eye,const glm::vec3& center,const glm::vec3& up)
 {
+#if 0
     glm::mat4 l_look_at  = glm::lookAt(eye,center,up);
     glm::quat l_rotation = glm::quat(glm::mat3(l_look_at));
     rotation(l_rotation);
     position(eye);
+#else
+	rotation(glm::conjugate(glm::quat_cast(glm::lookAt(eye, center, up))));
+	position(eye);
+#endif
 }
 
 void transform::translation(const glm::vec3& vector)
@@ -55,7 +60,12 @@ glm::vec3 transform::get_position() const
 
 glm::quat transform::get_rotation() const
 {
-    return m_tranform.m_rotation;
+	return m_tranform.m_rotation;
+}
+
+glm::vec3 transform::get_scale() const
+{
+	return m_tranform.m_scale;
 }
 
 glm::mat4 const& transform::get_local_matrix()

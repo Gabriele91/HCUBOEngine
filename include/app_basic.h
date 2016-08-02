@@ -74,6 +74,8 @@ protected:
     void go_to_window_mode(application& app);
     
     bool is_fullscreen(application& app) const;
+
+	void camera_look_around(application& app);
     
 private:
 
