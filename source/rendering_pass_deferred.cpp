@@ -112,9 +112,9 @@ void rendering_pass_deferred::draw_pass(glm::vec4&  clear_color,
 	//draw
     for (entity::wptr& weak_entity : renderables)
     {
-        auto entity   = weak_entity.lock();
-		auto t_entity = entity->get_component<transform>();
-		auto r_entity = entity->get_component<renderable>();
+        auto entity     = weak_entity.lock();
+		auto t_entity   = entity->get_component<transform>();
+		auto r_entity   = entity->get_component<renderable>();
 
 		if (r_entity->is_enabled())
 		{
@@ -126,14 +126,26 @@ void rendering_pass_deferred::draw_pass(glm::vec4&  clear_color,
 												 t_entity->get_matrix())
 			)
 			{
-				r_entity->draw
-				(  
-					viewport,
-					c_camera->get_projection(),
-					t_camera->get_matrix_inv(),
-					t_entity->get_matrix(),
-					entity->get_component<material>()
-				);
+				auto e_material = r_entity->get_material();
+				//material
+				if (e_material)
+				{
+					e_material->bind_state();
+					e_material->bind(
+						viewport,
+						c_camera->get_projection(),
+						t_camera->get_matrix_inv(),
+						t_entity->get_matrix()
+					);
+				}
+				//draw
+				entity->get_component<renderable>()->draw();
+				//material
+				if (e_material)
+				{
+					e_material->unbind();
+					e_material->unbind_state();
+				}
 			}
 		}
 	}

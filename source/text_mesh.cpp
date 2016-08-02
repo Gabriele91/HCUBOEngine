@@ -63,28 +63,6 @@ void text_mesh::set_text(const std::string& text)
     set_text(u32text);
 }
 
-
-void text_mesh::draw(const glm::vec4& viewport,
-                     const glm::mat4& projection,
-                     const glm::mat4& view,
-                     const glm::mat4& model,
-                     material_ptr material)
-{
-	if (material)
-	{
-		material->bind_state();
-		material->bind(viewport, projection, view, model);
-	}
-
-	text_mesh::draw();
-
-	if (material)
-	{
-		material->unbind();
-		material->unbind_state();
-	}
-}
-
 void text_mesh::draw()
 {
     const int attribute_location = 0;

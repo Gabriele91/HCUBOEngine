@@ -24,9 +24,4 @@ public:
     void set_text(const std::string& text);
     void set_text(const std::u32string& text);
 	void draw();
-    void draw(const glm::vec4& viewport,
-              const glm::mat4& projection,
-              const glm::mat4& view,
-              const glm::mat4& model,
-              material_ptr material);
 };

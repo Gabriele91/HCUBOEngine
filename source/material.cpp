@@ -1107,7 +1107,7 @@ void material::unbind_state()
 	}
 }
 
-component_ptr material::copy() const
+material_ptr material::copy() const
 {
 	auto omaterial = material_snew();
 

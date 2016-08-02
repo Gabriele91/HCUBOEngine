@@ -253,7 +253,7 @@ void app_basic::start(application& app)
         //cube
 #if 0
         auto e_cube = gameobject::cube_new({1,1,1});
-             e_cube->add_component(m_resources.get_material("w_box_mat"));
+             e_cube->get_component<renderable>->set_material(m_resources.get_material("w_box_mat"));
 		auto t_cube = e_cube->get_component<transform>();
 		t_cube->position({ 0.,-10.0,0. });
 		t_cube->scale({ 70.,1.0,70. });

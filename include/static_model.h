@@ -19,7 +19,6 @@ public:
 
 	struct sub_model
 	{
-		material_ptr m_material;
 		mesh::ptr m_mesh;
 	};
 

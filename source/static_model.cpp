@@ -19,7 +19,7 @@ entity::ptr static_model::instantiate()
 	//add childs
 	for (sub_model& model : m_sub_models)
 	{
-		root->add_child(gameobject::node_new(model.m_mesh, model.m_material));
+		root->add_child(gameobject::node_new(model.m_mesh));
 	}
 	return root;
 }
@@ -73,8 +73,6 @@ bool static_model::load(resources_manager& resources, const std::string& path)
 		//mat name
 		std::string mat_name((size_t)size_mat_name, '\0');
 		std::fread(&mat_name[0], sizeof(char)*size_mat_name, 1, model_file);
-		//get material
-		m_sub_models[i].m_material = resources.get_material(mat_name);
 		//get index
 		unsigned int size_index = 0;
 		std::fread(&size_index, sizeof(unsigned int), 1, model_file);
@@ -104,6 +102,8 @@ bool static_model::load(resources_manager& resources, const std::string& path)
 			//compute OBB is if versione 1
 			version == 1
 		);
+		//set material
+		m_sub_models[i].m_mesh->set_material( resources.get_material(mat_name) );
 		//is versione 2? Load OBB
 		if (version == 2)
 		{
@@ -131,8 +131,7 @@ prefab_ptr static_model::copy() const
 	//read and copy all
 	for (unsigned int i = 0; i != m_sub_models.size(); ++i)
 	{
-		ostatic_model->m_sub_models[i].m_material = std::static_pointer_cast<material>(m_sub_models[i].m_material->copy());
-		ostatic_model->m_sub_models[i].m_mesh     = std::static_pointer_cast<mesh>(m_sub_models[i].m_mesh->copy());
+		ostatic_model->m_sub_models[i].m_mesh = std::static_pointer_cast<mesh>(m_sub_models[i].m_mesh->copy());
 	}
 	return std::static_pointer_cast<prefab>(ostatic_model);
 }

@@ -96,12 +96,27 @@ void rendering_pass_base::draw_pass(glm::vec4&  clear_color,
     
 	for (entity::wptr& weak_entity : renderables)
 	{
-        auto entity = weak_entity.lock();
-		entity->get_component<renderable>()->draw(viewport,
-                                                  ccamera->get_projection(),
-                                                  tcamera->get_matrix_inv(),
-                                                  entity->get_component<transform>()->get_matrix(),
-                                                  entity->get_component<material>());
+        auto entity   = weak_entity.lock();
+		auto material = entity->get_component<renderable>()->get_material();
+		//material
+		if (material)
+		{
+			material->bind_state();
+			material->bind(
+				viewport,
+				ccamera->get_projection(),
+				tcamera->get_matrix_inv(),
+				entity->get_component<transform>()->get_matrix()
+			);
+		}
+		//draw
+		entity->get_component<renderable>()->draw();
+		//material
+		if (material)
+		{
+			material->unbind();
+			material->unbind_state();
+		}
 	}
 }
 

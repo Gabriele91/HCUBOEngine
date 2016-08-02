@@ -7,7 +7,6 @@
 //
 #pragma once
 #include <OpenGL4.h>
-#include <component.h>
 #include <camera.h>
 #include <vector>
 #include <texture.h>
@@ -17,12 +16,20 @@
 #include <glm/vec4.hpp>
 #include <glm/mat4x4.hpp>
 #include <smart_pointers.h>
-
-class material : public component, public resource
+//class declaration
+class material;
+//pointer declaration
+using material_ptr = std::shared_ptr< material >;
+using material_uptr = std::unique_ptr< material >;
+using material_wptr = std::weak_ptr  < material >;
+template < class... Args >
+static inline material_ptr material_snew(Args&&... args)
 {
-    
-    COMPONENT_DEC(material)
-    
+	return std::make_shared< material >(args...);
+}
+//class definition
+class material : public resource
+{    
 public:
 
 	virtual ~material();
@@ -50,7 +57,7 @@ public:
     
 	void unbind_state();
 
-	component_ptr copy() const;
+	material_ptr copy() const;
 
 protected:
 
@@ -91,12 +98,3 @@ protected:
     std::vector< glm::mat4 > m_mat4s;
     std::vector< uniform_mat4::ptr > m_uniform_mat4s;
 };
-
-using material_ptr  = std::shared_ptr< material >;
-using material_uptr = std::unique_ptr< material >;
-using material_wptr = std::weak_ptr  < material >;
-template < class... Args >
-static inline material_ptr material_snew(Args&&... args)
-{
-    return std::make_shared< material >( args... );
-}

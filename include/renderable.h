@@ -14,19 +14,15 @@
 class renderable : public component
 {
     
-    COMPONENT_DEC(renderable)
-    
+	COMPONENT_DEC(renderable)
+
 public:
 
     renderable(){}
 
 	virtual ~renderable() {};
     
-	virtual void draw(const glm::vec4& viewport,
-                      const glm::mat4& projection,
-                      const glm::mat4& view,
-					  const glm::mat4& model,
-					  material_ptr material)
+	virtual void draw()
     {
         assert(0);
     };
@@ -41,11 +37,21 @@ public:
 		return m_bounding_box;
 	}
 
+	material_ptr get_material() const
+	{
+		return m_material;
+	}
+
+	void set_material(material_ptr material)
+	{
+		m_material = material;
+	}
 
 protected:
 
-	obb  m_bounding_box;
-	bool m_support_culling{ false };
+	obb			 m_bounding_box;
+	material_ptr m_material;
+	bool		 m_support_culling{ false };
 
 };
 

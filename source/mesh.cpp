@@ -142,32 +142,6 @@ void mesh::disable_support_culling()
 	m_support_culling = false;
 }
 
-void mesh::draw(const glm::vec4& viewport,
-                const glm::mat4& projection,
-                const glm::mat4& view,
-                const glm::mat4& model,
-                material_ptr material)
-{
-	if (material)
-	{
-		material->bind_state();
-		material->bind(viewport,
-                       projection,
-                       view,
-                       model);
-	}
-
-	mesh::draw();
-
-	if (material)
-	{
-		material->unbind();
-		material->unbind_state();
-	}
-}
-
-
-
 void mesh::draw()
 {
     //bind buffer
@@ -312,6 +286,7 @@ component_ptr mesh::copy() const
 	omesh->m_layout = m_layout;
 	omesh->m_bvertex_size = m_bvertex_size;
 	omesh->m_bindex_size = m_bindex_size;
+	omesh->m_material = m_material;
 	//copy gpu buffers
 	if (m_bindex||m_bvertex)
 	{

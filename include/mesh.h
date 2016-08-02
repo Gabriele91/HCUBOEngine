@@ -133,12 +133,6 @@ public:
 	void disable_support_culling();
 
 	void draw();
-
-    void draw(const glm::vec4& viewport,
-              const glm::mat4& projection,
-              const glm::mat4& view,
-              const glm::mat4& model,
-              material_ptr material);
     
     void destoy();
     
