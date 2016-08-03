@@ -22,7 +22,8 @@ public:
 
 	void clear();
 	void push(entity::ptr e);
-	void remove(entity::ptr e);
+    void remove(entity::ptr e);
+    void reserve(size_t size);
 };
 
 class rendering_pass
@@ -79,13 +80,23 @@ public:
 	entity::ptr get_camera() const;
 
 	const std::vector< rendering_pass_ptr >& get_rendering_pass() const;
+    
+    void stop_update_frustum(bool stop_update);
+    
+    void stop_frustum_culling(bool stop_culling);
         
 protected:
     
+    void build_renderables_queue();
+    
+    bool m_update_frustum{ true };
+    bool m_stop_frustum_culling{ false };
+
     glm::vec4                         m_clear_color;
     glm::vec4                         m_ambient_color;
     entity::ptr						  m_camera;
-	render_queues					  m_queue;
+    render_queues					  m_renderables;
+    render_queues					  m_queue_renderables;
 	std::vector< rendering_pass_ptr > m_rendering_pass;
     
 };

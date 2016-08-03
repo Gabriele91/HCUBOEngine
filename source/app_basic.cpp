@@ -43,30 +43,22 @@ void app_basic::key_event(application& app,int key, int scancode, int action, in
 	else if (key == GLFW_KEY_U)
 	{
 		rendering_system*	r_system = m_systems.get_system<rendering_system>();
-		rendering_pass_ptr	d_pass = r_system->get_rendering_pass()[0];
-		auto p_deferred = std::static_pointer_cast<rendering_pass_deferred>(d_pass);
-		p_deferred->stop_update_frustum(false);
+		r_system->stop_update_frustum(false);
 	}
 	else if (key == GLFW_KEY_H)
-	{
-		rendering_system*	r_system = m_systems.get_system<rendering_system>();
-		rendering_pass_ptr	d_pass = r_system->get_rendering_pass()[0];
-		auto p_deferred = std::static_pointer_cast<rendering_pass_deferred>(d_pass);
-		p_deferred->stop_update_frustum(true);
+    {
+        rendering_system*	r_system = m_systems.get_system<rendering_system>();
+        r_system->stop_update_frustum(true);
 	}
 	else if (key == GLFW_KEY_I)
 	{
 		rendering_system*	r_system = m_systems.get_system<rendering_system>();
-		rendering_pass_ptr	d_pass = r_system->get_rendering_pass()[0];
-		auto p_deferred = std::static_pointer_cast<rendering_pass_deferred>(d_pass);
-		p_deferred->stop_frustum_culling(false);
+		r_system->stop_frustum_culling(false);
 	}
 	else if (key == GLFW_KEY_J)
 	{
 		rendering_system*	r_system = m_systems.get_system<rendering_system>();
-		rendering_pass_ptr	d_pass = r_system->get_rendering_pass()[0];
-		auto p_deferred = std::static_pointer_cast<rendering_pass_deferred>(d_pass);
-		p_deferred->stop_frustum_culling(true);
+		r_system->stop_frustum_culling(true);
 	}
 	else if(key == GLFW_KEY_UP)          m_camera->get_component<transform>()->translation({0,0,1});
 	else if(key == GLFW_KEY_DOWN)        m_camera->get_component<transform>()->translation({0,0,-1});

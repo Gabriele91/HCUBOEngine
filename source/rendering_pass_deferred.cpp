@@ -76,17 +76,6 @@ bool rendering_pass_deferred::is_enable_ambient_occlusion() const
 	return m_enable_ambient_occlusion;
 }
 
-
-void rendering_pass_deferred::stop_update_frustum(bool stop_update)
-{
-	m_update_frustum = !stop_update;
-}
-
-void rendering_pass_deferred::stop_frustum_culling(bool stop_culling)
-{
-	m_stop_frustum_culling = stop_culling;
-}
-
 void rendering_pass_deferred::draw_pass(glm::vec4&  clear_color,
                                         glm::vec4&  ambient_color,
                                         entity::ptr e_camera,
@@ -103,50 +92,32 @@ void rendering_pass_deferred::draw_pass(glm::vec4&  clear_color,
 	glClearColor(ambient_color.r, ambient_color.g, ambient_color.b, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	//update view frustum
-	if(m_update_frustum)
-		c_camera->get_frustum().update_frustum(c_camera->get_projection()*
-											   t_camera->get_matrix_inv());
-
 	//draw
     for (entity::wptr& weak_entity : queues.m_opaque)
     {
         auto entity     = weak_entity.lock();
 		auto t_entity   = entity->get_component<transform>();
 		auto r_entity   = entity->get_component<renderable>();
-
-		if (r_entity->is_enabled())
-		{
-			if 
-			(	
-				m_stop_frustum_culling ||
-				!r_entity->has_support_culling() ||
-				c_camera->get_frustum().test_obb(r_entity->get_bounding_box(), 
-												 t_entity->get_matrix())
-			)
-			{
-				auto e_material = r_entity->get_material();
-				//material
-				if (e_material)
-				{
-					e_material->bind_state();
-					e_material->bind(
-						viewport,
-						c_camera->get_projection(),
-						t_camera->get_matrix_inv(),
-						t_entity->get_matrix()
-					);
-				}
-				//draw
-				entity->get_component<renderable>()->draw();
-				//material
-				if (e_material)
-				{
-					e_material->unbind();
-					e_material->unbind_state();
-				}
-			}
-		}
+        auto e_material = r_entity->get_material();
+        //material
+        if (e_material)
+        {
+            e_material->bind_state();
+            e_material->bind(
+                viewport,
+                c_camera->get_projection(),
+                t_camera->get_matrix_inv(),
+                t_entity->get_matrix()
+            );
+        }
+        //draw
+        entity->get_component<renderable>()->draw();
+        //material
+        if (e_material)
+        {
+            e_material->unbind();
+            e_material->unbind_state();
+        }
 	}
 
 	m_g_buffer.unbind();

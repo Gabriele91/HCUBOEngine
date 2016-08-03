@@ -61,6 +61,13 @@ void render_queues::push(entity::ptr e)
 	//else in m_translucent
 }
 
+void render_queues::reserve(size_t size)
+{
+    m_lights.reserve(size);
+    m_opaque.reserve(size);
+    m_translucent.reserve(size);
+}
+
 void rendering_system::on_attach( system_manager& sm )
 {
     for(auto& e : sm.get_entities()) on_add_entity(e);
@@ -69,14 +76,15 @@ void rendering_system::on_attach( system_manager& sm )
 void rendering_system::on_detach()
 {
     m_camera = nullptr;
-	m_queue.clear();
+	m_renderables.clear();
+    m_queue_renderables.clear();
 }
 
 void rendering_system::on_add_entity(entity::ptr e)
 {
     //copy ref
     if(e->has_component<camera>())     m_camera = e;
-	else							   m_queue.push(e);
+	else							   m_renderables.push(e);
 }
 
 void rendering_system::on_remove_entity(entity::ptr e)
@@ -84,14 +92,13 @@ void rendering_system::on_remove_entity(entity::ptr e)
     //remove camera
     if(m_camera == e) m_camera = nullptr;
 	//remove obj
-	else              m_queue.remove(e);
+	else              m_renderables.remove(e);
 }
 
 void rendering_system::on_update(double deltatime)
 {
     draw();
 }
-
 
 void rendering_system::set_clear_color(const glm::vec4& clear_color)
 {
@@ -148,8 +155,71 @@ void rendering_pass_base::draw_pass(glm::vec4&  clear_color,
 	}
 }
 
+
+void rendering_system::build_renderables_queue()
+{
+    //camera
+    camera::ptr   c_camera = m_camera->get_component<camera>();
+    transform_ptr t_camera = m_camera->get_component<transform>();
+    auto&         f_camera = c_camera->get_frustum();
+    //update view frustum
+    if(m_update_frustum)
+        c_camera->get_frustum().update_frustum(c_camera->get_projection()*
+                                               t_camera->get_matrix_inv());
+    //build queue lights
+    for (entity::wptr& weak_entity : m_renderables.m_lights)
+    {
+        auto entity     = weak_entity.lock();
+        auto t_entity   = entity->get_component<transform>();
+        auto l_entity   = entity->get_component<light>();
+        
+        if( l_entity->is_enabled() && f_camera.test_sphere((glm::vec3)(t_entity->get_matrix()*glm::vec4(0,0,0,1.)), l_entity->m_quadratic))
+        {
+            m_queue_renderables.m_lights.push_back(entity);
+        }
+    }
+    //build queue opaque
+    for (entity::wptr& weak_entity : m_renderables.m_opaque)
+    {
+        auto entity     = weak_entity.lock();
+        auto t_entity   = entity->get_component<transform>();
+        auto r_entity   = entity->get_component<renderable>();
+        
+        if(   r_entity->is_enabled() && (
+                                         !r_entity->has_support_culling()
+                                         || f_camera.test_obb(r_entity->get_bounding_box(), t_entity->get_matrix())
+                                         ))
+        {
+            m_queue_renderables.m_opaque.push_back(entity);
+        }
+    }
+    //build queue translucent
+    for (entity::wptr& weak_entity : m_renderables.m_translucent)
+    {
+        auto entity     = weak_entity.lock();
+        auto t_entity   = entity->get_component<transform>();
+        auto r_entity   = entity->get_component<renderable>();
+        
+        if(   r_entity->is_enabled() && (
+                                         !r_entity->has_support_culling()
+                                         || f_camera.test_obb(r_entity->get_bounding_box(), t_entity->get_matrix())
+                                         ))
+        {
+            m_queue_renderables.m_translucent.push_back(entity);
+        }
+    }
+}
+
 void rendering_system::draw()
 {
+    //new queue
+    m_queue_renderables.clear();
+    m_queue_renderables.m_lights.reserve(m_renderables.m_lights.size());
+    m_queue_renderables.m_opaque.reserve(m_renderables.m_opaque.size());
+    m_queue_renderables.m_translucent.reserve(m_renderables.m_translucent.size());
+    //culling
+    if(!m_stop_frustum_culling) build_renderables_queue();
+    //all passes
     for (rendering_pass_ptr& pass : m_rendering_pass)
     {
         pass->draw_pass
@@ -157,7 +227,7 @@ void rendering_system::draw()
             m_clear_color,
             m_ambient_color,
             m_camera,
-            m_queue
+            m_stop_frustum_culling ? m_renderables : m_queue_renderables
         );
     }
 }
@@ -180,4 +250,15 @@ entity::ptr rendering_system::get_camera() const
 const std::vector< rendering_pass_ptr >& rendering_system::get_rendering_pass() const
 {
 	return m_rendering_pass;
+}
+
+
+void rendering_system::stop_update_frustum(bool stop_update)
+{
+    m_update_frustum = !stop_update;
+}
+
+void rendering_system::stop_frustum_culling(bool stop_culling)
+{
+    m_stop_frustum_culling = stop_culling;
 }
