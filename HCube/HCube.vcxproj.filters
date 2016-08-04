@@ -16,15 +16,6 @@
     <Filter Include="File di risorse\assets">
       <UniqueIdentifier>{62dd8327-b5a5-4d9a-956b-ed41580b8863}</UniqueIdentifier>
     </Filter>
-    <Filter Include="File di risorse\assets\shaders">
-      <UniqueIdentifier>{43006d9e-f495-4f2b-a466-be924f3230c8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="File di risorse\assets\shaders\deferred">
-      <UniqueIdentifier>{56748d9b-af85-4c58-a8f8-c054c3fc380a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="File di risorse\assets\shaders\forward">
-      <UniqueIdentifier>{a455aba3-dee9-4fff-8392-8e3f8a0c3875}</UniqueIdentifier>
-    </Filter>
     <Filter Include="File di risorse\assets\textures">
       <UniqueIdentifier>{4f6d4cf0-c98a-4131-a2a2-51d3ac46dba7}</UniqueIdentifier>
     </Filter>
@@ -33,6 +24,15 @@
     </Filter>
     <Filter Include="File di risorse\assets\ship">
       <UniqueIdentifier>{024b4634-fa25-4758-8a3e-810ee384c9bd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="File di risorse\common">
+      <UniqueIdentifier>{ccf34896-0c2e-4591-8d04-b5f9bb247e0e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="File di risorse\common\shaders">
+      <UniqueIdentifier>{43006d9e-f495-4f2b-a466-be924f3230c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="File di risorse\common\shaders\lib">
+      <UniqueIdentifier>{fc3af3a6-3986-4fb5-8922-0d0e0cc39252}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -244,48 +244,6 @@
     <None Include="..\source\cocoa_native_dialog.mm">
       <Filter>File di origine</Filter>
     </None>
-    <None Include="..\assets\shaders\deferred\base.glsl">
-      <Filter>File di risorse\assets\shaders\deferred</Filter>
-    </None>
-    <None Include="..\assets\shaders\deferred\base_texture.glsl">
-      <Filter>File di risorse\assets\shaders\deferred</Filter>
-    </None>
-    <None Include="..\assets\shaders\deferred\text.glsl">
-      <Filter>File di risorse\assets\shaders\deferred</Filter>
-    </None>
-    <None Include="..\assets\shaders\deferred\triangle_lines.glsl">
-      <Filter>File di risorse\assets\shaders\deferred</Filter>
-    </None>
-    <None Include="..\assets\shaders\deferred\wireframe.glsl">
-      <Filter>File di risorse\assets\shaders\deferred</Filter>
-    </None>
-    <None Include="..\assets\shaders\forward\base.glsl">
-      <Filter>File di risorse\assets\shaders\forward</Filter>
-    </None>
-    <None Include="..\assets\shaders\forward\base_texture.glsl">
-      <Filter>File di risorse\assets\shaders\forward</Filter>
-    </None>
-    <None Include="..\assets\shaders\forward\text.glsl">
-      <Filter>File di risorse\assets\shaders\forward</Filter>
-    </None>
-    <None Include="..\assets\shaders\forward\triangle_lines.glsl">
-      <Filter>File di risorse\assets\shaders\forward</Filter>
-    </None>
-    <None Include="..\assets\shaders\forward\wireframe.glsl">
-      <Filter>File di risorse\assets\shaders\forward</Filter>
-    </None>
-    <None Include="..\assets\shaders\deferred\deferred_light.glsl">
-      <Filter>File di risorse\assets\shaders\deferred</Filter>
-    </None>
-    <None Include="..\assets\shaders\deferred\base_texture_specular.glsl">
-      <Filter>File di risorse\assets\shaders\deferred</Filter>
-    </None>
-    <None Include="..\assets\shaders\deferred\base_texture_normal.glsl">
-      <Filter>File di risorse\assets\shaders\deferred</Filter>
-    </None>
-    <None Include="..\assets\shaders\deferred\base_texture_normal_specular.glsl">
-      <Filter>File di risorse\assets\shaders\deferred</Filter>
-    </None>
     <None Include="..\assets\materials\baril_mat.mat">
       <Filter>File di risorse\assets\materials</Filter>
     </None>
@@ -307,11 +265,62 @@
     <None Include="..\assets\ship\vehicle_playerShip_metal_mat.mat">
       <Filter>File di risorse\assets\ship</Filter>
     </None>
-    <None Include="..\assets\shaders\deferred\ssao_pass.glsl">
-      <Filter>File di risorse\assets\shaders\deferred</Filter>
+    <None Include="..\common\shaders\base.glsl">
+      <Filter>File di risorse\common\shaders</Filter>
     </None>
-    <None Include="..\assets\shaders\deferred\ssao_blur.glsl">
-      <Filter>File di risorse\assets\shaders\deferred</Filter>
+    <None Include="..\common\shaders\base_texture.glsl">
+      <Filter>File di risorse\common\shaders</Filter>
+    </None>
+    <None Include="..\common\shaders\base_texture_normal.glsl">
+      <Filter>File di risorse\common\shaders</Filter>
+    </None>
+    <None Include="..\common\shaders\base_texture_normal_specular.glsl">
+      <Filter>File di risorse\common\shaders</Filter>
+    </None>
+    <None Include="..\common\shaders\base_texture_specular.glsl">
+      <Filter>File di risorse\common\shaders</Filter>
+    </None>
+    <None Include="..\common\shaders\deferred_light.glsl">
+      <Filter>File di risorse\common\shaders</Filter>
+    </None>
+    <None Include="..\common\shaders\ssao_blur.glsl">
+      <Filter>File di risorse\common\shaders</Filter>
+    </None>
+    <None Include="..\common\shaders\ssao_pass.glsl">
+      <Filter>File di risorse\common\shaders</Filter>
+    </None>
+    <None Include="..\common\shaders\text.glsl">
+      <Filter>File di risorse\common\shaders</Filter>
+    </None>
+    <None Include="..\common\shaders\triangle_lines.glsl">
+      <Filter>File di risorse\common\shaders</Filter>
+    </None>
+    <None Include="..\common\shaders\wireframe.glsl">
+      <Filter>File di risorse\common\shaders</Filter>
+    </None>
+    <None Include="..\common\shaders\lib\base.glsl">
+      <Filter>File di risorse\common\shaders\lib</Filter>
+    </None>
+    <None Include="..\common\shaders\lib\base_texture.glsl">
+      <Filter>File di risorse\common\shaders\lib</Filter>
+    </None>
+    <None Include="..\common\shaders\lib\base_texture_normal.glsl">
+      <Filter>File di risorse\common\shaders\lib</Filter>
+    </None>
+    <None Include="..\common\shaders\lib\base_texture_normal_specular.glsl">
+      <Filter>File di risorse\common\shaders\lib</Filter>
+    </None>
+    <None Include="..\common\shaders\lib\base_texture_specular.glsl">
+      <Filter>File di risorse\common\shaders\lib</Filter>
+    </None>
+    <None Include="..\common\shaders\lib\lights.glsl">
+      <Filter>File di risorse\common\shaders\lib</Filter>
+    </None>
+    <None Include="..\common\shaders\lib\output_fragment.glsl">
+      <Filter>File di risorse\common\shaders\lib</Filter>
+    </None>
+    <None Include="..\common\shaders\lib\ssao_kernel.glsl">
+      <Filter>File di risorse\common\shaders\lib</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
