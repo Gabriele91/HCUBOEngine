@@ -178,7 +178,7 @@ void app_basic::start(application& app)
     //set camera
     m_systems.add_entity(m_camera);
     //deferred alloc
-    m_resources.add_directory("assets/shaders/deferred");
+    m_resources.add_directory("common/shaders");
     auto rendering_pass = rendering_pass_deferred::snew(m_camera, m_resources);
 	rendering_pass->set_ambient_occlusion(true);
     m_rendering->add_rendering_pass(rendering_pass);

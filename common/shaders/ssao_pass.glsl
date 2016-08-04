@@ -14,9 +14,7 @@ void main()
 
 #pragma fragment
 //include ssao kernel
-#pragma include "ssao_kernel.glsl"
-//consts
-const int max_kernel_size = 64;
+#pragma include "lib/ssao_kernel.glsl"
 //in
 in vec2 frag_uvcoord;
 //out

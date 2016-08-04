@@ -172,8 +172,9 @@ void rendering_system::build_renderables_queue()
         auto entity     = weak_entity.lock();
         auto t_entity   = entity->get_component<transform>();
         auto l_entity   = entity->get_component<light>();
-        
-        if( l_entity->is_enabled() && f_camera.test_sphere((glm::vec3)(t_entity->get_matrix()*glm::vec4(0,0,0,1.)), l_entity->m_quadratic))
+		const auto l_pos    = (glm::vec3)(t_entity->get_matrix()*glm::vec4(0, 0, 0, 1.));
+		const auto l_radius	= l_entity->m_quadratic;
+        if( l_entity->is_enabled() && f_camera.test_sphere(l_pos, l_radius))
         {
             m_queue_renderables.m_lights.push_back(entity);
         }
