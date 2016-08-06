@@ -201,7 +201,7 @@ void render_queues::add_call_translucent(element* e)
 	//loop vars
 	element* last    = nullptr;
 	element* current = m_cull_translucent;
-	//insert sort, front to back
+	//insert sort, back to front
 	for (; current;
 		last = current,
 		current = current->m_next)

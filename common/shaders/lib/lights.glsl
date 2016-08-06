@@ -115,6 +115,9 @@ void calc_spot_light(in light light0,
     results.m_specular = light0.m_specular * spec * specular * attenuation * intensity;
 }
 
+//todo: gobo texture
+//http://aschultz.us/blog/archives/153
+
 // Calculates the color when using a light.
 void compute_light(in light light0,
 				   in vec3  position,
