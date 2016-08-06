@@ -14,9 +14,9 @@ void rendering_pass_deferred::uniform_light::get_uniform(int i, shader::ptr shad
     m_uniform_diffuse  = shader->get_shader_uniform_vec3((lights_i + ".m_diffuse").c_str());
     m_uniform_specular  = shader->get_shader_uniform_vec3((lights_i + ".m_specular").c_str());
     
-    m_uniform_constant  = shader->get_shader_uniform_float((lights_i + ".m_constant").c_str());
-    m_uniform_linear    = shader->get_shader_uniform_float((lights_i + ".m_linear").c_str());
-	m_uniform_quadratic = shader->get_shader_uniform_float((lights_i + ".m_quadratic").c_str());
+    m_uniform_constant  = shader->get_shader_uniform_float((lights_i + ".m_inv_constant").c_str());
+    m_uniform_linear    = shader->get_shader_uniform_float((lights_i + ".m_inv_quad_linear").c_str());
+	m_uniform_quadratic = shader->get_shader_uniform_float((lights_i + ".m_inv_quad_quadratic").c_str());
     
     m_uniform_inner_cut_off = shader->get_shader_uniform_float((lights_i + ".m_inner_cut_off").c_str());
     m_uniform_outer_cut_off = shader->get_shader_uniform_float((lights_i + ".m_outer_cut_off").c_str());
@@ -30,9 +30,9 @@ void rendering_pass_deferred::uniform_light::uniform(light_wptr weak_light,const
     m_uniform_direction->set_value((glm::vec3)(view * model * glm::vec4(0,0,1.0,0.0)));
     m_uniform_diffuse->set_value(light->m_diffuse);
     m_uniform_specular->set_value(light->m_specular);
-    m_uniform_constant->set_value(light->m_constant);
-    m_uniform_linear->set_value(light->m_linear);
-	m_uniform_quadratic->set_value(light->m_quadratic);
+    m_uniform_constant->set_value(1./light->m_constant);
+    m_uniform_linear->set_value(1./(light->m_linear*light->m_linear));
+	m_uniform_quadratic->set_value(1./(light->m_quadratic*light->m_quadratic));
     m_uniform_inner_cut_off->set_value(light->m_inner_cut_off);
     m_uniform_outer_cut_off->set_value(light->m_outer_cut_off);
 }

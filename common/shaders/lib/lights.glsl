@@ -15,9 +15,9 @@ struct light
     vec3  m_diffuse;
     vec3  m_specular;
     
-    float m_constant;
-    float m_linear;
-    float m_quadratic;
+    float m_inv_constant;
+    float m_inv_quad_linear;
+    float m_inv_quad_quadratic;
     
     float m_inner_cut_off;
     float m_outer_cut_off;
@@ -38,9 +38,9 @@ uniform light lights[MAX_LIGHTS];
 float compute_attenuation(in light light0, in vec3  frag_position)
 {
 	float light_distance = length(light0.m_position - frag_position);
-	float attenuation = clamp(min((1.0f / light0.m_constant), 1.0)
-							  - (light_distance / (light0.m_linear*light0.m_linear))
-							  - ((light_distance * light_distance) / (light0.m_quadratic*light0.m_quadratic)), 0.0, 1.0);
+	float attenuation = clamp(  min(light0.m_inv_constant, 1.0)
+                                - ( light_distance * light0.m_inv_quad_linear )
+							    - ((light_distance * light_distance) * light0.m_inv_quad_quadratic), 0.0, 1.0);
 	attenuation *= attenuation;
 	return attenuation;
 }
