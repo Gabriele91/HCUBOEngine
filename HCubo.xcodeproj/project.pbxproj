@@ -70,6 +70,11 @@
 		E0D8F21F1D4E6B2D006EA26C /* obb.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E0D8F21D1D4E6B2D006EA26C /* obb.cpp */; };
 		E0E8EC461D4804CA00BE1432 /* ssao_technique.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E0E8EC451D4804CA00BE1432 /* ssao_technique.cpp */; };
 		E0E8EC481D4804D700BE1432 /* ssao_technique.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E0E8EC451D4804CA00BE1432 /* ssao_technique.cpp */; };
+		E0ED49411D56166A00EFE862 /* frustum.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E0D8F21C1D4E6B2D006EA26C /* frustum.cpp */; };
+		E0ED49421D56166A00EFE862 /* obb.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E0D8F21D1D4E6B2D006EA26C /* obb.cpp */; };
+		E0ED49431D56166A00EFE862 /* tga.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E015839B1D43990D0029D6F5 /* tga.cpp */; };
+		E0ED49441D56166A00EFE862 /* rendering_pass_deferred.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E022AF4B1D3EB487009F76D5 /* rendering_pass_deferred.cpp */; };
+		E0ED49481D5616A100EFE862 /* common in Resources */ = {isa = PBXBuildFile; fileRef = E0ED49471D5616A100EFE862 /* common */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -161,6 +166,7 @@
 		E0D8F2231D4E6B39006EA26C /* prefab.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = prefab.h; sourceTree = "<group>"; };
 		E0E8EC451D4804CA00BE1432 /* ssao_technique.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ssao_technique.cpp; sourceTree = "<group>"; };
 		E0E8EC471D4804D000BE1432 /* ssao_technique.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ssao_technique.h; sourceTree = "<group>"; };
+		E0ED49471D5616A100EFE862 /* common */ = {isa = PBXFileReference; lastKnownFileType = folder; path = common; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -228,6 +234,7 @@
 		E01A2ED11D22C24D00A8BA77 = {
 			isa = PBXGroup;
 			children = (
+				E0ED49471D5616A100EFE862 /* common */,
 				E089AC0B1D2E5ECE009F0CDD /* assets */,
 				E01A2EE41D22C2A900A8BA77 /* include */,
 				E00ABDB81D23C3BE004E4CFD /* source */,
@@ -392,6 +399,7 @@
 				E03EDCC21D3418F200C0C22A /* Info.plist in Resources */,
 				E09799411D2E5DD2006D1F13 /* Assets.xcassets in Resources */,
 				E089AC0D1D2E5ECE009F0CDD /* assets in Resources */,
+				E0ED49481D5616A100EFE862 /* common in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -440,11 +448,15 @@
 				E03EDCA41D34187500C0C22A /* stb_image.cpp in Sources */,
 				E03EDC9C1D34187500C0C22A /* camera.cpp in Sources */,
 				E01583A51D43FCBC0029D6F5 /* entity.cpp in Sources */,
+				E0ED49431D56166A00EFE862 /* tga.cpp in Sources */,
+				E0ED49441D56166A00EFE862 /* rendering_pass_deferred.cpp in Sources */,
 				E03EDCA81D34187500C0C22A /* shader.cpp in Sources */,
+				E0ED49411D56166A00EFE862 /* frustum.cpp in Sources */,
 				E03EDCAA1D34187500C0C22A /* texture.cpp in Sources */,
 				E01461AC1D34D2EF008A2574 /* resources_manager.cpp in Sources */,
 				E0E8EC481D4804D700BE1432 /* ssao_technique.cpp in Sources */,
 				E03EDC9A1D34187500C0C22A /* application.cpp in Sources */,
+				E0ED49421D56166A00EFE862 /* obb.cpp in Sources */,
 				E03EDCA31D34187500C0C22A /* native_dialog.cpp in Sources */,
 				E022AF491D3E01BC009F76D5 /* g_buffer.cpp in Sources */,
 				E01583A21D43E9FE0029D6F5 /* transform.cpp in Sources */,

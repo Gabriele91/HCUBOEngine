@@ -31,6 +31,16 @@ void frustum::update_frustum(const glm::mat4& projection)
 }
 
 
+//distance
+float frustum::distance_from_plane(frustum::plane_type plane, const glm::vec3& point) const
+{
+    return plane_distance(m_planes[plane],point);
+}
+
+float frustum::distance_from_near_plane(const glm::vec3& point) const
+{
+    return plane_distance(m_planes[NEARP], point);
+}
 
 //test point
 frustum::testing_result frustum::test_point(const glm::vec3& point) const

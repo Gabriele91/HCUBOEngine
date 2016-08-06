@@ -16,9 +16,12 @@
 class render_queues
 {
 public:
-	std::vector < entity::wptr > m_lights;
-	std::vector < entity::wptr > m_opaque;
-	std::vector < entity::wptr > m_translucent;
+    
+    using queue = std::vector < entity::wptr >;
+    
+	queue m_lights;
+	queue m_opaque;
+	queue m_translucent;
 
 	void clear();
 	void push(entity::ptr e);

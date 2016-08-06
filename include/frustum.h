@@ -6,9 +6,21 @@
 class frustum
 {
 public:
-
+    
+    //planes
+    enum plane_type
+    {
+        TOP = 0,
+        BOTTOM,
+        LEFT,
+        RIGHT,
+        NEARP,
+        FARP,
+        N_PLANES
+    };
+    
 	//results
-	static enum testing_result { OUTSIDE, INTERSECT, INSIDE };
+    enum testing_result { OUTSIDE, INTERSECT, INSIDE };
 
 	//update planes
 	void update_frustum(const glm::mat4& projection);
@@ -24,20 +36,12 @@ public:
 
 	//test obb
 	testing_result test_obb(const obb& box,const glm::mat4& model) const;
+    
+    //distance
+    float distance_from_plane(plane_type plane, const glm::vec3& point) const;
+    float distance_from_near_plane(const glm::vec3& point) const;
 
 private:
-
-
-	enum plane_type
-	{
-		TOP = 0,
-		BOTTOM,
-		LEFT,
-		RIGHT,
-		NEARP,
-		FARP,
-		N_PLANES
-	};
 
 	glm::vec4 m_planes[N_PLANES];
 

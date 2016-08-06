@@ -156,6 +156,53 @@ void rendering_pass_base::draw_pass(glm::vec4&  clear_color,
 }
 
 
+static inline float compute_camera_depth(const frustum& f_camera,const transform_ptr& t_entity)
+{
+    return f_camera.distance_from_near_plane((glm::vec3)(t_entity->get_matrix()*glm::vec4(0,0,0,1)));
+}
+
+static inline void front_to_back_insert_sort(render_queues::queue& q,
+                                             const frustum& f_camera,
+                                             const entity::ptr& entity,
+                                             float depth)
+{
+    //init i
+    long i = (long)q.size()-1;
+    //search
+    for(; i > 0; --i)
+    {
+        //
+        auto  entity     = q[i].lock();
+        auto  t_entity   = entity->get_component<transform>();
+        float this_depth = compute_camera_depth(f_camera,t_entity);
+        //
+        if(this_depth < depth) break;
+    }
+    //insert
+    q.insert(q.begin()+(i+1), entity);
+}
+
+static inline void back_to_front_insert_sort(render_queues::queue& q,
+                                             const frustum& f_camera,
+                                             const entity::ptr& entity,
+                                             float depth)
+{
+    //init i
+    long i = (long)q.size()-1;
+    //search
+    for(; i > 0; --i)
+    {
+        //
+        auto  entity     = q[i].lock();
+        auto  t_entity   = entity->get_component<transform>();
+        float this_depth = compute_camera_depth(f_camera,t_entity);
+        //
+        if(this_depth > depth) break;
+    }
+    //insert
+    q.insert(q.begin()+(i+1), entity);
+}
+
 void rendering_system::build_renderables_queue()
 {
     //camera
@@ -187,11 +234,18 @@ void rendering_system::build_renderables_queue()
         auto r_entity   = entity->get_component<renderable>();
         
         if(   r_entity->is_enabled() && (
-                                         !r_entity->has_support_culling()
-                                         || f_camera.test_obb(r_entity->get_bounding_box(), t_entity->get_matrix())
+                                         ! r_entity->has_support_culling()
+                                         ||f_camera.test_obb(r_entity->get_bounding_box(), t_entity->get_matrix())
                                          ))
         {
+#ifndef _DEBUG
+            front_to_back_insert_sort(m_queue_renderables.m_opaque,
+                                      f_camera,
+                                      entity,
+                                      compute_camera_depth(f_camera,t_entity));
+#else
             m_queue_renderables.m_opaque.push_back(entity);
+#endif
         }
     }
     //build queue translucent
@@ -206,7 +260,14 @@ void rendering_system::build_renderables_queue()
                                          || f_camera.test_obb(r_entity->get_bounding_box(), t_entity->get_matrix())
                                          ))
         {
+#ifndef _DEBUG
+            back_to_front_insert_sort(m_queue_renderables.m_translucent,
+                                      f_camera,
+                                      entity,
+                                      compute_camera_depth(f_camera,t_entity));
+#else
             m_queue_renderables.m_translucent.push_back(entity);
+#endif
         }
     }
 }
