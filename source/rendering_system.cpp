@@ -171,6 +171,8 @@ void render_queues::add_call_light(element* e)
 
 void render_queues::add_call_opaque(element* e)
 {
+	e->m_next = nullptr;
+	//loop vars
 	element* last    = nullptr;
 	element* current = m_cull_opaque;
 	//insert sort, front to back
@@ -178,13 +180,9 @@ void render_queues::add_call_opaque(element* e)
 		   last = current,
 		   current = current->m_next)
 	{
-		//
-		auto    entity = current->lock();
-		auto  t_entity = entity->get_component<transform>();
-		//
 		if (current->m_depth < e->m_depth) break;
 	}
-	
+	//last iteration
 	if (last)
 	{
 		e->m_next = current;
@@ -199,6 +197,8 @@ void render_queues::add_call_opaque(element* e)
 
 void render_queues::add_call_translucent(element* e)
 {
+	e->m_next = nullptr;
+	//loop vars
 	element* last    = nullptr;
 	element* current = m_cull_translucent;
 	//insert sort, front to back
@@ -206,13 +206,9 @@ void render_queues::add_call_translucent(element* e)
 		last = current,
 		current = current->m_next)
 	{
-		//
-		auto    entity = current->lock();
-		auto  t_entity = entity->get_component<transform>();
-		//
 		if (current->m_depth > e->m_depth) break;
 	}
-
+	//last iteration
 	if (last)
 	{
 		e->m_next    = current;
@@ -249,7 +245,6 @@ void rendering_system::build_renderables_queue()
 		const auto l_radius	= l_entity->m_quadratic;
         if( l_entity->is_enabled() && f_camera.test_sphere(l_pos, l_radius))
         {
-			weak_element.m_next = nullptr;
 			m_renderables.add_call_light(&weak_element);
         }
     }
@@ -265,7 +260,6 @@ void rendering_system::build_renderables_queue()
                                          ||f_camera.test_obb(r_entity->get_bounding_box(), t_entity->get_matrix())
                                          ))
         {
-			weak_element.m_next = nullptr;
 			weak_element.m_depth = compute_camera_depth(f_camera, t_entity);
 			m_renderables.add_call_opaque(&weak_element);
         }
@@ -282,7 +276,6 @@ void rendering_system::build_renderables_queue()
                                          || f_camera.test_obb(r_entity->get_bounding_box(), t_entity->get_matrix())
                                          ))
         {
-			weak_element.m_next = nullptr;
 			weak_element.m_depth = compute_camera_depth(f_camera, t_entity);
 			m_renderables.add_call_translucent(&weak_element);
         }
