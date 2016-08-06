@@ -102,11 +102,11 @@ void app_basic::scroll_event(application& application,const glm::dvec2& scroll_o
 
 void app_basic::resize_event(application& application,const glm::ivec2& size)
 {
-    m_aspect = float(size.x) / float(size.y);
-    //viewport
-    m_camera->get_component<camera>()->set_viewport(glm::ivec4{0, 0, size.x, size.y});
-    //new perspective
-    m_camera->get_component<camera>()->set_perspective(m_fov, m_aspect, 0.1, 1000.0);
+	m_aspect = float(size.x) / float(size.y);
+	//viewport
+	m_camera->get_component<camera>()->set_viewport(glm::ivec4{ 0, 0, size.x, size.y });
+	//new perspective
+	m_camera->get_component<camera>()->set_perspective(m_fov, m_aspect, 0.1, 500.0);
 }
 
 void app_basic::camera_look_around(application& app)
@@ -164,24 +164,13 @@ void app_basic::start(application& app)
     rendering_system::ptr m_rendering= rendering_system::snew();
     //add into system
     m_systems.add_system(m_rendering);
-    //camera
-         m_camera = gameobject::camera_new();
-    auto c_camera = m_camera->get_component<camera>();
-    auto t_camera = m_camera->get_component<transform>();
-    glm::vec2 size = app.get_window_size();
-    m_aspect       = float(size.x) / float(size.y);
-    c_camera->set_viewport(glm::ivec4{0, 0, size.x, size.y});
-    c_camera->set_perspective(m_fov, m_aspect, 0.1, 500.0);
-	t_camera->look_at(glm::vec3{ 0.0f, 6.9f, -45.0f },
-				  	  glm::vec3{ 0.0f, 1.0f, 0.0f },
-					  glm::vec3{ 0.0f, 1.0f, 0.0f });
-    //set camera
-    m_systems.add_entity(m_camera);
-    //deferred alloc
-    m_resources.add_directory("common/shaders");
-    auto rendering_pass = rendering_pass_deferred::snew(m_camera, m_resources);
+	//gbuffer size
+	glm::ivec2 g_size = app.get_window_size();
+	//deferred alloc
+	m_resources.add_directory("common/shaders");
+	auto rendering_pass = rendering_pass_deferred::snew(g_size, m_resources);
 	rendering_pass->set_ambient_occlusion(true);
-    m_rendering->add_rendering_pass(rendering_pass);
+	m_rendering->add_rendering_pass(rendering_pass);
     //load assets
     m_resources.add_directory("assets/textures");
 	m_resources.add_directory("assets/materials");
@@ -192,7 +181,22 @@ void app_basic::start(application& app)
 	m_resources.add_directory("assets/sponza");
     /////// /////// /////// /////// /////// /////// /////// /////// ///////
     // build scene
-    {
+	{
+		//camera
+		m_camera = gameobject::camera_new();
+		auto c_camera = m_camera->get_component<camera>();
+		auto t_camera = m_camera->get_component<transform>();
+		glm::vec2 size = app.get_window_size();
+		m_aspect = float(size.x) / float(size.y);
+		c_camera->set_viewport(glm::ivec4{ 0, 0, size.x, size.y });
+		c_camera->set_perspective(m_fov, m_aspect, 0.1, 500.0);
+		t_camera->look_at(glm::vec3{ 0.0f, 6.9f, -45.0f },
+		glm::vec3{ 0.0f, 1.0f, 0.0f },
+		glm::vec3{ 0.0f, 1.0f, 0.0f });
+		//set camera
+		m_systems.add_entity(m_camera);
+
+		//ship
              m_model = m_resources.get_prefab("ship")->instantiate();
         auto t_model = m_model->get_component<transform>();
         //set info

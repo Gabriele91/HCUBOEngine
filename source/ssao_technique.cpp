@@ -3,9 +3,8 @@
 #include <cmath>
 #include <cstdlib>
 
-void ssao_technique::init(entity::ptr e_camera, resources_manager& resources)
+void ssao_technique::init(const glm::ivec2& w_size, resources_manager& resources)
 {
-	glm::ivec2 w_size = e_camera->get_component<camera>()->get_viewport_size();
 	//load shader ssao
 	m_shader = resources.get_shader("ssao_pass");
 	m_uniform_noise_scale = m_shader->get_shader_uniform_vec2("noise_scale");

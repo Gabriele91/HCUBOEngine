@@ -37,10 +37,11 @@ void rendering_pass_deferred::uniform_light::uniform(light_wptr weak_light,const
     m_uniform_outer_cut_off->set_value(light->m_outer_cut_off);
 }
 
-rendering_pass_deferred::rendering_pass_deferred(entity::ptr e_camera, resources_manager& resources)
+rendering_pass_deferred::rendering_pass_deferred(const glm::ivec2& w_size, resources_manager& resources)
 {
-	m_g_buffer.init(e_camera->get_component<camera>()->get_viewport_size());
-	m_ssao.init(e_camera, resources);
+	m_q_size = w_size;
+	m_g_buffer.init(w_size);
+	m_ssao.init(w_size, resources);
 	m_ssao.set_kernel_size(8);
 	m_ssao.set_radius(2.0);
 
@@ -93,9 +94,12 @@ void rendering_pass_deferred::draw_pass(glm::vec4&  clear_color,
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	//draw
-    for (entity::wptr& weak_entity : queues.m_opaque)
-    {
-        auto entity     = weak_entity.lock();
+	for (render_queues::element*
+		 weak_element = queues.m_cull_opaque;
+		 weak_element;
+		 weak_element = weak_element->m_next)
+	{
+		auto entity = weak_element->lock();
 		auto t_entity   = entity->get_component<transform>();
 		auto r_entity   = entity->get_component<renderable>();
         auto e_material = r_entity->get_material();
@@ -130,6 +134,7 @@ void rendering_pass_deferred::draw_pass(glm::vec4&  clear_color,
 	{
 		m_ssao.applay(e_camera, m_g_buffer, m_square);
 	}
+	////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////
 	m_shader->bind();
 	//set texture g_buffer

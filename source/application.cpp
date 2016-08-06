@@ -28,6 +28,26 @@ void application::swap() const
 }
 
 
+bool application::is_resizable() const
+{
+	return m_is_resizable;
+}
+
+glm::ivec2 application::get_screen_size() const
+{
+	//get screen size
+	int n_monitors = 0;
+	GLFWmonitor** monitors = glfwGetMonitors(&n_monitors);
+	//info monitor/screen
+	const GLFWvidmode* monitor_mode = glfwGetVideoMode(monitors[0]);
+	//return size
+	return glm::ivec2
+	{
+		(int)monitor_mode->width,
+		(int)monitor_mode->height
+	};
+}
+
 glm::ivec2 application::get_window_size() const
 {
 
@@ -59,11 +79,13 @@ double application::get_last_delta_time() const
 {
 	return m_last_delta_time;
 }
+
 //get attr
 instance* application::get_instance()
 {
     return m_instance;
 }
+
 GLFWwindow* application::get_window()
 {
     return m_window;
@@ -103,6 +125,8 @@ bool application::execute(const window_size& size,
 {
     //save
     m_instance = app;
+	//resize ?
+	m_is_resizable = resizable ? true : false;
     //set context version
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, major_gl_ctx);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, minor_gl_ctx);

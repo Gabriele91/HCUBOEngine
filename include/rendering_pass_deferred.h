@@ -14,7 +14,7 @@ public:
 	const unsigned  m_max_lights = 32;
 
 	//pass
-	rendering_pass_deferred(entity::ptr camera, 
+	rendering_pass_deferred(const glm::ivec2& w_size,
 							resources_manager& resources);
 
 	//overload draw
@@ -33,6 +33,7 @@ protected:
 	g_buffer          m_g_buffer;
 	ssao_technique    m_ssao;
 
+	glm::ivec2        m_q_size;
 	mesh::ptr         m_square;
 	shader::ptr	      m_shader;
 	uniform_int::ptr  m_position;

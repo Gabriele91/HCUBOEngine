@@ -16,9 +16,9 @@ int main(int argc, const char * argv[])
 	app_basic view_points;
 	return app.execute(
 		window_size_percentage{ { 90., 90. } } //window size
-		,true								   //resizable
+		, false								   //resizable
 		, 4									   //OpenGL version
-		, 0									   //OpenGL sub-version
+		, 1									   //OpenGL sub-version
 		, "view particles"					   //window title
 		, &view_points) 					   //instance
 		? 0 : 1;

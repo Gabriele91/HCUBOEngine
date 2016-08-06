@@ -17,11 +17,35 @@ class render_queues
 {
 public:
     
-    using queue = std::vector < entity::wptr >;
+	struct element
+	{
+		element(entity::wptr ref) : m_ref(ref) {};
+		//ref to object
+		entity::wptr m_ref;
+		//list
+		element* m_next { nullptr };
+		float    m_depth{ ~0      };
+		//fake lock
+		entity::ptr lock()
+		{
+			return m_ref.lock();
+		}
+	};
+
+    using queue = std::vector < element >;
     
 	queue m_lights;
 	queue m_opaque;
 	queue m_translucent;
+
+	//culling
+	element* m_cull_light      { nullptr };
+	element* m_cull_opaque     { nullptr };
+	element* m_cull_translucent{ nullptr };
+
+	void add_call_light(element* e);
+	void add_call_opaque(element* e);
+	void add_call_translucent(element* e);
 
 	void clear();
 	void push(entity::ptr e);
@@ -99,7 +123,6 @@ protected:
     glm::vec4                         m_ambient_color;
     entity::ptr						  m_camera;
     render_queues					  m_renderables;
-    render_queues					  m_queue_renderables;
 	std::vector< rendering_pass_ptr > m_rendering_pass;
     
 };

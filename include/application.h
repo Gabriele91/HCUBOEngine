@@ -55,6 +55,8 @@ class application
     GLFWwindow* m_window   { nullptr };
     instance*   m_instance { nullptr };
 	double		m_last_delta_time{ 0 };
+	bool		m_is_resizable{ false };
+
 public:
     
     application();
@@ -63,6 +65,8 @@ public:
     void clear() const;
     void swap() const;
     //info
+	bool       is_resizable() const;
+	glm::ivec2 get_screen_size() const;
 	glm::ivec2 get_window_size() const;
 	glm::ivec2 get_window_position() const;
 	glm::dvec2 get_mouse_position() const;

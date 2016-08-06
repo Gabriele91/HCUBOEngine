@@ -13,7 +13,7 @@ public:
 
 	virtual ~ssao_technique() { destoy(); }
 
-	void init(entity::ptr camera, resources_manager& resources);
+	void init(const glm::ivec2& w_size, resources_manager& resources);
 
 	void destoy();
 

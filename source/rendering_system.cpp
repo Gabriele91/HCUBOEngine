@@ -56,8 +56,8 @@ void render_queues::remove(entity::ptr e)
 
 void render_queues::push(entity::ptr e)
 {
-	if (e->has_component<light>())      m_lights.push_back(e);
-	if (e->has_component<renderable>()) m_opaque.push_back(e);
+	if (e->has_component<light>())      m_lights.push_back({ e });
+	if (e->has_component<renderable>()) m_opaque.push_back({ e });
 	//else in m_translucent
 }
 
@@ -77,7 +77,6 @@ void rendering_system::on_detach()
 {
     m_camera = nullptr;
 	m_renderables.clear();
-    m_queue_renderables.clear();
 }
 
 void rendering_system::on_add_entity(entity::ptr e)
@@ -129,9 +128,12 @@ void rendering_pass_base::draw_pass(glm::vec4&  clear_color,
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
     
-	for (entity::wptr& weak_entity : queues.m_opaque)
+	for (render_queues::element*
+		 weak_element = queues.m_cull_opaque; 
+		 weak_element;
+		 weak_element = weak_element->m_next )
 	{
-        auto entity   = weak_entity.lock();
+        auto entity   = weak_element->lock();
 		auto material = entity->get_component<renderable>()->get_material();
 		//material
 		if (material)
@@ -161,50 +163,74 @@ static inline float compute_camera_depth(const frustum& f_camera,const transform
     return f_camera.distance_from_near_plane((glm::vec3)(t_entity->get_matrix()*glm::vec4(0,0,0,1)));
 }
 
-static inline void front_to_back_insert_sort(render_queues::queue& q,
-                                             const frustum& f_camera,
-                                             const entity::ptr& entity,
-                                             float depth)
+void render_queues::add_call_light(element* e)
 {
-    //init i
-    long i = (long)q.size()-1;
-    //search
-    for(; i > 0; --i)
-    {
-        //
-        auto  entity     = q[i].lock();
-        auto  t_entity   = entity->get_component<transform>();
-        float this_depth = compute_camera_depth(f_camera,t_entity);
-        //
-        if(this_depth < depth) break;
-    }
-    //insert
-    q.insert(q.begin()+(i+1), entity);
+	e->m_next = m_cull_light;
+	m_cull_light = e;
 }
 
-static inline void back_to_front_insert_sort(render_queues::queue& q,
-                                             const frustum& f_camera,
-                                             const entity::ptr& entity,
-                                             float depth)
+void render_queues::add_call_opaque(element* e)
 {
-    //init i
-    long i = (long)q.size()-1;
-    //search
-    for(; i > 0; --i)
-    {
-        //
-        auto  entity     = q[i].lock();
-        auto  t_entity   = entity->get_component<transform>();
-        float this_depth = compute_camera_depth(f_camera,t_entity);
-        //
-        if(this_depth > depth) break;
-    }
-    //insert
-    q.insert(q.begin()+(i+1), entity);
+	element* last    = nullptr;
+	element* current = m_cull_opaque;
+	//insert sort, front to back
+	for (; current;
+		   last = current,
+		   current = current->m_next)
+	{
+		//
+		auto    entity = current->lock();
+		auto  t_entity = entity->get_component<transform>();
+		//
+		if (current->m_depth < e->m_depth) break;
+	}
+	
+	if (last)
+	{
+		e->m_next = current;
+		last->m_next = e;
+	}
+	else
+	{
+		e->m_next     = m_cull_opaque;
+		m_cull_opaque = e;
+	}
+}
+
+void render_queues::add_call_translucent(element* e)
+{
+	element* last    = nullptr;
+	element* current = m_cull_translucent;
+	//insert sort, front to back
+	for (; current;
+		last = current,
+		current = current->m_next)
+	{
+		//
+		auto    entity = current->lock();
+		auto  t_entity = entity->get_component<transform>();
+		//
+		if (current->m_depth > e->m_depth) break;
+	}
+
+	if (last)
+	{
+		e->m_next    = current;
+		last->m_next = e;
+	}
+	else
+	{
+		e->m_next          = m_cull_translucent;
+		m_cull_translucent = e;
+	}
 }
 
 void rendering_system::build_renderables_queue()
 {
+	//init
+	m_renderables.m_cull_light = nullptr;
+	m_renderables.m_cull_opaque = nullptr;
+	m_renderables.m_cull_translucent = nullptr;
     //camera
     camera::ptr   c_camera = m_camera->get_component<camera>();
     transform_ptr t_camera = m_camera->get_component<transform>();
@@ -214,22 +240,23 @@ void rendering_system::build_renderables_queue()
         c_camera->get_frustum().update_frustum(c_camera->get_projection()*
                                                t_camera->get_matrix_inv());
     //build queue lights
-    for (entity::wptr& weak_entity : m_renderables.m_lights)
+    for (render_queues::element& weak_element : m_renderables.m_lights)
     {
-        auto entity     = weak_entity.lock();
+        auto entity     = weak_element.lock();
         auto t_entity   = entity->get_component<transform>();
         auto l_entity   = entity->get_component<light>();
 		const auto l_pos    = (glm::vec3)(t_entity->get_matrix()*glm::vec4(0, 0, 0, 1.));
 		const auto l_radius	= l_entity->m_quadratic;
         if( l_entity->is_enabled() && f_camera.test_sphere(l_pos, l_radius))
         {
-            m_queue_renderables.m_lights.push_back(entity);
+			weak_element.m_next = nullptr;
+			m_renderables.add_call_light(&weak_element);
         }
     }
     //build queue opaque
-    for (entity::wptr& weak_entity : m_renderables.m_opaque)
+    for (render_queues::element& weak_element : m_renderables.m_opaque)
     {
-        auto entity     = weak_entity.lock();
+        auto entity     = weak_element.lock();
         auto t_entity   = entity->get_component<transform>();
         auto r_entity   = entity->get_component<renderable>();
         
@@ -238,20 +265,15 @@ void rendering_system::build_renderables_queue()
                                          ||f_camera.test_obb(r_entity->get_bounding_box(), t_entity->get_matrix())
                                          ))
         {
-#ifndef _DEBUG
-            front_to_back_insert_sort(m_queue_renderables.m_opaque,
-                                      f_camera,
-                                      entity,
-                                      compute_camera_depth(f_camera,t_entity));
-#else
-            m_queue_renderables.m_opaque.push_back(entity);
-#endif
+			weak_element.m_next = nullptr;
+			weak_element.m_depth = compute_camera_depth(f_camera, t_entity);
+			m_renderables.add_call_opaque(&weak_element);
         }
     }
     //build queue translucent
-    for (entity::wptr& weak_entity : m_renderables.m_translucent)
+	for (render_queues::element& weak_element : m_renderables.m_translucent)
     {
-        auto entity     = weak_entity.lock();
+        auto entity     = weak_element.lock();
         auto t_entity   = entity->get_component<transform>();
         auto r_entity   = entity->get_component<renderable>();
         
@@ -260,25 +282,15 @@ void rendering_system::build_renderables_queue()
                                          || f_camera.test_obb(r_entity->get_bounding_box(), t_entity->get_matrix())
                                          ))
         {
-#ifndef _DEBUG
-            back_to_front_insert_sort(m_queue_renderables.m_translucent,
-                                      f_camera,
-                                      entity,
-                                      compute_camera_depth(f_camera,t_entity));
-#else
-            m_queue_renderables.m_translucent.push_back(entity);
-#endif
+			weak_element.m_next = nullptr;
+			weak_element.m_depth = compute_camera_depth(f_camera, t_entity);
+			m_renderables.add_call_translucent(&weak_element);
         }
     }
 }
 
 void rendering_system::draw()
 {
-    //new queue
-    m_queue_renderables.clear();
-    m_queue_renderables.m_lights.reserve(m_renderables.m_lights.size());
-    m_queue_renderables.m_opaque.reserve(m_renderables.m_opaque.size());
-    m_queue_renderables.m_translucent.reserve(m_renderables.m_translucent.size());
     //culling
     if(!m_stop_frustum_culling) build_renderables_queue();
     //all passes
@@ -289,7 +301,7 @@ void rendering_system::draw()
             m_clear_color,
             m_ambient_color,
             m_camera,
-            m_stop_frustum_culling ? m_renderables : m_queue_renderables
+            m_renderables
         );
     }
 }

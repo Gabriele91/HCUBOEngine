@@ -392,7 +392,7 @@ bool shader::load_shader(const std::string& vs_str, size_t line_vs,
     // load shaders files
     // vertex
     std::string file_vs =
-    "#version 400\n" +
+    "#version 410\n" +
     defines_string +
     "#define saturate(x) clamp( x, 0.0, 1.0 )       \n"
     "#define lerp        mix                        \n"
@@ -410,7 +410,7 @@ bool shader::load_shader(const std::string& vs_str, size_t line_vs,
     ////////////////////////////////////////////////////////////////////////////////
     //fragmentx
     std::string file_fs =
-    "#version 400\n" +
+    "#version 410\n" +
     defines_string +
     "#define saturate(x) clamp( x, 0.0, 1.0 )       \n"
     "#define lerp        mix                        \n"
@@ -434,7 +434,7 @@ bool shader::load_shader(const std::string& vs_str, size_t line_vs,
     {
         //geometrfs_stry
         std::string file_gs =
-        "#version 400\n" +
+        "#version 410\n" +
         defines_string +
         "#define saturate(x) clamp( x, 0.0, 1.0 )       \n"
         "#define lerp        mix                        \n"
