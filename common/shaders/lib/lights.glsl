@@ -117,6 +117,7 @@ void calc_spot_light(in light light0,
 
 //todo: gobo texture
 //http://aschultz.us/blog/archives/153
+//https://en.wikibooks.org/wiki/GLSL_Programming/Unity/Cookies
 
 // Calculates the color when using a light.
 void compute_light(in light light0,
