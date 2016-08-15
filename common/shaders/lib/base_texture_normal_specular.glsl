@@ -1,10 +1,10 @@
 #pragma vertex
 //in
-layout(location = 0) in vec3 vertex;
-layout(location = 1) in vec3 normal;
-layout(location = 2) in vec2 uvcoord;
-layout(location = 3) in vec3 tangent;
-layout(location = 4) in vec3 bitangents;
+layout(location = ATT_POSITIONT) in vec3 vertex;
+layout(location = ATT_NORMAL0)   in vec3 normal;
+layout(location = ATT_TEXCOORD0) in vec2 uvcoord;
+layout(location = ATT_TANGENT0)  in vec3 tangent;
+layout(location = ATT_BINORMAL0) in vec3 bitangents;
 //out 
 out vec3 frag_vertex;
 out vec2 frag_uvcoord;

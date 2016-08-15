@@ -1,6 +1,5 @@
 #pragma vertex
-
-layout(location = 0) in vec3 vertex;
+layout(location = ATT_POSITIONT) in vec3 vertex;
 
 uniform mat4 projection;
 uniform mat4 view;

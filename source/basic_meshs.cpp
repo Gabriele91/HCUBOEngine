@@ -48,19 +48,17 @@ namespace basic_meshs
             
             layout = mesh::mesh_layout
             {
-                mesh::input_layout
-                {
-					sizeof(vertex),
-					{
-						mesh::input{ 0, 3, offsetof(vertex, m_position), true },
-						mesh::input{ 1, 3, offsetof(vertex, m_normal)         },
-						mesh::input{ 2, 2, offsetof(vertex, m_uvmap)          },
-						mesh::input{ 3, 3, offsetof(vertex, m_tangent)        },
-						mesh::input{ 4, 3, offsetof(vertex, m_bitangent)      }
-					}
-                },
-                GL_TRIANGLES,
-                GL_STATIC_DRAW
+                render::create_IL({
+                                    sizeof(vertex),
+                                    {
+                                         attribute{ ATT_POSITIONT, AST_FLOAT3, offsetof(vertex, m_position) },
+                                         attribute{ ATT_NORMAL0, AST_FLOAT3, offsetof(vertex, m_normal)     },
+                                         attribute{ ATT_TEXCOORD0, AST_FLOAT2, offsetof(vertex, m_uvmap)    },
+                                         attribute{ ATT_TANGENT0, AST_FLOAT3, offsetof(vertex, m_tangent)   },
+                                         attribute{ ATT_BINORMAL0, AST_FLOAT3, offsetof(vertex, m_bitangent)}
+                                    }
+                                  }),
+                DRAW_TRIANGLES
             };
             
             std::vector< vertex > vertices
@@ -134,16 +132,14 @@ namespace basic_meshs
             
             layout = mesh::mesh_layout
             {
-                mesh::input_layout
-				{   
-					sizeof(vertex),
-					{
-						mesh::input{ 0, 3, offsetof(vertex, m_position), true },
-						mesh::input{ 1, 3, offsetof(vertex, m_normal)         }
-					}
-				},
-                GL_TRIANGLES,
-                GL_STATIC_DRAW
+                render::create_IL({
+                    sizeof(vertex),
+                    {
+                        attribute{ ATT_POSITIONT, AST_FLOAT3, offsetof(vertex, m_position) },
+                        attribute{ ATT_NORMAL0,   AST_FLOAT3, offsetof(vertex, m_normal)   }
+                    }
+                }),
+                DRAW_TRIANGLES
             };
             
 			std::vector< unsigned int > ibuffer
@@ -211,21 +207,20 @@ namespace basic_meshs
 				glm::vec3 m_normal;
 				glm::vec2 m_uvmap;
 			};
-
-			layout = mesh::mesh_layout
-			{
-				mesh::input_layout
-				{
-					sizeof(vertex),
-					{
-						mesh::input{ 0, 3, offsetof(vertex, m_position), true },
-						mesh::input{ 1, 3, offsetof(vertex, m_normal)         },
-						mesh::input{ 2, 2, offsetof(vertex, m_uvmap)          }
-					}
-				},
-				GL_TRIANGLE_STRIP,
-				GL_STATIC_DRAW
-			};
+            
+            
+            layout = mesh::mesh_layout
+            {
+                render::create_IL({
+                    sizeof(vertex),
+                    {
+                        attribute{ ATT_POSITIONT, AST_FLOAT3, offsetof(vertex, m_position) },
+                        attribute{ ATT_NORMAL0,   AST_FLOAT3, offsetof(vertex, m_normal)   },
+                        attribute{ ATT_TEXCOORD0, AST_FLOAT2, offsetof(vertex, m_uvmap)    }
+                    }
+                }),
+                DRAW_TRIANGLE_STRIP
+            };
 
 			std::vector< vertex > vertices
 			{
@@ -247,20 +242,19 @@ namespace basic_meshs
 				glm::vec3 m_position;
 				glm::vec3 m_normal;
 			};
-
-			layout = mesh::mesh_layout
-			{
-				mesh::input_layout
-				{
-					sizeof(vertex),
-					{
-						mesh::input{ 0, 3, offsetof(vertex, m_position), true },
-						mesh::input{ 1, 3, offsetof(vertex, m_normal) }
-					}
-				},
-				GL_TRIANGLE_STRIP,
-				GL_STATIC_DRAW
-			};
+            
+            
+            layout = mesh::mesh_layout
+            {
+                render::create_IL({
+                    sizeof(vertex),
+                    {
+                        attribute{ ATT_POSITIONT, AST_FLOAT3, offsetof(vertex, m_position) },
+                        attribute{ ATT_NORMAL0,   AST_FLOAT3, offsetof(vertex, m_normal)   }
+                    }
+                }),
+                DRAW_TRIANGLE_STRIP
+            };
 
 			std::vector< vertex > vertices
 			{

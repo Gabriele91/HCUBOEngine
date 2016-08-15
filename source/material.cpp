@@ -80,65 +80,65 @@ public:
         m_shader;
     };
     
-    static std::string cullface_to_string(GLenum cullface)
+    static std::string cullface_to_string(cullface_type cullface)
     {
         switch (cullface)
         {
-            case GL_BACK: return "back";
-            case GL_FRONT: return "front";
-            case GL_FRONT_AND_BACK: return "front_and_back";
+            case CF_BACK: return "back";
+            case CF_FRONT: return "front";
+            case CF_FRONT_AND_BACK: return "front_and_back";
             default: return "";
         }
     }
     
-    static GLenum cullface_from_string(const std::string& cullface,GLenum cullface_default)
+    static cullface_type cullface_from_string(const std::string& cullface,cullface_type cullface_default)
     {
-        if(cullface=="back")           return GL_BACK;
-        if(cullface=="front")          return GL_FRONT;
-        if(cullface=="front_and_back") return GL_FRONT_AND_BACK;
+        if(cullface=="back")           return CF_BACK;
+        if(cullface=="front")          return CF_FRONT;
+        if(cullface=="front_and_back") return CF_FRONT_AND_BACK;
         return cullface_default;
     }
     
-    static std::string blend_to_string(GLenum blend)
+    static std::string blend_to_string(blend_type blend)
     {
         switch (blend)
         {
-            case GL_ONE: return "one";
-            case GL_ZERO: return "zero";
+            case BLEND_ONE: return "one";
+            case BLEND_ZERO: return "zero";
                 
-            case GL_ONE_MINUS_DST_COLOR: return "one_minus_dst_color";
-            case GL_ONE_MINUS_DST_ALPHA: return "one_minus_dst_alpha";
-            case GL_ONE_MINUS_SRC_COLOR: return "one_minus_src_color";
-            case GL_ONE_MINUS_SRC_ALPHA: return "one_minus_src_alpha";
+            case BLEND_ONE_MINUS_DST_COLOR: return "one_minus_dst_color";
+            case BLEND_ONE_MINUS_DST_ALPHA: return "one_minus_dst_alpha";
+            case BLEND_ONE_MINUS_SRC_COLOR: return "one_minus_src_color";
+            case BLEND_ONE_MINUS_SRC_ALPHA: return "one_minus_src_alpha";
                 
                 
-            case GL_DST_COLOR: return "dst_color";
-            case GL_DST_ALPHA: return "dst_alpha";
+            case BLEND_DST_COLOR: return "dst_color";
+            case BLEND_DST_ALPHA: return "dst_alpha";
                 
-            case GL_SRC_COLOR: return "src_color";
-            case GL_SRC_ALPHA: return "src_alpha";
-            case GL_SRC_ALPHA_SATURATE: return "src_apha_sature";
+            case BLEND_SRC_COLOR: return "src_color";
+            case BLEND_SRC_ALPHA: return "src_alpha";
+            case BLEND_SRC_ALPHA_SATURATE: return "src_apha_sature";
             default: return "";
         }
     }
     
-    static GLenum blend_from_string(const std::string& blend,GLenum blend_default)
+    static blend_type blend_from_string(const std::string& blend,blend_type blend_default)
     {
         //
-        if(blend=="one") return GL_ONE;
-        if(blend=="zero") return GL_ZERO;
+        if(blend=="one") return BLEND_ONE;
+        if(blend=="zero") return BLEND_ZERO;
         //
-        if(blend=="one_minus_dst_color") return GL_ONE_MINUS_DST_COLOR;
-        if(blend=="one_minus_dst_alpha") return GL_ONE_MINUS_DST_ALPHA;
-        if(blend=="one_minus_src_color") return GL_ONE_MINUS_SRC_COLOR;
-        if(blend=="one_minus_src_alpha") return GL_ONE_MINUS_SRC_ALPHA;
+        if(blend=="one_minus_dst_color") return BLEND_ONE_MINUS_DST_COLOR;
+        if(blend=="one_minus_dst_alpha") return BLEND_ONE_MINUS_DST_ALPHA;
+        if(blend=="one_minus_src_color") return BLEND_ONE_MINUS_SRC_COLOR;
+        if(blend=="one_minus_src_alpha") return BLEND_ONE_MINUS_SRC_ALPHA;
         //
-        if(blend=="dst_color") return GL_DST_COLOR;
-        if(blend=="dst_alpha") return GL_DST_ALPHA;
+        if(blend=="dst_color") return BLEND_DST_COLOR;
+        if(blend=="dst_alpha") return BLEND_DST_ALPHA;
         //
-        if(blend=="src_color") return GL_SRC_COLOR;
-        if(blend=="src_alpha") return GL_SRC_ALPHA;
-        if(blend=="src_apha_sature") return GL_SRC_ALPHA_SATURATE;
+        if(blend=="src_color") return BLEND_SRC_COLOR;
+        if(blend=="src_alpha") return BLEND_SRC_ALPHA;
+        if(blend=="src_apha_sature") return BLEND_SRC_ALPHA_SATURATE;
         
         return blend_default;
     }
@@ -907,11 +907,11 @@ bool material::load(resources_manager& resources,const std::string& path)
     material_parser parser;
     //default
     material_parser::context context;
-    context.m_blend.m_enable      = m_blend;
-    context.m_blend.m_source      = material_parser::blend_to_string( m_blend_src );
-    context.m_blend.m_destination = material_parser::blend_to_string( m_blend_dst );
-    context.m_cullmode.m_enable   = m_cullface;
-    context.m_cullmode.m_mode     = material_parser::cullface_to_string( m_cullmode );
+    context.m_blend.m_enable      = m_blend.m_enable;
+    context.m_blend.m_source      = material_parser::blend_to_string( m_blend.m_src );
+    context.m_blend.m_destination = material_parser::blend_to_string( m_blend.m_dst );
+    context.m_cullmode.m_enable   = m_cullface.m_cullface != CF_DISABLE;
+    context.m_cullmode.m_mode     = material_parser::cullface_to_string( m_cullface.m_cullface );
     //do parsing
     if(!parser.parse(context,filesystem::text_file_read_all(path)))
     {
@@ -923,12 +923,16 @@ bool material::load(resources_manager& resources,const std::string& path)
         return false;
     }
     //set blend
-    blend(parser.get_context().m_blend.m_enable);
-    blend_src(material_parser::blend_from_string(parser.get_context().m_blend.m_source,m_blend_src));
-    blend_dst(material_parser::blend_from_string(parser.get_context().m_blend.m_destination,m_blend_dst));
+    if(parser.get_context().m_blend.m_enable)
+        m_blend = blend_state(material_parser::blend_from_string(parser.get_context().m_blend.m_source,m_blend.m_src),
+                              material_parser::blend_from_string(parser.get_context().m_blend.m_destination,m_blend.m_dst));
+    else
+        m_blend = blend_state();
     //set cullface
-    cullface(parser.get_context().m_cullmode.m_enable);
-    cullmode(material_parser::cullface_from_string(parser.get_context().m_cullmode.m_mode, m_cullmode));
+    if(parser.get_context().m_cullmode.m_enable)
+        m_cullface = cullface_state(material_parser::cullface_from_string(parser.get_context().m_cullmode.m_mode, m_cullface.m_cullface));
+    else
+        m_cullface = cullface_state(CF_DISABLE);
     //shader name
     std::string shader_name = parser.get_context().m_shader.m_shader_name;
     //set shader
@@ -987,29 +991,14 @@ bool material::load(resources_manager& resources,const std::string& path)
     return true;
 }
 
-void material::cullface(bool face)
+void material::cullface(cullface_state& cfs)
 {
-	m_cullface = face;
+    m_cullface = cfs;
 }
 
-void material::cullmode(int mode)
+void material::blend(const blend_state& bls)
 {
-	m_cullmode = mode;
-}
-
-void material::blend(bool b)
-{
-	m_blend = b;
-}
-
-void material::blend_src(int src)
-{
-	m_blend_src = src;
-}
-
-void material::blend_dst(int dst)
-{
-	m_blend_dst = dst;
+    m_blend = bls;
 }
 
 void material::bind(const glm::vec4& viewport,
@@ -1074,8 +1063,7 @@ void material::bind(const glm::vec4& viewport,
 
 void material::unbind()
 {
-	if (!m_shader)
-		return;
+	if (!m_shader) return;
 	//unbind shader
 	m_shader->unbind();
 }
@@ -1083,28 +1071,16 @@ void material::unbind()
 
 void material::bind_state()
 {
-	if (m_cullface)
-	{
-		glEnable(GL_CULL_FACE);
-		glCullFace(m_cullmode);
-	}
-	if (m_blend)
-	{
-		glEnable(GL_BLEND);
-		glBlendFunc(m_blend_src, m_blend_dst);
-	}
+    m_temp_blend    = render::get_blend_state();
+    m_temp_cullface = render::get_cullface_state();
+    render::set_cullface_state(m_cullface);
+    render::set_blend_state(m_blend);
 }
 
 void material::unbind_state()
 {
-	if (m_blend)
-	{
-		glDisable(GL_BLEND);
-	}
-	if (m_cullface)
-	{
-		glDisable(GL_CULL_FACE);
-	}
+    render::set_blend_state(m_temp_blend);
+    render::set_cullface_state(m_temp_cullface);
 }
 
 material_ptr material::copy() const
@@ -1112,12 +1088,11 @@ material_ptr material::copy() const
 	auto omaterial = material_snew();
 
 	//cullface
+    omaterial->m_temp_cullface = m_temp_cullface;
 	omaterial->m_cullface = m_cullface;
-	omaterial->m_cullmode = m_cullmode;
-	//blend
-	omaterial->m_blend = m_blend;
-	omaterial->m_blend_src = m_blend_src;
-	omaterial->m_blend_dst = m_blend_dst;
+    //blend
+    omaterial->m_temp_blend = m_temp_blend;
+    omaterial->m_blend = m_blend;
 	//shader
 	omaterial->m_shader = m_shader;
 	//standard uniform

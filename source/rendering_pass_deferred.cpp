@@ -85,13 +85,13 @@ void rendering_pass_deferred::draw_pass(glm::vec4&  clear_color,
     camera::ptr   c_camera = e_camera->get_component<camera>();
     transform_ptr t_camera = e_camera->get_component<transform>();
 	const glm::vec4& viewport = c_camera->get_viewport();
-    glViewport(viewport.x, viewport.y, viewport.z, viewport.w);
-    glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
-
+    render::set_viewport_state({viewport});
+    render::set_clear_color_state({clear_color});
+    
 	m_g_buffer.bind();
     
-	glClearColor(ambient_color.r, ambient_color.g, ambient_color.b, 1.0);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    render::set_clear_color_state(glm::vec4{ambient_color.r, ambient_color.g, ambient_color.b,1.0});
+    render::clear();
 
 	//draw
 	for (render_queues::element*
@@ -127,7 +127,7 @@ void rendering_pass_deferred::draw_pass(glm::vec4&  clear_color,
 	m_g_buffer.unbind();
 	////////////////////////////////////////////////////////////////////////////////
 	//clear frame buffer
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    render::clear();
 	////////////////////////////////////////////////////////////////////////////////
 	//ssao pass
 	if(m_enable_ambient_occlusion)

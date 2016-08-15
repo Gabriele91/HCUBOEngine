@@ -1,6 +1,6 @@
 #pragma vertex
+layout(location = ATT_POSITIONT) in int character;
 
-layout(location = 0) in int character;
 out int v_character;
 out int v_position;
 

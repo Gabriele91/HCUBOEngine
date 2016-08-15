@@ -6,7 +6,7 @@
 //  Copyright © 2016 Gabriele. All rights reserved.
 //
 #pragma once
-#include <OpenGL4.h>
+#include <render.h>
 #include <camera.h>
 #include <vector>
 #include <texture.h>
@@ -36,15 +36,9 @@ public:
 
     bool load(resources_manager& resources,const std::string& path);
     
-	void cullface(bool face);
+	void cullface(cullface_state& cfs);
     
-	void cullmode(int mode);
-    
-	void blend(bool b);
-    
-	void blend_src(int src);
-    
-	void blend_dst(int dst);
+	void blend(const blend_state& bls);
     
 	virtual void bind(const glm::vec4& viewport,
 					  const glm::mat4& projection,
@@ -60,14 +54,12 @@ public:
 	material_ptr copy() const;
 
 protected:
-
-    bool m_cullface  { true   };
-    int  m_cullmode  { GL_BACK };
+ 
+    cullface_state m_temp_cullface;
+    cullface_state m_cullface{ CF_BACK };
     
-    bool m_blend     { false  };
-    int  m_blend_src { GL_ONE };
-    int  m_blend_dst { GL_ZERO};
-    
+    blend_state    m_temp_blend;
+    blend_state    m_blend;
     
     //shader
     shader::ptr  m_shader { nullptr };

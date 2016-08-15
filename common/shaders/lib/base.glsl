@@ -1,7 +1,7 @@
 #pragma vertex
 //in
-layout(location = 0) in vec3 vertex;
-layout(location = 1) in vec3 normal;
+layout(location = ATT_POSITIONT) in vec3 vertex;
+layout(location = ATT_NORMAL0)   in vec3 normal;
 //out 
 out vec3 frag_vertex;
 out vec3 frag_normal;

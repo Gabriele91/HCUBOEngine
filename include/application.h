@@ -8,7 +8,6 @@
 #pragma once
 #include <string>
 #include <tuple>
-#include <OpenGL4.h>
 #include <GLFW/glfw3.h>
 #include <glm/vec2.hpp>
 class application;
@@ -47,6 +46,7 @@ public:
     virtual void start(application& application) = 0;
     virtual bool run(application& application,double delta_time) = 0;
     virtual bool end(application& application) = 0;
+    virtual ~instance(){}
 };
 
 

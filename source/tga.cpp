@@ -6,7 +6,7 @@
 //  Copyright © 2016 Gabriele. All rights reserved.
 //
 #include <vector>
-#include <OpenGL4.h>
+#include <render.h>
 #include <struct_attribute.h>
 #include <memory>
 #include <cstring>
@@ -151,8 +151,9 @@ static void image_y_flip(std::vector<unsigned char>& bytes,
 
 bool decode_tga(std::vector<unsigned char>& out_image,
 		   	    unsigned long& image_width,
-			    unsigned long& image_height,
-			    GLenum&	      open_gl_type,
+                unsigned long& image_height,
+                texture_format& image_format,
+                texture_type&   image_type,
 			    const unsigned char* in_tga,
 			    size_t in_size)
 {
@@ -168,10 +169,10 @@ bool decode_tga(std::vector<unsigned char>& out_image,
 	//opengl type
 	switch (header->m_bits)
 	{
-		case 8:   open_gl_type = GL_R8;     break;
-		case 16:  open_gl_type = GL_RGB565; break;
-		case 24:  open_gl_type = GL_RGB;    break;
-		case 32:  open_gl_type = GL_RGBA;   break;
+        case 8:   image_format = TF_R8;      image_type = TT_R;    break;
+		case 16:  image_format = TF_RGB565;  image_type = TT_RGB;  break;
+		case 24:  image_format = TF_RGB8;    image_type = TT_RGB;  break;
+		case 32:  image_format = TF_RGBA8;   image_type = TT_RGBA; break;
 		default: return false; break;
 	}
 	//copy data

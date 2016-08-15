@@ -46,14 +46,16 @@ public:
         set(texture, (size_t)0, (size_t)0);
     }
     
-    void enable(texture::ptr texture)
+    void enable(texture::ptr in_texture)
     {
-        set(texture.get(), (size_t)0, (size_t)0);
+        assert(in_texture.get());
+        set(in_texture.get(), (size_t)0, (size_t)0);
     }
     
-    void set_value(texture::ptr texture)
+    void set_value(texture::ptr in_texture)
     {
-        set(texture.get(), (size_t)0, (size_t)0);
+        assert(in_texture.get());
+        set(in_texture.get(), (size_t)0, (size_t)0);
     }
     
     void set_value(texture* texture)

@@ -20,6 +20,6 @@ int main(int argc, const char * argv[])
 		, 4									   //OpenGL version
 		, 1									   //OpenGL sub-version
 		, "view particles"					   //window title
-		, &view_points) 					   //instance
+		, new app_basic) 					   //instance
 		? 0 : 1;
 }

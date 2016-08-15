@@ -6,6 +6,7 @@
 //  Copyright © 2016 Gabriele. All rights reserved.
 //
 #include <mesh.h>
+#include <render.h>
 #include <resources_manager.h>
 #include <static_model.h>
 #include <tangent_space_calculation.h>
@@ -35,23 +36,24 @@ bool static_model::load(resources_manager& resources, const std::string& path)
 		glm::vec3 m_tangent;
 		glm::vec3 m_bitangent;
 	};
-	//gpu layout
-	mesh::mesh_layout layout
-	{
-		mesh::input_layout
-		{
-			sizeof(vertex),
-			{
-				mesh::input{ 0, 3, offsetof(vertex, m_position), true },
-				mesh::input{ 1, 3, offsetof(vertex, m_normal) },
-				mesh::input{ 2, 2, offsetof(vertex, m_uvmap) },
-				mesh::input{ 3, 3, offsetof(vertex, m_tangent) },
-				mesh::input{ 4, 3, offsetof(vertex, m_bitangent) }
-			}
-		},
-		GL_TRIANGLES,
-		GL_STATIC_DRAW
-	};
+    //attrs list
+    attribute_list attribute_list
+    {
+        sizeof(vertex),
+        {
+            attribute{ ATT_POSITIONT, AST_FLOAT3, offsetof(vertex, m_position) },
+            attribute{ ATT_NORMAL0,   AST_FLOAT3, offsetof(vertex, m_normal)   },
+            attribute{ ATT_TEXCOORD0, AST_FLOAT2, offsetof(vertex, m_uvmap)    },
+            attribute{ ATT_TANGENT0,  AST_FLOAT3, offsetof(vertex, m_tangent)  },
+            attribute{ ATT_BINORMAL0, AST_FLOAT3, offsetof(vertex, m_bitangent)}
+        }
+    };
+    //mesh layout
+    mesh::mesh_layout layout
+    {
+        render::create_IL(attribute_list),
+        DRAW_TRIANGLES
+    };
 	//open file
 	FILE* model_file = fopen(path.c_str(), "rb");
 	//test open
@@ -90,11 +92,11 @@ bool static_model::load(resources_manager& resources, const std::string& path)
 			std::fread(&vertices[v].m_uvmap.x, sizeof(float), 2, model_file);
 			std::fread(&vertices[v].m_tangent.x, sizeof(float), 3, model_file);
 			std::fread(&vertices[v].m_bitangent.x, sizeof(float), 3, model_file);
-		}
+        }
 		//create mesh
-		m_sub_models[i].m_mesh = mesh::snew();
+        m_sub_models[i].m_mesh = mesh::snew();
 		m_sub_models[i].m_mesh->build(
-			layout,
+            layout,
 			ibuffer.data(),
 			ibuffer.size(),
 			(const mesh::byte*)vertices.data(),

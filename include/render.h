@@ -16,7 +16,12 @@ class context_render_target;
 class context_vertex_buffer;
 class context_index_buffer;
 class context_input_layout;
-class context_shader;
+
+using context_texture_ptr       = std::shared_ptr< context_texture >  ;
+using context_render_target_ptr = std::shared_ptr< context_render_target >;
+using context_vertex_buffer_ptr = std::shared_ptr< context_vertex_buffer > ;
+using context_index_buffer_ptr  = std::shared_ptr< context_index_buffer >  ;
+using context_input_layout_ptr  = std::shared_ptr< context_input_layout >  ;
 
 enum render_driver
 {
@@ -110,6 +115,10 @@ enum texture_format
     TF_R16F,
     TF_R32F,
     ////////////////////
+    TF_RGB565,
+    TF_RGB5A1,
+    TF_RGBA4,
+    ////////////////////
     TF_DEPTH16_STENCIL8,
     TF_DEPTH24_STENCIL8,
     TF_DEPTH32_STENCIL8,
@@ -126,6 +135,14 @@ enum texture_type
     TT_RGBA,
     TT_DEPTH,
     TT_DEPTH_STENCIL
+};
+
+enum texture_type_format
+{
+    TTF_FLOAT,
+    TTF_UNSIGNED_BYTE,
+    TTF_UNSIGNED_SHORT,
+    TTF_UNSIGNED_INT
 };
 
 enum texture_mag_filter_type
@@ -158,76 +175,36 @@ enum render_target_type
     RT_DEPTH_STENCIL
 };
 
+
+
 enum attribute_type
 {
-    //POSITIONT
+    //POSITION TRANSFORM
     ATT_POSITIONT    = 0,
-    //POSITION
-    ATT_POSITION0    = 1,
-    ATT_POSITION1,
-    ATT_POSITION2,
-    ATT_POSITION3,
-    ATT_POSITION4,
-    ATT_POSITION5,
-    ATT_POSITION6,
-    ATT_POSITION7,
-    ATT_POSITION8,
-    ATT_POSITION9,
-    //COLOR
-    ATT_COLOR0 = 20,
-    ATT_COLOR1,
-    ATT_COLOR2,
-    ATT_COLOR3,
-    ATT_COLOR4,
-    ATT_COLOR5,
-    ATT_COLOR6,
-    ATT_COLOR7,
-    ATT_COLOR8,
-    ATT_COLOR9,
-    //TEXCOORD
-    ATT_TEXCOORD0 = 40,
-    ATT_TEXCOORD1,
-    ATT_TEXCOORD2,
-    ATT_TEXCOORD3,
-    ATT_TEXCOORD4,
-    ATT_TEXCOORD5,
-    ATT_TEXCOORD6,
-    ATT_TEXCOORD7,
-    ATT_TEXCOORD8,
-    ATT_TEXCOORD9,
-    //NORMAL
-    ATT_NORMAL0 = 60,
-    ATT_NORMAL1,
-    ATT_NORMAL2,
-    ATT_NORMAL3,
-    ATT_NORMAL4,
-    ATT_NORMAL5,
-    ATT_NORMAL6,
-    ATT_NORMAL7,
-    ATT_NORMAL8,
-    ATT_NORMAL9,
-    //TANGENT
-    ATT_TANGENT0 = 80,
-    ATT_TANGENT1,
-    ATT_TANGENT2,
-    ATT_TANGENT3,
-    ATT_TANGENT4,
-    ATT_TANGENT5,
-    ATT_TANGENT6,
-    ATT_TANGENT7,
-    ATT_TANGENT8,
-    ATT_TANGENT9,
-    //BINORMAL
-    ATT_BINORMAL0 = 110,
-    ATT_BINORMAL1,
-    ATT_BINORMAL2,
-    ATT_BINORMAL3,
-    ATT_BINORMAL4,
-    ATT_BINORMAL5,
-    ATT_BINORMAL6,
-    ATT_BINORMAL7,
-    ATT_BINORMAL8,
-    ATT_BINORMAL9,
+    
+    ATT_NORMAL0      = 1,
+    ATT_TEXCOORD0    = 2,
+    ATT_TANGENT0     = 3,
+    ATT_BINORMAL0    = 4,
+    ATT_COLOR0       = 5,
+    
+    //POSITION 0
+    ATT_POSITION0    = 6,
+    
+    ATT_NORMAL1      = 7,
+    ATT_TEXCOORD1    = 8,
+    ATT_TANGENT1     = 9,
+    ATT_BINORMAL1    = 10,
+    ATT_COLOR1       = 11,
+    
+    //POSITION 1
+    ATT_POSITION1    = 12,
+    
+    ATT_NORMAL2      = 13,
+    ATT_TEXCOORD2    = 14,
+    ATT_TANGENT2     = 15,
+    ATT_BINORMAL2    = 16,
+    ATT_COLOR2       = 17
 };
 
 enum attribute_strip_type
@@ -286,7 +263,7 @@ struct attribute
         m_offset = offset;
     }
     
-    bool is_position_transform()
+    bool is_position_transform() const
     {
         return m_attribute == ATT_POSITIONT;
     }
@@ -503,85 +480,94 @@ struct render_state
     }
 };
 
-
+#define LIB_EXPORT
 namespace render
 {
-    static render_driver get_render_driver();
+    LIB_EXPORT render_driver get_render_driver();
+    LIB_EXPORT void print_info();
     
-    static void init();
-    static void close();
+    LIB_EXPORT void init();
+    LIB_EXPORT void close();
     
-    static const clear_color_state& get_clear_color_state();
-    static void set_clear_color_state(const clear_color_state& cf);
-    static void clear();
+    LIB_EXPORT const clear_color_state& get_clear_color_state();
+    LIB_EXPORT void set_clear_color_state(const clear_color_state& cf);
+    LIB_EXPORT void clear();
     
-    static const depth_buffer_state& get_depth_buffer_state();
-    static void set_depth_buffer_state(const depth_buffer_state& cf);
+    LIB_EXPORT const depth_buffer_state& get_depth_buffer_state();
+    LIB_EXPORT void set_depth_buffer_state(const depth_buffer_state& cf);
     
-    static const cullface_state& get_cullface_state();
-    static void set_cullface_state(const cullface_state& cf);
+    LIB_EXPORT const cullface_state& get_cullface_state();
+    LIB_EXPORT void set_cullface_state(const cullface_state& cf);
     
-    static const viewport_state& get_viewport_state();
-    static void set_viewport_state(const viewport_state& vs);
+    LIB_EXPORT const viewport_state& get_viewport_state();
+    LIB_EXPORT void set_viewport_state(const viewport_state& vs);
     
-    static const blend_state& get_blend_state();
-    static void set_blend_state(const blend_state& bs);
+    LIB_EXPORT const blend_state& get_blend_state();
+    LIB_EXPORT void set_blend_state(const blend_state& bs);
     
-    static const render_state& get_render_state();
-    static void set_render_state(const render_state& rs);
+    LIB_EXPORT const render_state& get_render_state();
+    LIB_EXPORT void set_render_state(const render_state& rs);
     
     //BO
-    static context_vertex_buffer* create_stream_VBO(const unsigned char* vbo, size_t stride, size_t n);
-    static context_index_buffer* create_stream_IBO(const unsigned int* ibo, size_t size);
-    static context_vertex_buffer* create_VBO(const unsigned char* vbo, size_t stride, size_t n);
-    static context_index_buffer* create_IBO(const unsigned int* ibo, size_t size);
+    LIB_EXPORT context_vertex_buffer* create_stream_VBO(const unsigned char* vbo, size_t stride, size_t n);
+    LIB_EXPORT context_index_buffer* create_stream_IBO(const unsigned int* ibo, size_t size);
+    LIB_EXPORT context_vertex_buffer* create_VBO(const unsigned char* vbo, size_t stride, size_t n);
+    LIB_EXPORT context_index_buffer* create_IBO(const unsigned int* ibo, size_t size);
     
-    static void update_steam_VBO(context_vertex_buffer* vbo, const unsigned char* vb, size_t n);
-    static void update_steam_IBO(context_index_buffer* vbo, const unsigned int* ib, size_t n);
+    LIB_EXPORT void update_steam_VBO(context_vertex_buffer* vbo, const unsigned char* vb, size_t n);
+    LIB_EXPORT void update_steam_IBO(context_index_buffer* vbo, const unsigned int* ib, size_t n);
     
-    static void bind_VBO(context_vertex_buffer*);
-    static void bind_IBO(context_index_buffer*);
+    LIB_EXPORT void bind_VBO(context_vertex_buffer*);
+    LIB_EXPORT void bind_IBO(context_index_buffer*);
     
-    static void delete_VBO(context_vertex_buffer*&);
-    static void delete_IBO(context_index_buffer*&);
+    LIB_EXPORT void unbind_VBO(context_vertex_buffer*);
+    LIB_EXPORT void unbind_IBO(context_index_buffer*);
+    
+    LIB_EXPORT void delete_VBO(context_vertex_buffer*&);
+    LIB_EXPORT void delete_IBO(context_index_buffer*&);
     
     //draw
-    static void draw_arrays(draw_type type,unsigned int n);
-    static void draw_arrays(draw_type type, unsigned int start,unsigned int size);
-    static void draw_elements(draw_type type, unsigned int n);
+    LIB_EXPORT void draw_arrays(draw_type type,unsigned int n);
+    LIB_EXPORT void draw_arrays(draw_type type, unsigned int start,unsigned int size);
+    LIB_EXPORT void draw_elements(draw_type type, unsigned int n);
     
     //IL=Input Layaut
-    static context_input_layout* create_IL(const attribute_list& atl);
-    static void delete_IL(context_input_layout*&);
-    static void bind_IL(context_input_layout*);
-    static void unbind_IL(context_input_layout* il);
+    LIB_EXPORT context_input_layout* create_IL(const attribute_list& atl);
+    LIB_EXPORT size_t size_IL(const context_input_layout* layout);
+    LIB_EXPORT bool   has_a_position_IL(const context_input_layout* layout);
+    LIB_EXPORT size_t position_offset_IL(const context_input_layout* layout);
+    LIB_EXPORT void delete_IL(context_input_layout*&);
+    LIB_EXPORT void bind_IL(context_input_layout*);
+    LIB_EXPORT void unbind_IL(context_input_layout* il);
     
     //depth
-    static float get_depth(const glm::vec2& pixel);
+    LIB_EXPORT float get_depth(const glm::vec2& pixel);
     //color
-    static glm::vec4 get_color(const glm::vec2& pixel);
+    LIB_EXPORT glm::vec4 get_color(const glm::vec2& pixel);
     
     //texture
-    static context_texture* create_texture(texture_type   type,
+    LIB_EXPORT context_texture* create_texture(texture_format format,
                                            unsigned int w,
                                            unsigned int h,
-                                           void* byte,
-                                           texture_format format,
+                                           const unsigned char* bytes,
+                                           texture_type   type,
+                                           texture_type_format type_format,
                                            texture_min_filter_type min_type,
                                            texture_mag_filter_type mag_type,
                                            texture_edge_type       edge_s,
-                                           texture_edge_type       edge_t);
-    static void bind_texture(context_texture*, int n);
-    static void unbind_texture(context_texture*);
-    static void delete_texture(context_texture*&);
+                                           texture_edge_type       edge_t,
+                                           bool                    build_mipmap);
+    LIB_EXPORT void bind_texture(context_texture*, int n);
+    LIB_EXPORT void unbind_texture(context_texture*);
+    LIB_EXPORT void delete_texture(context_texture*&);
     
     //target
-    static context_render_target* create_render_target(const std::vector< target_field >& textures);
-    static void enable_render_target(context_render_target*);
-    static void disable_render_target(context_render_target*);
-    static void delete_render_target(context_render_target*&);
+    LIB_EXPORT context_render_target* create_render_target(const std::vector< target_field >& textures);
+    LIB_EXPORT void enable_render_target(context_render_target*);
+    LIB_EXPORT void disable_render_target(context_render_target*);
+    LIB_EXPORT void delete_render_target(context_render_target*&);
     
     //debug
-    void print_errors();
+    LIB_EXPORT void print_errors();
     
 };

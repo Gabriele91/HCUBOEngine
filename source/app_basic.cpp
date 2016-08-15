@@ -167,7 +167,7 @@ void app_basic::start(application& app)
 	//gbuffer size
 	glm::ivec2 g_size = app.get_window_size();
 	//deferred alloc
-	m_resources.add_directory("common/shaders");
+    m_resources.add_directory("common/shaders");
 	auto rendering_pass = rendering_pass_deferred::snew(g_size, m_resources);
 	rendering_pass->set_ambient_occlusion(true);
 	m_rendering->add_rendering_pass(rendering_pass);
@@ -400,7 +400,7 @@ void app_basic::go_to_fullscreen(application& app)
         //go to fullscreen mode
         const GLFWvidmode* monitor_mode = glfwGetVideoMode(monitors[0]);
         glfwSetWindowMonitor(
-                             app.get_window()
+                               app.get_window()
                              , monitors[0]
                              , 0
                              , 0

@@ -18,41 +18,43 @@ void ssao_technique::init(const glm::ivec2& w_size, resources_manager& resources
 	m_shader_blur = resources.get_shader("ssao_blur");
 	m_uniform_ssoa_input = m_shader->get_shader_uniform_int("g_ssao_input");
 	////////////////////////////////////////////////////////////////////////////////////////////////////
-	//fbo
-	glGenFramebuffers(1, &m_fbo);
-	glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
-	//gen texture
-	glGenTextures(1, &m_ssao_texture);
-	glBindTexture(GL_TEXTURE_2D, m_ssao_texture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, w_size.x, w_size.y, 0, GL_RGB, GL_FLOAT, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	//create frame buffer texture
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_ssao_texture, 0);
-	//clear
-	glClearColor(1.0, 1.0, 1.0, 1.0);
-	glClear(GL_COLOR_BUFFER_BIT);
-	//unbind
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    m_ssao_texture =
+    render::create_texture(TF_R8,
+                           w_size.x,
+                           w_size.y,
+                           nullptr,
+                           TT_RGB,
+                           TTF_FLOAT,
+                           TMIN_NEAREST,
+                           TMAG_NEAREST,
+                           TEDGE_REPEAT,
+                           TEDGE_REPEAT,
+                           false);
+    //create frame buffer texture
+    m_fbo =
+    render::create_render_target({
+        target_field{ m_ssao_texture, RT_COLOR }
+    });
 	////////////////////////////////////////////////////////////////////////////////////////////////////
-
-	////////////////////////////////////////////////////////////////////////////////////////////////////
-	//fbo_blur
-	glGenFramebuffers(1, &m_fbo_blur);
-	glBindFramebuffer(GL_FRAMEBUFFER, m_fbo_blur);
-	//gen texture
-	glGenTextures(1, &m_ssao_blur_texture);
-	glBindTexture(GL_TEXTURE_2D, m_ssao_blur_texture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, w_size.x, w_size.y, 0, GL_RGB, GL_FLOAT, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	//create frame buffer texture
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_ssao_blur_texture, 0);
-	//clear
-	glClearColor(1.0, 1.0, 1.0, 1.0);
-	glClear(GL_COLOR_BUFFER_BIT);
-	//unbind
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    m_ssao_blur_texture =
+    render::create_texture(TF_R8,
+                           w_size.x,
+                           w_size.y,
+                           nullptr,
+                           TT_RGB,
+                           TTF_FLOAT,
+                           TMIN_NEAREST,
+                           TMAG_NEAREST,
+                           TEDGE_REPEAT,
+                           TEDGE_REPEAT,
+                           false);
+    m_fbo_blur =
+    render::create_render_target({
+        target_field{ m_ssao_blur_texture, RT_COLOR }
+    });
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    //clear
+    clear();
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	//build kernel
 	set_kernel_size(m_max_kernel_size);
@@ -68,52 +70,58 @@ void ssao_technique::init(const glm::ivec2& w_size, resources_manager& resources
 			0.0f
 		};
 	}
-	//build noise texture
-	glGenTextures(1, &m_noise_texture);
-	glBindTexture(GL_TEXTURE_2D, m_noise_texture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, 4, 4, 0, GL_RGB, GL_FLOAT, noise_buffer.data());
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	//unbind texture
-	glBindTexture(GL_TEXTURE_2D, 0);
+    //build noise texture
+    m_noise_texture =
+    render::create_texture(TF_RGB16F,
+                           4,
+                           4,
+                           (const unsigned char*)noise_buffer.data(),
+                           TT_RGB,
+                           TTF_FLOAT,
+                           TMIN_NEAREST,
+                           TMAG_NEAREST,
+                           TEDGE_REPEAT,
+                           TEDGE_REPEAT,
+                           false);
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 }
 
 void ssao_technique::clear()
 {
 	if (m_fbo)
-	{
-		glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
-		//clear
-		glClearColor(1.0, 1.0, 1.0, 1.0);
-		glClear(GL_COLOR_BUFFER_BIT);
-		//unbind
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		//clear blurred texture
-		glBindFramebuffer(GL_FRAMEBUFFER, m_fbo_blur);
-		//clear
-		glClearColor(1.0, 1.0, 1.0, 1.0);
-		glClear(GL_COLOR_BUFFER_BIT);
-		//unbind
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	}
+    {
+        //clear
+        auto temp_color_clear_state = render::get_clear_color_state();
+        render::set_clear_color_state(clear_color_state(glm::vec4{1.,1.,1.,1.}));
+        
+        render::enable_render_target(m_fbo);
+        render::clear();
+        render::disable_render_target(m_fbo);
+        
+        render::enable_render_target(m_fbo_blur);
+        render::clear();
+        render::disable_render_target(m_fbo_blur);
+
+        render::set_clear_color_state(temp_color_clear_state);
+    }
 }
 
 void ssao_technique::applay(entity::ptr e_camera, g_buffer& buffer, mesh::ptr square)
 {
+    //clear
+    auto temp_cullface          = render::get_cullface_state();
+    auto temp_color_clear_state = render::get_clear_color_state();
+    auto temp_depth_buffer_state= render::get_depth_buffer_state();
 	//disabl depth test
-	glDisable(GL_DEPTH_TEST);
+    render::set_cullface_state(CF_DISABLE);
+    render::set_depth_buffer_state({ false });
+    render::set_clear_color_state(clear_color_state(glm::vec4{1.,1.,1.,1.}));
 	//draw
 	camera::ptr   c_camera = e_camera->get_component<camera>();
 	//enable fbo
-	glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
+    render::enable_render_target(m_fbo);
 	//clear buffer not necessary (?)
-#if 1
-	glClearColor(1.0, 1.0, 1.0, 1.0);
-	glClear(GL_COLOR_BUFFER_BIT);
-#endif
+    render::clear();
 	//bind shader
 	m_shader->bind();
 	//////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -125,9 +133,8 @@ void ssao_technique::applay(entity::ptr e_camera, g_buffer& buffer, mesh::ptr sq
 	//set g_buffer 
 	buffer.set_texture_buffer(g_buffer::G_BUFFER_TEXTURE_TYPE_POSITION);//0
 	buffer.set_texture_buffer(g_buffer::G_BUFFER_TEXTURE_TYPE_NORMAL);  //1
-	//set noise												
-	glActiveTexture(GL_TEXTURE0 + 2);//2
-	glBindTexture(GL_TEXTURE_2D, m_noise_texture);
+	//set noise
+    render::bind_texture(m_noise_texture, 2);                           //2
 	//set uniform id
 	m_position->set_value(0);
 	m_normal->set_value(1);
@@ -141,10 +148,9 @@ void ssao_technique::applay(entity::ptr e_camera, g_buffer& buffer, mesh::ptr sq
 	buffer.disable_texture(g_buffer::G_BUFFER_TEXTURE_TYPE_POSITION);//0
 	buffer.disable_texture(g_buffer::G_BUFFER_TEXTURE_TYPE_NORMAL);  //1
     //disable noise
-	glActiveTexture(GL_TEXTURE0 + 2);//2
-	glBindTexture(GL_TEXTURE_2D, 0);
+	render::unbind_texture(m_noise_texture);
 	//disable fbo
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    render::disable_render_target(m_fbo);
 	//////////////////////////////////////
 	//   ____   __     _    _   ____    //
 	//  | |\ \ | |    | |  | | | |\ \   //
@@ -154,17 +160,11 @@ void ssao_technique::applay(entity::ptr e_camera, g_buffer& buffer, mesh::ptr sq
 	//                                  //
 	//////////////////////////////////////	
 	//enable fbo
-	glBindFramebuffer(GL_FRAMEBUFFER, m_fbo_blur);
-	//clear buffer not necessary
-#if 0
-	glClearColor(1.0, 1.0, 1.0, 1.0);
-	glClear(GL_COLOR_BUFFER_BIT);
-#endif
+    render::enable_render_target(m_fbo_blur);
 	//bind shader
 	m_shader_blur->bind();	
 	//bind ssao texture
-	glActiveTexture(GL_TEXTURE0);//0
-	glBindTexture(GL_TEXTURE_2D, m_ssao_texture);
+    render::bind_texture(m_ssao_texture, 0);
 	//uniform id texture
 	m_uniform_ssoa_input->set_value(0);
 	//draw
@@ -172,12 +172,14 @@ void ssao_technique::applay(entity::ptr e_camera, g_buffer& buffer, mesh::ptr sq
 	//unbind
 	m_shader_blur->unbind();
 	//disable ssao texture
-	glActiveTexture(GL_TEXTURE0);//0
-	glBindTexture(GL_TEXTURE_2D, 0);
-	//disable fbo
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	//renable depth test
-	glEnable(GL_DEPTH_TEST);
+    render::unbind_texture(m_ssao_texture);
+    //disable fbo
+    render::disable_render_target(m_fbo_blur);
+    //reset state
+    render::set_cullface_state(temp_cullface);
+    render::set_clear_color_state(temp_color_clear_state);
+    render::set_depth_buffer_state(temp_depth_buffer_state);
+    
 }
 
 void ssao_technique::destoy()
@@ -186,22 +188,16 @@ void ssao_technique::destoy()
 
 	if (m_shader) m_shader_blur = nullptr;
 
-	if (m_fbo) glDeleteFramebuffers(1, &m_fbo);
+    if (m_fbo) render::delete_render_target(m_fbo);
 
-	if (m_fbo_blur) glDeleteFramebuffers(1, &m_fbo_blur);
+	if (m_fbo_blur)  render::delete_render_target(m_fbo_blur);
 
-	if (m_ssao_texture) glDeleteTextures(1, &m_ssao_texture);
+    if (m_ssao_texture) render::delete_texture(m_ssao_texture);
 
-	if (m_ssao_blur_texture) glDeleteTextures(1, &m_ssao_blur_texture);
+	if (m_ssao_blur_texture) render::delete_texture(m_ssao_blur_texture);
 	
-	if (m_noise_texture) glDeleteTextures(1, &m_noise_texture);
+	if (m_noise_texture) render::delete_texture(m_noise_texture);
 
-	m_fbo = 0;
-	m_fbo_blur = 0;
-	m_last_n_text = 0;
-	m_ssao_texture = 0;
-	m_noise_texture = 0;
-	m_ssao_blur_texture = 0;
 	m_uniform_noise_scale = nullptr;
 	m_uniform_projection = nullptr;
 	m_uniform_kernel_size = nullptr;
@@ -213,18 +209,14 @@ void ssao_technique::destoy()
 	m_kernel_size = m_max_kernel_size;
 }
 
-void ssao_technique::set_texture(GLenum n_tex)
+void ssao_technique::set_texture(int n_tex)
 {
-	m_last_n_text = n_tex;
-	glActiveTexture(GL_TEXTURE0 + n_tex);
-	glBindTexture(GL_TEXTURE_2D, m_ssao_blur_texture);
+    render::bind_texture(m_ssao_blur_texture, n_tex);
 }
 
 void ssao_technique::disable_texture()
 {
-	glActiveTexture(GL_TEXTURE0 + m_last_n_text);
-	glBindTexture(GL_TEXTURE_2D, 0);
-	m_last_n_text = 0;
+    render::unbind_texture(m_ssao_blur_texture);
 }
 
 void ssao_technique::set_kernel_size(unsigned int kernel_size)

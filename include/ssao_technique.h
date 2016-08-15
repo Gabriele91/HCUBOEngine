@@ -19,7 +19,7 @@ public:
 
 	void applay(entity::ptr e_camera, g_buffer& buffer, mesh::ptr square);
 	
-	void set_texture(GLenum n_text = 0);
+	void set_texture(int n_text = 0);
 
 	void clear();
 
@@ -33,11 +33,11 @@ private:
 
 
 	//////////////////////////////////////////////////////////////////////
-	GLuint		m_fbo          { 0 };
-	GLuint      m_ssao_texture { 0 };
-	GLuint      m_noise_texture{ 0 };
-	GLuint		m_kernel_size  { 0 };
-	GLfloat     m_radius       { 1.0f };
+    context_render_target* m_fbo          { nullptr };
+    context_texture*       m_ssao_texture { nullptr };
+    context_texture*       m_noise_texture{ nullptr };
+	unsigned int           m_kernel_size  { 0       };
+	float                  m_radius       { 1.0f    };
 
 	shader::ptr	m_shader;
     
@@ -50,12 +50,10 @@ private:
 	uniform_int::ptr  m_normal;
 	uniform_int::ptr  m_noise;
 	//////////////////////////////////////////////////////////////////////
-	GLuint				m_fbo_blur{ 0 };
-	GLuint				m_ssao_blur_texture{ 0 };
-
+	context_render_target* m_fbo_blur{ nullptr };
+    context_texture*       m_ssao_blur_texture{ nullptr };
 	shader::ptr			m_shader_blur;
 	uniform_int::ptr    m_uniform_ssoa_input;
 	//////////////////////////////////////////////////////////////////////
-	GLenum	m_last_n_text = 0;
 
 };

@@ -7,7 +7,7 @@
 //
 #pragma once
 #include <vector>
-#include <OpenGL4.h>
+#include <render.h>
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 #include <renderable.h>
@@ -17,53 +17,42 @@ class mesh :  public smart_pointers< mesh >,  public renderable
 {
 
 public:
-    //byte type
-    using byte = unsigned char;
-    //layout field
-    struct input
+    //buffer mode
+    enum buffer_type
     {
-        int    m_attribute;
-        int    m_strip;
-        size_t m_offset;
-		bool   m_is_position;
-
-		input(int   attribute,
-		  	  int   strip,
-			  size_t offset)
-		{
-			m_attribute = attribute;
-			m_strip = strip;
-			m_offset = offset;
-			m_is_position = false;
-		}
-
-		input(int   attribute,
-			  int   strip,
-			  size_t offset,
-			  bool   is_position)
-		{
-			m_attribute = attribute;
-			m_strip = strip;
-			m_offset = offset;
-			m_is_position = is_position;
-		}
+        STATIC = 0,
+        STREAM = 1
     };
-    //layout
-	struct input_layout
-	{
-		int m_size;
-		std::vector< input > m_fields;
-	};
+    //alias
+    using byte = unsigned char;
     //mesh layout
     struct mesh_layout
     {
-        input_layout m_input_layout;
-        int m_draw_mode;
-        int m_buffer_mode;
+        context_input_layout_ptr m_input_layout{ nullptr };
+        draw_type                m_draw_mode   { DRAW_TRIANGLES };
+        buffer_type              m_buffer_mode { STATIC };
 
 		bool has_a_position() const;
 		size_t position_offset() const;
-
+        
+        mesh_layout(){}
+        mesh_layout(context_input_layout* layout,
+                    draw_type draw_mode = DRAW_TRIANGLES,
+                    buffer_type buffer_mode = STATIC)
+        {
+            m_input_layout = context_input_layout_ptr(layout,render::delete_IL),
+            m_draw_mode    = draw_mode;
+            m_buffer_mode  = buffer_mode;
+        }
+        mesh_layout(context_input_layout_ptr layout,
+                    draw_type draw_mode = DRAW_TRIANGLES,
+                    buffer_type buffer_mode = STATIC)
+        {
+            m_input_layout = layout,
+            m_draw_mode    = draw_mode;
+            m_buffer_mode  = buffer_mode;
+        }
+        
     };
     //draw range (no indexed)
     struct draw_range
@@ -89,7 +78,7 @@ public:
 
 	virtual ~mesh();
 
-    mesh(const mesh_layout& layout,
+    mesh(      mesh_layout& layout,
          const draw_range & draw_range,
          const std::vector< byte >& vertex,
 		 bool compute_obb = true)
@@ -97,7 +86,7 @@ public:
         build(layout, draw_range, vertex, compute_obb);
     }
     
-    mesh(const mesh_layout& layout,
+    mesh(      mesh_layout& layout,
          const std::vector< unsigned int >& indexs,
          const std::vector< byte >& vertex,
 		 bool compute_obb = true)
@@ -105,24 +94,24 @@ public:
         build(layout, indexs, vertex, compute_obb);
     }
     
-    void build(const mesh_layout& layout,
+    void build(      mesh_layout& layout,
                const std::vector< unsigned int >& indexs,
                const std::vector< byte >& points,
 		       bool compute_obb = true);
 
-	void build(const mesh_layout& layout,
+	void build(      mesh_layout& layout,
 			   const draw_range & draw_range,
 		       const std::vector< byte >& points,
 		       bool compute_obb = true);
 
-	void build(const mesh_layout& layout,
+	void build(      mesh_layout& layout,
 		       const unsigned int* indexs,
 		       size_t isize,
 		       const byte* points,
 		       size_t vsize,
 		       bool compute_obb = true);
 
-	void build(const mesh_layout& layout,
+	void build(      mesh_layout& layout,
 		       const draw_range & draw_range,
 		       const byte* points,
 			   size_t size,
@@ -157,7 +146,7 @@ protected:
     mesh_layout  m_layout;
     unsigned int m_bvertex_size{ 0 };
     unsigned int m_bindex_size { 0 };
-    unsigned int m_bindex      { 0 };
-    unsigned int m_bvertex     { 0 };
+    context_index_buffer*  m_bindex { nullptr };
+    context_vertex_buffer* m_bvertex{ nullptr };
     
 };

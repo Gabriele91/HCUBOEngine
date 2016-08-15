@@ -9,33 +9,22 @@
 #include <string>
 #include <g_buffer.h>
 
-static std::string framebuffer_error_to_str(GLenum error)
-{
-    switch (error)
-    {
-        case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:         return "GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT";
-//      case GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS:         return "GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS";
-        case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT: return "GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT";
-        case GL_FRAMEBUFFER_UNSUPPORTED:                   return "GL_FRAMEBUFFER_UNSUPPORTED";
-        case GL_FRAMEBUFFER_COMPLETE:                      return "GL_FRAMEBUFFER_COMPLETE";
-        default:                                           return "GL_UNKNOW";
-    }
-}
-
 //texture buffer type
-struct texture_type
+struct target_texture_type
 {
-    GLenum m_internal_format = GL_RGBA32F;
-    GLenum m_format          = GL_RGBA;
-    GLenum m_type            = GL_FLOAT;
+    texture_format       m_format      = TF_RGBA32F;
+    texture_type         m_type        = TT_RGBA;
+    texture_type_format  m_type_format = TTF_FLOAT;
     
-    texture_type(){}
+    target_texture_type(){}
     
-    texture_type(GLenum type_0,GLenum type_1,GLenum type_2)
+    target_texture_type(texture_format      type_0,
+                        texture_type        type_1,
+                        texture_type_format type_2)
     {
-        m_internal_format = type_0;
-        m_format          = type_1;
-        m_type            = type_2;
+        m_format      = type_0;
+        m_type        = type_1;
+        m_type_format = type_2;
     }
 };
 
@@ -50,91 +39,68 @@ bool g_buffer::init(unsigned int width, unsigned int height)
     m_width  = width;
     m_height = height;
     
-    // Create the FBO
-    glGenFramebuffers(1, &m_fbo);
-    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_fbo);
-    
-    // Create the gbuffer textures
-    glGenTextures(G_BUFFER_NUM_TEXTURES, m_textures);
-    glGenTextures(1, &m_depth_texture);
-    
-    // draw buffers to attach
-    GLenum draw_buffers[G_BUFFER_NUM_TEXTURES] = {0};
-
     //types
-    texture_type types[G_BUFFER_NUM_TEXTURES];
+    target_texture_type types[G_BUFFER_NUM_TEXTURES];
     
     //specify type
-    types[G_BUFFER_TEXTURE_TYPE_POSITION] = texture_type( GL_RGB16F, GL_RGB,  GL_FLOAT );
-    types[G_BUFFER_TEXTURE_TYPE_NORMAL]   = texture_type( GL_RGB,    GL_RGB,  GL_UNSIGNED_BYTE );
-    types[G_BUFFER_TEXTURE_TYPE_ALBEDO]   = texture_type( GL_RGBA,   GL_RGBA, GL_UNSIGNED_BYTE );
+    types[G_BUFFER_TEXTURE_TYPE_POSITION] = target_texture_type( TF_RGB16F,  TT_RGB,  TTF_FLOAT );
+    types[G_BUFFER_TEXTURE_TYPE_NORMAL]   = target_texture_type( TF_RGB16F,  TT_RGB,  TTF_FLOAT );
+    types[G_BUFFER_TEXTURE_TYPE_ALBEDO]   = target_texture_type( TF_RGBA8,   TT_RGBA, TTF_UNSIGNED_BYTE );
+    
     
     //create texture
     for (unsigned int i = 0 ; i != G_BUFFER_NUM_TEXTURES ; i++)
     {
-        glBindTexture(GL_TEXTURE_2D, m_textures[i]);
-        glTexImage2D(GL_TEXTURE_2D,
-                     0,
-                     types[i].m_internal_format,
-                     width,
-                     height,
-                     0,
-                     types[i].m_format,
-                     types[i].m_type,
-                     NULL);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, m_textures[i], 0);
-        draw_buffers[i] = GL_COLOR_ATTACHMENT0 + i;
+        m_textures[i] =
+        render::create_texture(types[i].m_format,
+                               width,
+                               height,
+                               nullptr,
+                               types[i].m_type,
+                               types[i].m_type_format,
+                               TMIN_NEAREST,
+                               TMAG_NEAREST,
+                               TEDGE_CLAMP,
+                               TEDGE_CLAMP,
+                               false);
     }
-
-	//attach to fbo
-	glDrawBuffers(G_BUFFER_NUM_TEXTURES, draw_buffers);
+    //depth
+    m_depth_texture =
+    render::create_texture(TF_DEPTH_COMPONENT32,
+                           width,
+                           height,
+                           nullptr,
+                           TT_DEPTH,
+                           TTF_FLOAT,
+                           TMIN_NEAREST,
+                           TMAG_NEAREST,
+                           TEDGE_CLAMP,
+                           TEDGE_CLAMP,
+                           false);
     
-    // depth
-    glBindTexture(GL_TEXTURE_2D, m_depth_texture);
-    glTexImage2D(GL_TEXTURE_2D,
-                 0,
-                 GL_DEPTH_COMPONENT32F,
-                 width,
-                 height,
-                 0,
-                 GL_DEPTH_COMPONENT,
-                 GL_FLOAT,
-                 NULL);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_depth_texture, 0);
-    
-    //status
-    GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-    
-    //test
-	if (status != GL_FRAMEBUFFER_COMPLETE)
-	{
-		std::cout << framebuffer_error_to_str(status) << std::endl;
-	}
-
-    // restore default FBO
-    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+    //rander target
+    m_target =
+    render::create_render_target({
+        target_field{ m_textures[G_BUFFER_TEXTURE_TYPE_POSITION], RT_COLOR },
+        target_field{ m_textures[G_BUFFER_TEXTURE_TYPE_NORMAL],   RT_COLOR },
+        target_field{ m_textures[G_BUFFER_TEXTURE_TYPE_ALBEDO],   RT_COLOR },
+        target_field{ m_depth_texture,                            RT_DEPTH },
+    });
     
     //success?
-    return status == GL_FRAMEBUFFER_COMPLETE;
+    return m_target != nullptr;
 }
 
 void g_buffer::destoy()
 {
-	if (m_fbo) glDeleteFramebuffers(1, &m_fbo);
+    if (m_target) render::delete_render_target( m_target );
+    
 	for (unsigned int i = 0; i != G_BUFFER_NUM_TEXTURES; i++)
 	{
-		if(m_textures[i]) glDeleteTextures(1, &m_textures[i]);
-		m_textures[i] = 0;
+		if(m_textures[i]) render::delete_texture(m_textures[i]);
 	}
-	if (m_depth_texture) glDeleteTextures(1, &m_depth_texture);
-
-	m_fbo = 0;
-	m_depth_texture = 0;
-	m_last_depth_n_text = 0;
+	if (m_depth_texture) render::delete_texture(m_depth_texture);
+    //to null
 	m_width  = 0 ;
 	m_height = 0 ;
 
@@ -142,28 +108,31 @@ void g_buffer::destoy()
 
 void g_buffer::bind_for_writing()
 {
-    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_fbo);
+    render::enable_render_target(m_target);
+    assert(0);
 }
 
 void g_buffer::bind_for_reading()
 {
-    glBindFramebuffer(GL_READ_FRAMEBUFFER, m_fbo);
+    render::enable_render_target(m_target);
+    assert(0);
 }
 
 void g_buffer::bind()
 {
-	glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
+    render::enable_render_target(m_target);
 }
 
 void g_buffer::unbind()
 {
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    render::disable_render_target(m_target);
 }
 
 
 void g_buffer::set_read_buffer(G_BUFFER_TEXTURE_TYPE texture_type)
 {
-    glReadBuffer(GL_COLOR_ATTACHMENT0 + texture_type);
+    //glReadBuffer(GL_COLOR_ATTACHMENT0 + texture_type);
+    assert(0);
 }
 
 void g_buffer::set_texture_buffer(G_BUFFER_TEXTURE_TYPE texture_type)
@@ -171,18 +140,15 @@ void g_buffer::set_texture_buffer(G_BUFFER_TEXTURE_TYPE texture_type)
 	switch (texture_type)
 	{
 	case G_BUFFER_TEXTURE_TYPE_POSITION:
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, m_textures[G_BUFFER_TEXTURE_TYPE_POSITION]);
+        render::bind_texture(m_textures[G_BUFFER_TEXTURE_TYPE_POSITION], 0);
 	break;
 
-	case G_BUFFER_TEXTURE_TYPE_NORMAL:
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, m_textures[G_BUFFER_TEXTURE_TYPE_NORMAL]);
+    case G_BUFFER_TEXTURE_TYPE_NORMAL:
+        render::bind_texture(m_textures[G_BUFFER_TEXTURE_TYPE_NORMAL], 1);
 	break;
 
-	case G_BUFFER_TEXTURE_TYPE_ALBEDO:
-		glActiveTexture(GL_TEXTURE2);
-		glBindTexture(GL_TEXTURE_2D, m_textures[G_BUFFER_TEXTURE_TYPE_ALBEDO]);
+    case G_BUFFER_TEXTURE_TYPE_ALBEDO:
+        render::bind_texture(m_textures[G_BUFFER_TEXTURE_TYPE_ALBEDO], 2);
 	break;
 	
 	case g_buffer::G_BUFFER_NUM_TEXTURES:
@@ -195,50 +161,44 @@ void g_buffer::set_texture_buffer(G_BUFFER_TEXTURE_TYPE texture_type)
 
 void g_buffer::disable_texture(G_BUFFER_TEXTURE_TYPE texture_type)
 {
-	switch (texture_type)
-	{
-	case G_BUFFER_TEXTURE_TYPE_POSITION:
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, 0);
-	break;
-
-	case G_BUFFER_TEXTURE_TYPE_NORMAL:
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, 0);
-	break;
-
-	case G_BUFFER_TEXTURE_TYPE_ALBEDO:
-		glActiveTexture(GL_TEXTURE2);
-		glBindTexture(GL_TEXTURE_2D, 0);
-	break;
-
-	case g_buffer::G_BUFFER_NUM_TEXTURES:
-	default:
-		assert(0);
-	break;
-	}
+    
+    switch (texture_type)
+    {
+        case G_BUFFER_TEXTURE_TYPE_POSITION:
+            render::unbind_texture(m_textures[G_BUFFER_TEXTURE_TYPE_POSITION]);
+        break;
+            
+        case G_BUFFER_TEXTURE_TYPE_NORMAL:
+            render::unbind_texture(m_textures[G_BUFFER_TEXTURE_TYPE_NORMAL]);
+        break;
+            
+        case G_BUFFER_TEXTURE_TYPE_ALBEDO:
+            render::unbind_texture(m_textures[G_BUFFER_TEXTURE_TYPE_ALBEDO]);
+        break;
+            
+        case g_buffer::G_BUFFER_NUM_TEXTURES:
+        default:
+            assert(0);
+        break;
+    }
 
 }
 
 void g_buffer::set_read_buffer_depth()
 {
-    glReadBuffer(GL_DEPTH_ATTACHMENT);
+    //glReadBuffer(GL_DEPTH_ATTACHMENT);
+    assert(0);
 }
 
-void g_buffer::set_texture_buffer_depth(GLenum n_texture)
+void g_buffer::set_texture_buffer_depth(size_t n_texture)
 {
-	m_last_depth_n_text = n_texture;
-    glActiveTexture(GL_TEXTURE0+n_texture);
-    glBindTexture(GL_TEXTURE_2D, m_depth_texture);
-}	
+    render::bind_texture(m_depth_texture, (int)n_texture);
+}
 
 void g_buffer::disable_depth_texture()
 {
-	glActiveTexture(GL_TEXTURE0 + m_last_depth_n_text);
-	glBindTexture(GL_TEXTURE_2D, 0);
-	m_last_depth_n_text = 0;
+    render::unbind_texture(m_depth_texture);
 }
-
 
 unsigned int g_buffer::get_width() const
 {

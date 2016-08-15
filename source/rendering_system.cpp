@@ -123,10 +123,9 @@ void rendering_pass_base::draw_pass(glm::vec4&  clear_color,
     camera::ptr   ccamera = e_camera->get_component<camera>();
     transform_ptr tcamera = e_camera->get_component<transform>();
     const glm::vec4& viewport = ccamera->get_viewport();
-    glViewport(viewport.x, viewport.y, viewport.z, viewport.w);
-    glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    
+    render::set_viewport_state({viewport});
+    render::set_clear_color_state({clear_color});
+    render::clear();
     
 	for (render_queues::element*
 		 weak_element = queues.m_cull_opaque; 

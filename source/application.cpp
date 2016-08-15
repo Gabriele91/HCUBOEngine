@@ -4,7 +4,7 @@
 #include <algorithm>
 #include <application.h>
 #include <query_performance.h>
-#include <OpenGL4.h>
+#include <render.h>
 
 application::application()
 {
@@ -153,34 +153,13 @@ bool application::execute(const window_size& size,
     //make current
     glfwMakeContextCurrent(m_window);
     glfwSwapInterval(1); 
-	_OPENGL_PRINT_DEBUG_
-    //get info
-    std::string renderer = (const char*)glGetString (GL_RENDERER);
-    std::string version  = (const char*)glGetString (GL_VERSION);
-    std::cout << "Renderer: " << renderer << std::endl;
-    std::cout << "OpenGL version supported: " << version << std::endl;
-	//window init glew
-#ifdef _WIN32
-	//enable glew experimental (OpenGL3/4)
-	glewExperimental = GL_TRUE;
-	//try to init glew (get OpenGL calls)
-	if (glewInit() != GLEW_OK)
-	{
-		std::cout << "Glew init fail" << std::endl;
-		return false;
-	}
-	//clear OpenGL error by Glew init
-	else while ((glGetError()) != GL_NO_ERROR);
-#endif
-    //init OpenGL VAO
-    GLuint global_vertex_array_id;
-    glGenVertexArrays(1, &global_vertex_array_id);
-    glBindVertexArray(global_vertex_array_id);
+    render::print_errors();
+    //init
+    render::init();
+    //show info
+    render::print_info();
 	//disable vSync
 	glfwSwapInterval(0);
-    //default state 
-    glEnable (GL_DEPTH_TEST);
-    glDepthFunc (GL_LESS);
     //enable capture ctrl
     glfwSetInputMode(m_window,GLFW_STICKY_KEYS,GLFW_TRUE);
     glfwSetInputMode(m_window,GLFW_STICKY_MOUSE_BUTTONS,GLFW_TRUE);
@@ -227,7 +206,7 @@ bool application::execute(const window_size& size,
                              });
     //start
     m_instance->start(*this);
-	_OPENGL_PRINT_DEBUG_
+    render::print_errors();
     //time
     double old_time  = 0;
     double last_time = query_performance::get_time();
@@ -242,15 +221,17 @@ bool application::execute(const window_size& size,
         //update
         if(!m_instance->run(*this, m_last_delta_time)) break;
         //print
-		_OPENGL_PRINT_DEBUG_
+        render::print_errors();
         //swap
         glfwSwapBuffers(m_window);
         glfwPollEvents();
     }
     bool end_state = m_instance->end(*this);
-	_OPENGL_PRINT_DEBUG_
-    //delete vao
-    glDeleteVertexArrays(1, &global_vertex_array_id);
+    //dealloc
+    delete m_instance;
+    m_instance = nullptr;
+    //delete context
+    render::close();
     //delete window
     glfwDestroyWindow(m_window);
     //to 0

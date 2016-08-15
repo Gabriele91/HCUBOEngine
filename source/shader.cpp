@@ -5,8 +5,36 @@
 #include <iostream>
 #include <shader.h>
 #include <OpenGL4.h>
+#include <render.h>
 #include <filesystem.h>
 
+
+static const char default_glsl_defines[]=
+R"GLSL(
+//POSITION TRANSFORM
+#define ATT_POSITIONT 0
+#define ATT_NORMAL0   1
+#define ATT_TEXCOORD0 2
+#define ATT_TANGENT0  3
+#define ATT_BINORMAL0 4
+#define ATT_COLOR0    5
+
+//POSITION 0
+#define ATT_POSITION0 6
+#define ATT_NORMAL1   7
+#define ATT_TEXCOORD1 8
+#define ATT_TANGENT1  9
+#define ATT_BINORMAL1 10
+#define ATT_COLOR1    11
+
+//POSITION 1
+#define ATT_POSITION1 12
+#define ATT_NORMAL2   13
+#define ATT_TEXCOORD2 14
+#define ATT_TANGENT2  15
+#define ATT_BINORMAL2 16
+#define ATT_COLOR2    17
+)GLSL";
 
 static bool log_error(unsigned int shader, int status,const std::string& type)
 {
@@ -394,6 +422,7 @@ bool shader::load_shader(const std::string& vs_str, size_t line_vs,
     std::string file_vs =
     "#version 410\n" +
     defines_string +
+    default_glsl_defines +
     "#define saturate(x) clamp( x, 0.0, 1.0 )       \n"
     "#define lerp        mix                        \n"
     "#line "+std::to_string(line_vs)+"\n" +
@@ -412,6 +441,7 @@ bool shader::load_shader(const std::string& vs_str, size_t line_vs,
     std::string file_fs =
     "#version 410\n" +
     defines_string +
+    default_glsl_defines +
     "#define saturate(x) clamp( x, 0.0, 1.0 )       \n"
     "#define lerp        mix                        \n"
     "#define bestp\n"
@@ -436,6 +466,7 @@ bool shader::load_shader(const std::string& vs_str, size_t line_vs,
         std::string file_gs =
         "#version 410\n" +
         defines_string +
+        default_glsl_defines +
         "#define saturate(x) clamp( x, 0.0, 1.0 )       \n"
         "#define lerp        mix                        \n"
         "#line "+std::to_string(line_gs)+"\n" +
@@ -595,8 +626,9 @@ uniform_gl_class(uniform_gl_vec4, float, glUniform4fv)
 
 class uniform_gl_texture : public uniform_texture
 {
+    context_texture* m_ctx_texture{ nullptr };
     GLint     m_unform_id{-1};
-    GLint    m_id{ 0 };
+    GLint     m_id{ 0 };
     shader*   m_shader{ nullptr };
     
 public:
@@ -608,18 +640,19 @@ public:
     
     virtual void disable()
     {
-        glActiveTexture((GLenum)(GL_TEXTURE0+m_id));
-        glBindTexture(GL_TEXTURE_2D, 0);
+        //unbind texture
+        render::unbind_texture(m_ctx_texture);
         m_unform_id = -1;
     }
     
-    virtual void  set(const void* value, size_t s, size_t n)
+    virtual void  set(const void* ref_value, size_t s, size_t n)
     {
         //uniform
         m_unform_id = (GLint)++m_shader->m_uniform_ntexture;
-        //texture type
-        glActiveTexture((GLenum)(GL_TEXTURE0+m_unform_id));
-        glBindTexture(GL_TEXTURE_2D, ((texture*)value)->get_id());
+        //get texture
+        m_ctx_texture = ((texture*)ref_value)->get_context_texture();
+        //bind texture
+        render::bind_texture(m_ctx_texture, m_unform_id);
         //bind id
         glUniform1i(m_id, m_unform_id);
     }

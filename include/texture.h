@@ -8,76 +8,57 @@
 #pragma once
 #include <vector>
 #include <string>
-#include <OpenGL4.h>
+#include <render.h>
 #include <resource.h>
 #include <smart_pointers.h>
 
 class texture : public smart_pointers<texture>, public resource
 {
   
-    unsigned int m_texture_id{ 0 };
-    unsigned long m_width    { 0 };
-    unsigned long m_height   { 0 };
+    context_texture* m_ctx_texture{ nullptr };
+    unsigned long    m_width    { 0 };
+    unsigned long    m_height   { 0 };
     
 public:
     
     struct attributes
     {
-        int  m_type_image{ GL_RGB     };
-        int  m_min_filter{ GL_NEAREST };
-        int  m_mag_filter{ GL_NEAREST };
+        texture_type   m_type   { TT_RGB   };
+        texture_format m_format { TF_RGB8  };
+        texture_min_filter_type m_min_filter{ TMIN_NEAREST };
+        texture_mag_filter_type m_mag_filter{ TMAG_NEAREST };
         bool m_clamp_to_border { false };
         bool m_build_mipmap    { false };
 
 		bool have_alpha_channel()
 		{
-			switch (m_type_image)
-            {
-                case GL_ALPHA:        return true;
-                case GL_RGBA:         return true;
-                case GL_RGBA4:        return true;
-                case GL_RGBA8:        return true;
-                case GL_RGBA8I:       return true;
-                case GL_RGBA16I:      return true;
-                case GL_RGBA32I:      return true;
-                case GL_RGBA8UI:      return true;
-                case GL_RGBA16UI:     return true;
-                case GL_RGBA32UI:     return true;
-                case GL_RGBA16F:      return true;
-                case GL_RGBA32F:      return true;
-                case GL_RGBA_INTEGER: return true;
-                case GL_RGB5_A1:      return true;
-                case GL_RGB10_A2:     return true;
-                case GL_RGB10_A2UI:   return true;
-                case GL_RGBA8_SNORM:  return true;
-                case GL_SRGB_ALPHA:   return true;
-                case GL_SRGB8_ALPHA8: return true;
-			    //* to do *//
-				default: return false;
-			}
+            return m_type == TT_RGBA;
 		}
         
-        attributes(int  type_image,
-                   int  min_filter      = GL_NEAREST,
-                   int  mag_filter      = GL_NEAREST,
+        attributes(texture_type   type_image,
+                   texture_format format_image,
+                   texture_min_filter_type  min_filter  = TMIN_NEAREST,
+                   texture_mag_filter_type  mag_filter  = TMAG_NEAREST,
                    bool clamp_to_border = false,
                    bool build_mipmap    = false)
         {
-            m_type_image      = type_image;
+            m_type            = type_image;
+            m_format          = format_image;
             m_min_filter      = min_filter;
             m_mag_filter      = mag_filter;
             m_clamp_to_border = clamp_to_border;
             m_build_mipmap    = build_mipmap;
         }
         
-        static attributes rgba(int  min_filter      = GL_NEAREST,
-                               int  mag_filter      = GL_NEAREST,
+        static attributes rgba(texture_min_filter_type  min_filter      = TMIN_NEAREST,
+                               texture_mag_filter_type  mag_filter      = TMAG_NEAREST,
                                bool clamp_to_border = false,
                                bool build_mipmap    = false)
         {
             return
             {
-                GL_RGBA,
+                TT_RGBA,
+                TF_RGBA8,
                 min_filter,
                 mag_filter,
                 clamp_to_border,
@@ -90,22 +71,24 @@ public:
         {
             return
             {
-                GL_RGBA,
-                GL_LINEAR,
-                GL_LINEAR,
+                TT_RGBA,
+                TF_RGBA8,
+                TMIN_LINEAR,
+                TMAG_LINEAR,
                 clamp_to_border,
                 false
             };
         }
         
-        static attributes rgba_linear_mipmap(bool clamp_to_border = false,
-                                             bool alpha_channel   = true)
+        static attributes rgba_linear_mipmap_linear(bool clamp_to_border = false,
+                                                    bool alpha_channel   = true)
         {
             return
             {
-                GL_RGBA,
-                GL_LINEAR_MIPMAP_LINEAR,
-                GL_LINEAR,
+                TT_RGBA,
+                TF_RGBA8,
+                TMIN_LINEAR_MIPMAP_LINEAR,
+                TMAG_LINEAR,
                 clamp_to_border,
                 true
             };
@@ -121,15 +104,17 @@ public:
     
     texture(const attributes& attr,
             const unsigned char* buffer,
-            unsigned long width,
-            unsigned long height,
-		    GLenum  type);
+            unsigned long  width,
+            unsigned long  height,
+            texture_format format,
+            texture_type   type);
     
     texture(const attributes& attr,
             const std::vector< unsigned char >& buffer,
             unsigned long width,
             unsigned long height,
-		    GLenum  type);
+            texture_format format,
+            texture_type   type);
     
     virtual ~texture();
     
@@ -148,17 +133,19 @@ public:
                const unsigned char* buffer,
                unsigned long width,
                unsigned long height,
-			   GLenum  type);
+               texture_format format,
+               texture_type   type);
     
     bool build(const attributes& attr,
                const std::vector< unsigned char >& buffer,
                unsigned long width,
                unsigned long height,
-			   GLenum  type);
+               texture_format format,
+               texture_type   type);
     
-    unsigned int get_id() const;
-    unsigned long get_width() const;
-    unsigned long get_height() const;
+    context_texture* get_context_texture() const;
+    unsigned long    get_width() const;
+    unsigned long    get_height() const;
 
     void destoy();
     

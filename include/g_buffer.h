@@ -6,7 +6,7 @@
 //  Copyright © 2016 Gabriele. All rights reserved.
 //
 #pragma once
-#include <OpenGL4.h>
+#include <render.h>
 #include <glm/vec2.hpp>
 
 class g_buffer
@@ -47,7 +47,7 @@ public:
     
     void set_read_buffer_depth();
     
-    void set_texture_buffer_depth(GLenum n_texture=0);
+    void set_texture_buffer_depth(size_t n_texture=0);
 
 	void disable_depth_texture();
 
@@ -62,9 +62,8 @@ private:
     unsigned int m_width    { 0 };
     unsigned int m_height   { 0 };
     
-	GLuint m_fbo{ 0 };
-	GLuint m_textures[G_BUFFER_NUM_TEXTURES]{ 0 };
-	GLuint m_depth_texture		{ 0 };
-	GLenum m_last_depth_n_text  { 0 };
+	context_render_target* m_target                         { nullptr };
+	context_texture*       m_textures[G_BUFFER_NUM_TEXTURES]{ nullptr };
+	context_texture*       m_depth_texture		            { nullptr };
 };
 
