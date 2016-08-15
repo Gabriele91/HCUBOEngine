@@ -1,4 +1,3 @@
-#pragma once
 #include <obb.h>
 #include <glm/glm.hpp>
 #include <glm/vec3.hpp>
