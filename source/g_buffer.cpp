@@ -44,7 +44,7 @@ bool g_buffer::init(unsigned int width, unsigned int height)
     
     //specify type
     types[G_BUFFER_TEXTURE_TYPE_POSITION] = target_texture_type( TF_RGB16F,  TT_RGB,  TTF_FLOAT );
-    types[G_BUFFER_TEXTURE_TYPE_NORMAL]   = target_texture_type( TF_RGB16F,  TT_RGB,  TTF_FLOAT );
+    types[G_BUFFER_TEXTURE_TYPE_NORMAL]   = target_texture_type( TF_RGB8,    TT_RGB,  TTF_FLOAT );
     types[G_BUFFER_TEXTURE_TYPE_ALBEDO]   = target_texture_type( TF_RGBA8,   TT_RGBA, TTF_UNSIGNED_BYTE );
     
     
