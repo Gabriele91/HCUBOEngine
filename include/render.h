@@ -6,6 +6,7 @@
 //  Copyright © 2016 Gabriele. All rights reserved.
 //
 #pragma once
+#include <memory>
 #include <string>
 #include <vector>
 #include <glm/vec2.hpp>
@@ -486,7 +487,7 @@ namespace render
     LIB_EXPORT render_driver get_render_driver();
     LIB_EXPORT void print_info();
     
-    LIB_EXPORT void init();
+    LIB_EXPORT bool init();
     LIB_EXPORT void close();
     
     LIB_EXPORT const clear_color_state& get_clear_color_state();

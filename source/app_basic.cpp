@@ -11,7 +11,6 @@
 #include <glm/gtc/quaternion.hpp>
 #include <basic_meshs.h>
 #include <regex>
-#include <OpenGL4.h>
 #include <rendering_pass_deferred.h>
 #include <gameobject.h>
 #include <transform.h>

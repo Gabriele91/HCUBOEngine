@@ -179,6 +179,7 @@
     <ClInclude Include="..\include\picking.h" />
     <ClInclude Include="..\include\picking_rotation.h" />
     <ClInclude Include="..\include\prefab.h" />
+    <ClInclude Include="..\include\render.h" />
     <ClInclude Include="..\include\renderable.h" />
     <ClInclude Include="..\include\rendering_pass_deferred.h" />
     <ClInclude Include="..\include\rendering_system.h" />
@@ -212,6 +213,7 @@
     <ClCompile Include="..\source\mesh.cpp" />
     <ClCompile Include="..\source\obb.cpp" />
     <ClCompile Include="..\source\query_performance.cpp" />
+    <ClCompile Include="..\source\render.cpp" />
     <ClCompile Include="..\source\rendering_pass_deferred.cpp" />
     <ClCompile Include="..\source\rendering_system.cpp" />
     <ClCompile Include="..\source\resources_manager.cpp" />

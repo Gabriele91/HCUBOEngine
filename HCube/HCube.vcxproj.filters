@@ -153,6 +153,9 @@
     <ClInclude Include="..\include\frustum.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\render.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\application.cpp">
@@ -237,6 +240,9 @@
       <Filter>File di origine</Filter>
     </ClCompile>
     <ClCompile Include="..\source\frustum.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\render.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
   </ItemGroup>

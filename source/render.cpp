@@ -131,7 +131,7 @@ render_state s_render_state;
 GLuint       s_vao_attributes;
 ///////////////////////
     
-void init()
+bool init()
 {
     
 #ifdef _WIN32
@@ -182,6 +182,8 @@ void init()
     s_render_state.m_clear_color.m_color = glm::vec4(0.1, 0.5, 1.0, 1.0);
     //clear all errors
     render::print_errors();
+	//return
+	return true;
 }
 
 void print_info()
@@ -382,7 +384,7 @@ context_index_buffer* create_stream_IBO(const unsigned int* ibo, size_t size)
     auto ptr=new context_index_buffer();
     ptr->gen_buffer();
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, *ptr);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint)*size, ibo, GL_STREAM_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int)*size, ibo, GL_STREAM_DRAW);
     return ptr;
 }
 
@@ -475,17 +477,17 @@ inline static GLuint get_draw_type(draw_type type)
     }
 }
 
-void draw_arrays(draw_type type, uint n)
+void draw_arrays(draw_type type, unsigned int n)
 {
     glDrawArrays(get_draw_type(type), 0, n);
 }
 
-void draw_arrays(draw_type type, uint start,uint size)
+void draw_arrays(draw_type type, unsigned int start, unsigned int size)
 {
     glDrawArrays(get_draw_type(type), start, size);
 }
 
-void draw_elements(draw_type type, uint n)
+void draw_elements(draw_type type, unsigned int n)
 {
     glDrawElements(get_draw_type(type), n, GL_UNSIGNED_INT, (void*)NULL);
 }
