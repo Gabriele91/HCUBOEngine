@@ -112,7 +112,7 @@ void ssao_technique::applay(entity::ptr e_camera, g_buffer& buffer, mesh::ptr sq
     auto temp_cullface          = render::get_cullface_state();
     auto temp_color_clear_state = render::get_clear_color_state();
     auto temp_depth_buffer_state= render::get_depth_buffer_state();
-	//disabl depth test
+	//disable depth test
     render::set_cullface_state(CF_BACK);
     render::set_depth_buffer_state({ false });
     render::set_clear_color_state(clear_color_state(glm::vec4{1.,1.,1.,1.}));
