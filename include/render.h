@@ -569,6 +569,6 @@ namespace render
     LIB_EXPORT void delete_render_target(context_render_target*&);
     
     //debug
-    LIB_EXPORT void print_errors();
+    LIB_EXPORT bool print_errors();
     
 };

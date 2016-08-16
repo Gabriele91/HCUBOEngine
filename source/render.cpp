@@ -879,9 +879,17 @@ void delete_render_target(context_render_target*& r_target)
     r_target = nullptr;
 }
 
-void print_errors()
+bool print_errors()
 {
-    _OPENGL_PRINT_DEBUG_
+	//get all gl errors
+	std::string gl_errors = debug_gl_errors_to_string();
+	//print
+	if (gl_errors.size())
+	{
+		std::cout << gl_errors << std::endl;
+		return true;
+	}
+	return false;
 }
   
 //end render

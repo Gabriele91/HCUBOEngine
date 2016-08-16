@@ -17,52 +17,61 @@
     #include <GL/gl.h>
 #endif
 
-#ifdef _DEBUG
-    #include <iostream>
-    namespace debug
-    {
-        static inline const char* get_open_gl_error(GLuint error)
-        {
-            struct token_string
-            {
-                GLuint m_token;
-                const char* m_string;
-            };
-            static const struct token_string gl_errors[] =
-            {
-                { GL_NO_ERROR, "no error" },
-                { GL_INVALID_ENUM, "invalid enumerant" },
-                { GL_INVALID_VALUE, "invalid value" },
-                { GL_INVALID_OPERATION, "invalid operation" },
-                #if defined __gl_h_
-                { GL_STACK_OVERFLOW, "stack overflow" },
-                { GL_STACK_UNDERFLOW, "stack underflow" },
-                { GL_TABLE_TOO_LARGE, "table too large" },
-                #endif
-                { GL_OUT_OF_MEMORY, "out of memory" },
-                { GL_INVALID_FRAMEBUFFER_OPERATION, "invalid framebuffer operation" },
-                { ~static_cast<GLuint>(0), NULL } /* end of list indicator */
-            };
-            
-            for (int i = 0; gl_errors[i].m_string; i++)
-            {
-                if (gl_errors[i].m_token == error)
-                    return (const char *) gl_errors[i].m_string;
-            }
-            return nullptr;
-        }
-    }
-	#define _OPENGL_PRINT_DEBUG_ \
-	{\
-		GLenum gl_err = GL_NO_ERROR;\
-		bool print_file = false;\
-		while ((gl_err = glGetError()) != GL_NO_ERROR)\
-		{\
-			if(!print_file) { std::cout << "At file: " << __FILE__ << " :" << std::endl; }\
-			const char* gl_err_str = debug::get_open_gl_error(gl_err);\
-			std::cout << "OpenGL error: " << __LINE__<< " : " << gl_err << " : " << (gl_err_str ? gl_err_str : "unknow") << std::endl;\
-		}\
+#include <string>
+#include <sstream>
+namespace debug
+{
+	static inline const char* get_open_gl_error(GLuint error)
+	{
+		struct token_string
+		{
+			GLuint m_token;
+			const char* m_string;
+		};
+		static const struct token_string gl_errors[] =
+		{
+			{ GL_NO_ERROR, "no error" },
+			{ GL_INVALID_ENUM, "invalid enumerant" },
+			{ GL_INVALID_VALUE, "invalid value" },
+			{ GL_INVALID_OPERATION, "invalid operation" },
+#if defined __gl_h_
+			{ GL_STACK_OVERFLOW, "stack overflow" },
+			{ GL_STACK_UNDERFLOW, "stack underflow" },
+			{ GL_TABLE_TOO_LARGE, "table too large" },
+#endif
+			{ GL_OUT_OF_MEMORY, "out of memory" },
+			{ GL_INVALID_FRAMEBUFFER_OPERATION, "invalid framebuffer operation" },
+			{ ~static_cast<GLuint>(0), NULL } /* end of list indicator */
+		};
+
+		for (int i = 0; gl_errors[i].m_string; i++)
+		{
+			if (gl_errors[i].m_token == error)
+				return (const char *)gl_errors[i].m_string;
+		}
+		return nullptr;
 	}
+
+	inline std::string gl_errors_to_string(const std::string& filename, size_t line)
+	{
+		std::stringstream output;
+		GLenum gl_err = GL_NO_ERROR;
+		bool print_file = false;
+		while ((gl_err = glGetError()) != GL_NO_ERROR)
+		{
+			if (!print_file) 
+			{ 
+				output << "At file: " << filename << " :" << std::endl;
+			}
+			const char* gl_err_str = debug::get_open_gl_error(gl_err); \
+			output << "OpenGL error: " << line << " : " << gl_err << " : " << (gl_err_str ? gl_err_str : "unknow") << std::endl; \
+		}
+		return output.str();
+	}
+}
+
+#ifdef _DEBUG
+	#define debug_gl_errors_to_string() debug::gl_errors_to_string(__FILE__,__LINE__)
 #else
-	#define _OPENGL_PRINT_DEBUG_
+	#define debug_gl_errors_to_string() std::string()
 #endif
