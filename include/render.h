@@ -481,6 +481,13 @@ struct render_state
     }
 };
 
+enum mapping_type
+{
+	MAP_WRITE,
+	MAP_READ,
+	MAP_WRITE_AND_READ
+};
+
 #define LIB_EXPORT
 namespace render
 {
@@ -523,6 +530,12 @@ namespace render
     
     LIB_EXPORT void unbind_VBO(context_vertex_buffer*);
     LIB_EXPORT void unbind_IBO(context_index_buffer*);
+
+	LIB_EXPORT unsigned char* map_VBO(context_vertex_buffer*, size_t start, size_t n,mapping_type type);
+	LIB_EXPORT void unmap_VBO(context_vertex_buffer*);
+
+	LIB_EXPORT unsigned int*  map_IBO(context_index_buffer*,size_t start,size_t n, mapping_type type);
+	LIB_EXPORT void unmap_IBO(context_index_buffer*);
     
     LIB_EXPORT void delete_VBO(context_vertex_buffer*&);
     LIB_EXPORT void delete_IBO(context_index_buffer*&);

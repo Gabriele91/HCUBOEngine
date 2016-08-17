@@ -6,20 +6,20 @@
 void rendering_pass_deferred::uniform_light::get_uniform(int i, shader::ptr shader)
 {
     std::string lights_i("lights[" + std::to_string(i) + "]");
-    m_uniform_type     = shader->get_shader_uniform_int((lights_i + ".m_type").c_str());
+    m_uniform_type     = shader->get_uniform((lights_i + ".m_type").c_str());
     
-    m_uniform_position = shader->get_shader_uniform_vec3((lights_i + ".m_position").c_str());
-    m_uniform_direction = shader->get_shader_uniform_vec3((lights_i + ".m_direction").c_str());
+    m_uniform_position = shader->get_uniform((lights_i + ".m_position").c_str());
+    m_uniform_direction = shader->get_uniform((lights_i + ".m_direction").c_str());
     
-    m_uniform_diffuse  = shader->get_shader_uniform_vec3((lights_i + ".m_diffuse").c_str());
-    m_uniform_specular  = shader->get_shader_uniform_vec3((lights_i + ".m_specular").c_str());
+    m_uniform_diffuse  = shader->get_uniform((lights_i + ".m_diffuse").c_str());
+    m_uniform_specular  = shader->get_uniform((lights_i + ".m_specular").c_str());
     
-    m_uniform_constant  = shader->get_shader_uniform_float((lights_i + ".m_inv_constant").c_str());
-    m_uniform_linear    = shader->get_shader_uniform_float((lights_i + ".m_inv_quad_linear").c_str());
-	m_uniform_quadratic = shader->get_shader_uniform_float((lights_i + ".m_inv_quad_quadratic").c_str());
+    m_uniform_constant  = shader->get_uniform((lights_i + ".m_inv_constant").c_str());
+    m_uniform_linear    = shader->get_uniform((lights_i + ".m_inv_quad_linear").c_str());
+	m_uniform_quadratic = shader->get_uniform((lights_i + ".m_inv_quad_quadratic").c_str());
     
-    m_uniform_inner_cut_off = shader->get_shader_uniform_float((lights_i + ".m_inner_cut_off").c_str());
-    m_uniform_outer_cut_off = shader->get_shader_uniform_float((lights_i + ".m_outer_cut_off").c_str());
+    m_uniform_inner_cut_off = shader->get_uniform((lights_i + ".m_inner_cut_off").c_str());
+    m_uniform_outer_cut_off = shader->get_uniform((lights_i + ".m_outer_cut_off").c_str());
 }
 
 void rendering_pass_deferred::uniform_light::uniform(light_wptr weak_light,const glm::mat4& view,const glm::mat4& model)
@@ -30,9 +30,9 @@ void rendering_pass_deferred::uniform_light::uniform(light_wptr weak_light,const
     m_uniform_direction->set_value((glm::vec3)(view * model * glm::vec4(0,0,1.0,0.0)));
     m_uniform_diffuse->set_value(light->m_diffuse);
     m_uniform_specular->set_value(light->m_specular);
-    m_uniform_constant->set_value(1./light->m_constant);
-    m_uniform_linear->set_value(1./(light->m_linear*light->m_linear));
-	m_uniform_quadratic->set_value(1./(light->m_quadratic*light->m_quadratic));
+    m_uniform_constant->set_value(1.f/light->m_constant);
+    m_uniform_linear->set_value(1.f/(light->m_linear*light->m_linear));
+	m_uniform_quadratic->set_value(1.f/(light->m_quadratic*light->m_quadratic));
     m_uniform_inner_cut_off->set_value(light->m_inner_cut_off);
     m_uniform_outer_cut_off->set_value(light->m_outer_cut_off);
 }
@@ -47,13 +47,13 @@ rendering_pass_deferred::rendering_pass_deferred(const glm::ivec2& w_size, resou
 
 	m_square    = basic_meshs::square3D({ 2.0,2.0 }, true);
 	m_shader    = resources.get_shader("deferred_light");
-	m_position  = m_shader->get_shader_uniform_int("g_vertex");
-	m_normal    = m_shader->get_shader_uniform_int("g_normal");
-	m_albedo    = m_shader->get_shader_uniform_int("g_albedo_spec");
-	m_occlusion = m_shader->get_shader_uniform_int("g_occlusion");
+	m_position  = m_shader->get_uniform("g_vertex");
+	m_normal    = m_shader->get_uniform("g_normal");
+	m_albedo    = m_shader->get_uniform("g_albedo_spec");
+	m_occlusion = m_shader->get_uniform("g_occlusion");
 	//uniforms
-	m_ambient_light = m_shader->get_shader_uniform_vec4("ambient_light");
-	m_uniform_n_lights_used = m_shader->get_shader_uniform_int("n_lights_used");
+	m_ambient_light = m_shader->get_uniform("ambient_light");
+	m_uniform_n_lights_used = m_shader->get_uniform("n_lights_used");
 	//alloc lights
 	m_uniform_lights.resize(m_max_lights);
 	//get unfirom lights
@@ -152,7 +152,7 @@ void rendering_pass_deferred::draw_pass(glm::vec4&  clear_color,
 	m_ambient_light->set_value(ambient_color);
     //compute max lights
     unsigned max_lights = std::min(m_max_lights,(unsigned)queues.m_lights.size());
-	m_uniform_n_lights_used->set_value(max_lights);
+	m_uniform_n_lights_used->set_value((int)max_lights);
 	//uniform lights
     for (unsigned i = 0; i != max_lights; ++i)
     {

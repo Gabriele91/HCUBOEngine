@@ -941,19 +941,15 @@ bool material::load(resources_manager& resources,const std::string& path)
         //shader
         m_shader = resources.get_shader(shader_name);
         //default uniform
-        if(m_shader->get_uniform_id("model") > -1)
-            m_uniform_model     = m_shader->get_shader_uniform_mat4("model");
-        if(m_shader->get_uniform_id("view") > -1)
-            m_uniform_view      = m_shader->get_shader_uniform_mat4("view");
-        if(m_shader->get_uniform_id("projection") > -1)
-            m_uniform_projection= m_shader->get_shader_uniform_mat4("projection");
-        if(m_shader->get_uniform_id("viewport") > -1)
-            m_uniform_viewport= m_shader->get_shader_uniform_vec4("viewport");
+        m_uniform_model      = m_shader->get_uniform("model");
+        m_uniform_view       = m_shader->get_uniform("view");
+        m_uniform_projection = m_shader->get_uniform("projection");
+        m_uniform_viewport   = m_shader->get_uniform("viewport");
         //texture
         for(auto& utexture : parser.get_context().m_shader.m_textures)
         {
             m_textures.push_back(resources.get_texture(utexture.m_texture));
-            m_uniform_textures.push_back(m_shader->get_shader_uniform_texture(utexture.m_uniform.c_str()));
+            m_uniform_textures.push_back(m_shader->get_uniform(utexture.m_uniform.c_str()));
         }
         //const uniform
         for(auto& uniform : parser.get_context().m_shader.m_uniforms)
@@ -962,27 +958,27 @@ bool material::load(resources_manager& resources,const std::string& path)
             {
                 case material_parser::context::ctx_shader::ctx_uniform_field::ctx_type::T_INT:
                     m_ints.push_back(uniform.m_value.m_int);
-                    m_uniform_ints.push_back(m_shader->get_shader_uniform_int(uniform.m_uniform.c_str()));
+                    m_uniform_ints.push_back(m_shader->get_uniform(uniform.m_uniform.c_str()));
                     break;
                 case material_parser::context::ctx_shader::ctx_uniform_field::ctx_type::T_FLOAT:
                     m_floats.push_back(uniform.m_value.m_float);
-                    m_uniform_floats.push_back(m_shader->get_shader_uniform_float(uniform.m_uniform.c_str()));
+                    m_uniform_floats.push_back(m_shader->get_uniform(uniform.m_uniform.c_str()));
                     break;
                 case material_parser::context::ctx_shader::ctx_uniform_field::ctx_type::T_VEC2:
                     m_vec2s.push_back(uniform.m_value.m_vec2);
-                    m_uniform_vec2s.push_back(m_shader->get_shader_uniform_vec2(uniform.m_uniform.c_str()));
+                    m_uniform_vec2s.push_back(m_shader->get_uniform(uniform.m_uniform.c_str()));
                     break;
                 case material_parser::context::ctx_shader::ctx_uniform_field::ctx_type::T_VEC3:
                     m_vec3s.push_back(uniform.m_value.m_vec3);
-                    m_uniform_vec3s.push_back(m_shader->get_shader_uniform_vec3(uniform.m_uniform.c_str()));
+                    m_uniform_vec3s.push_back(m_shader->get_uniform(uniform.m_uniform.c_str()));
                     break;
                 case material_parser::context::ctx_shader::ctx_uniform_field::ctx_type::T_VEC4:
                     m_vec4s.push_back(uniform.m_value.m_vec4);
-                    m_uniform_vec4s.push_back(m_shader->get_shader_uniform_vec4(uniform.m_uniform.c_str()));
+                    m_uniform_vec4s.push_back(m_shader->get_uniform(uniform.m_uniform.c_str()));
                     break;
                 case material_parser::context::ctx_shader::ctx_uniform_field::ctx_type::T_MAT4:
                     m_mat4s.push_back(uniform.m_value.m_mat4);
-                    m_uniform_mat4s.push_back(m_shader->get_shader_uniform_mat4(uniform.m_uniform.c_str()));
+                    m_uniform_mat4s.push_back(m_shader->get_uniform(uniform.m_uniform.c_str()));
                     break;
                 default: break;
             }

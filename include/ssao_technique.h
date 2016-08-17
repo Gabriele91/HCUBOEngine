@@ -41,19 +41,19 @@ private:
 
 	shader::ptr	m_shader;
     
-	uniform_vec2::ptr       m_uniform_noise_scale;
-	uniform_mat4::ptr       m_uniform_projection;
-	uniform_int::ptr        m_uniform_kernel_size;
-	uniform_float::ptr      m_uniform_radius;
+	uniform* m_uniform_noise_scale;
+	uniform* m_uniform_projection;
+	uniform* m_uniform_kernel_size;
+	uniform* m_uniform_radius;
 
-	uniform_int::ptr  m_position;
-	uniform_int::ptr  m_normal;
-	uniform_int::ptr  m_noise;
+	uniform* m_position;
+	uniform* m_normal;
+	uniform* m_noise;
 	//////////////////////////////////////////////////////////////////////
 	context_render_target* m_fbo_blur{ nullptr };
     context_texture*       m_ssao_blur_texture{ nullptr };
-	shader::ptr			m_shader_blur;
-	uniform_int::ptr    m_uniform_ssoa_input;
+	shader::ptr			   m_shader_blur;
+	uniform*               m_uniform_ssoa_input;
 	//////////////////////////////////////////////////////////////////////
 
 };

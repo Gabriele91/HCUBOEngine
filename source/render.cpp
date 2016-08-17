@@ -406,6 +406,7 @@ context_index_buffer* create_IBO(const unsigned int* ibo, size_t size)
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int)*size, ibo, GL_STATIC_DRAW);
     return ptr;
 }
+
 void update_steam_VBO(context_vertex_buffer* vbo, const unsigned char* data, size_t size)
 {
     //get state
@@ -417,6 +418,7 @@ void update_steam_VBO(context_vertex_buffer* vbo, const unsigned char* data, siz
     //restore
     glBindBuffer(GL_ARRAY_BUFFER, lastbind);
 }
+
 void update_steam_IBO(context_index_buffer* ibo, const unsigned int* data, size_t size){
     //get state
     GLint lastbind;
@@ -447,6 +449,42 @@ void unbind_IBO(context_index_buffer* ibo)
 {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0);
 }
+
+GLbitfield get_mapping_type(mapping_type type)
+{
+	switch (type)
+	{
+		default:
+		case MAP_WRITE_AND_READ: return GL_MAP_WRITE_BIT | GL_MAP_WRITE_BIT | GL_MAP_UNSYNCHRONIZED_BIT; break;
+		case MAP_WRITE: return GL_MAP_WRITE_BIT | GL_MAP_UNSYNCHRONIZED_BIT;
+		case MAP_READ:  return GL_MAP_READ_BIT  | GL_MAP_UNSYNCHRONIZED_BIT;
+	}
+}
+
+unsigned char* map_VBO(context_vertex_buffer* vbo, size_t start, size_t n, mapping_type type)
+{
+	bind_VBO(vbo);
+	return (unsigned char*)glMapBufferRange(GL_ARRAY_BUFFER, start, n, get_mapping_type(type));
+}
+
+void unmap_VBO(context_vertex_buffer* vbo)
+{
+	glUnmapBuffer(GL_ARRAY_BUFFER);
+	unbind_VBO(vbo);
+}
+
+unsigned int*  map_IBO(context_index_buffer* ibo, size_t start, size_t n, mapping_type type)
+{
+	bind_IBO(ibo);
+	return (unsigned int*)glMapBufferRange(GL_ELEMENT_ARRAY_BUFFER, start * sizeof(unsigned int), n * sizeof(unsigned int), get_mapping_type(type));
+}
+
+void unmap_IBO(context_index_buffer* ibo)
+{
+	glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);
+	unbind_IBO(ibo);
+}
+
 
 void delete_VBO(context_vertex_buffer*& vbo)
 {

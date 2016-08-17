@@ -16,35 +16,30 @@ text_mesh::text_mesh(size_t text_max_size)
     //set max size
     m_text_max_size = text_max_size;
     //gen buffer
-    glGenBuffers (1, &m_bpoints);
-    glBindBuffer (GL_ARRAY_BUFFER, m_bpoints);
-    glBufferData (GL_ARRAY_BUFFER, text_max_size * sizeof (int), NULL, GL_STREAM_DRAW);
-    glBindBuffer (GL_ARRAY_BUFFER, 0);
+	m_bpoints = render::create_stream_VBO(nullptr, sizeof(int), text_max_size);
+	//create input layout
+	m_layout = render::create_IL({
+		attribute{ATT_POSITIONT,AST_INT,0}
+	});
 }
 
 text_mesh::~text_mesh()
 {
-    glDeleteBuffers(1, &m_bpoints);
+	render::delete_VBO(m_bpoints);
+	render::delete_IL(m_layout);
 }
 
 void text_mesh::update_mesh()
 {
-    //bind
-    glBindBuffer(GL_ARRAY_BUFFER, m_bpoints);
     ///get point
-    int* points = (int*)glMapBufferRange(GL_ARRAY_BUFFER,
-                                         0,
-                                         m_text_max_size * sizeof (int),
-                                         GL_MAP_WRITE_BIT | GL_MAP_UNSYNCHRONIZED_BIT );
+    int* points = (int*)render::map_VBO(m_bpoints, 0, m_text_max_size * sizeof(int), MAP_WRITE);
     // stream data
     for(size_t i=0; i!=m_text_max_size && i!=m_text.size(); ++i)
     {
         points[i] = (int)m_text[i];
     }
     // unmap buffer
-    glUnmapBuffer(GL_ARRAY_BUFFER);
-    //unbind
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+	render::unmap_VBO(m_bpoints);
 }
 
 void text_mesh::set_text(const std::u32string& text)
@@ -65,18 +60,8 @@ void text_mesh::set_text(const std::string& text)
 
 void text_mesh::draw()
 {
-    const int attribute_location = 0;
-    ////////////////////////////////////////////////////////
-    //unbind index
-    glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, 0);
-    ////////////////////////////////////////////////////////
-    glBindBuffer(GL_ARRAY_BUFFER, m_bpoints);
-    glEnableVertexAttribArray(attribute_location);
-    glVertexAttribIPointer (attribute_location, 1, GL_INT, 0, nullptr);
-    ////////////////////////////////////////////////////////
-    //draw
-    glDrawArrays (GL_POINTS, 0, (GLuint)std::min(m_text.size(),m_text_max_size));
-    ////////////////////////////////////////////////////////
-    //unbind
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+	render::bind_VBO(m_bpoints);
+	render::bind_IL(m_layout);
+	render::draw_arrays(DRAW_POINTS, (unsigned int)std::min(m_text.size(), m_text_max_size));
+	render::unmap_VBO(m_bpoints);
 }

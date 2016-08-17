@@ -7,7 +7,7 @@
 #include <OpenGL4.h>
 #include <render.h>
 #include <filesystem.h>
-
+#include <glm/gtc/type_ptr.hpp> 
 
 static const char default_glsl_defines[]=
 R"GLSL(
@@ -583,191 +583,112 @@ void shader::unbind()
     //unbind ibo
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
+
 //id programma
 unsigned int shader::program_id() const
 {
     return m_shader_id;
 }
 
-//start uniform
-void shader::uniform()
-{
-    //restart texture uniform
-    m_uniform_ntexture = -1;
-}
-
 //uniform
 
-#define uniform_gl_class(class_name,T,uniform_gl_call)\
-class class_name : public uniform<class_name> {\
-\
-GLint m_id{0};\
-\
-    public:\
-    class_name( GLint id ): m_id(id){}\
-    virtual void  set(const void* value, size_t s, size_t n)\
-    {\
-        uniform_gl_call ((GLuint)(m_id+s), (GLuint)n, (const T*)value); \
-    }\
-    virtual void  set(const void* value)\
-    {\
-        uniform_gl_call (m_id, 1, (const T*)value);\
-    }\
-    virtual void* get(){ return nullptr;}\
-    virtual const void* get() const { return nullptr; }\
-    virtual ~class_name(){}\
-};
-
-uniform_gl_class(uniform_gl_int, int, glUniform1iv)
-uniform_gl_class(uniform_gl_float, float, glUniform1fv)
-uniform_gl_class(uniform_gl_vec2, float, glUniform2fv)
-uniform_gl_class(uniform_gl_vec3, float, glUniform3fv)
-uniform_gl_class(uniform_gl_vec4, float, glUniform4fv)
-
-class uniform_gl_texture : public uniform_texture
+void uniform::set_value(texture::ptr in_texture)
 {
-    context_texture* m_ctx_texture{ nullptr };
-    GLint     m_unform_id{-1};
-    GLint     m_id{ 0 };
-    shader*   m_shader{ nullptr };
-    
-public:
-    
-    uniform_gl_texture(GLint id, shader* shader)
-    :m_id(id)
-    ,m_shader(shader)
-    {}
-    
-    virtual void disable()
-    {
-        //unbind texture
-        render::unbind_texture(m_ctx_texture);
-        m_unform_id = -1;
-    }
-    
-    virtual void  set(const void* ref_value, size_t s, size_t n)
-    {
-        //uniform
-        m_unform_id = (GLint)++m_shader->m_uniform_ntexture;
-        //get texture
-        m_ctx_texture = ((texture*)ref_value)->get_context_texture();
-        //bind texture
-        render::bind_texture(m_ctx_texture, m_unform_id);
-        //bind id
-        glUniform1i(m_id, m_unform_id);
-    }
-    
-    virtual void  set(const void* value)
-    {
-        //void
-    }
-    
-    virtual void* get(){ return NULL; }
-    virtual const void* get() const { return NULL; }
-    virtual ~uniform_gl_texture(){}
-};
-
-class uniform_gl_mat4 : public uniform < uniform_gl_mat4 >
-{
-    GLint m_id{ 0 };
-public:
-    
-    uniform_gl_mat4(GLint id) : m_id(id){}
-    
-    virtual void  set(const void* value, size_t s, size_t n)
-    {
-        glUniformMatrix4fv((GLuint)(m_id + s), (GLuint)n, false, (const float*)value);
-    }
-    
-    virtual void  set(const void* value)
-    {
-        glUniformMatrix4fv(m_id, 1, false, (const float*)value);
-    }
-    virtual void* get(){ return NULL; }
-    virtual const void* get() const { return NULL; }
-    virtual ~uniform_gl_mat4(){}
-    
-};
-
-
-uniform_texture* shader::get_uniform_texture(const char *name)
-{
-    return (uniform_texture*)new uniform_gl_texture(get_uniform_id(name),this);
+	int n_texture = ++m_shader->m_uniform_ntexture;
+	//bind texture
+	render::bind_texture(in_texture->get_context_texture(), n_texture);
+	//bind id
+	glUniform1i(m_id, n_texture);
 }
 
-uniform_int* shader::get_uniform_int(const char *name)
+void uniform::set_value(int i)
 {
-    return (uniform_int*)new uniform_gl_int(get_uniform_id(name));
+	glUniform1i(m_id, i);
+}
+void uniform::set_value(float f)
+{
+	glUniform1f(m_id, f);
+}
+void uniform::set_value(const glm::vec2& v2)
+{
+	glUniform2fv(m_id, 1, glm::value_ptr(v2));
+}
+void uniform::set_value(const glm::vec3& v3)
+{
+	glUniform3fv(m_id, 1, glm::value_ptr(v3));
+}
+void uniform::set_value(const glm::vec4& v4)
+{
+	glUniform4fv(m_id, 1, glm::value_ptr(v4));
+}
+void uniform::set_value(const glm::mat4& m4)
+{
+	glUniformMatrix4fv(m_id, 1, GL_FALSE, glm::value_ptr(m4));
 }
 
-uniform_float* shader::get_uniform_float(const char *name)
+void uniform::set_value(const int* i, size_t n)
 {
-    return (uniform_float*)new uniform_gl_float(get_uniform_id(name));
+	glUniform1iv(m_id, n, i);
 }
 
-uniform_vec2* shader::get_uniform_vec2(const char *name)
+void uniform::set_value(const float* f, size_t n)
 {
-    return (uniform_vec2*)new uniform_gl_vec2(get_uniform_id(name));
+	glUniform1fv(m_id, n, f);
 }
 
-uniform_vec3* shader::get_uniform_vec3(const char *name)
+void uniform::set_value(const glm::vec2* v2, size_t n)
 {
-    return (uniform_vec3*)new uniform_gl_vec3(get_uniform_id(name));
+	glUniform2fv(m_id, n, (const float*)v2);
 }
 
-uniform_vec4* shader::get_uniform_vec4(const char *name)
+void uniform::set_value(const glm::vec3* v3, size_t n)
 {
-    return (uniform_vec4*)new uniform_gl_vec4(get_uniform_id(name));
+	glUniform3fv(m_id, n, (const float*)v3);
+}
+void uniform::set_value(const glm::vec4* v4, size_t n)
+{
+	glUniform4fv(m_id, n, (const float*)v4);
+}
+void uniform::set_value(const glm::mat4* m4, size_t n)
+{
+	glUniformMatrix4fv(m_id, n, GL_FALSE, (const float*)m4);
 }
 
-uniform_mat4* shader::get_uniform_mat4(const char *name)
+void uniform::set_value(const std::vector < int >& i)
 {
-    return (uniform_mat4*)new uniform_gl_mat4(get_uniform_id(name));
+	set_value(i.data(), i.size());
+}
+void uniform::set_value(const std::vector < float >& f)
+{
+	set_value(f.data(), f.size());
+}
+void uniform::set_value(const std::vector < glm::vec2 >& v2)
+{
+	set_value(v2.data(), v2.size());
+}
+void uniform::set_value(const std::vector < glm::vec3 >& v3)
+{
+	set_value(v3.data(), v3.size());
+}
+void uniform::set_value(const std::vector < glm::vec4 >& v4)
+{
+	set_value(v4.data(), v4.size());
+}
+void uniform::set_value(const std::vector < glm::mat4 >& m4)
+{
+	set_value(m4.data(), m4.size());
 }
 
-uniform_array_int* shader::get_uniform_array_int(const char *name)
+uniform* shader::get_uniform(const char *name)
 {
-    return (uniform_array_int*)new uniform_gl_int(get_uniform_id(name));
-}
-
-uniform_array_float* shader::get_uniform_array_float(const char *name)
-{
-    return (uniform_array_float*)new uniform_gl_float(get_uniform_id(name));
-}
-
-uniform_array_vec2* shader::get_uniform_array_vec2(const char *name)
-{
-    return (uniform_array_vec2*)new uniform_gl_vec2(get_uniform_id(name));
-}
-
-uniform_array_vec3* shader::get_uniform_array_vec3(const char *name)
-{
-    return (uniform_array_vec3*)new uniform_gl_vec3(get_uniform_id(name));
-}
-
-uniform_array_vec4* shader::get_uniform_array_vec4(const char *name)
-{
-    return (uniform_array_vec4*)new uniform_gl_vec4(get_uniform_id(name));
-}
-
-uniform_array_mat4* shader::get_uniform_array_mat4(const char *name)
-{
-    return (uniform_array_mat4*)new uniform_gl_mat4(get_uniform_id(name));
+	auto uit = m_uniform_map.find(name);
+	//if find
+	if(uit != m_uniform_map.end()) return &uit->second;
+	//else
+	int uid = get_uniform_id(name);
+	if (uid < 0) return nullptr;
+	//add and return
+	return &(m_uniform_map[name] = uniform( this, (long)uid ));
 }
 
 
-
-uniform_texture::ptr shader::get_shader_uniform_texture(const char *name){ return get_uniform_texture(name)->shared(); }
-uniform_int::ptr shader::get_shader_uniform_int(const char *name){ return get_uniform_int(name)->shared(); }
-uniform_float::ptr shader::get_shader_uniform_float(const char *name){ return get_uniform_float(name)->shared(); }
-uniform_vec2::ptr shader::get_shader_uniform_vec2(const char *name){ return get_uniform_vec2(name)->shared(); }
-uniform_vec3::ptr shader::get_shader_uniform_vec3(const char *name){ return get_uniform_vec3(name)->shared(); }
-uniform_vec4::ptr shader::get_shader_uniform_vec4(const char *name){ return get_uniform_vec4(name)->shared(); }
-uniform_mat4::ptr shader::get_shader_uniform_mat4(const char *name){ return get_uniform_mat4(name)->shared(); }
-
-uniform_array_int::ptr shader::get_shader_uniform_array_int(const char *name){ return get_uniform_array_int(name)->shared(); }
-uniform_array_float::ptr shader::get_shader_uniform_array_float(const char *name){ return get_uniform_array_float(name)->shared(); }
-uniform_array_vec2::ptr shader::get_shader_uniform_array_vec2(const char *name){ return get_uniform_array_vec2(name)->shared(); }
-uniform_array_vec3::ptr shader::get_shader_uniform_array_vec3(const char *name){ return get_uniform_array_vec3(name)->shared(); }
-uniform_array_vec4::ptr shader::get_shader_uniform_array_vec4(const char *name){ return get_uniform_array_vec4(name)->shared(); }
-uniform_array_mat4::ptr shader::get_shader_uniform_array_mat4(const char *name){ return get_uniform_array_mat4(name)->shared(); }

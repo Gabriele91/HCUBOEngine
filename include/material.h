@@ -64,29 +64,29 @@ protected:
     //shader
     shader::ptr  m_shader { nullptr };
     //standard uniform
-    uniform_mat4::ptr m_uniform_projection{ nullptr };
-    uniform_mat4::ptr m_uniform_view{ nullptr };
-    uniform_mat4::ptr m_uniform_model{ nullptr };
-    uniform_vec4::ptr m_uniform_viewport{ nullptr };
+    uniform* m_uniform_projection{ nullptr };
+	uniform* m_uniform_view      { nullptr };
+	uniform* m_uniform_model     { nullptr };
+	uniform* m_uniform_viewport  { nullptr };
     //uniform textures
     std::vector< texture::ptr > m_textures;
-    std::vector< uniform_texture::ptr > m_uniform_textures;
+    std::vector< uniform* >     m_uniform_textures;
     //uniform float
-    std::vector< float > m_floats;
-    std::vector< uniform_float::ptr > m_uniform_floats;
+    std::vector< float >    m_floats;
+	std::vector< uniform* > m_uniform_floats;
     //uniform int
-    std::vector< int > m_ints;
-    std::vector< uniform_int::ptr > m_uniform_ints;
+    std::vector< int >      m_ints;
+	std::vector< uniform* > m_uniform_ints;
     //uniform vec2
     std::vector< glm::vec2 > m_vec2s;
-    std::vector< uniform_vec2::ptr > m_uniform_vec2s;
+	std::vector< uniform* > m_uniform_vec2s;
     //uniform vec3
     std::vector< glm::vec3 > m_vec3s;
-    std::vector< uniform_vec3::ptr > m_uniform_vec3s;
+	std::vector< uniform* > m_uniform_vec3s;
     //uniform vec4
     std::vector< glm::vec4 > m_vec4s;
-    std::vector< uniform_vec4::ptr > m_uniform_vec4s;
+	std::vector< uniform* > m_uniform_vec4s;
     //uniform mat4
     std::vector< glm::mat4 > m_mat4s;
-    std::vector< uniform_mat4::ptr > m_uniform_mat4s;
+	std::vector< uniform* >  m_uniform_mat4s;
 };

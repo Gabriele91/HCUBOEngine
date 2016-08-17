@@ -33,33 +33,33 @@ protected:
 	g_buffer          m_g_buffer;
 	ssao_technique    m_ssao;
 
-	glm::ivec2        m_q_size;
-	mesh::ptr         m_square;
-	shader::ptr	      m_shader;
-	uniform_int::ptr  m_position;
-	uniform_int::ptr  m_normal;
-	uniform_int::ptr  m_albedo;
-	uniform_int::ptr  m_occlusion;
-	uniform_vec4::ptr m_ambient_light;
+	glm::ivec2  m_q_size;
+	mesh::ptr   m_square;
+	shader::ptr	m_shader;
+	uniform*    m_position;
+	uniform*    m_normal;
+	uniform*    m_albedo;
+	uniform*    m_occlusion;
+	uniform*    m_ambient_light;
 
     bool m_enable_ambient_occlusion{ true };
 
 	struct uniform_light
 	{
-        uniform_int::ptr   m_uniform_type;
+		uniform* m_uniform_type;
         
-        uniform_vec3::ptr  m_uniform_position;
-        uniform_vec3::ptr  m_uniform_direction;
+		uniform* m_uniform_position;
+		uniform* m_uniform_direction;
         
-        uniform_vec3::ptr  m_uniform_diffuse;
-        uniform_vec3::ptr  m_uniform_specular;
+		uniform* m_uniform_diffuse;
+		uniform* m_uniform_specular;
         
-        uniform_float::ptr m_uniform_constant;
-        uniform_float::ptr m_uniform_linear;
-        uniform_float::ptr m_uniform_quadratic;
+		uniform* m_uniform_constant;
+		uniform* m_uniform_linear;
+		uniform* m_uniform_quadratic;
 
-		uniform_float::ptr m_uniform_inner_cut_off;
-        uniform_float::ptr m_uniform_outer_cut_off;
+		uniform* m_uniform_inner_cut_off;
+		uniform* m_uniform_outer_cut_off;
 
 		void get_uniform(int i, shader::ptr shader);
         void uniform(light_wptr light,const glm::mat4& view,const glm::mat4& model);
@@ -67,6 +67,6 @@ protected:
 	};
 	std::vector < uniform_light > m_uniform_lights;
 	//size lights
-	uniform_int::ptr  m_uniform_n_lights_used;
+	uniform* m_uniform_n_lights_used;
 
 };

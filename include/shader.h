@@ -6,6 +6,7 @@
 //  Copyright © 2016 Gabriele. All rights reserved.
 //
 #pragma once
+#include <unordered_map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -16,318 +17,47 @@
 #include <texture.h>
 #include <smart_pointers.h>
 
-template <class T>
+class uniform;
+class shader;
+
 class uniform
 {
-public:
-    
-    using ptr = std::shared_ptr< T >;
 
-    ptr shared(){ return ptr((T*)this); }
-    
-    virtual ~uniform(){};
+public:
+
+	void set_value(texture::ptr in_texture);
+	void set_value(int i);
+	void set_value(float f);
+	void set_value(const glm::vec2& v2);
+	void set_value(const glm::vec3& v3);
+	void set_value(const glm::vec4& v4);
+	void set_value(const glm::mat4& m4);
+
+	void set_value(const int* i, size_t n);
+	void set_value(const float* f, size_t n);
+	void set_value(const glm::vec2* v2, size_t n);
+	void set_value(const glm::vec3* v3, size_t n);
+	void set_value(const glm::vec4* v4, size_t n);
+	void set_value(const glm::mat4* m4, size_t n);
+
+	void set_value(const std::vector < int >& i);
+	void set_value(const std::vector < float >& f);
+	void set_value(const std::vector < glm::vec2 >& v2);
+	void set_value(const std::vector < glm::vec3 >& v3);
+	void set_value(const std::vector < glm::vec4 >& v4);
+	void set_value(const std::vector < glm::mat4 >& m4);
+
+	uniform() {}
+
+	bool is_valid() { return m_shader && m_id >= -1; }
 
 protected:
-    virtual void  set(const void*) = 0;
-    virtual void  set(const void*, size_t i,size_t n) = 0;
-    virtual void* get() = 0;
-    virtual const void* get() const = 0;
-};
 
-class uniform_texture : public uniform<uniform_texture>
-{
-    
-public:
-    
-    uniform_texture(){}
-    
-    void enable(texture* texture)
-    {
-        set(texture, (size_t)0, (size_t)0);
-    }
-    
-    void enable(texture::ptr in_texture)
-    {
-        assert(in_texture.get());
-        set(in_texture.get(), (size_t)0, (size_t)0);
-    }
-    
-    void set_value(texture::ptr in_texture)
-    {
-        assert(in_texture.get());
-        set(in_texture.get(), (size_t)0, (size_t)0);
-    }
-    
-    void set_value(texture* texture)
-    {
-        set(texture, (size_t)0, (size_t)0);
-    }
-   
-    virtual void disable()=0;
-    
-    operator const texture*() const
-    {
-        return (const texture*)(get());
-    }
-    
-};
+	friend class shader;
+	shader* m_shader{ nullptr };
+	long    m_id    { -1 };
 
-class uniform_int : public uniform<uniform_int>
-{
-public:
-    
-    uniform_int(int i)
-    {
-        set(&i);
-    }
-    operator int() const
-    {
-        return *((int*)(this->get()));
-    }
-    void set_value(int i)
-    {
-        set(&i);
-    }
-    int operator = (int i)
-    {
-        set(&i);
-        return i;
-    }
-};
-
-class uniform_float : public uniform<uniform_float>
-{
-public:
-    
-    uniform_float(float f)
-    {
-        set(&f);
-    }
-    
-    operator float() const
-    {
-        return *((float*)(this->get()));
-    }
-    
-    void set_value(float f)
-    {
-        set(&f);
-    }
-    
-    float operator = (float f)
-    {
-        set(&f);
-        return f;
-    }
-};
-
-class uniform_vec2 : public uniform<uniform_vec2>
-{
-public:
-    uniform_vec2(const glm::vec2& v2)
-    {
-        set(&v2.x);
-    }
-    operator const glm::vec2&() const
-    {
-        return *((glm::vec2*)(this->get()));
-    }
-    void set_value(const glm::vec2& v2)
-    {
-        set(&v2.x);
-    }
-    const glm::vec2& operator = (const glm::vec2& v2)
-    {
-        set(&v2.x);
-        return v2;
-    }
-};
-
-class uniform_vec3 : public uniform<uniform_vec3>
-{
-public:
-    
-    uniform_vec3(const glm::vec3& v3)
-    {
-        set(&v3.x);
-    }
-    
-    operator const glm::vec3&() const
-    {
-        return *((glm::vec3*)(this->get()));
-    }
-    
-    void set_value(const glm::vec3& v3)
-    {
-        set(&v3.x);
-    }
-    
-    const glm::vec3& operator = (const glm::vec3& v3)
-    {
-        set(&v3.x);
-        return v3;
-    }
-};
-
-class uniform_vec4 : public uniform<uniform_vec4>
-{
-public:
-    
-    uniform_vec4(const glm::vec4& v4)
-    {
-        set(&v4.x);
-    }
-    
-    operator const glm::vec4&() const
-    {
-        return *((glm::vec4*)(this->get()));
-    }
-    
-    void set_value(const glm::vec4& v4)
-    {
-        set(&v4.x);
-    }
-    
-    const glm::vec4& operator = (const glm::vec4& v4)
-    {
-        set(&v4.x);
-        return v4;
-    }
-};
-
-class uniform_mat4 : public uniform<uniform_mat4>
-{
-public:
-    uniform_mat4(const glm::mat4 & m4)
-    {
-        set(&m4[0]);
-    }
-
-    operator const glm::mat4&() const
-    {
-        return *((glm::mat4*)(this->get()));
-    }
-
-    void set_value(const glm::mat4& m4)
-    {
-        set(&m4[0]);
-    }
-
-    const glm::mat4& operator = (const glm::mat4& m4)
-    {
-        set(&m4[0]);
-        return m4;
-    }
-};
-
-class uniform_array_int : public uniform<uniform_array_int>
-{
-public:
-	
-    void set_value(int i, size_t n)
-    {
-        set(&i, n, 1);
-    }
-    
-    void set_value(int* i, size_t n)
-    {
-		set(i, 0, n);
-    }
-    
-    int get_value(size_t n) const
-    {
-        return ((const int*)get())[n];
-    }
-};
-
-class uniform_array_float : public uniform<uniform_array_float>
-{
-public:
-    void set_value(float f, size_t n)
-    {
-		set(&f, n, 1);
-    }
-    
-    void set_value(float* f, size_t n)
-    {
-		set(f, 0, n);
-    }
-    
-    float get_value(size_t n) const
-    {
-        return ((const float*)get())[n];
-    }
-};
-
-class uniform_array_vec2 : public uniform<uniform_array_vec2>
-{
-public:
-    void set_value(const glm::vec2& v2, size_t n)
-    {
-		set(&v2, n, 1);
-    }
-    
-    void set_value(glm::vec2* v2, size_t n)
-    {
-		set(v2, 0, n);
-    }
-    
-    glm::vec2 get_value(size_t n) const
-    {
-        return ((const glm::vec2*)get())[n];
-    }
-};
-
-class uniform_array_vec3 : public uniform<uniform_array_vec3>
-{
-public:
-    void set_value(const glm::vec3& v3, size_t n)
-    {
-		set(&v3, n, 1);
-    }
-    void set_value(glm::vec3* v3, size_t n)
-    {
-		set(v3, 0, n);
-    }
-    glm::vec3 get_value(size_t n) const
-    {
-        return ((const glm::vec3*)get())[n];
-    }
-};
-
-class uniform_array_vec4 : public uniform<uniform_array_vec3>
-{
-public:
-    void set_value(const glm::vec4& v4, size_t n)
-    {
-		set(&v4, n, 1);
-    }
-    void set_value(glm::vec4* v4, size_t n)
-    {
-		set(v4, 0, n);
-    }
-    glm::vec4 get_value(size_t n) const
-    {
-        return ((const glm::vec4*)get())[n];
-    }
-};
-class uniform_array_mat4 : public uniform<uniform_array_mat4>
-{
-public:
-    void set_value(const glm::mat4& v4, size_t n)
-    {
-		set(&v4, n, 1);
-    }
-    
-    void set_value(glm::mat4* v4, size_t n)
-    {
-		set(v4, 0, n);
-    }
-    
-    glm::mat4 get_value(size_t n) const
-    {
-        return ((const glm::mat4*)get())[n];
-    }
+	uniform(shader* arg_shader, long arg_id) : m_shader(arg_shader), m_id(arg_id){}
 };
 
 class shader : public smart_pointers<shader>, public resource
@@ -348,7 +78,6 @@ public:
         std::vector<std::string> defines;
         return load(effect, defines);
     }
-    
     
     bool load(const std::string& vs, const std::string& fs)
     {
@@ -377,40 +106,11 @@ public:
                      const std::vector<std::string>& defines);
     
     //get consts
-    uniform_texture*   get_uniform_texture(const char *name);
-    uniform_int*       get_uniform_int(const char *name);
-    uniform_float*     get_uniform_float(const char *name);
-    uniform_vec2*      get_uniform_vec2(const char *name);
-    uniform_vec3*      get_uniform_vec3(const char *name);
-    uniform_vec4*      get_uniform_vec4(const char *name);
-    uniform_mat4*      get_uniform_mat4(const char *name);
-    
-    uniform_array_int*   get_uniform_array_int(const char *name);
-    uniform_array_float* get_uniform_array_float(const char *name);
-    uniform_array_vec2*  get_uniform_array_vec2(const char *name);
-    uniform_array_vec3*  get_uniform_array_vec3(const char *name);
-    uniform_array_vec4*  get_uniform_array_vec4(const char *name);
-    uniform_array_mat4*  get_uniform_array_mat4(const char *name);
-    
-    uniform_texture::ptr  get_shader_uniform_texture(const char *name);
-    uniform_int::ptr      get_shader_uniform_int(const char *name);
-    uniform_float::ptr    get_shader_uniform_float(const char *name);
-    uniform_vec2::ptr     get_shader_uniform_vec2(const char *name);
-    uniform_vec3::ptr     get_shader_uniform_vec3(const char *name);
-    uniform_vec4::ptr     get_shader_uniform_vec4(const char *name);
-    uniform_mat4::ptr     get_shader_uniform_mat4(const char *name);
-    
-    uniform_array_int::ptr get_shader_uniform_array_int(const char *name);
-    uniform_array_float::ptr get_shader_uniform_array_float(const char *name);
-    uniform_array_vec2::ptr get_shader_uniform_array_vec2(const char *name);
-    uniform_array_vec3::ptr get_shader_uniform_array_vec3(const char *name);
-    uniform_array_vec4::ptr get_shader_uniform_array_vec4(const char *name);
-    uniform_array_mat4::ptr get_shader_uniform_array_mat4(const char *name);
+    uniform* get_uniform(const char *name);
     
     //imposta shader
     virtual void bind();
     virtual void unbind();
-    virtual void uniform();
     
     //get uniform id
     int get_uniform_id(const char *name);
@@ -419,13 +119,15 @@ public:
     unsigned int program_id() const;
 
 protected:
-    
+
+	//friend class
+	friend class uniform;
+
     //count uniforms texture
     long m_uniform_ntexture{ -1 };
-    
-    //friend class
-    friend class uniform_gl_texture;
-    
+
+	//uniforms
+	std::unordered_map< std::string, uniform > m_uniform_map;
     
 private:
     

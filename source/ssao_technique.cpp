@@ -7,16 +7,16 @@ void ssao_technique::init(const glm::ivec2& w_size, resources_manager& resources
 {
 	//load shader ssao
 	m_shader = resources.get_shader("ssao_pass");
-	m_uniform_noise_scale = m_shader->get_shader_uniform_vec2("noise_scale");
-	m_uniform_projection = m_shader->get_shader_uniform_mat4("projection");
-	m_uniform_kernel_size = m_shader->get_shader_uniform_int("kernel_size");
-	m_uniform_radius = m_shader->get_shader_uniform_float("radius");
-	m_position = m_shader->get_shader_uniform_int("g_position");
-	m_normal = m_shader->get_shader_uniform_int("g_normal");
-	m_noise = m_shader->get_shader_uniform_int("t_noise");
+	m_uniform_noise_scale = m_shader->get_uniform("noise_scale");
+	m_uniform_projection = m_shader->get_uniform("projection");
+	m_uniform_kernel_size = m_shader->get_uniform("kernel_size");
+	m_uniform_radius = m_shader->get_uniform("radius");
+	m_position = m_shader->get_uniform("g_position");
+	m_normal = m_shader->get_uniform("g_normal");
+	m_noise = m_shader->get_uniform("t_noise");
 	//load shader blur ssao
 	m_shader_blur = resources.get_shader("ssao_blur");
-	m_uniform_ssoa_input = m_shader->get_shader_uniform_int("g_ssao_input");
+	m_uniform_ssoa_input = m_shader_blur->get_uniform("g_ssao_input");
 	////////////////////////////////////////////////////////////////////////////////////////////////////
     m_ssao_texture =
     render::create_texture(TF_R8,
@@ -128,7 +128,7 @@ void ssao_technique::applay(entity::ptr e_camera, g_buffer& buffer, mesh::ptr sq
 	//bind kernel/proj/scale noise
 	m_uniform_projection->set_value(c_camera->get_projection());
 	m_uniform_noise_scale->set_value((glm::vec2)c_camera->get_viewport_size() / glm::vec2(4, 4));
-	m_uniform_kernel_size->set_value(m_kernel_size);
+	m_uniform_kernel_size->set_value((int)m_kernel_size);
 	m_uniform_radius->set_value(m_radius);
 	//set g_buffer 
 	buffer.set_texture_buffer(g_buffer::G_BUFFER_TEXTURE_TYPE_POSITION);//0

@@ -6,14 +6,19 @@
 //  Copyright © 2016 Gabriele. All rights reserved.
 //
 #include <string>
+#include <render.h>
 #include <renderable.h>
 #include <smart_pointers.h>
 
 class text_mesh :  public smart_pointers< text_mesh >,  public renderable
 {
+	//string info
     std::u32string m_text;
     size_t         m_text_max_size;
-    unsigned int   m_bpoints;
+	//draw info
+	context_input_layout*  m_layout { nullptr };
+	context_vertex_buffer* m_bpoints{ nullptr };
+	//update
     void           update_mesh();
     
 public:
