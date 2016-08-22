@@ -12,14 +12,14 @@
 
 int main(int argc, const char * argv[])
 {
-    application app;
-	app_basic view_points;
+    hcube::application app;
+	hcube::app_basic view_points;
 	return app.execute(
-		window_size_percentage{ { 90., 90. } } //window size
-		, false								   //resizable
-		, 4									   //OpenGL version
-		, 1									   //OpenGL sub-version
-		, "view particles"					   //window title
-		, new app_basic) 					   //instance
+		  hcube::window_size_percentage{ { 90., 90. } }//window size
+		, false								           //resizable
+		, 4									           //OpenGL version
+		, 1									           //OpenGL sub-version
+		, "view particles"					           //window title
+		, new hcube::app_basic) 					   //instance
 		? 0 : 1;
 }

@@ -7,12 +7,15 @@
 //
 #pragma once
 
-namespace query_performance
+namespace hcube
 {
-    //get time
-    extern long long get_ticks();
-    //time
-    extern double get_time();
-    //time
-    extern double get_time_ms();
+	namespace query_performance
+	{
+		//get time
+		extern long long get_ticks();
+		//time
+		extern double get_time();
+		//time
+		extern double get_time_ms();
+	}
 }

@@ -12,27 +12,30 @@
 #include <entity.h>
 #include <basic_meshs.h>
 
-namespace gameobject
+namespace hcube
 {
-    template < class... Args >
-    static inline entity::ptr node_new(Args&&... args)
-    {
-        return entity::snew(transform_snew(),args...);
-    }
-    
-    static inline entity::ptr light_new()
-    {
-        return entity::snew(transform_snew(),light_snew());
-    }
-    
-    static inline entity::ptr camera_new()
-    {
-        return entity::snew(transform_snew(),camera::snew());
-    }
-    
-    static inline entity::ptr cube_new(const glm::vec3& size,bool uvmap=true)
-    {
-        return entity::snew(transform_snew(),basic_meshs::cube(size,uvmap));
-    }
-    
+	namespace gameobject
+	{
+		template < class... Args >
+		static inline entity::ptr node_new(Args&&... args)
+		{
+			return entity::snew(transform_snew(), args...);
+		}
+
+		static inline entity::ptr light_new()
+		{
+			return entity::snew(transform_snew(), light_snew());
+		}
+
+		static inline entity::ptr camera_new()
+		{
+			return entity::snew(transform_snew(), camera::snew());
+		}
+
+		static inline entity::ptr cube_new(const glm::vec3& size, bool uvmap = true)
+		{
+			return entity::snew(transform_snew(), basic_meshs::cube(size, uvmap));
+		}
+
+	}
 }

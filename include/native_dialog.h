@@ -10,16 +10,20 @@
 #include <vector>
 #include <GLFW/glfw3.h>
 
-namespace native_dialog
+namespace hcube
 {
-    
-    struct open_file_output
-    {
-        bool        m_success;
-        std::string m_path;
-    };
-    
-    open_file_output open_file_dialog(GLFWwindow* window,
-                                      const std::string& title,
-                                      const std::vector<std::string>& types);
-};
+
+	namespace native_dialog
+	{
+
+		struct open_file_output
+		{
+			bool        m_success;
+			std::string m_path;
+		};
+
+		open_file_output open_file_dialog(GLFWwindow* window,
+										  const std::string& title,
+									      const std::vector<std::string>& types);
+	};
+}

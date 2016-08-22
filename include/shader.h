@@ -17,124 +17,127 @@
 #include <texture.h>
 #include <smart_pointers.h>
 
-class uniform;
-class shader;
-
-class uniform
+namespace hcube
 {
+	class uniform;
+	class shader;
 
-public:
+	class uniform
+	{
 
-	void set_value(texture::ptr in_texture);
-	void set_value(int i);
-	void set_value(float f);
-	void set_value(const glm::vec2& v2);
-	void set_value(const glm::vec3& v3);
-	void set_value(const glm::vec4& v4);
-	void set_value(const glm::mat4& m4);
+	public:
 
-	void set_value(const int* i, size_t n);
-	void set_value(const float* f, size_t n);
-	void set_value(const glm::vec2* v2, size_t n);
-	void set_value(const glm::vec3* v3, size_t n);
-	void set_value(const glm::vec4* v4, size_t n);
-	void set_value(const glm::mat4* m4, size_t n);
+		void set_value(texture::ptr in_texture);
+		void set_value(int i);
+		void set_value(float f);
+		void set_value(const glm::vec2& v2);
+		void set_value(const glm::vec3& v3);
+		void set_value(const glm::vec4& v4);
+		void set_value(const glm::mat4& m4);
 
-	void set_value(const std::vector < int >& i);
-	void set_value(const std::vector < float >& f);
-	void set_value(const std::vector < glm::vec2 >& v2);
-	void set_value(const std::vector < glm::vec3 >& v3);
-	void set_value(const std::vector < glm::vec4 >& v4);
-	void set_value(const std::vector < glm::mat4 >& m4);
+		void set_value(const int* i, size_t n);
+		void set_value(const float* f, size_t n);
+		void set_value(const glm::vec2* v2, size_t n);
+		void set_value(const glm::vec3* v3, size_t n);
+		void set_value(const glm::vec4* v4, size_t n);
+		void set_value(const glm::mat4* m4, size_t n);
 
-	uniform() {}
+		void set_value(const std::vector < int >& i);
+		void set_value(const std::vector < float >& f);
+		void set_value(const std::vector < glm::vec2 >& v2);
+		void set_value(const std::vector < glm::vec3 >& v3);
+		void set_value(const std::vector < glm::vec4 >& v4);
+		void set_value(const std::vector < glm::mat4 >& m4);
 
-	bool is_valid() { return m_shader && m_id >= -1; }
+		uniform() {}
 
-protected:
+		bool is_valid() { return m_shader && m_id >= -1; }
 
-	friend class shader;
-	shader* m_shader{ nullptr };
-	long    m_id    { -1 };
+	protected:
 
-	uniform(shader* arg_shader, long arg_id) : m_shader(arg_shader), m_id(arg_id){}
-};
+		friend class shader;
+		shader* m_shader{ nullptr };
+		long    m_id{ -1 };
 
-class shader : public smart_pointers<shader>, public resource
-{
+		uniform(shader* arg_shader, long arg_id) : m_shader(arg_shader), m_id(arg_id) {}
+	};
 
-public:
+	class shader : public smart_pointers<shader>, public resource
+	{
 
-    shader(){}
-    virtual ~shader();
-    
-    bool load(resources_manager& resources,const std::string& path)
-    {
-        return load(path);
-    }
-    
-    bool load(const std::string& effect)
-    {
-        std::vector<std::string> defines;
-        return load(effect, defines);
-    }
-    
-    bool load(const std::string& vs, const std::string& fs)
-    {
-        std::vector<std::string> defines;
-        return load(vs, fs, "", defines);
-    }
-    
-    bool load(const std::string& vs, const std::string& fs, const std::string& gs)
-    {
-        std::vector<std::string> defines;
-        return load(vs, fs, gs, defines);
-    }
-    
-    bool load(const std::string& vs, const std::string& fs,  const std::vector<std::string>& defines)
-    {
-        return load(vs, fs, "", defines);
-    }
-    
-    bool load(const std::string& effect, const std::vector<std::string>& defines);
-    
-    bool load(const std::string& vs, const std::string& fs, const std::string& gs, const std::vector<std::string>& defines);
-    
-    bool load_shader(const std::string& vs, size_t line_vs,
-                     const std::string& fs, size_t line_fs,
-                     const std::string& gs, size_t line_gs,
-                     const std::vector<std::string>& defines);
-    
-    //get consts
-    uniform* get_uniform(const char *name);
-    
-    //imposta shader
-    virtual void bind();
-    virtual void unbind();
-    
-    //get uniform id
-    int get_uniform_id(const char *name);
-  
-    //id programma
-    unsigned int program_id() const;
+	public:
 
-protected:
+		shader() {}
+		virtual ~shader();
 
-	//friend class
-	friend class uniform;
+		bool load(resources_manager& resources, const std::string& path)
+		{
+			return load(path);
+		}
 
-    //count uniforms texture
-    long m_uniform_ntexture{ -1 };
+		bool load(const std::string& effect)
+		{
+			std::vector<std::string> defines;
+			return load(effect, defines);
+		}
 
-	//uniforms
-	std::unordered_map< std::string, uniform > m_uniform_map;
-    
-private:
-    
-    unsigned int m_shader_id{ 0 };
-    unsigned int m_shader_vs{ 0 };
-    unsigned int m_shader_fs{ 0 };
-    unsigned int m_shader_gs{ 0 };
-    void delete_program();
+		bool load(const std::string& vs, const std::string& fs)
+		{
+			std::vector<std::string> defines;
+			return load(vs, fs, "", defines);
+		}
 
-};
+		bool load(const std::string& vs, const std::string& fs, const std::string& gs)
+		{
+			std::vector<std::string> defines;
+			return load(vs, fs, gs, defines);
+		}
+
+		bool load(const std::string& vs, const std::string& fs, const std::vector<std::string>& defines)
+		{
+			return load(vs, fs, "", defines);
+		}
+
+		bool load(const std::string& effect, const std::vector<std::string>& defines);
+
+		bool load(const std::string& vs, const std::string& fs, const std::string& gs, const std::vector<std::string>& defines);
+
+		bool load_shader(const std::string& vs, size_t line_vs,
+			const std::string& fs, size_t line_fs,
+			const std::string& gs, size_t line_gs,
+			const std::vector<std::string>& defines);
+
+		//get consts
+		uniform* get_uniform(const char *name);
+
+		//imposta shader
+		virtual void bind();
+		virtual void unbind();
+
+		//get uniform id
+		int get_uniform_id(const char *name);
+
+		//id programma
+		unsigned int program_id() const;
+
+	protected:
+
+		//friend class
+		friend class uniform;
+
+		//count uniforms texture
+		long m_uniform_ntexture{ -1 };
+
+		//uniforms
+		std::unordered_map< std::string, uniform > m_uniform_map;
+
+	private:
+
+		unsigned int m_shader_id{ 0 };
+		unsigned int m_shader_vs{ 0 };
+		unsigned int m_shader_fs{ 0 };
+		unsigned int m_shader_gs{ 0 };
+		void delete_program();
+
+	};
+}

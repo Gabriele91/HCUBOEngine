@@ -12,21 +12,24 @@
 #include <resource.h>
 #include <prefab.h>
 
-class static_model : public prefab, public smart_pointers< static_model >
+namespace hcube
 {
-public:
-
-
-	struct sub_model
+	class static_model : public prefab, public smart_pointers< static_model >
 	{
-		mesh::ptr m_mesh;
+	public:
+
+
+		struct sub_model
+		{
+			mesh::ptr m_mesh;
+		};
+
+		std::vector< sub_model > m_sub_models;
+
+		bool load(resources_manager& resources, const std::string& path);
+
+		virtual entity::ptr instantiate();
+
+		virtual prefab_ptr copy() const;
 	};
-
-	std::vector< sub_model > m_sub_models;
-
-	bool load(resources_manager& resources, const std::string& path);
-
-	virtual entity::ptr instantiate();
-
-	virtual prefab_ptr copy() const;
-};
+}

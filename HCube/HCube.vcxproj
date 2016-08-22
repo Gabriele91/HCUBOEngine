@@ -161,7 +161,6 @@
     <ClInclude Include="..\include\arc_ball.h" />
     <ClInclude Include="..\include\basic_meshs.h" />
     <ClInclude Include="..\include\camera.h" />
-    <ClInclude Include="..\include\collection_materials.h" />
     <ClInclude Include="..\include\component.h" />
     <ClInclude Include="..\include\eigenvalues_jacobi.h" />
     <ClInclude Include="..\include\entity.h" />

@@ -13,33 +13,37 @@
 #include <glm/gtc/quaternion.hpp>
 #include <frustum.h>
 
-class camera :  public component, public smart_pointers< camera >
+namespace hcube
 {
-    
-    COMPONENT_DEC(camera)
-    
-public:
-    
-    void set_viewport(const glm::ivec4& viewport);
-    void set_perspective(float fov,float aspect,float near,float far);
-    glm::vec2 get_near_and_far() const;
-    
-    const glm::ivec2  get_viewport_size() const;
-    const glm::ivec4& get_viewport() const;
-    const glm::mat4&  get_projection() const;
-    const glm::mat4&  get_projection_inv() const;
 
-	frustum& get_frustum();
-    const frustum& get_frustum() const;
-	void update_view_frustum();
+	class camera : public component, public smart_pointers< camera >
+	{
 
-	virtual component_ptr copy() const;
+		COMPONENT_DEC(camera)
 
-protected:
-    
-	frustum	   m_frustum;
-    glm::ivec4 m_viewport;
-    glm::mat4  m_projection;
-    glm::mat4  m_projection_inv;
-    
-};
+	public:
+
+		void set_viewport(const glm::ivec4& viewport);
+		void set_perspective(float fov, float aspect, float near, float far);
+		glm::vec2 get_near_and_far() const;
+
+		const glm::ivec2  get_viewport_size() const;
+		const glm::ivec4& get_viewport() const;
+		const glm::mat4&  get_projection() const;
+		const glm::mat4&  get_projection_inv() const;
+
+		frustum& get_frustum();
+		const frustum& get_frustum() const;
+		void update_view_frustum();
+
+		virtual component_ptr copy() const;
+
+	protected:
+
+		frustum	   m_frustum;
+		glm::ivec4 m_viewport;
+		glm::mat4  m_projection;
+		glm::mat4  m_projection_inv;
+
+	};
+}

@@ -3,46 +3,49 @@
 #include <glm/mat4x4.hpp>
 #include <obb.h>
 
-class frustum
+namespace hcube
 {
-public:
-    
-    //planes
-    enum plane_type
-    {
-        TOP = 0,
-        BOTTOM,
-        LEFT,
-        RIGHT,
-        NEARP,
-        FARP,
-        N_PLANES
-    };
-    
-	//results
-    enum testing_result { OUTSIDE, INTERSECT, INSIDE };
+	class frustum
+	{
+	public:
 
-	//update planes
-	void update_frustum(const glm::mat4& projection);
+		//planes
+		enum plane_type
+		{
+			TOP = 0,
+			BOTTOM,
+			LEFT,
+			RIGHT,
+			NEARP,
+			FARP,
+			N_PLANES
+		};
 
-	//test point
-	testing_result test_point(const glm::vec3& point) const;
+		//results
+		enum testing_result { OUTSIDE, INTERSECT, INSIDE };
 
-	//test sphere
-	testing_result test_sphere(const glm::vec3& point,float radius) const;
+		//update planes
+		void update_frustum(const glm::mat4& projection);
 
-	//test obb
-	testing_result test_obb(const obb& box) const;
+		//test point
+		testing_result test_point(const glm::vec3& point) const;
 
-	//test obb
-	testing_result test_obb(const obb& box,const glm::mat4& model) const;
-    
-    //distance
-    float distance_from_plane(plane_type plane, const glm::vec3& point) const;
-    float distance_from_near_plane(const glm::vec3& point) const;
+		//test sphere
+		testing_result test_sphere(const glm::vec3& point, float radius) const;
 
-private:
+		//test obb
+		testing_result test_obb(const obb& box) const;
 
-	glm::vec4 m_planes[N_PLANES];
+		//test obb
+		testing_result test_obb(const obb& box, const glm::mat4& model) const;
 
-};
+		//distance
+		float distance_from_plane(plane_type plane, const glm::vec3& point) const;
+		float distance_from_near_plane(const glm::vec3& point) const;
+
+	private:
+
+		glm::vec4 m_planes[N_PLANES];
+
+	};
+}

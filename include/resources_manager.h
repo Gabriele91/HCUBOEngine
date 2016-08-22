@@ -13,34 +13,37 @@
 #include <material.h>
 #include <prefab.h>
 
-class resources_manager
+namespace hcube
 {
-public:
-    
-    void add_directory(const std::string& directory,bool recursive = false);
-    shader::ptr get_shader(const std::string& name);
-    texture::ptr get_texture(const std::string& name);
-	material_ptr get_material(const std::string& name);
-	prefab_ptr get_prefab(const std::string& name);
+	class resources_manager
+	{
+	public:
 
-	void set_shader_path(const std::string& name, const std::string& path);
-	void set_texture_path(const std::string& name, const std::string& path);
-	void set_material_path(const std::string& name, const std::string& path);
-	void set_prefab_path(const std::string& name, const std::string& path);
+		void add_directory(const std::string& directory, bool recursive = false);
+		shader::ptr get_shader(const std::string& name);
+		texture::ptr get_texture(const std::string& name);
+		material_ptr get_material(const std::string& name);
+		prefab_ptr get_prefab(const std::string& name);
 
-	const std::string& get_shader_path(const std::string& name);
-	const std::string& get_texture_path(const std::string& name);
-	const std::string& get_material_path(const std::string& name);
-	const std::string& get_prefab_path(const std::string& name);
-	
-private:
+		void set_shader_path(const std::string& name, const std::string& path);
+		void set_texture_path(const std::string& name, const std::string& path);
+		void set_material_path(const std::string& name, const std::string& path);
+		void set_prefab_path(const std::string& name, const std::string& path);
+
+		const std::string& get_shader_path(const std::string& name);
+		const std::string& get_texture_path(const std::string& name);
+		const std::string& get_material_path(const std::string& name);
+		const std::string& get_prefab_path(const std::string& name);
+
+	private:
 
 
-	using resources_path_map = std::unordered_map< std::string, std::string >;
-    using resources_map      = std::unordered_map< std::string, resource_ptr >;
-    using resources_map_it   = resources_map::iterator;
-    using resources_map_cit  = resources_map::const_iterator;
+		using resources_path_map = std::unordered_map< std::string, std::string >;
+		using resources_map = std::unordered_map< std::string, resource_ptr >;
+		using resources_map_it = resources_map::iterator;
+		using resources_map_cit = resources_map::const_iterator;
 
-	resources_map      m_resources_map;
-	resources_path_map m_resources_path_map;
-};
+		resources_map      m_resources_map;
+		resources_path_map m_resources_path_map;
+	};
+}

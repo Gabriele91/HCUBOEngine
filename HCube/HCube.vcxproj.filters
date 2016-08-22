@@ -72,9 +72,6 @@
     <ClInclude Include="..\include\query_performance.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\collection_materials.h">
-      <Filter>File di intestazione</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\json11.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
