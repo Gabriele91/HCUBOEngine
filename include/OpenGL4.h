@@ -73,7 +73,7 @@ namespace hcube
 	}
 }
 #ifdef _DEBUG
-	#define debug_gl_errors_to_string() ::hcubo::debug::gl_errors_to_string(__FILE__,__LINE__)
+	#define debug_gl_errors_to_string() ::hcube::debug::gl_errors_to_string(__FILE__,__LINE__)
 #else
-	#define debug_gl_errors_to_string() std::string()
+	#define debug_gl_errors_to_string() ::std::string()
 #endif
