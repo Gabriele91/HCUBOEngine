@@ -22,13 +22,15 @@ int main(int argc,char* argv[])
 	l_model.compute_obbs();
 	//save
 #if 1
-	l_model.save(argv[2]);
+	if (argc == 3) l_model.save(argv[2]);
+	else           l_model.save(argv[2], argv[3]);
 #else
 	/* debug */
 	model obb_model;
 	build_obb_model(l_model, obb_model);
 	obb_model.compute_obbs();
-	obb_model.save(argv[2]);
+	if (argc == 3) obb_model.save(argv[2]);
+	else           obb_model.save(argv[2], argv[3]);
 #endif
 	//end
 	return 0;

@@ -42,4 +42,5 @@ struct model
 	std::vector< node > m_nodes;
 	void compute_obbs();
 	void save(const std::string& path);
+	void save(const std::string& path,const std::string& mat_prefix);
 };

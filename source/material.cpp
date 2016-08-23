@@ -948,42 +948,55 @@ namespace hcube
 			m_uniform_view       = m_shader->get_uniform("view");
 			m_uniform_projection = m_shader->get_uniform("projection");
 			m_uniform_viewport   = m_shader->get_uniform("viewport");
+			//ref
+			uniform* u_ref = nullptr;
 			//texture
-			for(auto& utexture : parser.get_context().m_shader.m_textures)
+			for (auto& utexture : parser.get_context().m_shader.m_textures)
 			{
-				m_textures.push_back(resources.get_texture(utexture.m_texture));
-				m_uniform_textures.push_back(m_shader->get_uniform(utexture.m_uniform.c_str()));
+				//test
+				if (u_ref = m_shader->get_uniform(utexture.m_uniform.c_str()))
+				{
+					//add
+					m_textures.push_back(resources.get_texture(utexture.m_texture));
+					m_uniform_textures.push_back(u_ref);
+				}
 			}
 			//const uniform
 			for(auto& uniform : parser.get_context().m_shader.m_uniforms)
 			{
-				switch (uniform.m_type)
+				//get ref
+				u_ref = m_shader->get_uniform(uniform.m_uniform.c_str());
+				//add ref
+				if (u_ref)
 				{
+					switch (uniform.m_type)
+					{
 					case material_parser::context::ctx_shader::ctx_uniform_field::ctx_type::T_INT:
 						m_ints.push_back(uniform.m_value.m_int);
-						m_uniform_ints.push_back(m_shader->get_uniform(uniform.m_uniform.c_str()));
+						m_uniform_ints.push_back(u_ref);
 						break;
 					case material_parser::context::ctx_shader::ctx_uniform_field::ctx_type::T_FLOAT:
 						m_floats.push_back(uniform.m_value.m_float);
-						m_uniform_floats.push_back(m_shader->get_uniform(uniform.m_uniform.c_str()));
+						m_uniform_floats.push_back(u_ref);
 						break;
 					case material_parser::context::ctx_shader::ctx_uniform_field::ctx_type::T_VEC2:
 						m_vec2s.push_back(uniform.m_value.m_vec2);
-						m_uniform_vec2s.push_back(m_shader->get_uniform(uniform.m_uniform.c_str()));
+						m_uniform_vec2s.push_back(u_ref);
 						break;
 					case material_parser::context::ctx_shader::ctx_uniform_field::ctx_type::T_VEC3:
 						m_vec3s.push_back(uniform.m_value.m_vec3);
-						m_uniform_vec3s.push_back(m_shader->get_uniform(uniform.m_uniform.c_str()));
+						m_uniform_vec3s.push_back(u_ref);
 						break;
 					case material_parser::context::ctx_shader::ctx_uniform_field::ctx_type::T_VEC4:
 						m_vec4s.push_back(uniform.m_value.m_vec4);
-						m_uniform_vec4s.push_back(m_shader->get_uniform(uniform.m_uniform.c_str()));
+						m_uniform_vec4s.push_back(u_ref);
 						break;
 					case material_parser::context::ctx_shader::ctx_uniform_field::ctx_type::T_MAT4:
 						m_mat4s.push_back(uniform.m_value.m_mat4);
-						m_uniform_mat4s.push_back(m_shader->get_uniform(uniform.m_uniform.c_str()));
+						m_uniform_mat4s.push_back(u_ref);
 						break;
 					default: break;
+					}
 				}
 			}
 		}

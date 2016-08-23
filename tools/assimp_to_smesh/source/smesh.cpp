@@ -115,6 +115,10 @@ void material::save(const std::string& path)
 
 void model::save(const std::string& path)
 {
+	save(path, "");
+}
+void model::save(const std::string& path, const std::string& mat_prefix)
+{
 	//open file
 	FILE* model_file = fopen(path.c_str(), "wb");
 	//test open
@@ -137,9 +141,10 @@ void model::save(const std::string& path)
 	for (auto& node : m_nodes)
 	{
 		//mat name
-		unsigned int size_mat_name = node.m_material.m_name.size();
+		std::string mat_name = mat_prefix+node.m_material.m_name;
+		unsigned int size_mat_name = mat_name.size();
 		std::fwrite(&size_mat_name, sizeof(unsigned int), 1, model_file);
-		std::fwrite(node.m_material.m_name.data(), sizeof(char)*size_mat_name, 1, model_file);
+		std::fwrite(mat_name.data(), sizeof(char)*size_mat_name, 1, model_file);
 		//index
 		unsigned int size_index = node.m_index.size();
 		std::fwrite(&size_index, sizeof(unsigned int), 1, model_file);
@@ -171,7 +176,7 @@ void model::save(const std::string& path)
 	//save materials
 	for (auto& node : m_nodes)
 	{
-		std::string filename = node.m_material.m_name + ".mat";
+		std::string filename = mat_prefix + node.m_material.m_name + ".mat";
 		node.m_material.save(directory + "/" + filename);
 	}
 
