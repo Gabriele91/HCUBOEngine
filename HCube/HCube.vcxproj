@@ -162,6 +162,7 @@
     <ClInclude Include="..\include\basic_meshs.h" />
     <ClInclude Include="..\include\camera.h" />
     <ClInclude Include="..\include\component.h" />
+    <ClInclude Include="..\include\effect.h" />
     <ClInclude Include="..\include\eigenvalues_jacobi.h" />
     <ClInclude Include="..\include\entity.h" />
     <ClInclude Include="..\include\filesystem.h" />
@@ -201,6 +202,7 @@
     <ClCompile Include="..\source\app_basic.cpp" />
     <ClCompile Include="..\source\basic_meshs.cpp" />
     <ClCompile Include="..\source\camera.cpp" />
+    <ClCompile Include="..\source\effect.cpp" />
     <ClCompile Include="..\source\entity.cpp" />
     <ClCompile Include="..\source\filesystem.cpp" />
     <ClCompile Include="..\source\frustum.cpp" />

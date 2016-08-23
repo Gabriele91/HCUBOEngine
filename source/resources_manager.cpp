@@ -34,6 +34,10 @@ namespace hcube
 			{
 				set_shader_path(basename, directory + "/" + filename);
 			}
+			else if (ext == ".fxhc")
+			{
+				set_effect_path(basename, directory + "/" + filename);
+			}
 			else if (ext == ".mat")
 			{
 				set_material_path(basename, directory + "/" + filename);
@@ -70,6 +74,14 @@ namespace hcube
 		m_resources_path_map[resource_name] = path;
 	}
 
+	void resources_manager::set_effect_path(const std::string& name, const std::string& path)
+	{
+		//shader name
+		std::string resource_name = "effect:" + name;
+		//set path
+		m_resources_path_map[resource_name] = path;
+	}
+
 	void resources_manager::set_texture_path(const std::string& name, const std::string& path)
 	{
 		//shader name
@@ -98,6 +110,12 @@ namespace hcube
 	const std::string& resources_manager::get_shader_path(const std::string& name)
 	{
 		auto it_path = m_resources_path_map.find("shader:" + name);
+		if (it_path != m_resources_path_map.end()) return it_path->second;
+		return "";
+	}
+	const std::string& resources_manager::get_effect_path(const std::string& name)
+	{
+		auto it_path = m_resources_path_map.find("effect:" + name);
 		if (it_path != m_resources_path_map.end()) return it_path->second;
 		return "";
 	}
@@ -137,6 +155,23 @@ namespace hcube
 		return std::static_pointer_cast<shader>(resource_it->second);
 	}
 
+	effect::ptr resources_manager::get_effect(const std::string& name)
+	{
+		//shader name
+		std::string effect_name = "effect:" + name;
+		//rerouce
+		resources_map_it resource_it = m_resources_map.find(effect_name);
+		//alloc
+		if (resource_it == m_resources_map.end())
+		{
+			m_resources_map[effect_name] = std::static_pointer_cast<effect>(effect::snew());
+			resource_it = m_resources_map.find(effect_name);
+			resource_it->second->load(*this, m_resources_path_map[effect_name]);
+		}
+		//return
+		return std::static_pointer_cast<effect>(resource_it->second);
+	}
+
 	texture::ptr resources_manager::get_texture(const std::string& name)
 	{
 		//shader name
@@ -170,7 +205,6 @@ namespace hcube
 		//return
 		return std::static_pointer_cast<material>(resource_it->second);
 	}
-
 
 	prefab_ptr resources_manager::get_prefab(const std::string& name)
 	{

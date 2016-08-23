@@ -29,7 +29,7 @@ void output_fragment(vec3 position,vec3 normal,vec4 albedo, float specular)
 	vec3 view_dir = normalize(vec3(0.0) - position);
 
 	// Then calculate lighting as usual
-	vec3 lighting =  compute_all_lights(diffuse * occlusion,
+	vec3 lighting =  compute_all_lights(diffuse /* * occlusion*/,
 								        position,
 								        view_dir,
 								        normal,

@@ -170,9 +170,9 @@ namespace hcube
 	}
 
 	inline bool process_include(std::string& output,
-		const std::string& path_file,
-		size_t& n_files,
-		size_t level = 1)
+								const std::string& path_file,
+								size_t& n_files,
+								size_t level = 1)
 	{
 		//cicle test
 		if (level > 16)
@@ -238,13 +238,15 @@ namespace hcube
 		return true;
 	}
 
-	inline bool process_import(const std::string& path_effect_file,
-		const std::vector<std::string>& defines,
-		std::string& out_vertex,
-		std::string& out_fragment,
-		std::string& out_geometry,
-		size_t& n_files,
-		size_t level = 0)
+	inline bool process_import(std::stringstream& effect, 
+							   const std::string& path_effect_file,
+							   const std::vector<std::string>& defines,
+							   std::string& out_vertex,
+							   std::string& out_fragment,
+							   std::string& out_geometry,
+							   size_t& n_files,
+							   size_t line  /* = 0*/,
+							   size_t level /* = 0*/)
 	{
 		//cicle test
 		if (level > 16)
@@ -266,8 +268,6 @@ namespace hcube
 		std::string buffers[P_SIZE];
 		//get base dir
 		std::string filedir = filesystem::get_directory(path_effect_file);
-		//read file
-		std::istringstream effect(filesystem::text_file_read_all(path_effect_file));
 		//parsing
 		std::string& all = buffers[P_ALL];
 		std::string& vertex = buffers[P_VERTEX];
@@ -277,8 +277,6 @@ namespace hcube
 		parsing_state state = P_ALL;
 		//line buffer
 		std::string effect_line;
-		//count line
-		size_t  line = 0;
 		//count files
 		size_t  this_file = n_files++;
 		//put line of "all" buffer
@@ -350,8 +348,12 @@ namespace hcube
 					{
 						return false;
 					}
+					//path
+					std::string import_path = filedir + "/" + path_include;
+					//input stream
+					std::stringstream import_effect(filesystem::text_file_read_all(import_path));
 					//add include
-					if (!process_import(filedir + "/" + path_include, defines, vertex, fragment, geometry, n_files, level + 1))
+					if (!process_import(import_effect, import_path, defines, vertex, fragment, geometry, n_files, line, level + 1))
 					{
 						return false;
 					}
@@ -375,41 +377,81 @@ namespace hcube
 	}
 
 	bool shader::load(const std::string& effect_file,
-		const std::vector<std::string>& defines)
+		              const std::vector<std::string>& defines,
+		              size_t line)
 	{
 		//id file
 		size_t  this_file = 0;
 		//buffers
 		std::string vertex, fragment, geometry;
+		//input stream
+		std::stringstream stream_effect(filesystem::text_file_read_all(effect_file));
 		//process
-		if (!process_import(effect_file, defines, vertex, fragment, geometry, this_file)) return false;
+		if (!process_import(stream_effect,
+						    effect_file,
+							defines, 
+							vertex, 
+							fragment, 
+							geometry, 
+							this_file, 
+							line, 
+							0)) return false;
 		//load shader
 		return load_shader(vertex, 0,
-			fragment, 0,
-			geometry, 0,
-			defines);
+						   fragment, 0,
+						   geometry, 0,
+						   defines);
 	}
 
 
+	bool shader::load_effect(const std::string& effect,
+					         const std::string& effect_file,
+					         size_t line_effect,
+					         const std::vector<std::string>& defines)
+	{
+
+		//id file
+		size_t  this_file = 0;
+		//buffers
+		std::string vertex, fragment, geometry;
+		//input stream
+		std::stringstream stream_effect(effect);
+		//process
+		if (!process_import(stream_effect,
+							effect_file,
+							defines,
+							vertex,
+							fragment,
+							geometry,
+							this_file,
+						    line_effect,
+							0)) return false;
+		//load shader
+		return load_shader(vertex, 0,
+						  fragment, 0,
+						  geometry, 0,
+						  defines);
+	}
 	bool shader::load(const std::string& vs_file,
-		const std::string& fs_file,
-		const std::string& gs_file,
-		const std::vector<std::string>& defines)
+		              const std::string& fs_file,
+		              const std::string& gs_file,
+		              const std::vector<std::string>& defines,
+		              size_t line)
 	{
 		return load_shader
 		(
-			filesystem::text_file_read_all(vs_file), 0,
-			filesystem::text_file_read_all(fs_file), 0,
+			filesystem::text_file_read_all(vs_file), line,
+			filesystem::text_file_read_all(fs_file), line,
 			gs_file.size() ?
-			filesystem::text_file_read_all(gs_file) : "", 0,
+			filesystem::text_file_read_all(gs_file) : "", line,
 			defines
 		);
 	}
 
 	bool shader::load_shader(const std::string& vs_str, size_t line_vs,
-		const std::string& fs_str, size_t line_fs,
-		const std::string& gs_str, size_t line_gs,
-		const std::vector<std::string>& defines)
+						     const std::string& fs_str, size_t line_fs,
+							 const std::string& gs_str, size_t line_gs,
+							 const std::vector<std::string>& defines)
 	{
 		//delete last shader
 		delete_program();

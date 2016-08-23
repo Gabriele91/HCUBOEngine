@@ -592,8 +592,6 @@ namespace hcube
 			return true;
 		}
     
-    
-    
 		bool parse_mat4(const char*& ptr, context::ctx_shader::ctx_uniform_field& field)
 		{
 			//first

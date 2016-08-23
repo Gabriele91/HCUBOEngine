@@ -75,37 +75,42 @@ namespace hcube
 			return load(path);
 		}
 
-		bool load(const std::string& effect)
+		bool load(const std::string& effect,size_t line = 0)
 		{
 			std::vector<std::string> defines;
-			return load(effect, defines);
+			return load(effect, defines, line);
 		}
 
-		bool load(const std::string& vs, const std::string& fs)
+		bool load(const std::string& vs, const std::string& fs, size_t line = 0)
 		{
 			std::vector<std::string> defines;
-			return load(vs, fs, "", defines);
+			return load(vs, fs, "", defines, line);
 		}
 
-		bool load(const std::string& vs, const std::string& fs, const std::string& gs)
+		bool load(const std::string& vs, const std::string& fs, const std::string& gs, size_t line = 0)
 		{
 			std::vector<std::string> defines;
-			return load(vs, fs, gs, defines);
+			return load(vs, fs, gs, defines, line);
 		}
 
-		bool load(const std::string& vs, const std::string& fs, const std::vector<std::string>& defines)
+		bool load(const std::string& vs, const std::string& fs, const std::vector<std::string>& defines, size_t line = 0)
 		{
-			return load(vs, fs, "", defines);
+			return load(vs, fs, "", defines, line);
 		}
 
-		bool load(const std::string& effect, const std::vector<std::string>& defines);
+		bool load(const std::string& effect, const std::vector<std::string>& defines, size_t line = 0);
 
-		bool load(const std::string& vs, const std::string& fs, const std::string& gs, const std::vector<std::string>& defines);
+		bool load(const std::string& vs, const std::string& fs, const std::string& gs, const std::vector<std::string>& defines, size_t line = 0);
+
+		bool load_effect(const std::string& effect,
+			             const std::string& effect_file,
+						 size_t line_effect,
+						 const std::vector<std::string>& defines);
 
 		bool load_shader(const std::string& vs, size_t line_vs,
-			const std::string& fs, size_t line_fs,
-			const std::string& gs, size_t line_gs,
-			const std::vector<std::string>& defines);
+			             const std::string& fs, size_t line_fs,
+			             const std::string& gs, size_t line_gs,
+			             const std::vector<std::string>& defines);
 
 		//get consts
 		uniform* get_uniform(const char *name);

@@ -168,13 +168,17 @@ namespace hcube
 		//gbuffer size
 		glm::ivec2 g_size = app.get_window_size();
 		//deferred alloc
+		m_resources.add_directory("common/effects");
 		m_resources.add_directory("common/shaders");
 		auto rendering_pass = rendering_pass_deferred::snew(g_size, m_resources);
 		rendering_pass->set_ambient_occlusion(true);
 		m_rendering->add_rendering_pass(rendering_pass);
+		//test effect
+		auto effect = m_resources.get_effect("base");
 		//load assets
 		m_resources.add_directory("assets/textures");
 		m_resources.add_directory("assets/materials");
+		m_resources.add_directory("assets/odst");
 		m_resources.add_directory("assets/ship");
 		m_resources.add_directory("assets/asteroid");
 		m_resources.add_directory("tools/assimp_to_smesh/output");
@@ -196,6 +200,16 @@ namespace hcube
 				glm::vec3{ 0.0f, 1.0f, 0.0f });
 			//set camera
 			m_systems.add_entity(m_camera);
+
+			//odst
+			auto m_odst = m_resources.get_prefab("odst")->instantiate();
+			auto t_odst = m_odst->get_component<transform>();
+			//set info
+			t_odst->position({ 0.0f, -5.0f, 0.0f });
+			t_odst->rotation(glm::quat({ glm::radians(15.0), glm::radians(0.0), 0.0 }));
+			t_odst->scale({ 0.2f, 0.2f, 0.2f });
+			//add to render
+			m_systems.add_entity(m_odst);
 
 			//ship
 			m_model = m_resources.get_prefab("ship")->instantiate();
