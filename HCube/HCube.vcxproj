@@ -237,6 +237,7 @@
     <None Include="..\assets\ship\ship.smhc" />
     <None Include="..\assets\ship\vehicle_playerShip_glass_mat.mat" />
     <None Include="..\assets\ship\vehicle_playerShip_metal_mat.mat" />
+    <None Include="..\common\effects\base.fxhc" />
     <None Include="..\common\shaders\base.glsl" />
     <None Include="..\common\shaders\base_texture.glsl" />
     <None Include="..\common\shaders\base_texture_normal.glsl" />

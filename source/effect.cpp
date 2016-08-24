@@ -14,9 +14,9 @@ namespace hcube
 	using  map_parameters = effect::map_parameters;
 	using  map_techniques = effect::map_techniques;
 	using  technique      = effect::technique;
-	using  parameter      = effect::parameter::parameter_type;
+	using  parameter      = effect::parameter;
 	using  parameters     = effect::parameters;
-	using  parameter_type = effect::parameter::parameter_type;
+	using  parameter_type = effect::parameter_type;
 	
 	static std::string blend_to_string(blend_type blend)
 	{
@@ -1010,7 +1010,7 @@ namespace hcube
 		parameter_int(int value = 0)
 		{
 			m_value = value;
-			m_type  = PT_INT;
+			m_type  = effect::PT_INT;
 		}
 		//set value
 		virtual void set_value(int i)
@@ -1026,7 +1026,7 @@ namespace hcube
 		parameter_float(float value = 0.0f)
 		{
 			m_value = value;
-			m_type = PT_FLOAT;
+			m_type  = effect::PT_FLOAT;
 		}
 		//set value
 		virtual void set_value(float f)
@@ -1041,12 +1041,12 @@ namespace hcube
 		//init
 		parameter_vec2()
 		{
-			m_type = PT_VEC2;
+			m_type = effect::PT_VEC2;
 		}
 		parameter_vec2(const glm::vec2& value)
 		{
 			m_value = value;
-			m_type = PT_VEC2;
+			m_type  = effect::PT_VEC2;
 		}
 		//set value
 		virtual void set_value(const glm::vec2& value)
@@ -1061,12 +1061,12 @@ namespace hcube
 		//init
 		parameter_vec3()
 		{
-			m_type = PT_VEC3;
+			m_type = effect::PT_VEC3;
 		}
 		parameter_vec3(const glm::vec3& value)
 		{
 			m_value = value;
-			m_type = PT_VEC3;
+			m_type  = effect::PT_VEC3;
 		}
 		//set value
 		virtual void set_value(const glm::vec3& value)
@@ -1081,12 +1081,12 @@ namespace hcube
 		//init
 		parameter_vec4()
 		{
-			m_type = PT_VEC4;
+			m_type = effect::PT_VEC4;
 		}
 		parameter_vec4(const glm::vec4& value)
 		{
 			m_value = value;
-			m_type = PT_VEC4;
+			m_type  = effect::PT_VEC4;
 		}
 		//set value
 		virtual void set_value(const glm::vec4& value)
@@ -1101,12 +1101,12 @@ namespace hcube
 		//init
 		parameter_mat4()
 		{
-			m_type = PT_MAT4;
+			m_type = effect::PT_MAT4;
 		}
 		parameter_mat4(const glm::mat4& value)
 		{
 			m_value = value;
-			m_type = PT_MAT4;
+			m_type  = effect::PT_MAT4;
 		}
 		//set value
 		virtual void set_value(const glm::mat4& value)
@@ -1114,6 +1114,61 @@ namespace hcube
 			m_value = value;
 		}
 	};
+
+
+	//enable pass effect
+	void effect::pass::bind()
+	{
+		render::set_blend_state(m_blend);
+		render::set_cullface_state(m_cullface);
+		render::set_depth_buffer_state(m_depth);
+		m_shader->bind();
+		for (size_t i = 0; i != m_uniform.size(); ++i)
+		{
+			auto& param = m_effect->m_parameters[m_param_id[i]];
+			//uniform value
+			switch (param->get_type())
+			{
+			default:
+			case PT_TEXTURE_ARRAY:
+			case PT_NONE:
+				/* void */
+			break;
+			//uniform
+			case PT_INT: m_uniform[i]->set_value(param->get_int()); break;
+			case PT_FLOAT: m_uniform[i]->set_value(param->get_float()); break;
+			case PT_TEXTURE: m_uniform[i]->set_value(param->get_texture()); break;
+			case PT_VEC2: m_uniform[i]->set_value(param->get_vec2()); break;
+			case PT_VEC3: m_uniform[i]->set_value(param->get_vec3()); break;
+			case PT_VEC4: m_uniform[i]->set_value(param->get_vec4()); break;
+			case PT_MAT4: m_uniform[i]->set_value(param->get_mat4()); break;
+			case PT_INT_ARRAY: m_uniform[i]->set_value(param->get_int_array()); break;
+			case PT_FLOAT_ARRAY: m_uniform[i]->set_value(param->get_float_array()); break;
+			case PT_VEC2_ARRAY: m_uniform[i]->set_value(param->get_vec2_array()); break;
+			case PT_VEC3_ARRAY: m_uniform[i]->set_value(param->get_vec3_array()); break;
+			case PT_VEC4_ARRAY: m_uniform[i]->set_value(param->get_vec4_array()); break;
+			case PT_MAT4_ARRAY: m_uniform[i]->set_value(param->get_mat4_array()); break;
+			}
+		}
+	}
+	//disable pass effect
+	void effect::pass::unbind()
+	{
+		m_shader->unbind();
+	}
+	//safe enable pass effect
+	render_state effect::pass::safe_bind()
+	{
+		render_state state = render::get_render_state();
+		bind();
+		return state;
+	}
+	//safe disable pass effect
+	void effect::pass::safe_unbind(const render_state& state)
+	{
+		render::set_render_state(state);
+		unbind();
+	}
 
 	//load effect
 	bool effect::load(resources_manager& resources, const std::string& path)
@@ -1164,6 +1219,7 @@ namespace hcube
 				//ref
 				effect_parser::pass_field& parser_pass = e_context.m_techniques[t].m_pass[p];
 				//get all values
+				this_technique[p].m_effect   = this;
 				this_technique[p].m_blend    = parser_pass.m_blend;
 				this_technique[p].m_cullface = parser_pass.m_cullface;
 				this_technique[p].m_depth    = parser_pass.m_depth;
@@ -1178,7 +1234,7 @@ namespace hcube
 					if (!this_technique[p].m_shader->load_effect(
 						parser_pass.m_shader.m_text,
 						path,
-						parser_pass.m_shader.m_line,
+						parser_pass.m_shader.m_line - 1,
 						{}))
 					{
 						std::cout << "Effect: "

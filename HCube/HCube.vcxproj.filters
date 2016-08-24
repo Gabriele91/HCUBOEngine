@@ -34,6 +34,9 @@
     <Filter Include="File di risorse\common\shaders\lib">
       <UniqueIdentifier>{fc3af3a6-3986-4fb5-8922-0d0e0cc39252}</UniqueIdentifier>
     </Filter>
+    <Filter Include="File di risorse\common\effects">
+      <UniqueIdentifier>{9b526587-ecc8-4ca4-8e67-1896bbffdbeb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\application.h">
@@ -330,6 +333,9 @@
     </None>
     <None Include="..\common\shaders\lib\ssao_kernel.glsl">
       <Filter>File di risorse\common\shaders\lib</Filter>
+    </None>
+    <None Include="..\common\effects\base.fxhc">
+      <Filter>File di risorse\common\effects</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

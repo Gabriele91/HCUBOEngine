@@ -280,7 +280,7 @@ namespace hcube
 		//count files
 		size_t  this_file = n_files++;
 		//put line of "all" buffer
-		all += "#line 1 " + std::to_string(this_file) + "\n";
+		all += "#line "+ std::to_string(line + 1) + " " + std::to_string(this_file) + "\n";
 		//start to parse
 		while (std::getline(effect, effect_line))
 		{
