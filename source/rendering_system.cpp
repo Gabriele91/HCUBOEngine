@@ -101,12 +101,12 @@ namespace hcube
 		draw();
 	}
 
-	void rendering_system::set_clear_color(const glm::vec4& clear_color)
+	void rendering_system::set_clear_color(const vec4& clear_color)
 	{
 		m_clear_color = clear_color;
 	}
 
-	void rendering_system::set_ambient_color(const glm::vec4& ambient_color)
+	void rendering_system::set_ambient_color(const vec4& ambient_color)
 	{
 		m_ambient_color = ambient_color;
 	}
@@ -117,8 +117,8 @@ namespace hcube
 	}
 
 
-	void rendering_pass_forward::draw_pass(glm::vec4&  clear_color,
-										   glm::vec4&  ambient_color,
+	void rendering_pass_forward::draw_pass(vec4&  clear_color,
+										   vec4&  ambient_color,
 										   entity::ptr e_camera,
 										   render_queues& queues)
 	{
@@ -127,7 +127,7 @@ namespace hcube
 		//get camera
 		camera::ptr   c_camera = e_camera->get_component<camera>();
 		transform_ptr t_camera = e_camera->get_component<transform>();
-		const glm::vec4& viewport = c_camera->get_viewport();
+		const vec4& viewport = c_camera->get_viewport();
 		//set state camera
 		render::set_viewport_state({ viewport });
 		render::set_clear_color_state({ clear_color });
@@ -196,7 +196,7 @@ namespace hcube
 
 	static inline float compute_camera_depth(const frustum& f_camera, const transform_ptr& t_entity)
 	{
-		return f_camera.distance_from_near_plane((glm::vec3)(t_entity->get_matrix()*glm::vec4(0, 0, 0, 1)));
+		return f_camera.distance_from_near_plane((vec3)(t_entity->get_matrix()*vec4(0, 0, 0, 1)));
 	}
 
 	void render_queues::add_call_light(element* e)
@@ -298,7 +298,7 @@ namespace hcube
 			auto entity = weak_element.lock();
 			auto t_entity = entity->get_component<transform>();
 			auto l_entity = entity->get_component<light>();
-			const auto l_pos = (glm::vec3)(t_entity->get_matrix()*glm::vec4(0, 0, 0, 1.));
+			const auto l_pos = (vec3)(t_entity->get_matrix()*vec4(0, 0, 0, 1.));
 			const auto l_radius = l_entity->m_radius;
 			if (l_entity->is_enabled() && f_camera.test_sphere(l_pos, l_radius))
 			{
@@ -357,12 +357,12 @@ namespace hcube
 		}
 	}
 
-	const glm::vec4& rendering_system::get_clear_color() const
+	const vec4& rendering_system::get_clear_color() const
 	{
 		return m_clear_color;
 	}
 
-	const glm::vec4& rendering_system::get_ambient_color() const
+	const vec4& rendering_system::get_ambient_color() const
 	{
 		return m_ambient_color;
 	}

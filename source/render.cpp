@@ -181,9 +181,9 @@ namespace hcube
 			s_render_state.m_blend.m_src = BLEND_ONE;
 			s_render_state.m_blend.m_dst = BLEND_ZERO;
 			//save viewport state
-			s_render_state.m_viewport.m_viewport = glm::vec4(0, 0, 0, 0);
+			s_render_state.m_viewport.m_viewport = vec4(0, 0, 0, 0);
 			//save clear color state
-			s_render_state.m_clear_color.m_color = glm::vec4(0.1, 0.5, 1.0, 1.0);
+			s_render_state.m_clear_color.m_color = vec4(0.1, 0.5, 1.0, 1.0);
 			//clear all errors
 			render::print_errors();
 			//return
@@ -623,7 +623,7 @@ namespace hcube
 		}
 
 		//DEPTH
-		float get_depth(const glm::vec2& pixel)
+		float get_depth(const vec2& pixel)
 		{
 			float depth;
 			glReadPixels(pixel.x, pixel.y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &depth);
@@ -631,9 +631,9 @@ namespace hcube
 		}
 
 		//RGBA
-		glm::vec4 get_color(const glm::vec2& pixel)
+		vec4 get_color(const vec2& pixel)
 		{
-			glm::vec4 rgba;
+			vec4 rgba;
 			glReadPixels(pixel.x, pixel.y, 1, 1, GL_RGBA, GL_FLOAT, &rgba);
 			return rgba;
 		}

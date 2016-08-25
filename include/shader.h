@@ -10,10 +10,7 @@
 #include <memory>
 #include <string>
 #include <vector>
-#include <glm/vec2.hpp>
-#include <glm/vec3.hpp>
-#include <glm/vec4.hpp>
-#include <glm/mat4x4.hpp>
+#include <vector_math.h>
 #include <texture.h>
 #include <smart_pointers.h>
 
@@ -30,24 +27,24 @@ namespace hcube
 		void set_value(texture::ptr in_texture);
 		void set_value(int i);
 		void set_value(float f);
-		void set_value(const glm::vec2& v2);
-		void set_value(const glm::vec3& v3);
-		void set_value(const glm::vec4& v4);
-		void set_value(const glm::mat4& m4);
+		void set_value(const vec2& v2);
+		void set_value(const vec3& v3);
+		void set_value(const vec4& v4);
+		void set_value(const mat4& m4);
 
 		void set_value(const int* i, size_t n);
 		void set_value(const float* f, size_t n);
-		void set_value(const glm::vec2* v2, size_t n);
-		void set_value(const glm::vec3* v3, size_t n);
-		void set_value(const glm::vec4* v4, size_t n);
-		void set_value(const glm::mat4* m4, size_t n);
+		void set_value(const vec2* v2, size_t n);
+		void set_value(const vec3* v3, size_t n);
+		void set_value(const vec4* v4, size_t n);
+		void set_value(const mat4* m4, size_t n);
 
 		void set_value(const std::vector < int >& i);
 		void set_value(const std::vector < float >& f);
-		void set_value(const std::vector < glm::vec2 >& v2);
-		void set_value(const std::vector < glm::vec3 >& v3);
-		void set_value(const std::vector < glm::vec4 >& v4);
-		void set_value(const std::vector < glm::mat4 >& m4);
+		void set_value(const std::vector < vec2 >& v2);
+		void set_value(const std::vector < vec3 >& v3);
+		void set_value(const std::vector < vec4 >& v4);
+		void set_value(const std::vector < mat4 >& m4);
 
 		uniform() {}
 

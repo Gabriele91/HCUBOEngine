@@ -2,16 +2,16 @@
     FROM CPP:
     for (unsigned int i = 0; i != 128; ++i)
 	{
-         glm::vec3 sample(((float)std::rand() / RAND_MAX) * 2.0 - 1.0,
+         vec3 sample(((float)std::rand() / RAND_MAX) * 2.0 - 1.0,
          ((float)std::rand() / RAND_MAX) * 2.0 - 1.0,
          ((float)std::rand() / RAND_MAX)
          );
-         sample = glm::normalize(sample);
+         sample = normalize(sample);
          sample *= ((float)std::rand() / RAND_MAX);
          GLfloat scale = GLfloat(i) / m_kernel_size;
          
          // Scale samples s.t. they're more aligned to center of kernel
-         scale = glm::mix(0.1f, 1.0f, scale * scale);
+         scale = mix(0.1f, 1.0f, scale * scale);
          sample *= scale;
          m_kernel.push_back(sample);
 	}

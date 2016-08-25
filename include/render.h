@@ -9,8 +9,7 @@
 #include <memory>
 #include <string>
 #include <vector>
-#include <glm/vec2.hpp>
-#include <glm/vec4.hpp>
+#include <vector_math.h>
 
 namespace hcube
 {
@@ -339,10 +338,10 @@ namespace hcube
 	struct viewport_state
 	{
 
-		glm::vec4 m_viewport;
+		vec4 m_viewport;
 		//costructors
 		viewport_state() {}
-		viewport_state(const glm::vec4& vp) : m_viewport(vp) {}
+		viewport_state(const vec4& vp) : m_viewport(vp) {}
 		//operators
 		bool operator==(const viewport_state& vs) const
 		{
@@ -429,10 +428,10 @@ namespace hcube
 	struct clear_color_state
 	{
 		//color
-		glm::vec4 m_color;
+		vec4 m_color;
 		//color
 		clear_color_state() :m_color(0, 0, 0, 0) {}
-		clear_color_state(const glm::vec4& color) :m_color(color) {}
+		clear_color_state(const vec4& color) :m_color(color) {}
 		//operators
 		bool operator==(const clear_color_state& c)const
 		{
@@ -443,11 +442,11 @@ namespace hcube
 			return m_color != c.m_color;
 		}
 		//cast operator
-		operator glm::vec4& ()
+		operator vec4& ()
 		{
 			return m_color;
 		}
-		operator const glm::vec4& () const
+		operator const vec4& () const
 		{
 			return m_color;
 		}
@@ -557,9 +556,9 @@ namespace hcube
 		LIB_EXPORT void unbind_IL(context_input_layout* il);
 
 		//depth
-		LIB_EXPORT float get_depth(const glm::vec2& pixel);
+		LIB_EXPORT float get_depth(const vec2& pixel);
 		//color
-		LIB_EXPORT glm::vec4 get_color(const glm::vec2& pixel);
+		LIB_EXPORT vec4 get_color(const vec2& pixel);
 
 		//texture
 		LIB_EXPORT context_texture* create_texture(texture_format format,

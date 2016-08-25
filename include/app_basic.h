@@ -9,7 +9,7 @@
 //include application instance
 #include <application.h>
 //include vectorial math
-#include <glm/mat4x4.hpp>
+#include <vector_math.h>
 //material
 #include <material.h>
 //camera
@@ -42,8 +42,8 @@ namespace hcube
 
 	struct window_info
 	{
-		glm::ivec2 m_size;
-		glm::ivec2 m_position;
+		ivec2 m_size;
+		ivec2 m_position;
 	};
 
 	class app_basic : public instance
@@ -53,13 +53,13 @@ namespace hcube
 
 		virtual void key_event(application& app, int key, int scancode, int action, int mods);
 
-		virtual void cursor_position_event(application& app, const glm::dvec2& pos);
+		virtual void cursor_position_event(application& app, const dvec2& pos);
 
 		virtual void mouse_button_event(application& app, int button, int action, int mods);
 
-		virtual void scroll_event(application& application, const glm::dvec2& scroll_offset);
+		virtual void scroll_event(application& application, const dvec2& scroll_offset);
 
-		virtual void resize_event(application& application, const glm::ivec2& size);
+		virtual void resize_event(application& application, const ivec2& size);
 
 		virtual void start(application& app);
 

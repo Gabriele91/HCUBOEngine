@@ -8,8 +8,7 @@
 #pragma once
 #include <component.h>
 #include <smart_pointers.h>
-#include <glm/vec3.hpp>
-#include <glm/vec4.hpp>
+#include <vector_math.h>
 #include <shader.h>
 
 
@@ -31,8 +30,8 @@ namespace hcube
 		//type
 		light_type m_type{ POINT_LIGHT };
 		//light info
-		glm::vec3  m_diffuse { 1.0, 1.0, 1.0 };
-		glm::vec3  m_specular{ 1.0, 1.0, 1.0 };
+		vec3  m_diffuse { 1.0, 1.0, 1.0 };
+		vec3  m_specular{ 1.0, 1.0, 1.0 };
 		//attenuation
 		float      m_constant     { 1.0 };
 		float      m_inside_radius{ 1.0 };
@@ -47,13 +46,13 @@ namespace hcube
 		light
 		(
 			light_type       type,
-			const glm::vec3& diffuse,
-			const glm::vec3& specular,
-			float            constant,
-			float            inside_radius,
-			float            radius,
-			float            inner_cut_off,
-			float            outer_cut_off
+			const vec3& diffuse,
+			const vec3& specular,
+			float       constant,
+			float       inside_radius,
+			float       radius,
+			float       inner_cut_off,
+			float       outer_cut_off
 		)
 		{
 			m_type = type;
@@ -69,11 +68,11 @@ namespace hcube
 		//init point type
 		void point
 		(
-			const glm::vec3& diffuse,
-			const glm::vec3& specular,
-			float            constant,
-			float            inside_radius,
-			float            radius
+			const vec3& diffuse,
+			const vec3& specular,
+			float       constant,
+			float       inside_radius,
+			float       radius
 		)
 		{
 			m_type = POINT_LIGHT;
@@ -87,13 +86,13 @@ namespace hcube
 		//init sport type
 		void spot
 		(
-			const glm::vec3& diffuse,
-			const glm::vec3& specular,
-			float            constant,
-			float            inside_radius,
-			float            radius,
-			float            inner_cut_off,
-			float            outer_cut_off
+			const vec3& diffuse,
+			const vec3& specular,
+			float       constant,
+			float       inside_radius,
+			float       radius,
+			float       inner_cut_off,
+			float       outer_cut_off
 		)
 		{
 			m_type = SPOT_LIGHT;
@@ -109,8 +108,8 @@ namespace hcube
 		//init direction type
 		void direction
 		(
-			const glm::vec3& diffuse,
-			const glm::vec3& specular
+			const vec3& diffuse,
+			const vec3& specular
 		)
 		{
 			m_type = DIRECTION_LIGHT;
@@ -149,7 +148,7 @@ namespace hcube
 
 		void get_uniform(int i, shader::ptr shader);
 
-		void uniform(light_wptr light, const glm::mat4& view, const glm::mat4& model);
+		void uniform(light_wptr light, const mat4& view, const mat4& model);
     
         bool is_valid() const;
         

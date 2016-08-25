@@ -30,7 +30,7 @@ namespace hcube
 		}
 	};
 
-	bool g_buffer::init(const glm::ivec2& window_size)
+	bool g_buffer::init(const ivec2& window_size)
 	{
 		return init(window_size.x, window_size.y);
 	}
@@ -212,9 +212,9 @@ namespace hcube
 		return m_height;
 	}
 
-	glm::ivec2 g_buffer::get_size() const
+	ivec2 g_buffer::get_size() const
 	{
-		return glm::ivec2{ m_width,m_height };
+		return ivec2{ m_width,m_height };
 	}
 
 }

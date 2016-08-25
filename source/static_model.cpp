@@ -32,11 +32,11 @@ namespace hcube
 		//struct of a vertex
 		struct vertex
 		{
-			glm::vec3 m_position;
-			glm::vec3 m_normal;
-			glm::vec2 m_uvmap;
-			glm::vec3 m_tangent;
-			glm::vec3 m_bitangent;
+			vec3 m_position;
+			vec3 m_normal;
+			vec2 m_uvmap;
+			vec3 m_tangent;
+			vec3 m_bitangent;
 		};
 		//attrs list
 		attribute_list attribute_list
@@ -111,9 +111,9 @@ namespace hcube
 			//is versione 2? Load OBB
 			if (version == 2)
 			{
-				glm::mat3 obb_rot;
-				glm::vec3 obb_pos;
-				glm::vec3 obb_ext;
+				mat3 obb_rot;
+				vec3 obb_pos;
+				vec3 obb_ext;
 				std::fread(&obb_rot[0].x, sizeof(float), 3, model_file);
 				std::fread(&obb_rot[1].x, sizeof(float), 3, model_file);
 				std::fread(&obb_rot[2].x, sizeof(float), 3, model_file);

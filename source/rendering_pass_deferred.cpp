@@ -5,7 +5,7 @@
 
 namespace hcube
 {
-	rendering_pass_deferred::rendering_pass_deferred(const glm::ivec2& w_size, resources_manager& resources)
+	rendering_pass_deferred::rendering_pass_deferred(const ivec2& w_size, resources_manager& resources)
 	{
 		m_q_size = w_size;
 		m_g_buffer.init(w_size);
@@ -45,20 +45,20 @@ namespace hcube
 		return m_enable_ambient_occlusion;
 	}
 
-	void rendering_pass_deferred::draw_pass(glm::vec4&  clear_color,
-											glm::vec4&  ambient_color,
+	void rendering_pass_deferred::draw_pass(vec4&  clear_color,
+											vec4&  ambient_color,
 											entity::ptr e_camera,
 											render_queues& queues)
 	{
 		//camera
 		camera::ptr   c_camera = e_camera->get_component<camera>();
 		transform_ptr t_camera = e_camera->get_component<transform>();
-		const glm::vec4& viewport = c_camera->get_viewport();
+		const vec4& viewport = c_camera->get_viewport();
 		//buffer
 		m_g_buffer.bind();
 		//set state
 		render::set_viewport_state({ viewport });
-		render::set_clear_color_state(glm::vec4{ clear_color.r, clear_color.g, clear_color.b,1.0 });
+		render::set_clear_color_state(vec4{ clear_color.r, clear_color.g, clear_color.b,1.0 });
 		render::clear();
 		//save state
 		auto render_state = render::get_render_state();

@@ -15,7 +15,7 @@ namespace hcube
 
 		virtual ~ssao_technique() { destoy(); }
 
-		void init(const glm::ivec2& w_size, resources_manager& resources);
+		void init(const ivec2& w_size, resources_manager& resources);
 
 		void destoy();
 

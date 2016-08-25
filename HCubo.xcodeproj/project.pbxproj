@@ -100,6 +100,7 @@
 		E0101B231D40B74900930372 /* material.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = material.cpp; sourceTree = "<group>"; };
 		E01334BA1D6EDEA0001C6B41 /* effect.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = effect.cpp; sourceTree = "<group>"; };
 		E01334BB1D6EDEA0001C6B41 /* light.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = light.cpp; sourceTree = "<group>"; };
+		E01334C01D6F03AA001C6B41 /* vector_math.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = vector_math.h; sourceTree = "<group>"; };
 		E01461AA1D34D2EC008A2574 /* resources_manager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = resources_manager.cpp; sourceTree = "<group>"; };
 		E01461AD1D34D343008A2574 /* resource.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = resource.h; sourceTree = "<group>"; };
 		E01583991D4399040029D6F5 /* struct_attribute.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = struct_attribute.h; sourceTree = "<group>"; };
@@ -169,7 +170,6 @@
 		E0B02EDD1D34BDCE0058D09B /* resources_manager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = resources_manager.h; sourceTree = "<group>"; };
 		E0D8F21C1D4E6B2D006EA26C /* frustum.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = frustum.cpp; sourceTree = "<group>"; };
 		E0D8F21D1D4E6B2D006EA26C /* obb.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = obb.cpp; sourceTree = "<group>"; };
-		E0D8F2201D4E6B39006EA26C /* eigenvalues_jacobi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = eigenvalues_jacobi.h; sourceTree = "<group>"; };
 		E0D8F2211D4E6B39006EA26C /* frustum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = frustum.h; sourceTree = "<group>"; };
 		E0D8F2221D4E6B39006EA26C /* obb.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = obb.h; sourceTree = "<group>"; };
 		E0D8F2231D4E6B39006EA26C /* prefab.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = prefab.h; sourceTree = "<group>"; };
@@ -269,7 +269,7 @@
 		E01A2EE41D22C2A900A8BA77 /* include */ = {
 			isa = PBXGroup;
 			children = (
-				E0D8F2201D4E6B39006EA26C /* eigenvalues_jacobi.h */,
+				E01334C01D6F03AA001C6B41 /* vector_math.h */,
 				E0D8F2211D4E6B39006EA26C /* frustum.h */,
 				E0D8F2221D4E6B39006EA26C /* obb.h */,
 				E0D8F2231D4E6B39006EA26C /* prefab.h */,

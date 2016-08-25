@@ -1,14 +1,14 @@
 #include <basic_meshs.h>
-#include <glm/glm.hpp>
+#include <vector_math.h>
 #include <tangent_space_calculation.h>
 
 namespace hcube
 {
 	namespace basic_meshs
 	{
-		mesh::ptr cube(const glm::vec3& cube_size, bool use_uvmap)
+		mesh::ptr cube(const vec3& cube_size, bool use_uvmap)
 		{
-			const glm::vec3& cube_size_h = cube_size * 0.5f;
+			const vec3& cube_size_h = cube_size * 0.5f;
 			//cube
 			mesh::ptr mesh_cube = mesh::snew();
 			//data
@@ -19,26 +19,26 @@ namespace hcube
 			{
 				struct vertex
 				{
-					glm::vec3 m_position;
-					glm::vec3 m_normal;
-					glm::vec2 m_uvmap;
-					glm::vec3 m_tangent;
-					glm::vec3 m_bitangent;
+					vec3 m_position;
+					vec3 m_normal;
+					vec2 m_uvmap;
+					vec3 m_tangent;
+					vec3 m_bitangent;
 
-					vertex(const glm::vec3& in_vertex,
-						const glm::vec3& in_normal,
-						const glm::vec2& in_uvmap)
+					vertex(const vec3& in_vertex,
+						const vec3& in_normal,
+						const vec2& in_uvmap)
 					{
 						m_position = in_vertex;
 						m_normal = in_normal;
 						m_uvmap = in_uvmap;
 					}
 
-					vertex(const glm::vec3& in_vertex,
-						const glm::vec3& in_normal,
-						const glm::vec2& in_uvmap,
-						const glm::vec3& in_tangent,
-						const glm::vec3& in_bitangent)
+					vertex(const vec3& in_vertex,
+						const vec3& in_normal,
+						const vec2& in_uvmap,
+						const vec3& in_tangent,
+						const vec3& in_bitangent)
 					{
 						m_position = in_vertex;
 						m_normal = in_normal;
@@ -128,8 +128,8 @@ namespace hcube
 
 				struct vertex
 				{
-					glm::vec3 m_position;
-					glm::vec3 m_normal;
+					vec3 m_position;
+					vec3 m_normal;
 				};
 
 				layout = mesh::mesh_layout
@@ -182,7 +182,7 @@ namespace hcube
 				//compute normals
 				for (vertex& v : vertices)
 				{
-					v.m_normal = glm::normalize(v.m_position);
+					v.m_normal = normalize(v.m_position);
 				}
 				//build mesh
 				mesh_cube->build(layout,
@@ -192,9 +192,9 @@ namespace hcube
 			//return cube
 			return mesh_cube;
 		}
-		mesh::ptr square3D(const glm::vec2& square_size, bool use_uvmap)
+		mesh::ptr square3D(const vec2& square_size, bool use_uvmap)
 		{
-			const glm::vec2& square_size_h = square_size * 0.5f;
+			const vec2& square_size_h = square_size * 0.5f;
 			//cube
 			mesh::ptr mesh_square = mesh::snew();
 			//data
@@ -205,9 +205,9 @@ namespace hcube
 			{
 				struct vertex
 				{
-					glm::vec3 m_position;
-					glm::vec3 m_normal;
-					glm::vec2 m_uvmap;
+					vec3 m_position;
+					vec3 m_normal;
+					vec2 m_uvmap;
 				};
 
 
@@ -241,8 +241,8 @@ namespace hcube
 
 				struct vertex
 				{
-					glm::vec3 m_position;
-					glm::vec3 m_normal;
+					vec3 m_position;
+					vec3 m_normal;
 				};
 
 

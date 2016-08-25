@@ -37,10 +37,10 @@ namespace hcube
 			{
 				float		m_float{ 0.0 };
 				int			m_int{ 0 };
-				glm::vec2	m_vec2;
-				glm::vec3	m_vec3;
-				glm::vec4	m_vec4;
-				glm::mat4	m_mat4;
+				vec2	m_vec2;
+				vec3	m_vec3;
+				vec4	m_vec4;
+				mat4	m_mat4;
 				std::string m_texture;
 			};
 
@@ -324,7 +324,7 @@ namespace hcube
 			if (!is_comm_arg(*ptr))
 			{
 				// is 'mat4('<float>')'
-				field.m_value.m_mat4 = glm::mat4(field.m_value.m_mat4[0][0]);
+				field.m_value.m_mat4 = mat4(field.m_value.m_mat4[0][0]);
 				//success
 				return true;
 			}

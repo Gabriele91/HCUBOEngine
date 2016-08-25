@@ -12,6 +12,7 @@
 #include <entity.h>
 #include <smart_pointers.h>
 #include <system_manager.h>
+#include <vector_math.h>
 
 namespace hcube
 {
@@ -58,8 +59,8 @@ namespace hcube
 	class rendering_pass
 	{
 	public:
-		virtual void draw_pass(glm::vec4&  clear_color,
-			glm::vec4&  ambient_color,
+		virtual void draw_pass(vec4&  clear_color,
+			vec4&  ambient_color,
 			entity::ptr e_camera,
 			render_queues& queues) = 0;
 	};
@@ -69,8 +70,8 @@ namespace hcube
 	class rendering_pass_forward : public rendering_pass, public smart_pointers< rendering_pass_forward >
 	{
 	public:
-		virtual void draw_pass(glm::vec4&  clear_color,
-			glm::vec4&  ambient_color,
+		virtual void draw_pass(vec4&  clear_color,
+			vec4&  ambient_color,
 			entity::ptr e_camera,
 			render_queues& queues);
 	};
@@ -94,17 +95,17 @@ namespace hcube
 
 		virtual void on_update(double deltatime);
 
-		void set_clear_color(const glm::vec4& clear_color);
+		void set_clear_color(const vec4& clear_color);
 
-		void set_ambient_color(const glm::vec4& ambient_color);
+		void set_ambient_color(const vec4& ambient_color);
 
 		void add_rendering_pass(rendering_pass_ptr pass);
 
 		void draw();
 
-		const glm::vec4& get_clear_color() const;
+		const vec4& get_clear_color() const;
 
-		const glm::vec4& get_ambient_color() const;
+		const vec4& get_ambient_color() const;
 
 		entity::ptr get_camera() const;
 
@@ -121,8 +122,8 @@ namespace hcube
 		bool m_update_frustum{ true };
 		bool m_stop_frustum_culling{ false };
 
-		glm::vec4                         m_clear_color;
-		glm::vec4                         m_ambient_color;
+		vec4                         m_clear_color;
+		vec4                         m_ambient_color;
 		entity::ptr						  m_camera;
 		render_queues					  m_renderables;
 		std::vector< rendering_pass_ptr > m_rendering_pass;

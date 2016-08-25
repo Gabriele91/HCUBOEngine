@@ -7,88 +7,89 @@
 //
 #include <transform.h>
 #include <entity.h>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtx/matrix_decompose.hpp>
+#include <vector_math.h>
 
 namespace hcube
 {
-	void transform::look_at(const glm::vec3& eye, const glm::vec3& center, const glm::vec3& up)
+	void transform::look_at(const vec3& eye, const vec3& center, const vec3& up)
 	{
 #if 0
-		glm::mat4 l_look_at = glm::lookAt(eye, center, up);
-		glm::quat l_rotation = glm::quat(glm::mat3(l_look_at));
+		mat4 l_look_at  = hcube::look_at(eye, center, up);
+		quat l_rotation = hcube::quat(mat3(l_look_at));
 		rotation(l_rotation);
 		position(eye);
 #else
-		rotation(glm::conjugate(glm::quat_cast(glm::lookAt(eye, center, up))));
+        const hcube::mat4 m4_look_at = hcube::look_at(eye, center, up);
+        const hcube::quat q_look_at  = hcube::quat_cast(m4_look_at);
+		rotation(hcube::conjugate(q_look_at));
 		position(eye);
 #endif
 	}
 
-	void transform::translation(const glm::vec3& vector)
+	void transform::translation(const vec3& vector)
 	{
 		m_tranform.m_position += vector;
 		set_dirty();
 	}
 
-	void transform::turn(const glm::quat& rot)
+	void transform::turn(const quat& rot)
 	{
 		m_tranform.m_rotation = rot * m_tranform.m_rotation;
 		set_dirty();
 	}
 
-	void transform::position(const glm::vec3& pos)
+	void transform::position(const vec3& pos)
 	{
 		m_tranform.m_position = pos;
 		set_dirty();
 	}
 
-	void transform::rotation(const glm::quat& rot)
+	void transform::rotation(const quat& rot)
 	{
 		m_tranform.m_rotation = rot;
 		set_dirty();
 	}
 
-	void transform::scale(const glm::vec3& scale)
+	void transform::scale(const vec3& scale)
 	{
 		m_tranform.m_scale = scale;
 		set_dirty();
 	}
 
-	glm::vec3 transform::get_position() const
+	vec3 transform::get_position() const
 	{
 		return  m_tranform.m_position;
 	}
 
-	glm::quat transform::get_rotation() const
+	quat transform::get_rotation() const
 	{
 		return m_tranform.m_rotation;
 	}
 
-	glm::vec3 transform::get_scale() const
+	vec3 transform::get_scale() const
 	{
 		return m_tranform.m_scale;
 	}
 
-	glm::mat4 const& transform::get_local_matrix()
+	mat4 const& transform::get_local_matrix()
 	{
 		compute_matrix();
 		return m_model_local_inv;
 	}
 
-	glm::mat4 const& transform::get_local_matrix_inv()
+	mat4 const& transform::get_local_matrix_inv()
 	{
 		compute_matrix();
 		return m_model_local_inv;
 	}
 
-	glm::mat4 const& transform::get_matrix()
+	mat4 const& transform::get_matrix()
 	{
 		compute_matrix();
 		return m_model_global;
 	}
 
-	glm::mat4 const& transform::get_matrix_inv()
+	mat4 const& transform::get_matrix_inv()
 	{
 		compute_matrix();
 		return m_model_global_inv;
@@ -143,17 +144,17 @@ namespace hcube
 		if (m_tranform.m_dirty)
 		{
 			//T*R*S
-			m_model_local = glm::translate(glm::mat4(1.0f), m_tranform.m_position);
-			m_model_local *= glm::mat4_cast(m_tranform.m_rotation);
-			m_model_local = glm::scale(m_model_local, m_tranform.m_scale);
+			m_model_local  = hcube::translate(mat4(1.0f), m_tranform.m_position);
+			m_model_local *= hcube::mat4_cast(m_tranform.m_rotation);
+            m_model_local  = hcube::scale(m_model_local, m_tranform.m_scale);
 			//inverse
-			m_model_local_inv = glm::inverse(m_model_local);
+			m_model_local_inv = inverse(m_model_local);
 			//global
 			if (get_entity() && get_entity()->get_parent())
 			{
 				m_model_global = get_entity()->get_parent()->get_component<transform>()->get_matrix() * m_model_local;
 				//inverse
-				m_model_global_inv = glm::inverse(m_model_global);
+				m_model_global_inv = inverse(m_model_global);
 			}
 			else
 			{

@@ -35,7 +35,7 @@ namespace hcube
 		return m_is_resizable;
 	}
 
-	glm::ivec2 application::get_screen_size() const
+	ivec2 application::get_screen_size() const
 	{
 		//get screen size
 		int n_monitors = 0;
@@ -43,36 +43,36 @@ namespace hcube
 		//info monitor/screen
 		const GLFWvidmode* monitor_mode = glfwGetVideoMode(monitors[0]);
 		//return size
-		return glm::ivec2
+		return ivec2
 		{
 			(int)monitor_mode->width,
 			(int)monitor_mode->height
 		};
 	}
 
-	glm::ivec2 application::get_window_size() const
+	ivec2 application::get_window_size() const
 	{
 
 		int width, height;
 		glfwGetFramebufferSize(m_window, &width, &height);
-		return glm::ivec2{ width, height };
+		return ivec2{ width, height };
 	}
 
-	glm::ivec2 application::get_window_position() const
+	ivec2 application::get_window_position() const
 	{
 		int x, y;
 		glfwGetWindowPos(m_window, &x, &y);
-		return glm::ivec2{ x, y };
+		return ivec2{ x, y };
 	}
 
-	glm::dvec2 application::get_mouse_position() const
+	dvec2 application::get_mouse_position() const
 	{
 		double xpos, ypos;
 		glfwGetCursorPos(m_window, &xpos, &ypos);
-		return glm::dvec2{ xpos, ypos };
+		return dvec2{ xpos, ypos };
 	}
 
-	void application::set_mouse_position(const glm::dvec2& pos) const
+	void application::set_mouse_position(const dvec2& pos) const
 	{
 		glfwSetCursorPos(m_window, pos.x, pos.y);
 	}
@@ -93,25 +93,25 @@ namespace hcube
 		return m_window;
 	}
 
-	window_size_pixel::window_size_pixel(const glm::ivec2& size)
+	window_size_pixel::window_size_pixel(const ivec2& size)
 	{
 		m_size = size;
 	}
 
-	glm::ivec2 window_size_pixel::get_size(GLFWmonitor* monitor) const
+	ivec2 window_size_pixel::get_size(GLFWmonitor* monitor) const
 	{
 		return m_size;
 	}
 
-	window_size_percentage::window_size_percentage(const glm::dvec2& size)
+	window_size_percentage::window_size_percentage(const dvec2& size)
 	{
 		m_size = size;
 	}
 
-	glm::ivec2 window_size_percentage::get_size(GLFWmonitor* monitor) const
+	ivec2 window_size_percentage::get_size(GLFWmonitor* monitor) const
 	{
 		const GLFWvidmode* monitor_mode = glfwGetVideoMode(monitor);
-		return glm::ivec2
+		return ivec2
 		{
 			(int)((double)monitor_mode->width * m_size.x / 100.0f),
 			(int)((double)monitor_mode->height * m_size.y / 100.0f)
@@ -139,7 +139,7 @@ namespace hcube
 		int n_monitors = 0;
 		GLFWmonitor** monitors = glfwGetMonitors(&n_monitors);
 		//size
-		glm::ivec2 window_size = size.get_size(monitors[0]);
+		ivec2 window_size = size.get_size(monitors[0]);
 		//create window
 		m_window = glfwCreateWindow(window_size.x, window_size.y, app_name.c_str(), NULL, NULL);
 		//center
@@ -180,7 +180,7 @@ namespace hcube
 			//context
 			application* l_app = (application*)glfwGetWindowUserPointer(window);
 			//call
-			l_app->get_instance()->cursor_position_event(*l_app, glm::dvec2{ xpos,ypos });
+			l_app->get_instance()->cursor_position_event(*l_app, dvec2{ xpos,ypos });
 		});
 		glfwSetMouseButtonCallback(m_window, []
 		(GLFWwindow* window, int button, int action, int mods)
@@ -196,7 +196,7 @@ namespace hcube
 			//context
 			application* l_app = (application*)glfwGetWindowUserPointer(window);
 			//call
-			l_app->get_instance()->scroll_event(*l_app, glm::dvec2{ xoffset,yoffset });
+			l_app->get_instance()->scroll_event(*l_app, dvec2{ xoffset,yoffset });
 		});
 		glfwSetWindowSizeCallback(m_window, []
 		(GLFWwindow* window, int width, int height)
@@ -204,7 +204,7 @@ namespace hcube
 			//context
 			application* l_app = (application*)glfwGetWindowUserPointer(window);
 			//call
-			l_app->get_instance()->resize_event(*l_app, glm::ivec2{ width,height });
+			l_app->get_instance()->resize_event(*l_app, ivec2{ width,height });
 		});
 		//start
 		m_instance->start(*this);

@@ -32,7 +32,7 @@ namespace hcube
 			return entity::snew(transform_snew(), camera::snew());
 		}
 
-		static inline entity::ptr cube_new(const glm::vec3& size, bool uvmap = true)
+		static inline entity::ptr cube_new(const vec3& size, bool uvmap = true)
 		{
 			return entity::snew(transform_snew(), basic_meshs::cube(size, uvmap));
 		}

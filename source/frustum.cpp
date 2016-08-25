@@ -5,25 +5,25 @@
 namespace hcube
 {
 	//plane distance
-	glm::vec4 plane_normalize(const glm::vec4 &plane)
+	vec4 plane_normalize(const vec4 &plane)
 	{
-		float  size = glm::length((glm::vec3)plane);
+		float  size = length((vec3)plane);
 		return plane / size;
 	}
 
 	//plane distance
-	float plane_distance(const glm::vec4 &plane, const glm::vec3& point)
+	float plane_distance(const vec4 &plane, const vec3& point)
 	{
-		return plane.w + glm::dot((glm::vec3)plane, point);
+		return plane.w + dot((vec3)plane, point);
 	}
 
 	//update planes
-	void frustum::update_frustum(const glm::mat4& projection)
+	void frustum::update_frustum(const mat4& projection)
 	{
-		const glm::vec4& p_x = glm::row(projection, 0);
-		const glm::vec4& p_y = glm::row(projection, 1);
-		const glm::vec4& p_z = glm::row(projection, 2);
-		const glm::vec4& p_w = glm::row(projection, 3);
+		const vec4& p_x = row(projection, 0);
+		const vec4& p_y = row(projection, 1);
+		const vec4& p_z = row(projection, 2);
+		const vec4& p_w = row(projection, 3);
 
 		m_planes[0] = plane_normalize(p_w + p_x);
 		m_planes[1] = plane_normalize(p_w - p_x);
@@ -35,18 +35,18 @@ namespace hcube
 
 
 	//distance
-	float frustum::distance_from_plane(frustum::plane_type plane, const glm::vec3& point) const
+	float frustum::distance_from_plane(frustum::plane_type plane, const vec3& point) const
 	{
 		return plane_distance(m_planes[plane], point);
 	}
 
-	float frustum::distance_from_near_plane(const glm::vec3& point) const
+	float frustum::distance_from_near_plane(const vec3& point) const
 	{
 		return plane_distance(m_planes[NEARP], point);
 	}
 
 	//test point
-	frustum::testing_result frustum::test_point(const glm::vec3& point) const
+	frustum::testing_result frustum::test_point(const vec3& point) const
 	{
 		for (int i = 0; i != N_PLANES; i++)
 		{
@@ -57,7 +57,7 @@ namespace hcube
 	}
 
 	//test sphere
-	frustum::testing_result frustum::test_sphere(const glm::vec3& point, float radius) const
+	frustum::testing_result frustum::test_sphere(const vec3& point, float radius) const
 	{
 		float center_distance;
 		testing_result result = INSIDE;
@@ -82,23 +82,23 @@ namespace hcube
 		// See "3D Game Engine Design" chapter 4.3.2.
 		frustum::testing_result result = INSIDE;
 		//refs
-		const glm::mat3& rotation = glm::transpose(box.get_rotation_matrix());
-		const glm::vec3& position = box.get_position();
+		const mat3& rotation = transpose(box.get_rotation_matrix());
+		const vec3& position = box.get_position();
 		//axis
-		auto& axis_0 = rotation[0];//glm::column(rotation, 0);
-		auto& axis_1 = rotation[1];//glm::column(rotation, 1);
-		auto& axis_2 = rotation[2];//glm::column(rotation, 2);
+		auto& axis_0 = rotation[0];//column(rotation, 0);
+		auto& axis_1 = rotation[1];//column(rotation, 1);
+		auto& axis_2 = rotation[2];//column(rotation, 2);
 
 		for (int i = 0; i != N_PLANES; ++i)
 		{
 			// plane normal 
-			const glm::vec3 norm = ((glm::vec3)m_planes[i]);
+			const vec3 norm = ((vec3)m_planes[i]);
 			// get extension
-			const glm::vec3& ext = box.get_extension();
+			const vec3& ext = box.get_extension();
 			// distance
-			float dist = ext.x * fabs(glm::dot(axis_0, norm)) +
-				ext.y * fabs(glm::dot(axis_1, norm)) +
-				ext.z * fabs(glm::dot(axis_2, norm));
+			float dist = ext.x * fabs(dot(axis_0, norm)) +
+				ext.y * fabs(dot(axis_1, norm)) +
+				ext.z * fabs(dot(axis_2, norm));
 			//compute distance
 			float distance_box = plane_distance(m_planes[i], position);
 			//like sphere 
@@ -110,7 +110,7 @@ namespace hcube
 		/* todo: use normals */
 		frustum::testing_result result = INSIDE;
 		// get points
-		std::vector< glm::vec3 > points;
+		std::vector< vec3 > points;
 		box.get_bounding_box(points);
 		// for each plane do ...
 		for (int i = 0; i != N_PLANES; i++)
@@ -135,30 +135,30 @@ namespace hcube
 	}
 
 	//test obb
-	frustum::testing_result frustum::test_obb(const obb& box, const glm::mat4& model) const
+	frustum::testing_result frustum::test_obb(const obb& box, const mat4& model) const
 	{
 #if 1
 		// Project the box onto the line defined by the plane center and normal.
 		// See "3D Game Engine Design" chapter 4.3.2.
 		frustum::testing_result result = INSIDE;
 		//rotation/position in global world
-		glm::mat3 rotation = glm::mat3(model)*glm::transpose(box.get_rotation_matrix());
-		glm::vec3 position = (glm::vec3)(model*glm::vec4(box.get_position(), 1.0));
+		mat3 rotation = mat3(model)*transpose(box.get_rotation_matrix());
+		vec3 position = (vec3)(model*vec4(box.get_position(), 1.0));
 		//axis
-		auto& axis_0 = rotation[0];//glm::column(rotation, 0);
-		auto& axis_1 = rotation[1];//glm::column(rotation, 1);
-		auto& axis_2 = rotation[2];//glm::column(rotation, 2);
+		auto& axis_0 = rotation[0];//column(rotation, 0);
+		auto& axis_1 = rotation[1];//column(rotation, 1);
+		auto& axis_2 = rotation[2];//column(rotation, 2);
 
 		for (int i = 0; i != N_PLANES; ++i)
 		{
 			// plane normal 
-			const glm::vec3 norm = ((glm::vec3)m_planes[i]);
+			const vec3 norm = ((vec3)m_planes[i]);
 			// get extension
-			const glm::vec3& ext = box.get_extension();
+			const vec3& ext = box.get_extension();
 			// distance
-			float dist = ext.x * fabs(glm::dot(axis_0, norm)) +
-				ext.y * fabs(glm::dot(axis_1, norm)) +
-				ext.z * fabs(glm::dot(axis_2, norm));
+			float dist = ext.x * fabs(dot(axis_0, norm)) +
+				ext.y * fabs(dot(axis_1, norm)) +
+				ext.z * fabs(dot(axis_2, norm));
 			//compute distance
 			float distance_box = plane_distance(m_planes[i], position);
 			//like sphere 
@@ -170,7 +170,7 @@ namespace hcube
 		/* todo: use normals */
 		frustum::testing_result result = INSIDE;
 		// get points
-		std::vector< glm::vec3 > points;
+		std::vector< vec3 > points;
 		box.get_bounding_box(points, model);
 		// for each plane do ...
 		for (int i = 0; i != N_PLANES; i++)

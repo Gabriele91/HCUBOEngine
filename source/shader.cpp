@@ -7,12 +7,12 @@
 #include <OpenGL4.h>
 #include <render.h>
 #include <filesystem.h>
-#include <glm/gtc/type_ptr.hpp> 
+#include <vector_math.h>
 
 namespace hcube
 {
 	static const char default_glsl_defines[] =
-		R"GLSL(
+R"GLSL(
 //POSITION TRANSFORM
 #define ATT_POSITIONT 0
 #define ATT_NORMAL0   1
@@ -666,21 +666,21 @@ namespace hcube
 	{
 		glUniform1f(m_id, f);
 	}
-	void uniform::set_value(const glm::vec2& v2)
+	void uniform::set_value(const vec2& v2)
 	{
-		glUniform2fv(m_id, 1, glm::value_ptr(v2));
+		glUniform2fv(m_id, 1, value_ptr(v2));
 	}
-	void uniform::set_value(const glm::vec3& v3)
+	void uniform::set_value(const vec3& v3)
 	{
-		glUniform3fv(m_id, 1, glm::value_ptr(v3));
+		glUniform3fv(m_id, 1, value_ptr(v3));
 	}
-	void uniform::set_value(const glm::vec4& v4)
+	void uniform::set_value(const vec4& v4)
 	{
-		glUniform4fv(m_id, 1, glm::value_ptr(v4));
+		glUniform4fv(m_id, 1, value_ptr(v4));
 	}
-	void uniform::set_value(const glm::mat4& m4)
+	void uniform::set_value(const mat4& m4)
 	{
-		glUniformMatrix4fv(m_id, 1, GL_FALSE, glm::value_ptr(m4));
+		glUniformMatrix4fv(m_id, 1, GL_FALSE, value_ptr(m4));
 	}
 
 	void uniform::set_value(const int* i, size_t n)
@@ -693,20 +693,20 @@ namespace hcube
 		glUniform1fv(m_id, n, f);
 	}
 
-	void uniform::set_value(const glm::vec2* v2, size_t n)
+	void uniform::set_value(const vec2* v2, size_t n)
 	{
 		glUniform2fv(m_id, n, (const float*)v2);
 	}
 
-	void uniform::set_value(const glm::vec3* v3, size_t n)
+	void uniform::set_value(const vec3* v3, size_t n)
 	{
 		glUniform3fv(m_id, n, (const float*)v3);
 	}
-	void uniform::set_value(const glm::vec4* v4, size_t n)
+	void uniform::set_value(const vec4* v4, size_t n)
 	{
 		glUniform4fv(m_id, n, (const float*)v4);
 	}
-	void uniform::set_value(const glm::mat4* m4, size_t n)
+	void uniform::set_value(const mat4* m4, size_t n)
 	{
 		glUniformMatrix4fv(m_id, n, GL_FALSE, (const float*)m4);
 	}
@@ -719,19 +719,19 @@ namespace hcube
 	{
 		set_value(f.data(), f.size());
 	}
-	void uniform::set_value(const std::vector < glm::vec2 >& v2)
+	void uniform::set_value(const std::vector < vec2 >& v2)
 	{
 		set_value(v2.data(), v2.size());
 	}
-	void uniform::set_value(const std::vector < glm::vec3 >& v3)
+	void uniform::set_value(const std::vector < vec3 >& v3)
 	{
 		set_value(v3.data(), v3.size());
 	}
-	void uniform::set_value(const std::vector < glm::vec4 >& v4)
+	void uniform::set_value(const std::vector < vec4 >& v4)
 	{
 		set_value(v4.data(), v4.size());
 	}
-	void uniform::set_value(const std::vector < glm::mat4 >& m4)
+	void uniform::set_value(const std::vector < mat4 >& m4)
 	{
 		set_value(m4.data(), m4.size());
 	}

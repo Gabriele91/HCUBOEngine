@@ -5,7 +5,7 @@
 
 namespace hcube
 {
-	void ssao_technique::init(const glm::ivec2& w_size, resources_manager& resources)
+	void ssao_technique::init(const ivec2& w_size, resources_manager& resources)
 	{
 		//load shader ssao
 		m_shader = resources.get_shader("ssao_pass");
@@ -62,10 +62,10 @@ namespace hcube
 		set_kernel_size(m_max_kernel_size);
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 		//noise texture
-		std::vector<glm::vec3> noise_buffer(16);
+		std::vector<vec3> noise_buffer(16);
 		for (size_t i = 0; i != noise_buffer.size(); ++i)
 		{
-			noise_buffer[i] = glm::vec3
+			noise_buffer[i] = vec3
 			{
 				((float)std::rand() / RAND_MAX) * 2.0 - 1.0,
 				((float)std::rand() / RAND_MAX) * 2.0 - 1.0,
@@ -94,7 +94,7 @@ namespace hcube
 		{
 			//clear
 			auto temp_color_clear_state = render::get_clear_color_state();
-			render::set_clear_color_state(clear_color_state(glm::vec4{ 1.,1.,1.,1. }));
+			render::set_clear_color_state(clear_color_state(vec4{ 1.,1.,1.,1. }));
 
 			render::enable_render_target(m_fbo);
 			render::clear();
@@ -117,7 +117,7 @@ namespace hcube
 		//disable depth test
 		render::set_cullface_state(CF_BACK);
 		render::set_depth_buffer_state({ false });
-		render::set_clear_color_state(clear_color_state(glm::vec4{ 1.,1.,1.,1. }));
+		render::set_clear_color_state(clear_color_state(vec4{ 1.,1.,1.,1. }));
 		//draw
 		camera::ptr   c_camera = e_camera->get_component<camera>();
 		//enable fbo
@@ -129,7 +129,7 @@ namespace hcube
 		//////////////////////////////////////////////////////////////////////////////////////////////////////
 		//bind kernel/proj/scale noise
 		m_uniform_projection->set_value(c_camera->get_projection());
-		m_uniform_noise_scale->set_value((glm::vec2)c_camera->get_viewport_size() / glm::vec2(4, 4));
+		m_uniform_noise_scale->set_value((vec2)c_camera->get_viewport_size() / vec2(4, 4));
 		m_uniform_kernel_size->set_value((int)m_kernel_size);
 		m_uniform_radius->set_value(m_radius);
 		//set g_buffer 

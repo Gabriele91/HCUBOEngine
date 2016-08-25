@@ -6,9 +6,7 @@
 //  Copyright © 2016 Gabriele. All rights reserved.
 //
 #include <app_basic.h>
-#include <glm/vec2.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/quaternion.hpp>
+#include <vector_math.h>
 #include <basic_meshs.h>
 #include <regex>
 #include <rendering_pass_deferred.h>
@@ -87,7 +85,7 @@ namespace hcube
 		}
 	}
 
-	void app_basic::cursor_position_event(application& app, const glm::dvec2& in_mouse_pos)
+	void app_basic::cursor_position_event(application& app, const dvec2& in_mouse_pos)
 	{
 		camera_look_around(app);
 	}
@@ -96,16 +94,16 @@ namespace hcube
 	{
 	}
 
-	void app_basic::scroll_event(application& application, const glm::dvec2& scroll_offset)
+	void app_basic::scroll_event(application& application, const dvec2& scroll_offset)
 	{
 
 	}
 
-	void app_basic::resize_event(application& application, const glm::ivec2& size)
+	void app_basic::resize_event(application& application, const ivec2& size)
 	{
 		m_aspect = float(size.x) / float(size.y);
 		//viewport
-		m_camera->get_component<camera>()->set_viewport(glm::ivec4{ 0, 0, size.x, size.y });
+		m_camera->get_component<camera>()->set_viewport(ivec4{ 0, 0, size.x, size.y });
 		//new perspective
 		m_camera->get_component<camera>()->set_perspective(m_fov, m_aspect, 0.1, 500.0);
 	}
@@ -113,42 +111,42 @@ namespace hcube
 	void app_basic::camera_look_around(application& app)
 	{
 		//statics
-		static glm::dvec2 half_wsize((glm::dvec2)app.get_window_size()*0.5);
-		static glm::dvec2 mouse_last_pos(half_wsize);
-		static glm::dvec2 angles;
+		static dvec2 half_wsize((dvec2)app.get_window_size()*0.5);
+		static dvec2 mouse_last_pos(half_wsize);
+		static dvec2 angles;
 		//mouse pos
-		glm::dvec2 mouse_pos = app.get_mouse_position();
+		dvec2 mouse_pos = app.get_mouse_position();
 		//fail case
 		if (mouse_pos == mouse_last_pos) return;
 		//compute speed
-		double mouse_speed = glm::length(mouse_last_pos - mouse_pos) * 0.01;
+		double mouse_speed = length(mouse_last_pos - mouse_pos) * 0.01;
 		//max speed
 		if (mouse_speed > 0.75) { return; }
 		//update
 		mouse_last_pos = mouse_pos;
 		//reset pos
-		app.set_mouse_position((glm::dvec2)app.get_window_size()*0.5);
+		app.set_mouse_position((dvec2)app.get_window_size()*0.5);
 		//update 
 		angles += mouse_speed * app.get_last_delta_time() * (half_wsize - mouse_pos);
 		std::swap(angles.x, angles.y);
 		//dir cam
-		glm::dvec3 direction
+		dvec3 direction
 		(
 			std::cos(angles.y) * std::sin(angles.x),
 			std::sin(angles.y),
 			std::cos(angles.y) * std::cos(angles.x)
 		);
-		glm::dvec3 right
+		dvec3 right
 		(
-			sin(angles.x - glm::pi<double>() / 2.0),
+            sin(angles.x - constants::pi<double>() / 2.0),
 			0,
-			cos(angles.x - glm::pi<double>() / 2.0)
+			cos(angles.x - constants::pi<double>() / 2.0)
 		);
-		glm::dvec3 up = glm::cross(right, direction);
+		dvec3 up = cross(right, direction);
 		//position
-		glm::dvec3 position = m_camera->get_component<transform>()->get_position();
+		dvec3 position = m_camera->get_component<transform>()->get_position();
 		//target
-		glm::dvec3 target = position + direction;
+		dvec3 target = position + direction;
 		//update camera
 		m_camera->get_component<transform>()->look_at(position, target, up);
 	}
@@ -166,7 +164,7 @@ namespace hcube
 		//add into system
 		m_systems.add_system(m_rendering);
 		//gbuffer size
-		glm::ivec2 g_size = app.get_window_size();
+		ivec2 g_size = app.get_window_size();
 		//deferred alloc
 		m_resources.add_directory("common/effects");
 		m_resources.add_directory("common/shaders");
@@ -197,13 +195,13 @@ namespace hcube
 			m_camera = gameobject::camera_new();
 			auto c_camera = m_camera->get_component<camera>();
 			auto t_camera = m_camera->get_component<transform>();
-			glm::vec2 size = app.get_window_size();
+			vec2 size = app.get_window_size();
 			m_aspect = float(size.x) / float(size.y);
-			c_camera->set_viewport(glm::ivec4{ 0, 0, size.x, size.y });
+			c_camera->set_viewport(ivec4{ 0, 0, size.x, size.y });
 			c_camera->set_perspective(m_fov, m_aspect, 0.1, 500.0);
-			t_camera->look_at(glm::vec3{ 0.0f, 6.9f, -45.0f },
-							  glm::vec3{ 0.0f, 1.0f, 0.0f },
-							  glm::vec3{ 0.0f, 1.0f, 0.0f });
+			t_camera->look_at(vec3{ 0.0f, 6.9f, -45.0f },
+							  vec3{ 0.0f, 1.0f, 0.0f },
+							  vec3{ 0.0f, 1.0f, 0.0f });
 			//set camera
 			m_systems.add_entity(m_camera);
 			//add cube
@@ -219,13 +217,13 @@ namespace hcube
 			auto t_model = m_model->get_component<transform>();
 			//set info
 			t_model->position({ 0.0f, -5.0f, 0.0f });
-			t_model->rotation(glm::quat({ glm::radians(15.0), glm::radians(0.0), 0.0 }));
+			t_model->rotation(quat({ radians(15.0), radians(0.0), 0.0 }));
 			t_model->scale({ 0.2f, 0.2f, 0.2f });
 
 			auto e_model_light = gameobject::light_new();
 			auto l_model_light = e_model_light->get_component<light>();
 			auto t_model_light = e_model_light->get_component<transform>();
-			t_model_light->position(glm::vec3{ 0,6.0f,-80 });
+			t_model_light->position(vec3{ 0,6.0f,-80 });
 			l_model_light->m_diffuse = { 1.0f, 0.8f, 0.1f };
 			l_model_light->m_specular = { 1.0f, 0.8f, 0.1f };
 			l_model_light->m_constant = 1.0;
@@ -236,29 +234,29 @@ namespace hcube
 			auto e_model_light1 = gameobject::light_new();
 			auto l_model_light1 = e_model_light1->get_component<light>();
 			auto t_model_light1 = e_model_light1->get_component<transform>();
-			t_model_light1->position(glm::vec3{ -16.4,10.0f,18.0 });
-			t_model_light1->rotation(glm::quat({ glm::radians(0.0), glm::radians(0.0), 0.0 }));
+			t_model_light1->position(vec3{ -16.4,10.0f,18.0 });
+			t_model_light1->rotation(quat({ radians(0.0), radians(0.0), 0.0 }));
 			l_model_light1->spot({ 1.0f, 0.8f, 0.1f },
 			{ 1.0f, 1.0f, 1.0f },
 				1.0,
 				10.0,
 				30.0,
-				glm::radians(10.0),
-				glm::radians(15.0));
+				radians(10.0),
+				radians(15.0));
 			m_model->add_child(e_model_light1);
 
 			auto e_model_light2 = gameobject::light_new();
 			auto l_model_light2 = e_model_light2->get_component<light>();
 			auto t_model_light2 = e_model_light2->get_component<transform>();
-			t_model_light2->position(glm::vec3{ 16.4,9.5f,19 });
-			t_model_light2->rotation(glm::quat({ glm::radians(0.0), glm::radians(0.0), 0.0 }));
+			t_model_light2->position(vec3{ 16.4,9.5f,19 });
+			t_model_light2->rotation(quat({ radians(0.0), radians(0.0), 0.0 }));
 			l_model_light2->spot({ 1.0f, 0.8f, 0.1f },
 			{ 1.0f, 1.0f, 1.0f },
 				1.0,
 				10.0,
 				30.0,
-				glm::radians(10.0),
-				glm::radians(15.0));
+				radians(10.0),
+				radians(15.0));
 			m_model->add_child(e_model_light2);
 
 			//add to render
@@ -307,9 +305,9 @@ namespace hcube
 			for (int i = 1; i != 4; ++i)
 			{
 				t_lights[i - 1]->position({
-					std::sin((glm::pi<float>()*0.66)*i)*15.,
+                    std::sin((constants::pi<float>()*0.66)*i)*15.,
 					0.0,
-					std::cos((glm::pi<float>()*0.66)*i)*15.,
+                    std::cos((constants::pi<float>()*0.66)*i)*15.,
 				});
 			}
 
@@ -323,7 +321,7 @@ namespace hcube
 			m_systems.add_entity(m_lights);
 
 			//ambient color
-			m_rendering->set_ambient_color(glm::vec4{ 0.26, 0.26, 0.26, 1.0 });
+			m_rendering->set_ambient_color(vec4{ 0.26, 0.26, 0.26, 1.0 });
 
 		}
 	}
@@ -337,9 +335,9 @@ namespace hcube
 		acc_delta_time += 1.0f * delta_time;
 		//////////////////////////////////////////////////////////
 		//update
-		//m_model->get_component<transform>()->turn(glm::quat{ {0.0, glm::radians(5.0*delta_time), 0.0} });
+		//m_model->get_component<transform>()->turn(quat{ {0.0, radians(5.0*delta_time), 0.0} });
 		//for all lights
-		m_lights->get_component<transform>()->turn(glm::quat{ {0.0, glm::radians(20.0*delta_time), 0.0} });
+		m_lights->get_component<transform>()->turn(quat{ {0.0, radians(20.0*delta_time), 0.0} });
 		//////////////////////////////////////////////////////////
 		//////////////////////////////////////////////////////////
 		//draw

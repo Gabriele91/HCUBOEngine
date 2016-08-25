@@ -8,8 +8,7 @@
 #pragma once
 #include <vector>
 #include <render.h>
-#include <glm/vec2.hpp>
-#include <glm/vec3.hpp>
+#include <vector_math.h>
 #include <renderable.h>
 #include <smart_pointers.h>
 

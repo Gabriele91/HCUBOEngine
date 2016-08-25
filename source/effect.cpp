@@ -124,10 +124,10 @@ namespace hcube
 			{
 				float		m_float{ 0.0 };
 				int			m_int{ 0 };
-				glm::vec2	m_vec2;
-				glm::vec3	m_vec3;
-				glm::vec4	m_vec4;
-				glm::mat4	m_mat4;
+				vec2	m_vec2;
+				vec3	m_vec3;
+				vec4	m_vec4;
+				mat4	m_mat4;
 				std::string m_texture;
 			};
 
@@ -407,7 +407,7 @@ namespace hcube
 			if (!is_comm_arg(*ptr)) 
 			{ 			
 				// is 'mat4('<float>')'
-				field.m_value.m_mat4 = glm::mat4(field.m_value.m_mat4[0][0]); 
+				field.m_value.m_mat4 = mat4(field.m_value.m_mat4[0][0]); 
 				//success
 				return true;
 			}
@@ -1148,24 +1148,24 @@ namespace hcube
 	struct parameter_vec2 : public effect::parameter
 	{
 		//value
-		glm::vec2 m_value;
+		vec2 m_value;
 		//init
 		parameter_vec2()
 		{
 			m_type = effect::PT_VEC2;
 		}
-		parameter_vec2(const glm::vec2& value)
+		parameter_vec2(const vec2& value)
 		{
 			m_value = value;
 			m_type  = effect::PT_VEC2;
 		}
 		//set value
-		virtual void set_value(const glm::vec2& value)
+		virtual void set_value(const vec2& value)
 		{
 			m_value = value;
 		}
 		//get value
-		virtual const glm::vec2& get_vec2()
+		virtual const vec2& get_vec2()
 		{
 			return m_value;
 		}
@@ -1178,24 +1178,24 @@ namespace hcube
 	struct parameter_vec3 : public effect::parameter
 	{
 		//value
-		glm::vec3 m_value;
+		vec3 m_value;
 		//init
 		parameter_vec3()
 		{
 			m_type = effect::PT_VEC3;
 		}
-		parameter_vec3(const glm::vec3& value)
+		parameter_vec3(const vec3& value)
 		{
 			m_value = value;
 			m_type  = effect::PT_VEC3;
 		}
 		//set value
-		virtual void set_value(const glm::vec3& value)
+		virtual void set_value(const vec3& value)
 		{
 			m_value = value;
 		}
 		//get value
-		virtual const glm::vec3& get_vec3()
+		virtual const vec3& get_vec3()
 		{
 			return m_value;
 		}
@@ -1208,24 +1208,24 @@ namespace hcube
 	struct parameter_vec4 : public effect::parameter
 	{
 		//value
-		glm::vec4 m_value;
+		vec4 m_value;
 		//init
 		parameter_vec4()
 		{
 			m_type = effect::PT_VEC4;
 		}
-		parameter_vec4(const glm::vec4& value)
+		parameter_vec4(const vec4& value)
 		{
 			m_value = value;
 			m_type  = effect::PT_VEC4;
 		}
 		//set value
-		virtual void set_value(const glm::vec4& value)
+		virtual void set_value(const vec4& value)
 		{
 			m_value = value;
 		}
 		//get value
-		virtual const glm::vec4& get_vec4()
+		virtual const vec4& get_vec4()
 		{
 			return m_value;
 		}
@@ -1238,24 +1238,24 @@ namespace hcube
 	struct parameter_mat4 : public effect::parameter
 	{
 		//value
-		glm::mat4 m_value;
+		mat4 m_value;
 		//init
 		parameter_mat4()
 		{
 			m_type = effect::PT_MAT4;
 		}
-		parameter_mat4(const glm::mat4& value)
+		parameter_mat4(const mat4& value)
 		{
 			m_value = value;
 			m_type  = effect::PT_MAT4;
 		}
 		//set value
-		virtual void set_value(const glm::mat4& value)
+		virtual void set_value(const mat4& value)
 		{
 			m_value = value;
 		}
 		//get value
-		virtual const glm::mat4& get_mat4()
+		virtual const mat4& get_mat4()
 		{
 			return m_value;
 		}
@@ -1270,10 +1270,10 @@ namespace hcube
 
 	//enable pass effect
 	void effect::pass::bind(
-		const glm::vec4& viewport,
-		const glm::mat4& projection,
-		const glm::mat4& view,
-		const glm::mat4& model, 
+		const vec4& viewport,
+		const mat4& projection,
+		const mat4& view,
+		const mat4& model, 
 		parameters* params
 	)
 	{
@@ -1326,10 +1326,10 @@ namespace hcube
 
 	//safe enable pass effect
 	render_state effect::pass::safe_bind(
-		const glm::vec4& viewport,
-		const glm::mat4& projection,
-		const glm::mat4& view,
-		const glm::mat4& model, 
+		const vec4& viewport,
+		const mat4& projection,
+		const mat4& view,
+		const mat4& model, 
 		parameters* params
 	)
 	{

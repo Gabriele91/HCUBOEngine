@@ -8,9 +8,7 @@
 #pragma once
 #include <smart_pointers.h>
 #include <component.h>
-#include <glm/vec3.hpp>
-#include <glm/mat4x4.hpp>
-#include <glm/gtc/quaternion.hpp>
+#include <vector_math.h>
 #include <frustum.h>
 
 namespace hcube
@@ -23,14 +21,14 @@ namespace hcube
 
 	public:
 
-		void set_viewport(const glm::ivec4& viewport);
+		void set_viewport(const ivec4& viewport);
 		void set_perspective(float fov, float aspect, float near, float far);
-		glm::vec2 get_near_and_far() const;
+		vec2 get_near_and_far() const;
 
-		const glm::ivec2  get_viewport_size() const;
-		const glm::ivec4& get_viewport() const;
-		const glm::mat4&  get_projection() const;
-		const glm::mat4&  get_projection_inv() const;
+		const ivec2  get_viewport_size() const;
+		const ivec4& get_viewport() const;
+		const mat4&  get_projection() const;
+		const mat4&  get_projection_inv() const;
 
 		frustum& get_frustum();
 		const frustum& get_frustum() const;
@@ -40,10 +38,10 @@ namespace hcube
 
 	protected:
 
-		frustum	   m_frustum;
-		glm::ivec4 m_viewport;
-		glm::mat4  m_projection;
-		glm::mat4  m_projection_inv;
+		frustum	 m_frustum;
+		ivec4    m_viewport;
+		mat4     m_projection;
+		mat4     m_projection_inv;
 
 	};
 }

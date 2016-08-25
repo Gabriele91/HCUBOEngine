@@ -49,14 +49,14 @@ namespace hcube
         && m_uniform_outer_cut_off;
 	}
 
-	void uniform_light::uniform(light_wptr weak_light, const glm::mat4& view, const glm::mat4& model)
+	void uniform_light::uniform(light_wptr weak_light, const mat4& view, const mat4& model)
 	{
         if(!is_valid()) return;
         
 		auto light = weak_light.lock();
 		m_uniform_type->set_value(light->m_type);
-		m_uniform_position->set_value((glm::vec3)(view * model * glm::vec4(0, 0, 0, 1.0)));
-		m_uniform_direction->set_value((glm::vec3)(view * model * glm::vec4(0, 0, 1.0, 0.0)));
+		m_uniform_position->set_value((vec3)(view * model * vec4(0, 0, 0, 1.0)));
+		m_uniform_direction->set_value((vec3)(view * model * vec4(0, 0, 1.0, 0.0)));
 		m_uniform_diffuse->set_value(light->m_diffuse);
 		m_uniform_specular->set_value(light->m_specular);
 		m_uniform_inv_constant->set_value(1.f / light->m_constant);

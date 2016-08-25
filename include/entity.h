@@ -8,7 +8,6 @@
 #pragma once
 #include <unordered_map>
 #include <material.h>
-#include <glm/mat4x4.hpp>
 #include <light.h>
 #include <renderable.h>
 #include <smart_pointers.h>

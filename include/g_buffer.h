@@ -7,7 +7,7 @@
 //
 #pragma once
 #include <render.h>
-#include <glm/vec2.hpp>
+#include <vector_math.h>
 
 namespace hcube
 {
@@ -27,7 +27,7 @@ namespace hcube
 
 		virtual ~g_buffer() { destoy(); }
 
-		bool init(const glm::ivec2& window_size);
+		bool init(const ivec2& window_size);
 
 		bool init(unsigned int width, unsigned int height);
 
@@ -57,7 +57,7 @@ namespace hcube
 
 		unsigned int get_height() const;
 
-		glm::ivec2 get_size() const;
+		ivec2 get_size() const;
 
 	private:
 
