@@ -196,6 +196,7 @@
     <ClInclude Include="..\include\text_mesh.h" />
     <ClInclude Include="..\include\tangent_space_calculation.h" />
     <ClInclude Include="..\include\transform.h" />
+    <ClInclude Include="..\include\vector_math.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\application.cpp" />
