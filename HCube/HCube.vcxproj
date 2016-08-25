@@ -187,6 +187,7 @@
     <ClInclude Include="..\include\resource.h" />
     <ClInclude Include="..\include\resources_manager.h" />
     <ClInclude Include="..\include\shader.h" />
+    <ClInclude Include="..\include\shadow_buffer.h" />
     <ClInclude Include="..\include\smart_pointers.h" />
     <ClInclude Include="..\include\query_performance.h" />
     <ClInclude Include="..\include\ssao_technique.h" />
@@ -223,6 +224,7 @@
     <ClCompile Include="..\source\rendering_system.cpp" />
     <ClCompile Include="..\source\resources_manager.cpp" />
     <ClCompile Include="..\source\shader.cpp" />
+    <ClCompile Include="..\source\shadow_buffer.cpp" />
     <ClCompile Include="..\source\ssao_technique.cpp" />
     <ClCompile Include="..\source\static_model.cpp" />
     <ClCompile Include="..\source\stb_image.cpp" />
@@ -246,6 +248,7 @@
     <None Include="..\common\effects\base_texture_normal.fxhc" />
     <None Include="..\common\effects\base_texture_normal_specular.fxhc" />
     <None Include="..\common\effects\base_texture_specular.fxhc" />
+    <None Include="..\common\effects\build_shadow.fxhc" />
     <None Include="..\common\effects\lib\base.glsl" />
     <None Include="..\common\effects\lib\base_texture.glsl" />
     <None Include="..\common\effects\lib\base_texture_normal.glsl" />

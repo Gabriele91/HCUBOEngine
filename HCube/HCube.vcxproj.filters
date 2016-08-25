@@ -171,6 +171,9 @@
     <ClInclude Include="..\include\rendering_pass_forward.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\shadow_buffer.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\application.cpp">
@@ -269,6 +272,9 @@
     <ClCompile Include="..\source\rendering_pass_forward.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\shadow_buffer.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\source\cocoa_native_dialog.mm">
@@ -357,6 +363,9 @@
     </None>
     <None Include="..\common\shaders\lib\ssao_kernel.glsl">
       <Filter>File di risorse\common\shaders\lib</Filter>
+    </None>
+    <None Include="..\common\effects\build_shadow.fxhc">
+      <Filter>File di risorse\common\effects</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

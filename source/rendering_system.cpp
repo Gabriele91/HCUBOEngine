@@ -200,15 +200,15 @@ namespace hcube
 		}
 	}
 
-	void rendering_system::build_renderables_queue()
+	void rendering_system::build_renderables_queue(entity::ptr select_camera)
 	{
 		//init
 		m_renderables.m_cull_light = nullptr;
 		m_renderables.m_cull_opaque = nullptr;
 		m_renderables.m_cull_translucent = nullptr;
 		//camera
-		camera::ptr   c_camera = m_camera->get_component<camera>();
-		transform_ptr t_camera = m_camera->get_component<transform>();
+		camera::ptr   c_camera = select_camera->get_component<camera>();
+		transform_ptr t_camera = select_camera->get_component<transform>();
 		auto&         f_camera = c_camera->get_frustum();
 		//update view frustum
 		if (m_update_frustum)
@@ -267,7 +267,7 @@ namespace hcube
 	void rendering_system::draw()
 	{
 		//culling
-		if (!m_stop_frustum_culling) build_renderables_queue();
+		if (!m_stop_frustum_culling) build_renderables_queue(m_camera);
 		//all passes
 		for (rendering_pass_ptr& pass : m_rendering_pass)
 		{
@@ -300,8 +300,7 @@ namespace hcube
 	{
 		return m_rendering_pass;
 	}
-
-
+	
 	void rendering_system::stop_update_frustum(bool stop_update)
 	{
 		m_update_frustum = !stop_update;

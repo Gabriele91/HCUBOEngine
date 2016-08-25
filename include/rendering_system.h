@@ -107,7 +107,7 @@ namespace hcube
 
 	protected:
 
-		void build_renderables_queue();
+		void build_renderables_queue(entity::ptr select_camera);
 
 		bool m_update_frustum{ true };
 		bool m_stop_frustum_culling{ false };
