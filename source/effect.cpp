@@ -1,4 +1,6 @@
 #include <effect.h>
+#include <list>
+#include <vector>
 #include <string>
 #include <sstream>
 #include <iostream>
@@ -561,6 +563,7 @@ namespace hcube
 				//skip }
 				++ptr;
 			}
+            return true;
 		}
 		//////////////////////////////////////////////////////
 		bool parse_blend(const char*& ptr, pass_field& pass)

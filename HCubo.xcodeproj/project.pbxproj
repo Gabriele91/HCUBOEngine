@@ -9,6 +9,10 @@
 /* Begin PBXBuildFile section */
 		E0101B241D40C1AC00930372 /* material.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E0101B231D40B74900930372 /* material.cpp */; };
 		E0101B251D40C1AD00930372 /* material.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E0101B231D40B74900930372 /* material.cpp */; };
+		E01334BC1D6EDEA0001C6B41 /* effect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E01334BA1D6EDEA0001C6B41 /* effect.cpp */; };
+		E01334BD1D6EDEA0001C6B41 /* effect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E01334BA1D6EDEA0001C6B41 /* effect.cpp */; };
+		E01334BE1D6EDEA0001C6B41 /* light.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E01334BB1D6EDEA0001C6B41 /* light.cpp */; };
+		E01334BF1D6EDEA0001C6B41 /* light.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E01334BB1D6EDEA0001C6B41 /* light.cpp */; };
 		E01461AB1D34D2EC008A2574 /* resources_manager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E01461AA1D34D2EC008A2574 /* resources_manager.cpp */; };
 		E01461AC1D34D2EF008A2574 /* resources_manager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E01461AA1D34D2EC008A2574 /* resources_manager.cpp */; };
 		E015839C1D43990D0029D6F5 /* tga.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E015839B1D43990D0029D6F5 /* tga.cpp */; };
@@ -94,6 +98,8 @@
 /* Begin PBXFileReference section */
 		E0101B211D4094C300930372 /* light.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = light.h; sourceTree = "<group>"; };
 		E0101B231D40B74900930372 /* material.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = material.cpp; sourceTree = "<group>"; };
+		E01334BA1D6EDEA0001C6B41 /* effect.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = effect.cpp; sourceTree = "<group>"; };
+		E01334BB1D6EDEA0001C6B41 /* light.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = light.cpp; sourceTree = "<group>"; };
 		E01461AA1D34D2EC008A2574 /* resources_manager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = resources_manager.cpp; sourceTree = "<group>"; };
 		E01461AD1D34D343008A2574 /* resource.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = resource.h; sourceTree = "<group>"; };
 		E01583991D4399040029D6F5 /* struct_attribute.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = struct_attribute.h; sourceTree = "<group>"; };
@@ -202,6 +208,8 @@
 		E00ABDB81D23C3BE004E4CFD /* source */ = {
 			isa = PBXGroup;
 			children = (
+				E01334BA1D6EDEA0001C6B41 /* effect.cpp */,
+				E01334BB1D6EDEA0001C6B41 /* light.cpp */,
 				E0D8F21C1D4E6B2D006EA26C /* frustum.cpp */,
 				E0D8F21D1D4E6B2D006EA26C /* obb.cpp */,
 				E03EDC731D34186900C0C22A /* app_basic.cpp */,
@@ -433,11 +441,13 @@
 				E022AF481D3DFF98009F76D5 /* g_buffer.cpp in Sources */,
 				E03EDC8B1D34186900C0C22A /* filesystem.cpp in Sources */,
 				E01583A11D43E9FE0029D6F5 /* transform.cpp in Sources */,
+				E01334BE1D6EDEA0001C6B41 /* light.cpp in Sources */,
 				E03EDC8C1D34186900C0C22A /* json11.cpp in Sources */,
 				E03EDC881D34186900C0C22A /* basic_meshs.cpp in Sources */,
 				E03EDC961D34186900C0C22A /* text_mesh.cpp in Sources */,
 				E01583A41D43FCBC0029D6F5 /* entity.cpp in Sources */,
 				E03EDC8A1D34186900C0C22A /* cocoa_native_dialog.mm in Sources */,
+				E01334BC1D6EDEA0001C6B41 /* effect.cpp in Sources */,
 				E03EDC8D1D34186900C0C22A /* main.cpp in Sources */,
 				E03EDC931D34186900C0C22A /* rendering_system.cpp in Sources */,
 				E03EDC921D34186900C0C22A /* query_performance.cpp in Sources */,
@@ -469,11 +479,13 @@
 				E022AF491D3E01BC009F76D5 /* g_buffer.cpp in Sources */,
 				E01583A21D43E9FE0029D6F5 /* transform.cpp in Sources */,
 				E03EDC9E1D34187500C0C22A /* filesystem.cpp in Sources */,
+				E01334BF1D6EDEA0001C6B41 /* light.cpp in Sources */,
 				E03EDC9F1D34187500C0C22A /* json11.cpp in Sources */,
 				E03EDC9B1D34187500C0C22A /* basic_meshs.cpp in Sources */,
 				E03EDCA91D34187500C0C22A /* text_mesh.cpp in Sources */,
 				E03EDC9D1D34187500C0C22A /* cocoa_native_dialog.mm in Sources */,
 				E08DB6B81D44AD7300EF554F /* system_manager.cpp in Sources */,
+				E01334BD1D6EDEA0001C6B41 /* effect.cpp in Sources */,
 				E03099BE1D4211D7001855A9 /* static_model.cpp in Sources */,
 				E03EDCA01D34187500C0C22A /* main.cpp in Sources */,
 				E03EDCA61D34187500C0C22A /* rendering_system.cpp in Sources */,

@@ -150,6 +150,13 @@ namespace hcube
 		void get_uniform(int i, shader::ptr shader);
 
 		void uniform(light_wptr light, const glm::mat4& view, const glm::mat4& model);
+    
+        bool is_valid() const;
+        
+    protected:
+        
+        bool m_valid{ false };
+        
 	};
 
 }

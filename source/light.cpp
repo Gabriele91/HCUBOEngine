@@ -34,10 +34,25 @@ namespace hcube
 
 		m_uniform_inner_cut_off = shader->get_uniform((lights_i + ".m_inner_cut_off").c_str());
 		m_uniform_outer_cut_off = shader->get_uniform((lights_i + ".m_outer_cut_off").c_str());
+        
+        //test
+        m_valid =
+           m_uniform_type
+        && m_uniform_position
+        && m_uniform_direction
+        && m_uniform_diffuse
+        && m_uniform_specular
+        && m_uniform_inv_constant
+        && m_uniform_inv_quad_inside_radius
+        && m_uniform_inv_quad_radius
+        && m_uniform_inner_cut_off
+        && m_uniform_outer_cut_off;
 	}
 
 	void uniform_light::uniform(light_wptr weak_light, const glm::mat4& view, const glm::mat4& model)
 	{
+        if(!is_valid()) return;
+        
 		auto light = weak_light.lock();
 		m_uniform_type->set_value(light->m_type);
 		m_uniform_position->set_value((glm::vec3)(view * model * glm::vec4(0, 0, 0, 1.0)));
@@ -49,5 +64,10 @@ namespace hcube
 		m_uniform_inv_quad_radius->set_value(1.f / (light->m_radius*light->m_radius));
 		m_uniform_inner_cut_off->set_value(light->m_inner_cut_off);
 		m_uniform_outer_cut_off->set_value(light->m_outer_cut_off);
-	}
+    }
+    
+    bool uniform_light::is_valid() const
+    {
+        return m_valid;
+    }
 }

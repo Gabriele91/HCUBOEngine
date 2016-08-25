@@ -479,7 +479,11 @@ namespace hcube
 		compiled = 0;
 		glCompileShader(m_shader_vs);
 		glGetShaderiv(m_shader_vs, GL_COMPILE_STATUS, &compiled);
-		if (!log_error(m_shader_vs, compiled, "vertex shader")) { glDeleteShader(m_shader_vs); }
+		if (!log_error(m_shader_vs, compiled, "vertex shader"))
+        {
+            glDeleteShader(m_shader_vs);
+            m_shader_vs=0;
+        }
 		////////////////////////////////////////////////////////////////////////////////
 		//fragmentx
 		std::string file_fs =
@@ -502,7 +506,11 @@ namespace hcube
 		compiled = 0;
 		glCompileShader(m_shader_fs);
 		glGetShaderiv(m_shader_fs, GL_COMPILE_STATUS, &compiled);
-		if (!log_error(m_shader_fs, compiled, "fragment shader")) { glDeleteShader(m_shader_fs); }
+		if (!log_error(m_shader_fs, compiled, "fragment shader"))
+        {
+            glDeleteShader(m_shader_fs);
+            m_shader_fs = 0;
+        }
 		////////////////////////////////////////////////////////////////////////////////
 		if (gs_str.size())
 		{
@@ -523,13 +531,17 @@ namespace hcube
 			compiled = 0;
 			glCompileShader(m_shader_gs);
 			glGetShaderiv(m_shader_gs, GL_COMPILE_STATUS, &compiled);
-			if (!log_error(m_shader_gs, compiled, "Geometry")) { glDeleteShader(m_shader_gs); }
+            if (!log_error(m_shader_gs, compiled, "Geometry"))
+            {
+                glDeleteShader(m_shader_gs);
+                m_shader_gs = 0;
+            }
 		}
 		////////////////////////////////////////////////////////////////////////////////
 		//made a shader program
-		m_shader_id = glCreateProgram();
-		glAttachShader(m_shader_id, m_shader_vs);
-		glAttachShader(m_shader_id, m_shader_fs);
+        m_shader_id = glCreateProgram();
+        if (m_shader_fs) glAttachShader(m_shader_id, m_shader_fs);
+		if (m_shader_vs) glAttachShader(m_shader_id, m_shader_vs);
 		if (m_shader_gs) glAttachShader(m_shader_id, m_shader_gs);
 		glLinkProgram(m_shader_id);
 		//get link status
@@ -537,6 +549,7 @@ namespace hcube
 		//out errors
 		if (!linked)
 		{
+            //get liking errors
 			GLint info_len = 0;
 			glGetProgramiv(m_shader_id, GL_INFO_LOG_LENGTH, &info_len);
 			if (info_len)
@@ -547,16 +560,16 @@ namespace hcube
 				free(info_log);
 			}
 			std::cout << "error linking" << std::endl;
-			//"stacca" gli schader dal shader program
-			glDetachShader(m_shader_id, m_shader_fs);
-			glDetachShader(m_shader_id, m_shader_vs);
+			//"detach" all shaders
+			if (m_shader_fs)  glDetachShader(m_shader_id, m_shader_fs);
+			if (m_shader_vs)  glDetachShader(m_shader_id, m_shader_vs);
 			if (m_shader_gs)  glDetachShader(m_shader_id, m_shader_gs);
-			//cancella gli shader
-			glDeleteShader(m_shader_fs);
-			glDeleteShader(m_shader_vs);
+			//destoy all shaders
+			if (m_shader_fs) glDeleteShader(m_shader_fs);
+			if (m_shader_vs) glDeleteShader(m_shader_vs);
 			if (m_shader_gs) glDeleteShader(m_shader_gs);
-			//cancella lo shader program
-			glDeleteProgram(m_shader_id);
+			//destoy program
+			if(m_shader_id) glDeleteProgram(m_shader_id);
 			//all to 0
 			m_shader_vs = 0;
 			m_shader_fs = 0;
