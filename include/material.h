@@ -16,6 +16,7 @@
 #include <glm/vec4.hpp>
 #include <glm/mat4x4.hpp>
 #include <smart_pointers.h>
+#include <effect.h>
 
 namespace hcube
 {
@@ -39,58 +40,16 @@ namespace hcube
 
 		bool load(resources_manager& resources, const std::string& path);
 
-		void cullface(cullface_state& cfs);
+		effect::ptr			get_effect() const;
 
-		void blend(const blend_state& bls);
-
-		virtual void bind(const glm::vec4& viewport,
-			const glm::mat4& projection,
-			const glm::mat4& view,
-			const glm::mat4& model);
-
-		virtual void unbind();
-
-		void  bind_state();
-
-		void unbind_state();
+		effect::parameters* get_parameters() const;
 
 		material_ptr copy() const;
 
 	protected:
 
-		cullface_state m_temp_cullface;
-		cullface_state m_cullface{ CF_BACK };
+		effect::ptr m_effect;
+		effect::parameters* m_parameters;
 
-		blend_state    m_temp_blend;
-		blend_state    m_blend;
-
-		//shader
-		shader::ptr  m_shader{ nullptr };
-		//standard uniform
-		uniform* m_uniform_projection{ nullptr };
-		uniform* m_uniform_view{ nullptr };
-		uniform* m_uniform_model{ nullptr };
-		uniform* m_uniform_viewport{ nullptr };
-		//uniform textures
-		std::vector< texture::ptr > m_textures;
-		std::vector< uniform* >     m_uniform_textures;
-		//uniform float
-		std::vector< float >    m_floats;
-		std::vector< uniform* > m_uniform_floats;
-		//uniform int
-		std::vector< int >      m_ints;
-		std::vector< uniform* > m_uniform_ints;
-		//uniform vec2
-		std::vector< glm::vec2 > m_vec2s;
-		std::vector< uniform* > m_uniform_vec2s;
-		//uniform vec3
-		std::vector< glm::vec3 > m_vec3s;
-		std::vector< uniform* > m_uniform_vec3s;
-		//uniform vec4
-		std::vector< glm::vec4 > m_vec4s;
-		std::vector< uniform* > m_uniform_vec4s;
-		//uniform mat4
-		std::vector< glm::mat4 > m_mat4s;
-		std::vector< uniform* >  m_uniform_mat4s;
 	};
 }

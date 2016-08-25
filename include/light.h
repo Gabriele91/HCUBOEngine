@@ -10,6 +10,7 @@
 #include <smart_pointers.h>
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
+#include <shader.h>
 
 
 namespace hcube
@@ -138,7 +139,6 @@ namespace hcube
 		//copy
 		virtual component_ptr copy() const;
 	};
-
 	using light_ptr = std::shared_ptr< light >;
 	using light_uptr = std::unique_ptr< light >;
 	using light_wptr = std::weak_ptr< light >;
@@ -162,4 +162,27 @@ namespace hcube
 			m_outer_cut_off
 		});
 	}
+
+	struct uniform_light
+	{
+		uniform* m_uniform_type;
+
+		uniform* m_uniform_position;
+		uniform* m_uniform_direction;
+
+		uniform* m_uniform_diffuse;
+		uniform* m_uniform_specular;
+
+		uniform* m_uniform_constant;
+		uniform* m_uniform_linear;
+		uniform* m_uniform_quadratic;
+
+		uniform* m_uniform_inner_cut_off;
+		uniform* m_uniform_outer_cut_off;
+
+		void get_uniform(int i, shader::ptr shader);
+
+		void uniform(light_wptr light, const glm::mat4& view, const glm::mat4& model);
+	};
+
 }

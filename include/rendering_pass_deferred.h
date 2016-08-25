@@ -47,28 +47,9 @@ namespace hcube
 
 		bool m_enable_ambient_occlusion{ true };
 
-		struct uniform_light
-		{
-			uniform* m_uniform_type;
-
-			uniform* m_uniform_position;
-			uniform* m_uniform_direction;
-
-			uniform* m_uniform_diffuse;
-			uniform* m_uniform_specular;
-
-			uniform* m_uniform_constant;
-			uniform* m_uniform_linear;
-			uniform* m_uniform_quadratic;
-
-			uniform* m_uniform_inner_cut_off;
-			uniform* m_uniform_outer_cut_off;
-
-			void get_uniform(int i, shader::ptr shader);
-			void uniform(light_wptr light, const glm::mat4& view, const glm::mat4& model);
-
-		};
+		//uniform lights
 		std::vector < uniform_light > m_uniform_lights;
+
 		//size lights
 		uniform* m_uniform_n_lights_used;
 

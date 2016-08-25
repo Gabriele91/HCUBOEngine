@@ -117,45 +117,80 @@ namespace hcube
 	}
 
 
-	void rendering_pass_base::draw_pass(glm::vec4&  clear_color,
-		glm::vec4&  ambient_color,
-		entity::ptr e_camera,
-		render_queues& queues)
+	void rendering_pass_forward::draw_pass(glm::vec4&  clear_color,
+										   glm::vec4&  ambient_color,
+										   entity::ptr e_camera,
+										   render_queues& queues)
 	{
-		camera::ptr   ccamera = e_camera->get_component<camera>();
-		transform_ptr tcamera = e_camera->get_component<transform>();
-		const glm::vec4& viewport = ccamera->get_viewport();
+		//save state
+		auto render_state = render::get_render_state();
+		//get camera
+		camera::ptr   c_camera = e_camera->get_component<camera>();
+		transform_ptr t_camera = e_camera->get_component<transform>();
+		const glm::vec4& viewport = c_camera->get_viewport();
+		//set state camera
 		render::set_viewport_state({ viewport });
 		render::set_clear_color_state({ clear_color });
 		render::clear();
-
+		//draw
 		for (render_queues::element*
-			weak_element = queues.m_cull_opaque;
-			weak_element;
-			weak_element = weak_element->m_next)
+			 weak_element = queues.m_cull_opaque;
+			 weak_element;
+			 weak_element = weak_element->m_next)
 		{
 			auto entity = weak_element->lock();
-			auto material = entity->get_component<renderable>()->get_material();
+			auto t_entity = entity->get_component<transform>();
+			auto r_entity = entity->get_component<renderable>();
+			auto e_material = r_entity->get_material();
 			//material
-			if (material)
+			if (e_material)
 			{
-				material->bind_state();
-				material->bind(
-					viewport,
-					ccamera->get_projection(),
-					tcamera->get_matrix_inv(),
-					entity->get_component<transform>()->get_matrix()
-				);
-			}
-			//draw
-			entity->get_component<renderable>()->draw();
-			//material
-			if (material)
-			{
-				material->unbind();
-				material->unbind_state();
+				effect::ptr         mat_effect    = e_material->get_effect();
+				effect::technique*  mat_technique = mat_effect->get_technique("forward");
+				//applay all pass
+				if (mat_technique) for (auto& pass : *mat_technique)
+				{
+					pass.bind(
+						viewport,
+						c_camera->get_projection(),
+						t_camera->get_matrix_inv(),
+						t_entity->get_matrix(),
+						e_material->get_parameters()
+					);
+					//lights?
+					if (pass.m_support_light)
+					{
+						//uniform ambient light
+						if (pass.m_uniform_ambient_light)
+							pass.m_uniform_ambient_light->set_value(ambient_color);
+						//init loop
+						int light_count = 0;
+						render_queues::element* weak_element = queues.m_cull_light;
+						//pass lights
+						for (; weak_element && light_count < pass.m_uniform_lights.size();
+							   weak_element = weak_element->m_next, ++light_count)
+						{
+							auto l_entity = weak_element->lock();
+							//uniform light
+							pass.m_uniform_lights[light_count].uniform(
+								l_entity->get_component<light>(),
+								t_camera->get_matrix_inv(),
+								l_entity->get_component<transform>()->get_matrix()
+							);
+						}
+						//pass n lights
+						if(pass.m_uniform_n_lights_used)
+							pass.m_uniform_n_lights_used->set_value(light_count);
+					}
+					//draw
+					entity->get_component<renderable>()->draw();
+					//end
+					pass.unbind();
+				}
 			}
 		}
+		//reset state
+		render::set_render_state(render_state);
 	}
 
 
@@ -166,8 +201,29 @@ namespace hcube
 
 	void render_queues::add_call_light(element* e)
 	{
-		e->m_next = m_cull_light;
-		m_cull_light = e;
+		// next to void
+		e->m_next = nullptr;
+		// loop vars
+		element* last = nullptr;
+		element* current = m_cull_light;
+		// insert sort, front to back
+		for (; current;
+			   last = current,
+			   current = current->m_next)
+		{
+			if (current->m_depth < e->m_depth) break;
+		}
+		// last iteration
+		if (last)
+		{
+			e->m_next = current;
+			last->m_next = e;
+		}
+		else
+		{
+			e->m_next = m_cull_light;
+			m_cull_light = e;
+		}
 	}
 
 	void render_queues::add_call_opaque(element* e)
@@ -178,8 +234,8 @@ namespace hcube
 		element* current = m_cull_opaque;
 		//insert sort, front to back
 		for (; current;
-			last = current,
-			current = current->m_next)
+			   last = current,
+			   current = current->m_next)
 		{
 			if (current->m_depth < e->m_depth) break;
 		}
@@ -246,6 +302,7 @@ namespace hcube
 			const auto l_radius = l_entity->m_quadratic;
 			if (l_entity->is_enabled() && f_camera.test_sphere(l_pos, l_radius))
 			{
+				weak_element.m_depth = compute_camera_depth(f_camera, t_entity);
 				m_renderables.add_call_light(&weak_element);
 			}
 		}

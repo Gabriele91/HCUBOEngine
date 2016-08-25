@@ -1,25 +1,7 @@
-//cullface
-cullface true
+effect "base_texture_normal_specular"
 {
-    mode back
-}
-
-//blend
-blend false
-
-//shader
-shader "base_texture_normal_specular"
-{
-    //texture
-    textures
-    {
-        diffuse_map  "box"
-        specular_map "box_specular"
-        normal_map   "box_normal"
-    }
-    //costant uniforms
-    uniforms
-    {
-        color vec4 (1.0,1.0,1.0,1.0)
-    }
+	diffuse_map  texture("box")
+	specular_map texture("box_specular")
+	normal_map   texture("box_normal")
+	color        vec4(1.0,1.0,1.0,1.0)
 }

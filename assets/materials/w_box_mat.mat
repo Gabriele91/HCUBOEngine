@@ -1,18 +1,4 @@
-//cullface
-cullface true
+effect "base"
 {
-    mode back
-}
-
-//blend
-blend false
-
-//shader
-shader "base"
-{
-    //costant uniforms
-    uniforms
-    {
-        color vec4 (1.0,1.0,1.0,1.0)
-    }
+	color vec4 (1.0,1.0,1.0,1.0)
 }

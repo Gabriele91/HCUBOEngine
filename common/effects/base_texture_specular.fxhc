@@ -1,5 +1,8 @@
 parameters
 {
+    mask float(0.0)
+    diffuse_map texture("white")
+    specular_map texture("black")
 	color vec4(1.0,1.0,1.0,1.0)
 }
 
@@ -13,7 +16,7 @@ technique "forward"
 		lights 32
 		shader source 
 		{
-			#pragma import "lib/base.glsl"
+			#pragma import "lib/base_texture_specular.glsl"
 		}
 	}
 }
@@ -28,7 +31,7 @@ technique "deferred"
 		shader source
 		{
 			#define DEFERRED_RENDERING
-			#pragma import "lib/base.glsl"
+			#pragma import "lib/base_texture_specular.glsl"
 		}
 	}
 }

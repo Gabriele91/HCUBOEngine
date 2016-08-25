@@ -141,12 +141,19 @@ namespace hcube
 			size_t      m_line{ 0 };
 		};
 
+		struct lights_field
+		{
+			bool m_on  { false };
+			int  m_n_lights{ 0 };
+		};
+
 		struct pass_field
 		{
 			cullface_state     m_cullface;
 			depth_buffer_state m_depth;
 			blend_state        m_blend;
 			shader_field       m_shader;
+			lights_field	   m_lights;
 		};
 
 		struct technique_field
@@ -520,6 +527,15 @@ namespace hcube
 						//skeep spaces
 						skeep_space_end_comment(ptr);
 					}
+					else if (CSTRCMP(ptr, "lights"))
+					{
+						//skeep spaces
+						skeep_space_end_comment(ptr);
+						//parse textures
+						if (!parse_lights(ptr, pass)) return false;
+						//skeep spaces
+						skeep_space_end_comment(ptr);
+					}
 					else if (CSTRCMP(ptr, "shader"))
 					{
 						//skeep spaces
@@ -640,6 +656,47 @@ namespace hcube
 			}
 			//parse
 			pass.m_cullface.m_cullface = cullface_from_string(param1,CF_BACK);
+			return true;
+		}
+		bool parse_lights(const char*& ptr, pass_field& pass)
+		{
+			//search source attribute
+			if (!(CSTRCMP_SKIP(ptr, "lights")))
+			{
+				push_error("Lights not found");
+				return false;
+			}
+			//skeep "line" space
+			skeep_line_space(ptr);
+			//is off?
+			if ((CSTRCMP_SKIP(ptr, "off")))
+			{
+				pass.m_lights.m_on = false;
+				pass.m_lights.m_n_lights = 0;
+				return true;
+			}
+			//is only_ambient?
+			if ((CSTRCMP_SKIP(ptr, "only_ambient")))
+			{
+				pass.m_lights.m_on = true;
+				pass.m_lights.m_n_lights = 0;
+				return true;
+			}
+			//number
+			if (!is_uint_number(*ptr))
+			{
+				push_error("Lights command required int parameter");
+				return false;
+			}
+			//enable lights
+			pass.m_lights.m_on = true;
+			//parse int
+			if(!parse_int(ptr, &ptr, pass.m_lights.m_n_lights))
+			{
+				push_error("Lights command required valid int parameter");
+				return false;
+			}
+			//end
 			return true;
 		}
 		bool parse_shader(const char*& ptr, pass_field& pass)
@@ -1002,6 +1059,37 @@ namespace hcube
 	};
 	
 	//struct by type
+	struct parameter_texture : public effect::parameter
+	{
+		//value
+		texture::ptr m_value;
+		//init
+		parameter_texture()
+		{
+			m_value = texture::ptr(nullptr);
+			m_type = effect::PT_TEXTURE;
+		}
+		parameter_texture(texture::ptr value)
+		{
+			m_value = value;
+			m_type = effect::PT_TEXTURE;
+		}
+		//set value
+		virtual void set_value(texture::ptr value)
+		{
+			m_value = value;
+		}
+		//get value
+		virtual texture::ptr get_texture() 
+		{ 
+			return m_value;
+		}
+		//copy
+		virtual parameter* copy() const
+		{
+			return new parameter_texture(m_value);
+		}
+	};
 	struct parameter_int : public effect::parameter 
 	{
 		//value
@@ -1016,6 +1104,16 @@ namespace hcube
 		virtual void set_value(int i)
 		{
 			m_value = i;
+		}
+		//get value
+		virtual int get_int()
+		{
+			return m_value;
+		}
+		//copy
+		virtual parameter* copy() const
+		{
+			return new parameter_int(m_value);
 		}
 	};
 	struct parameter_float : public effect::parameter
@@ -1032,6 +1130,16 @@ namespace hcube
 		virtual void set_value(float f)
 		{
 			m_value = f;
+		}
+		//get value
+		virtual float get_float()
+		{
+			return m_value;
+		}
+		//copy
+		virtual parameter* copy() const
+		{
+			return new parameter_float(m_value);
 		}
 	};
 	struct parameter_vec2 : public effect::parameter
@@ -1053,6 +1161,16 @@ namespace hcube
 		{
 			m_value = value;
 		}
+		//get value
+		virtual const glm::vec2& get_vec2()
+		{
+			return m_value;
+		}
+		//copy
+		virtual parameter* copy() const
+		{
+			return new parameter_vec2(m_value);
+		}
 	};
 	struct parameter_vec3 : public effect::parameter
 	{
@@ -1072,6 +1190,16 @@ namespace hcube
 		virtual void set_value(const glm::vec3& value)
 		{
 			m_value = value;
+		}
+		//get value
+		virtual const glm::vec3& get_vec3()
+		{
+			return m_value;
+		}
+		//copy
+		virtual parameter* copy() const
+		{
+			return new parameter_vec3(m_value);
 		}
 	};
 	struct parameter_vec4 : public effect::parameter
@@ -1093,6 +1221,16 @@ namespace hcube
 		{
 			m_value = value;
 		}
+		//get value
+		virtual const glm::vec4& get_vec4()
+		{
+			return m_value;
+		}
+		//copy
+		virtual parameter* copy() const
+		{
+			return new parameter_vec4(m_value);
+		}
 	};
 	struct parameter_mat4 : public effect::parameter
 	{
@@ -1113,19 +1251,44 @@ namespace hcube
 		{
 			m_value = value;
 		}
+		//get value
+		virtual const glm::mat4& get_mat4()
+		{
+			return m_value;
+		}
+		//copy
+		virtual parameter* copy() const
+		{
+			return new parameter_mat4(m_value);
+		}
 	};
 
 
+
 	//enable pass effect
-	void effect::pass::bind()
+	void effect::pass::bind(
+		const glm::vec4& viewport,
+		const glm::mat4& projection,
+		const glm::mat4& view,
+		const glm::mat4& model, 
+		parameters* params
+	)
 	{
 		render::set_blend_state(m_blend);
 		render::set_cullface_state(m_cullface);
 		render::set_depth_buffer_state(m_depth);
 		m_shader->bind();
+		//default uniforms
+		if (m_uniform_projection) m_uniform_projection->set_value(projection);
+		if (m_uniform_view)       m_uniform_view->set_value(view);
+		if (m_uniform_model)      m_uniform_model->set_value(model);
+		if (m_uniform_viewport)   m_uniform_viewport->set_value(viewport);
+		//if null use default
+		if (!params) params = &m_effect->m_parameters;
+		//uniform
 		for (size_t i = 0; i != m_uniform.size(); ++i)
 		{
-			auto& param = m_effect->m_parameters[m_param_id[i]];
+			auto& param = (*params)[m_param_id[i]];
 			//uniform value
 			switch (param->get_type())
 			{
@@ -1151,18 +1314,27 @@ namespace hcube
 			}
 		}
 	}
+
 	//disable pass effect
 	void effect::pass::unbind()
 	{
 		m_shader->unbind();
 	}
+
 	//safe enable pass effect
-	render_state effect::pass::safe_bind()
+	render_state effect::pass::safe_bind(
+		const glm::vec4& viewport,
+		const glm::mat4& projection,
+		const glm::mat4& view,
+		const glm::mat4& model, 
+		parameters* params
+	)
 	{
 		render_state state = render::get_render_state();
-		bind();
+		bind(viewport, projection,view,model,params);
 		return state;
 	}
+
 	//safe disable pass effect
 	void effect::pass::safe_unbind(const render_state& state)
 	{
@@ -1193,12 +1365,13 @@ namespace hcube
 		{
 			switch (e_context.m_parameters[i].m_type)
 			{
-			case parameter_type::PT_INT:   m_parameters[i] = new parameter_int(e_context.m_parameters[i].m_value.m_int);     break;
-			case parameter_type::PT_FLOAT: m_parameters[i] = new parameter_float(e_context.m_parameters[i].m_value.m_float); break;
-			case parameter_type::PT_VEC2:  m_parameters[i] = new parameter_vec2(e_context.m_parameters[i].m_value.m_vec2);   break;
-			case parameter_type::PT_VEC3:  m_parameters[i] = new parameter_vec3(e_context.m_parameters[i].m_value.m_vec3);   break;
-			case parameter_type::PT_VEC4:  m_parameters[i] = new parameter_vec4(e_context.m_parameters[i].m_value.m_vec4);   break;
-			case parameter_type::PT_MAT4:  m_parameters[i] = new parameter_mat4(e_context.m_parameters[i].m_value.m_mat4);   break;
+			case parameter_type::PT_INT:    m_parameters[i] = std::unique_ptr< parameter >(new parameter_int(e_context.m_parameters[i].m_value.m_int));     break;
+			case parameter_type::PT_FLOAT:  m_parameters[i] = std::unique_ptr< parameter >(new parameter_float(e_context.m_parameters[i].m_value.m_float)); break;
+			case parameter_type::PT_VEC2:   m_parameters[i] = std::unique_ptr< parameter >(new parameter_vec2(e_context.m_parameters[i].m_value.m_vec2));   break;
+			case parameter_type::PT_VEC3:   m_parameters[i] = std::unique_ptr< parameter >(new parameter_vec3(e_context.m_parameters[i].m_value.m_vec3));   break;
+			case parameter_type::PT_VEC4:   m_parameters[i] = std::unique_ptr< parameter >(new parameter_vec4(e_context.m_parameters[i].m_value.m_vec4));   break;
+			case parameter_type::PT_MAT4:   m_parameters[i] = std::unique_ptr< parameter >(new parameter_mat4(e_context.m_parameters[i].m_value.m_mat4));   break;
+			case parameter_type::PT_TEXTURE:m_parameters[i] = std::unique_ptr< parameter >(new parameter_texture(resources.get_texture(e_context.m_parameters[i].m_value.m_texture))); break;
 			default: assert(0); break;
 			}
 			//save id
@@ -1245,6 +1418,41 @@ namespace hcube
 
 					}
 				}
+				//default uniform
+				this_technique[p].m_uniform_model      = this_technique[p].m_shader->get_uniform("model");
+				this_technique[p].m_uniform_view       = this_technique[p].m_shader->get_uniform("view");
+				this_technique[p].m_uniform_projection = this_technique[p].m_shader->get_uniform("projection");
+				this_technique[p].m_uniform_viewport   = this_technique[p].m_shader->get_uniform("viewport");
+				//lights uniforms
+				if (parser_pass.m_lights.m_on)
+				{
+					//add support lights
+					this_technique[p].m_support_light = true;
+					//ambient
+					this_technique[p].m_uniform_ambient_light = this_technique[p].m_shader->get_uniform("ambient_light");
+					//n lights
+					this_technique[p].m_uniform_n_lights_used = this_technique[p].m_shader->get_uniform("n_lights_used");
+					//alloc
+					this_technique[p].m_uniform_lights.resize(parser_pass.m_lights.m_n_lights);
+					//add uniforms
+					for (size_t l = 0; l != parser_pass.m_lights.m_n_lights; ++l)
+					{
+						this_technique[p].m_uniform_lights[l].get_uniform(l, this_technique[p].m_shader);
+					}
+				}
+				//get uniforms
+				for (auto it : m_map_parameters)
+				{
+					//get
+					uniform* u_shader = this_technique[p].m_shader->get_uniform(it.first.c_str());
+					//test
+					if (u_shader)
+					{
+						//push
+						this_technique[p].m_param_id.push_back(it.second);
+						this_technique[p].m_uniform.push_back(u_shader);
+					}
+				}
 
 			}
 		}
@@ -1264,7 +1472,7 @@ namespace hcube
 	effect::parameter* effect::get_parameter(int parameter_id)
 	{
 		if(m_parameters.size() > parameter_id)
-			return m_parameters[parameter_id];
+			return m_parameters[parameter_id].get();
 		return nullptr;
 	}
 
@@ -1274,12 +1482,25 @@ namespace hcube
 		if(it_param != m_map_parameters.end()) return get_parameter(it_param->second);
 		return nullptr;
 	}
+
+	effect::parameters* effect::copy_all_parameters()
+	{
+		//alloc vector
+		auto new_params = new parameters(m_parameters.size());
+		//copy all
+		for (size_t i = 0; i != m_parameters.size(); ++i)
+		{
+			(*new_params)[i] = std::unique_ptr< parameter >( m_parameters[i]->copy() );
+		}
+		return new_params;
+	}
+
 	//get id
 	int effect::get_parameter_id(const std::string& parameter_name)
 	{
 		auto it_param = m_map_parameters.find(parameter_name);
-		if (it_param != m_map_parameters.end()) return -1;
-		return it_param->second;
+		if (it_param != m_map_parameters.end()) return it_param->second;
+		return -1;
 	}
 
 }

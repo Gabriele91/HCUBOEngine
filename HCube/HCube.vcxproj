@@ -207,6 +207,7 @@
     <ClCompile Include="..\source\filesystem.cpp" />
     <ClCompile Include="..\source\frustum.cpp" />
     <ClCompile Include="..\source\g_buffer.cpp" />
+    <ClCompile Include="..\source\light.cpp" />
     <ClCompile Include="..\source\material.cpp" />
     <ClCompile Include="..\source\native_dialog.cpp" />
     <ClCompile Include="..\source\json11.cpp" />
@@ -238,17 +239,18 @@
     <None Include="..\assets\ship\vehicle_playerShip_glass_mat.mat" />
     <None Include="..\assets\ship\vehicle_playerShip_metal_mat.mat" />
     <None Include="..\common\effects\base.fxhc" />
-    <None Include="..\common\shaders\base.glsl" />
-    <None Include="..\common\shaders\base_texture.glsl" />
-    <None Include="..\common\shaders\base_texture_normal.glsl" />
-    <None Include="..\common\shaders\base_texture_normal_specular.glsl" />
-    <None Include="..\common\shaders\base_texture_specular.glsl" />
+    <None Include="..\common\effects\base_texture.fxhc" />
+    <None Include="..\common\effects\base_texture_normal.fxhc" />
+    <None Include="..\common\effects\base_texture_normal_specular.fxhc" />
+    <None Include="..\common\effects\base_texture_specular.fxhc" />
+    <None Include="..\common\effects\lib\base.glsl" />
+    <None Include="..\common\effects\lib\base_texture.glsl" />
+    <None Include="..\common\effects\lib\base_texture_normal.glsl" />
+    <None Include="..\common\effects\lib\base_texture_normal_specular.glsl" />
+    <None Include="..\common\effects\lib\base_texture_specular.glsl" />
+    <None Include="..\common\effects\lib\lights.glsl" />
+    <None Include="..\common\effects\lib\output_fragment.glsl" />
     <None Include="..\common\shaders\deferred_light.glsl" />
-    <None Include="..\common\shaders\lib\base.glsl" />
-    <None Include="..\common\shaders\lib\base_texture.glsl" />
-    <None Include="..\common\shaders\lib\base_texture_normal.glsl" />
-    <None Include="..\common\shaders\lib\base_texture_normal_specular.glsl" />
-    <None Include="..\common\shaders\lib\base_texture_specular.glsl" />
     <None Include="..\common\shaders\lib\lights.glsl" />
     <None Include="..\common\shaders\lib\output_fragment.glsl" />
     <None Include="..\common\shaders\lib\ssao_kernel.glsl" />
@@ -282,6 +284,8 @@
     <Image Include="..\assets\textures\box_specular.png" />
     <Image Include="..\assets\textures\font.png" />
     <Image Include="..\assets\textures\NormalMap.png" />
+    <Image Include="..\common\textures\black.tga" />
+    <Image Include="..\common\textures\white.tga" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

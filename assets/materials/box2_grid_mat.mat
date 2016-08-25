@@ -1,7 +1,8 @@
-effect "base_texture_normal_specular"
+effect "box2_grid_effect" 
 {
-	diffuse_map  texture("box2")
+	diffuse_map  texture("box2_grid")
 	specular_map texture("box2_specular")
 	normal_map   texture("box2_normal")
 	color        vec4(1.0,1.0,1.0,1.0)
+	mask		 float(0.9)
 }

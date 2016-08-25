@@ -31,11 +31,17 @@
     <Filter Include="File di risorse\common\shaders">
       <UniqueIdentifier>{43006d9e-f495-4f2b-a466-be924f3230c8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="File di risorse\common\shaders\lib">
-      <UniqueIdentifier>{fc3af3a6-3986-4fb5-8922-0d0e0cc39252}</UniqueIdentifier>
-    </Filter>
     <Filter Include="File di risorse\common\effects">
       <UniqueIdentifier>{9b526587-ecc8-4ca4-8e67-1896bbffdbeb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="File di risorse\common\effects\lib">
+      <UniqueIdentifier>{db718893-e057-40dc-84af-ce08fef9a13a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="File di risorse\common\shaders\lib">
+      <UniqueIdentifier>{23157241-6136-45f9-b9d1-584be02ec9f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="File di risorse\common\textures">
+      <UniqueIdentifier>{292d62b4-3297-4660-bc1b-fcdbf1c5b6b8}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -251,6 +257,9 @@
     <ClCompile Include="..\source\effect.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\light.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\source\cocoa_native_dialog.mm">
@@ -277,20 +286,41 @@
     <None Include="..\assets\ship\vehicle_playerShip_metal_mat.mat">
       <Filter>File di risorse\assets\ship</Filter>
     </None>
-    <None Include="..\common\shaders\base.glsl">
-      <Filter>File di risorse\common\shaders</Filter>
+    <None Include="..\common\effects\base.fxhc">
+      <Filter>File di risorse\common\effects</Filter>
     </None>
-    <None Include="..\common\shaders\base_texture.glsl">
-      <Filter>File di risorse\common\shaders</Filter>
+    <None Include="..\common\effects\base_texture.fxhc">
+      <Filter>File di risorse\common\effects</Filter>
     </None>
-    <None Include="..\common\shaders\base_texture_normal.glsl">
-      <Filter>File di risorse\common\shaders</Filter>
+    <None Include="..\common\effects\base_texture_normal.fxhc">
+      <Filter>File di risorse\common\effects</Filter>
     </None>
-    <None Include="..\common\shaders\base_texture_normal_specular.glsl">
-      <Filter>File di risorse\common\shaders</Filter>
+    <None Include="..\common\effects\base_texture_normal_specular.fxhc">
+      <Filter>File di risorse\common\effects</Filter>
     </None>
-    <None Include="..\common\shaders\base_texture_specular.glsl">
-      <Filter>File di risorse\common\shaders</Filter>
+    <None Include="..\common\effects\base_texture_specular.fxhc">
+      <Filter>File di risorse\common\effects</Filter>
+    </None>
+    <None Include="..\common\effects\lib\base.glsl">
+      <Filter>File di risorse\common\effects\lib</Filter>
+    </None>
+    <None Include="..\common\effects\lib\base_texture.glsl">
+      <Filter>File di risorse\common\effects\lib</Filter>
+    </None>
+    <None Include="..\common\effects\lib\base_texture_normal.glsl">
+      <Filter>File di risorse\common\effects\lib</Filter>
+    </None>
+    <None Include="..\common\effects\lib\base_texture_normal_specular.glsl">
+      <Filter>File di risorse\common\effects\lib</Filter>
+    </None>
+    <None Include="..\common\effects\lib\base_texture_specular.glsl">
+      <Filter>File di risorse\common\effects\lib</Filter>
+    </None>
+    <None Include="..\common\effects\lib\lights.glsl">
+      <Filter>File di risorse\common\effects\lib</Filter>
+    </None>
+    <None Include="..\common\effects\lib\output_fragment.glsl">
+      <Filter>File di risorse\common\effects\lib</Filter>
     </None>
     <None Include="..\common\shaders\deferred_light.glsl">
       <Filter>File di risorse\common\shaders</Filter>
@@ -310,21 +340,6 @@
     <None Include="..\common\shaders\wireframe.glsl">
       <Filter>File di risorse\common\shaders</Filter>
     </None>
-    <None Include="..\common\shaders\lib\base.glsl">
-      <Filter>File di risorse\common\shaders\lib</Filter>
-    </None>
-    <None Include="..\common\shaders\lib\base_texture.glsl">
-      <Filter>File di risorse\common\shaders\lib</Filter>
-    </None>
-    <None Include="..\common\shaders\lib\base_texture_normal.glsl">
-      <Filter>File di risorse\common\shaders\lib</Filter>
-    </None>
-    <None Include="..\common\shaders\lib\base_texture_normal_specular.glsl">
-      <Filter>File di risorse\common\shaders\lib</Filter>
-    </None>
-    <None Include="..\common\shaders\lib\base_texture_specular.glsl">
-      <Filter>File di risorse\common\shaders\lib</Filter>
-    </None>
     <None Include="..\common\shaders\lib\lights.glsl">
       <Filter>File di risorse\common\shaders\lib</Filter>
     </None>
@@ -333,9 +348,6 @@
     </None>
     <None Include="..\common\shaders\lib\ssao_kernel.glsl">
       <Filter>File di risorse\common\shaders\lib</Filter>
-    </None>
-    <None Include="..\common\effects\base.fxhc">
-      <Filter>File di risorse\common\effects</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -386,6 +398,12 @@
     </Image>
     <Image Include="..\assets\ship\vehicle_playerShip_spc.png">
       <Filter>File di risorse\assets\ship</Filter>
+    </Image>
+    <Image Include="..\common\textures\black.tga">
+      <Filter>File di risorse\common\textures</Filter>
+    </Image>
+    <Image Include="..\common\textures\white.tga">
+      <Filter>File di risorse\common\textures</Filter>
     </Image>
   </ItemGroup>
 </Project>

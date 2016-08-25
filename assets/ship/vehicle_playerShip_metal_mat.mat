@@ -1,22 +1,7 @@
-
-	cullface true
-	{
-		mode back
-	}
-
-	blend false
-
-	shader "base_texture_normal_specular"
-	{
-		textures
-		{
-			diffuse_map "vehicle_playerShip_dff"
-			specular_map "vehicle_playerShip_spc"
-			normal_map "vehicle_playerShip_nrm"
-		}
-
-		uniforms
-		{
-			color vec4(1.000000,1.000000,1.000000,1.000000)
-		}
-	}
+effect "base_texture_normal_specular"
+{
+	diffuse_map   texture("vehicle_playerShip_dff")
+	specular_map  texture("vehicle_playerShip_spc")
+	normal_map    texture("vehicle_playerShip_nrm")
+	color         vec4(1.000000,1.000000,1.000000,1.000000)
+}

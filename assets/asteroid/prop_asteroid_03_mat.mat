@@ -1,22 +1,7 @@
-
-	cullface true
-	{
-		mode back
-	}
-
-	blend false
-
-	shader "base_texture_normal_specular"
-	{
-		textures
-		{
-			diffuse_map "prop_asteroid_03_dff"
-			specular_map "asteroid_03_spec"
-			normal_map "prop_asteroid_03_nrm"
-		}
-
-		uniforms
-		{
-			color vec4(1.000000,1.000000,1.000000,1.000000)
-		}
-	}
+effect "base_texture_normal_specular"
+{
+	diffuse_map  texture("prop_asteroid_03_dff")
+	specular_map texture("asteroid_03_spec")
+	normal_map   texture("prop_asteroid_03_nrm")
+	color        vec4(1.000000,1.000000,1.000000,1.000000)
+}

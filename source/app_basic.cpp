@@ -170,12 +170,18 @@ namespace hcube
 		//deferred alloc
 		m_resources.add_directory("common/effects");
 		m_resources.add_directory("common/shaders");
+		m_resources.add_directory("common/textures");
+#if 0
 		auto rendering_pass = rendering_pass_deferred::snew(g_size, m_resources);
 		rendering_pass->set_ambient_occlusion(true);
 		m_rendering->add_rendering_pass(rendering_pass);
-		//test effect
-		auto effect = m_resources.get_effect("base");
+#else
+		auto rendering_pass = rendering_pass_forward::snew();
+		m_rendering->add_rendering_pass(rendering_pass);
+#endif
 		//load assets
+		m_resources.add_directory("assets/effects");
+		m_resources.add_directory("assets/shaders");
 		m_resources.add_directory("assets/textures");
 		m_resources.add_directory("assets/materials");
 		m_resources.add_directory("assets/odst");
@@ -196,21 +202,18 @@ namespace hcube
 			c_camera->set_viewport(glm::ivec4{ 0, 0, size.x, size.y });
 			c_camera->set_perspective(m_fov, m_aspect, 0.1, 500.0);
 			t_camera->look_at(glm::vec3{ 0.0f, 6.9f, -45.0f },
-				glm::vec3{ 0.0f, 1.0f, 0.0f },
-				glm::vec3{ 0.0f, 1.0f, 0.0f });
+							  glm::vec3{ 0.0f, 1.0f, 0.0f },
+							  glm::vec3{ 0.0f, 1.0f, 0.0f });
 			//set camera
 			m_systems.add_entity(m_camera);
-
-			//odst
-			auto m_odst = m_resources.get_prefab("odst")->instantiate();
-			auto t_odst = m_odst->get_component<transform>();
-			//set info
-			t_odst->position({ 0.0f, -5.0f, 0.0f });
-			t_odst->rotation(glm::quat({ glm::radians(15.0), glm::radians(0.0), 0.0 }));
-			t_odst->scale({ 0.2f, 0.2f, 0.2f });
-			//add to render
-			m_systems.add_entity(m_odst);
-
+			//add cube
+			auto cube = gameobject::node_new(
+				basic_meshs::cube({ 5,5,5 }, true)
+			);
+			cube->get_component<renderable>()->set_material(
+				m_resources.get_material("box2_grid_mat")
+			);
+			m_systems.add_entity(cube);
 			//ship
 			m_model = m_resources.get_prefab("ship")->instantiate();
 			auto t_model = m_model->get_component<transform>();
@@ -260,44 +263,7 @@ namespace hcube
 
 			//add to render
 			m_systems.add_entity(m_model);
-			//cube
-#if 0
-			auto e_cube = gameobject::cube_new({ 1,1,1 });
-			e_cube->get_component<renderable>->set_material(m_resources.get_material("w_box_mat"));
-			auto t_cube = e_cube->get_component<transform>();
-			t_cube->position({ 0.,-10.0,0. });
-			t_cube->scale({ 70.,1.0,70. });
-			//add to render
-			m_systems.add_entity(e_cube);
-#if 1
-			auto e_nanosuit = m_resources.get_prefab("nanosuit")->instantiate();
-			auto t_nanosuit = e_nanosuit->get_component<transform>();
-			t_nanosuit->position({ 0.,-10.0,0. });
-			t_nanosuit->scale({ 1.0, 1.0, 1.0 });
-			t_nanosuit->rotation(glm::quat({ glm::radians(0.0), glm::radians(180.0), 0.0 }));
-			//add to render
-			m_systems.add_entity(e_nanosuit);
-#endif
 
-#else
-			auto e_sponza = m_resources.get_prefab("sponza")->instantiate();
-			auto t_sponza = e_sponza->get_component<transform>();
-			t_sponza->position({ 5.,-10.0, -99. });
-			t_sponza->scale({ 0.12,0.12,0.12 });
-			t_sponza->rotation(glm::quat({ 0, glm::radians(90.0), 0.0 }));
-			//add to render
-			m_systems.add_entity(e_sponza);
-#if 0
-			auto e_sponza_obb = m_resources.get_prefab("sponza_obb")->instantiate();
-			auto t_sponza_obb = e_sponza_obb->get_component<transform>();
-			t_sponza_obb->position({ 5.,-10.0, -99. });
-			t_sponza_obb->scale({ 0.12,0.12,0.12 });
-			t_sponza_obb->rotation(glm::quat({ 0, glm::radians(90.0), 0.0 }));
-			//add to render
-			m_systems.add_entity(e_sponza_obb);
-
-#endif 
-#endif
 			//lights
 			entity::ptr e_lights[3] =
 			{
@@ -332,20 +298,9 @@ namespace hcube
 
 			for (short i = 0; i != 3; ++i)
 			{
-#if 0
-				l_lights[i]->m_constant = 1.0;
-				l_lights[i]->m_linear = 0.001;
-				l_lights[i]->m_quadratic = 0.002;
-#else
-
 				l_lights[i]->m_constant = 1.1;
 				l_lights[i]->m_linear = 18.0f;
 				l_lights[i]->m_quadratic = 35.0;
-				/*
-				l_lights[i]->set_quadratic_attenuation_from_radius(10.0,0.001);
-				std::cout << "l["<<i<<"].radius = "<<l_lights[i]->get_radius_factor()<<std::endl;
-				*/
-#endif
 			}
 
 
@@ -382,7 +337,7 @@ namespace hcube
 		acc_delta_time += 1.0f * delta_time;
 		//////////////////////////////////////////////////////////
 		//update
-		m_model->get_component<transform>()->turn(glm::quat{ {0.0, glm::radians(5.0*delta_time), 0.0} });
+		//m_model->get_component<transform>()->turn(glm::quat{ {0.0, glm::radians(5.0*delta_time), 0.0} });
 		//for all lights
 		m_lights->get_component<transform>()->turn(glm::quat{ {0.0, glm::radians(20.0*delta_time), 0.0} });
 		//////////////////////////////////////////////////////////

@@ -10,6 +10,7 @@
 #include <glm/mat4x4.hpp>
 #include <texture.h>
 #include <shader.h>
+#include <light.h>
 #include <smart_pointers.h>
 
 namespace hcube
@@ -84,6 +85,8 @@ namespace hcube
 			virtual const std::vector<glm::vec4>& get_vec4_array() { return{}; }
 			virtual const std::vector<glm::mat4>& get_mat4_array() { return{}; }
 
+			virtual parameter* copy() const = 0;
+
 		protected:
 
 			friend class effect;
@@ -94,25 +97,48 @@ namespace hcube
 		};
 
 		//parameters list
-		using parameters = std::vector < parameter* >;
+		using parameters = std::vector < std::unique_ptr< parameter > >;
 
 		//pass type
 		struct pass
 		{
-			effect*				m_effect{ nullptr };
-			cullface_state		m_cullface;
-			depth_buffer_state	m_depth;
-			blend_state			m_blend;
-			shader::ptr			m_shader;
+			effect*				    m_effect{ nullptr };
+			cullface_state		    m_cullface;
+			depth_buffer_state	    m_depth;
+			blend_state			    m_blend;
+			shader::ptr			    m_shader;
 			std::vector< int >		m_param_id;
 			std::vector< uniform* > m_uniform;
+			//default uniform
+			uniform* m_uniform_projection{ nullptr };
+			uniform* m_uniform_view{ nullptr };
+			uniform* m_uniform_model{ nullptr };
+			uniform* m_uniform_viewport{ nullptr };
+			//all light uniform
+			bool m_support_light{ false };
+			uniform* m_uniform_ambient_light{ nullptr };
+			uniform* m_uniform_n_lights_used{ nullptr };
+			std::vector< uniform_light > m_uniform_lights;
 			//unsafe
-			void bind();
+			void bind(
+				const glm::vec4& viewport,
+				const glm::mat4& projection,
+				const glm::mat4& view,
+				const glm::mat4& model, 
+				parameters* params = nullptr
+			);
 			void unbind();
 			//safe
-			render_state safe_bind();
+			render_state safe_bind(
+				const glm::vec4& viewport,
+				const glm::mat4& projection,
+				const glm::mat4& view,
+				const glm::mat4& model,
+				parameters* params = nullptr
+			);
 			void safe_unbind(const render_state&);
 		};
+
 
 		//pass list
 		using technique = std::vector < pass >;
@@ -128,11 +154,13 @@ namespace hcube
 		technique* get_technique(const std::string& technique);
 
 		//get parameter
-		parameter* get_parameter(int parameter);
-		parameter* get_parameter(const std::string& parameter);
+		parameter*  get_parameter(int parameter);
+		parameter*  get_parameter(const std::string& parameter);
+		parameters* copy_all_parameters();
 
 		//get id
 		int get_parameter_id(const std::string& parameter);
+
 
 	protected:
 		parameters		m_parameters;

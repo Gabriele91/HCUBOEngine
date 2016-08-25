@@ -5,40 +5,6 @@
 
 namespace hcube
 {
-	void rendering_pass_deferred::uniform_light::get_uniform(int i, shader::ptr shader)
-	{
-		std::string lights_i("lights[" + std::to_string(i) + "]");
-		m_uniform_type = shader->get_uniform((lights_i + ".m_type").c_str());
-
-		m_uniform_position = shader->get_uniform((lights_i + ".m_position").c_str());
-		m_uniform_direction = shader->get_uniform((lights_i + ".m_direction").c_str());
-
-		m_uniform_diffuse = shader->get_uniform((lights_i + ".m_diffuse").c_str());
-		m_uniform_specular = shader->get_uniform((lights_i + ".m_specular").c_str());
-
-		m_uniform_constant = shader->get_uniform((lights_i + ".m_inv_constant").c_str());
-		m_uniform_linear = shader->get_uniform((lights_i + ".m_inv_quad_linear").c_str());
-		m_uniform_quadratic = shader->get_uniform((lights_i + ".m_inv_quad_quadratic").c_str());
-
-		m_uniform_inner_cut_off = shader->get_uniform((lights_i + ".m_inner_cut_off").c_str());
-		m_uniform_outer_cut_off = shader->get_uniform((lights_i + ".m_outer_cut_off").c_str());
-	}
-
-	void rendering_pass_deferred::uniform_light::uniform(light_wptr weak_light, const glm::mat4& view, const glm::mat4& model)
-	{
-		auto light = weak_light.lock();
-		m_uniform_type->set_value(light->m_type);
-		m_uniform_position->set_value((glm::vec3)(view * model * glm::vec4(0, 0, 0, 1.0)));
-		m_uniform_direction->set_value((glm::vec3)(view * model * glm::vec4(0, 0, 1.0, 0.0)));
-		m_uniform_diffuse->set_value(light->m_diffuse);
-		m_uniform_specular->set_value(light->m_specular);
-		m_uniform_constant->set_value(1.f / light->m_constant);
-		m_uniform_linear->set_value(1.f / (light->m_linear*light->m_linear));
-		m_uniform_quadratic->set_value(1.f / (light->m_quadratic*light->m_quadratic));
-		m_uniform_inner_cut_off->set_value(light->m_inner_cut_off);
-		m_uniform_outer_cut_off->set_value(light->m_outer_cut_off);
-	}
-
 	rendering_pass_deferred::rendering_pass_deferred(const glm::ivec2& w_size, resources_manager& resources)
 	{
 		m_q_size = w_size;
@@ -80,21 +46,22 @@ namespace hcube
 	}
 
 	void rendering_pass_deferred::draw_pass(glm::vec4&  clear_color,
-		glm::vec4&  ambient_color,
-		entity::ptr e_camera,
-		render_queues& queues)
+											glm::vec4&  ambient_color,
+											entity::ptr e_camera,
+											render_queues& queues)
 	{
+		//camera
 		camera::ptr   c_camera = e_camera->get_component<camera>();
 		transform_ptr t_camera = e_camera->get_component<transform>();
 		const glm::vec4& viewport = c_camera->get_viewport();
-		render::set_viewport_state({ viewport });
-		render::set_clear_color_state({ clear_color });
-
+		//buffer
 		m_g_buffer.bind();
-
-		render::set_clear_color_state(glm::vec4{ ambient_color.r, ambient_color.g, ambient_color.b,1.0 });
+		//set state
+		render::set_viewport_state({ viewport });
+		render::set_clear_color_state(glm::vec4{ clear_color.r, clear_color.g, clear_color.b,1.0 });
 		render::clear();
-
+		//save state
+		auto render_state = render::get_render_state();
 		//draw
 		for (render_queues::element*
 			weak_element = queues.m_cull_opaque;
@@ -108,24 +75,28 @@ namespace hcube
 			//material
 			if (e_material)
 			{
-				e_material->bind_state();
-				e_material->bind(
-					viewport,
-					c_camera->get_projection(),
-					t_camera->get_matrix_inv(),
-					t_entity->get_matrix()
-				);
-			}
-			//draw
-			entity->get_component<renderable>()->draw();
-			//material
-			if (e_material)
-			{
-				e_material->unbind();
-				e_material->unbind_state();
+				effect::ptr         mat_effect = e_material->get_effect();
+				effect::technique*  mat_technique = mat_effect->get_technique("deferred");
+				//applay all pass
+				if(mat_technique) for (auto& pass : *mat_technique)
+				{
+					pass.bind(
+						viewport,
+						c_camera->get_projection(),
+						t_camera->get_matrix_inv(),
+						t_entity->get_matrix(),
+						e_material->get_parameters()
+					);
+					//draw
+					entity->get_component<renderable>()->draw();
+					//end
+					pass.unbind();
+				}
 			}
 		}
-
+		//reset state
+		render::set_render_state(render_state);
+		//unbind
 		m_g_buffer.unbind();
 		////////////////////////////////////////////////////////////////////////////////
 		//clear frame buffer
@@ -151,18 +122,24 @@ namespace hcube
 		m_albedo->set_value(2);
 		m_occlusion->set_value(3);
 		//add info
-		m_ambient_light->set_value(ambient_color);
-		//compute max lights
-		unsigned max_lights = std::min(m_max_lights, (unsigned)queues.m_lights.size());
-		m_uniform_n_lights_used->set_value((int)max_lights);
-		//uniform lights
-		for (unsigned i = 0; i != max_lights; ++i)
+		m_ambient_light->set_value(ambient_color);;
+		//init loop
+		int light_count = 0;
+		render_queues::element* weak_element = queues.m_cull_light;
+		//pass lights
+		for (; weak_element && light_count < m_max_lights;
+			   weak_element = weak_element->m_next, ++light_count)
 		{
-			auto entity = queues.m_lights[i].lock();
-			m_uniform_lights[i].uniform(entity->get_component<light>(),
+			auto l_entity = weak_element->lock();
+			//uniform light
+			m_uniform_lights[light_count].uniform(
+				l_entity->get_component<light>(),
 				t_camera->get_matrix_inv(),
-				entity->get_component<transform>()->get_matrix());
+				l_entity->get_component<transform>()->get_matrix()
+			);
 		}
+		//compute max lights
+		m_uniform_n_lights_used->set_value((int)light_count);
 		//draw squere
 		m_square->draw();
 		//unbind texture

@@ -66,7 +66,7 @@ namespace hcube
 	using rendering_pass_ptr = std::shared_ptr< rendering_pass >;
 	using rendering_pass_uptr = std::unique_ptr< rendering_pass >;
 
-	class rendering_pass_base : public rendering_pass, public smart_pointers< rendering_pass_base >
+	class rendering_pass_forward : public rendering_pass, public smart_pointers< rendering_pass_forward >
 	{
 	public:
 		virtual void draw_pass(glm::vec4&  clear_color,
