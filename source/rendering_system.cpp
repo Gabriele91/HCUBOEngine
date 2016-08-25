@@ -299,7 +299,7 @@ namespace hcube
 			auto t_entity = entity->get_component<transform>();
 			auto l_entity = entity->get_component<light>();
 			const auto l_pos = (glm::vec3)(t_entity->get_matrix()*glm::vec4(0, 0, 0, 1.));
-			const auto l_radius = l_entity->m_quadratic;
+			const auto l_radius = l_entity->m_radius;
 			if (l_entity->is_enabled() && f_camera.test_sphere(l_pos, l_radius))
 			{
 				weak_element.m_depth = compute_camera_depth(f_camera, t_entity);

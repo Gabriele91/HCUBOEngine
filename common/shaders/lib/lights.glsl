@@ -1,5 +1,5 @@
 //costs
-const int MAX_LIGHTS = 32;
+const int MAX_LIGHTS      = 32;
 const int DIRECTION_LIGHT = 0;
 const int POINT_LIGHT     = 1;
 const int SPOT_LIGHT      = 2;
@@ -16,8 +16,8 @@ struct light
     vec3  m_specular;
     
     float m_inv_constant;
-    float m_inv_quad_linear;
-    float m_inv_quad_quadratic;
+    float m_inv_quad_inside_radius;
+    float m_inv_quad_radius;
     
     float m_inner_cut_off;
     float m_outer_cut_off;
@@ -39,8 +39,8 @@ float compute_attenuation(in light light0, in vec3  frag_position)
 {
 	float light_distance = length(light0.m_position - frag_position);
 	float attenuation = clamp(  min(light0.m_inv_constant, 1.0)
-                                - ( light_distance * light0.m_inv_quad_linear )
-							    - ((light_distance * light_distance) * light0.m_inv_quad_quadratic), 0.0, 1.0);
+                                - ( light_distance * light0.m_inv_quad_inside_radius)
+							    - ((light_distance * light_distance) * light0.m_inv_quad_radius), 0.0, 1.0);
 	attenuation *= attenuation;
 	return attenuation;
 }

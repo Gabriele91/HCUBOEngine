@@ -229,8 +229,8 @@ namespace hcube
 			l_model_light->m_diffuse = { 1.0f, 0.8f, 0.1f };
 			l_model_light->m_specular = { 1.0f, 0.8f, 0.1f };
 			l_model_light->m_constant = 1.0;
-			l_model_light->m_linear = 7.0;
-			l_model_light->m_quadratic = 7.0;
+			l_model_light->m_inside_radius = 7.0;
+			l_model_light->m_radius = 7.0;
 			m_model->add_child(e_model_light);
 
 			auto e_model_light1 = gameobject::light_new();
@@ -299,8 +299,8 @@ namespace hcube
 			for (short i = 0; i != 3; ++i)
 			{
 				l_lights[i]->m_constant = 1.1;
-				l_lights[i]->m_linear = 18.0f;
-				l_lights[i]->m_quadratic = 35.0;
+				l_lights[i]->m_inside_radius = 18.0f;
+				l_lights[i]->m_radius = 35.0;
 			}
 
 

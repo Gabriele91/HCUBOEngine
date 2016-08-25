@@ -31,26 +31,27 @@ namespace hcube
 		//type
 		light_type m_type{ POINT_LIGHT };
 		//light info
-		glm::vec3  m_diffuse{ 1.0, 1.0, 1.0 };
+		glm::vec3  m_diffuse { 1.0, 1.0, 1.0 };
 		glm::vec3  m_specular{ 1.0, 1.0, 1.0 };
 		//attenuation
-		float      m_constant{ 1.0 };
-		float      m_linear{ 1.0 };
-		float      m_quadratic{ 0.0 };
+		float      m_constant     { 1.0 };
+		float      m_inside_radius{ 1.0 };
+		float      m_radius       { 1.0 };
 		//spot light info
 		float      m_inner_cut_off{ -1.0 };
 		float      m_outer_cut_off{ -1.0 };
 		//default
 		light() {}
-		//init params
+
+		//init all params
 		light
 		(
 			light_type       type,
 			const glm::vec3& diffuse,
 			const glm::vec3& specular,
 			float            constant,
-			float            linear,
-			float            quadratic,
+			float            inside_radius,
+			float            radius,
 			float            inner_cut_off,
 			float            outer_cut_off
 		)
@@ -59,83 +60,63 @@ namespace hcube
 			m_diffuse = diffuse;
 			m_specular = specular;
 			m_constant = constant;
-			m_linear = linear;
-			m_quadratic = quadratic;
+			m_inside_radius = inside_radius;
+			m_radius        = radius;
 			m_inner_cut_off = inner_cut_off;
 			m_outer_cut_off = outer_cut_off;
 		}
+
 		//init point type
-		void point(const glm::vec3& diffuse,
+		void point
+		(
+			const glm::vec3& diffuse,
 			const glm::vec3& specular,
 			float            constant,
-			float            linear,
-			float            quadratic)
+			float            inside_radius,
+			float            radius
+		)
 		{
 			m_type = POINT_LIGHT;
 			m_diffuse = diffuse;
 			m_specular = specular;
 			m_constant = constant;
-			m_linear = linear;
-			m_quadratic = quadratic;
+			m_inside_radius = inside_radius;
+			m_radius = radius;
 		}
+
 		//init sport type
-		void spot(const glm::vec3& diffuse,
+		void spot
+		(
+			const glm::vec3& diffuse,
 			const glm::vec3& specular,
 			float            constant,
-			float            linear,
-			float            quadratic,
+			float            inside_radius,
+			float            radius,
 			float            inner_cut_off,
-			float            outer_cut_off)
+			float            outer_cut_off
+		)
 		{
 			m_type = SPOT_LIGHT;
 			m_diffuse = diffuse;
 			m_specular = specular;
 			m_constant = constant;
-			m_linear = linear;
-			m_quadratic = quadratic;
+			m_inside_radius = inside_radius;
+			m_radius = radius;
 			m_inner_cut_off = std::cos(inner_cut_off);
 			m_outer_cut_off = std::cos(outer_cut_off);
 		}
+
 		//init direction type
-		void direction(const glm::vec3& diffuse,
-			const glm::vec3& specular)
+		void direction
+		(
+			const glm::vec3& diffuse,
+			const glm::vec3& specular
+		)
 		{
 			m_type = DIRECTION_LIGHT;
 			m_diffuse = diffuse;
 			m_specular = specular;
 		}
-
-		//compute attenuation from radius and linear att
-		void set_quadratic_attenuation_from_radius(float radius, float linear = 1.0, float constant = 1.0)
-		{
-			//formula
-			// a = 1./ (c + d*l + d*d*q)
-			// if d = r => a=0
-			// q = (c+r*l)/(r*r)
-			m_quadratic = (constant + radius*linear) / (radius*radius);
-			m_linear = linear;
-			m_constant = constant;
-		}
-
-		void set_linear_attenuation_from_radius(float radius, float quadratic = 1.0, float constant = 1.0)
-		{
-			//formula
-			// a = 1./ (c + d*l + d*d*q)
-			// if d = r => a=0
-			// l = (c+r*r*q)/r
-			m_linear = ((constant + radius*radius*quadratic) / radius);
-			m_quadratic = quadratic;
-			m_constant = constant;
-		}
-
-		float get_radius_factor(float brightness = 128.0f) const
-		{
-			float light_max = std::fmaxf(std::fmaxf(m_diffuse.r, m_diffuse.g), m_diffuse.b);
-			float brightness_factor = 256.f / brightness; //256.0f->green max bit value
-			return (m_linear + std::sqrtf(m_linear * m_linear - 4 * m_quadratic * (m_constant - brightness_factor * light_max))) / (2 * m_quadratic);
-		}
-
-
 		//copy
 		virtual component_ptr copy() const;
 	};
@@ -148,21 +129,7 @@ namespace hcube
 	{
 		return std::make_shared< light >(args...);
 	}
-
-	inline component_ptr light::copy() const
-	{
-		return light_snew(light{
-			m_type,
-			m_diffuse,
-			m_specular,
-			m_constant,
-			m_linear,
-			m_quadratic ,
-			m_inner_cut_off,
-			m_outer_cut_off
-		});
-	}
-
+	
 	struct uniform_light
 	{
 		uniform* m_uniform_type;
@@ -173,9 +140,9 @@ namespace hcube
 		uniform* m_uniform_diffuse;
 		uniform* m_uniform_specular;
 
-		uniform* m_uniform_constant;
-		uniform* m_uniform_linear;
-		uniform* m_uniform_quadratic;
+		uniform* m_uniform_inv_constant;
+		uniform* m_uniform_inv_quad_inside_radius;
+		uniform* m_uniform_inv_quad_radius;
 
 		uniform* m_uniform_inner_cut_off;
 		uniform* m_uniform_outer_cut_off;
