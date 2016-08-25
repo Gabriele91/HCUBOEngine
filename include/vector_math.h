@@ -19,6 +19,7 @@
 #include <glm/gtx/matrix_operation.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp> 
+#include <glm/gtc/matrix_access.hpp> 
 
 namespace hcube
 {
@@ -147,6 +148,18 @@ namespace hcube
     {
         return glm::degrees(a);
     }
+
+	template < class T >
+	inline auto row(const T& a, size_t i) -> decltype( glm::row(a, i) )
+	{
+		return glm::row(a, i);
+	}
+
+	template < class T >
+	inline auto column(const T& a, size_t i) -> decltype( glm::column(a, i) )
+	{
+		return glm::column(a, i);
+	}
     
     template < class T, class V >
     inline T translate(const T& mat,const V& v)

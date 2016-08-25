@@ -4,10 +4,7 @@
 #include <memory>
 #include <string>
 #include <vector>
-#include <glm/vec2.hpp>
-#include <glm/vec3.hpp>
-#include <glm/vec4.hpp>
-#include <glm/mat4x4.hpp>
+#include <vector_math.h>
 #include <texture.h>
 #include <shader.h>
 #include <light.h>
