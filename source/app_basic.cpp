@@ -10,6 +10,7 @@
 #include <basic_meshs.h>
 #include <regex>
 #include <rendering_pass_deferred.h>
+#include <rendering_pass_forward.h>
 #include <gameobject.h>
 #include <transform.h>
 #include <iostream>

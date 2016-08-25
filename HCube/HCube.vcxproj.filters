@@ -168,6 +168,9 @@
     <ClInclude Include="..\include\vector_math.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\rendering_pass_forward.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\application.cpp">
@@ -261,6 +264,9 @@
       <Filter>File di origine</Filter>
     </ClCompile>
     <ClCompile Include="..\source\light.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\rendering_pass_forward.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
   </ItemGroup>

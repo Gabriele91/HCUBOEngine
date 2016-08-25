@@ -182,6 +182,7 @@
     <ClInclude Include="..\include\render.h" />
     <ClInclude Include="..\include\renderable.h" />
     <ClInclude Include="..\include\rendering_pass_deferred.h" />
+    <ClInclude Include="..\include\rendering_pass_forward.h" />
     <ClInclude Include="..\include\rendering_system.h" />
     <ClInclude Include="..\include\resource.h" />
     <ClInclude Include="..\include\resources_manager.h" />
@@ -218,6 +219,7 @@
     <ClCompile Include="..\source\query_performance.cpp" />
     <ClCompile Include="..\source\render.cpp" />
     <ClCompile Include="..\source\rendering_pass_deferred.cpp" />
+    <ClCompile Include="..\source\rendering_pass_forward.cpp" />
     <ClCompile Include="..\source\rendering_system.cpp" />
     <ClCompile Include="..\source\resources_manager.cpp" />
     <ClCompile Include="..\source\shader.cpp" />
