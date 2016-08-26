@@ -9,6 +9,7 @@
 #include <camera.h>
 #include <entity.h>
 #include <rendering_system.h>
+#include <resources_manager.h>
 
 
 namespace hcube
@@ -115,7 +116,12 @@ namespace hcube
 	{
 		m_rendering_pass.push_back(pass);
 	}
-	
+
+	void rendering_system::add_shadow_rendering_pass(rendering_pass_ptr pass)
+	{
+		m_shadow_pass = pass;
+	}
+
 	static inline float compute_camera_depth(const frustum& f_camera, const transform_ptr& t_entity)
 	{
 		return f_camera.distance_from_near_plane((vec3)(t_entity->get_matrix()*vec4(0, 0, 0, 1)));
@@ -200,74 +206,161 @@ namespace hcube
 		}
 	}
 
-	void rendering_system::build_renderables_queue(entity::ptr select_camera)
+
+	void render_queues::compute_light_queue(const frustum& view_frustum)
 	{
-		//init
-		m_renderables.m_cull_light = nullptr;
-		m_renderables.m_cull_opaque = nullptr;
-		m_renderables.m_cull_translucent = nullptr;
-		//camera
-		camera::ptr   c_camera = select_camera->get_component<camera>();
-		transform_ptr t_camera = select_camera->get_component<transform>();
-		auto&         f_camera = c_camera->get_frustum();
-		//update view frustum
-		if (m_update_frustum)
-			c_camera->get_frustum().update_frustum(
-				c_camera->get_projection()*
-				t_camera->get_matrix_inv()
-			);
+		m_cull_light = nullptr;
 		//build queue lights
-		for (render_queues::element& weak_element : m_renderables.m_lights)
+		for (render_queues::element& weak_element : m_lights)
 		{
 			auto entity = weak_element.lock();
 			auto t_entity = entity->get_component<transform>();
 			auto l_entity = entity->get_component<light>();
 			const auto l_pos = (vec3)(t_entity->get_matrix()*vec4(0, 0, 0, 1.));
 			const auto l_radius = l_entity->m_radius;
-			if (l_entity->is_enabled() && f_camera.test_sphere(l_pos, l_radius))
+			if (l_entity->is_enabled() && view_frustum.test_sphere(l_pos, l_radius))
 			{
-				weak_element.m_depth = compute_camera_depth(f_camera, t_entity);
-				m_renderables.add_call_light(&weak_element);
+				weak_element.m_depth = compute_camera_depth(view_frustum, t_entity);
+				add_call_light(&weak_element);
 			}
 		}
+
+	}
+	void render_queues::compute_opaque_queue(const frustum& view_frustum)
+	{
+		m_cull_opaque = nullptr;
 		//build queue opaque
-		for (render_queues::element& weak_element : m_renderables.m_opaque)
+		for (render_queues::element& weak_element : m_opaque)
 		{
 			auto entity = weak_element.lock();
 			auto t_entity = entity->get_component<transform>();
 			auto r_entity = entity->get_component<renderable>();
 
-			if (r_entity->is_enabled() && (
-				!r_entity->has_support_culling()
-				|| f_camera.test_obb(r_entity->get_bounding_box(), t_entity->get_matrix())
-				))
+			if (r_entity->is_enabled() &&
+				( !r_entity->has_support_culling() ||
+				   view_frustum.test_obb(r_entity->get_bounding_box(), t_entity->get_matrix())) )
 			{
-				weak_element.m_depth = compute_camera_depth(f_camera, t_entity);
-				m_renderables.add_call_opaque(&weak_element);
+				weak_element.m_depth = compute_camera_depth(view_frustum, t_entity);
+				add_call_opaque(&weak_element);
 			}
 		}
+
+	}
+	void render_queues::compute_translucent_queue(const frustum& view_frustum)
+	{
+		//init
+		m_cull_translucent = nullptr;
 		//build queue translucent
-		for (render_queues::element& weak_element : m_renderables.m_translucent)
+		for (render_queues::element& weak_element : m_translucent)
 		{
 			auto entity = weak_element.lock();
 			auto t_entity = entity->get_component<transform>();
 			auto r_entity = entity->get_component<renderable>();
 
-			if (r_entity->is_enabled() && (
-				!r_entity->has_support_culling()
-				|| f_camera.test_obb(r_entity->get_bounding_box(), t_entity->get_matrix())
-				))
+			if (r_entity->is_enabled() &&
+				(!r_entity->has_support_culling() ||
+					view_frustum.test_obb(r_entity->get_bounding_box(), t_entity->get_matrix()))
+				)
 			{
-				weak_element.m_depth = compute_camera_depth(f_camera, t_entity);
-				m_renderables.add_call_translucent(&weak_element);
+				weak_element.m_depth = compute_camera_depth(view_frustum, t_entity);
+				add_call_translucent(&weak_element);
 			}
 		}
+
+	}
+
+	rendering_pass_shadow::rendering_pass_shadow(resources_manager& resources)
+	{
+		m_effect		   = resources.get_effect("build_shadow");
+		m_technique_shadow = m_effect->get_technique("shadow");
+	}
+
+	void rendering_pass_shadow::draw_pass(
+		vec4&  clear_color,
+		vec4&  ambient_color,
+		entity::ptr e_light,
+		render_queues& queues
+	)
+	{
+		//pass
+		effect::pass& shadow_pass = (*m_technique_shadow)[0];
+		//shadow map
+		auto l_light = e_light->get_component<light>();
+		//enable shadow?
+		if (!l_light->is_enable_shadow()) return;
+		//get camera
+		camera::ptr   c_light = l_light->get_shadow_camera();
+		transform_ptr t_light = e_light->get_component<transform>();
+		frustum&      f_light = c_light->get_frustum();
+		//update view frustum
+		f_light.update_frustum(c_light->get_projection()*
+							   t_light->get_matrix_inv());
+		//build queue
+		queues.compute_opaque_queue(f_light);
+		//enable shadow buffer/texture
+		l_light->get_shadow_buffer().bind();
+		//clear
+		render::clear();
+		//applay pass
+		auto state = shadow_pass.safe_bind
+		(
+			c_light->get_viewport(),
+			c_light->get_projection(),
+			t_light->get_matrix_inv(),
+			mat4(1)
+		);
+		//set viewport
+		render::set_viewport_state({ c_light->get_viewport() });
+		//draw objs
+		for (render_queues::element*
+			weak_element = queues.m_cull_opaque;
+			weak_element;
+			weak_element = weak_element->m_next)
+		{
+			auto entity = weak_element->lock();
+			auto t_entity = entity->get_component<transform>();
+			auto r_entity = entity->get_component<renderable>();
+			//set transform
+			shadow_pass.m_uniform_model->set_value(t_entity->get_matrix());
+			//draw
+			r_entity->draw();
+		}
+		//disable
+		shadow_pass.safe_unbind(state);
+		//disable shadow buffer/texture
+		l_light->get_shadow_buffer().unbind();
 	}
 
 	void rendering_system::draw()
 	{
 		//culling
-		if (!m_stop_frustum_culling) build_renderables_queue(m_camera);
+		camera::ptr   c_camera = m_camera->get_component<camera>();
+		transform_ptr t_camera = m_camera->get_component<transform>();
+		frustum&      f_camera = c_camera->get_frustum();
+		//update view frustum
+		f_camera.update_frustum(c_camera->get_projection()*t_camera->get_matrix_inv());
+		//update queue
+		m_renderables.compute_light_queue(f_camera);
+		//build shadow map
+		for(render_queues::element*
+			weak_light = m_renderables.m_cull_light;
+			weak_light && m_shadow_pass;
+			weak_light = weak_light->m_next)
+		{
+			//get light
+			auto e_light = weak_light->lock();
+			//get pass
+			m_shadow_pass->draw_pass
+			(
+				m_clear_color,
+				m_ambient_color,
+				e_light,
+				m_renderables
+			);
+		}
+		//update queue
+		m_renderables.compute_opaque_queue(f_camera);
+		m_renderables.compute_translucent_queue(f_camera);
 		//all passes
 		for (rendering_pass_ptr& pass : m_rendering_pass)
 		{

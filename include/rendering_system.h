@@ -10,6 +10,7 @@
 #include <queue>
 #include <camera.h>
 #include <entity.h>
+#include <effect.h>
 #include <smart_pointers.h>
 #include <system_manager.h>
 #include <vector_math.h>
@@ -54,18 +55,43 @@ namespace hcube
 		void push(entity::ptr e);
 		void remove(entity::ptr e);
 		void reserve(size_t size);
+
+
+		void compute_light_queue(const frustum& view_frustum);
+		void compute_opaque_queue(const frustum& view_frustum);
+		void compute_translucent_queue(const frustum& view_frustum);
 	};
 
 	class rendering_pass
 	{
 	public:
-		virtual void draw_pass(vec4&  clear_color,
+		virtual void draw_pass(
+			vec4&  clear_color,
 			vec4&  ambient_color,
 			entity::ptr e_camera,
-			render_queues& queues) = 0;
+			render_queues& queues
+		) = 0;
 	};
 	using rendering_pass_ptr = std::shared_ptr< rendering_pass >;
 	using rendering_pass_uptr = std::unique_ptr< rendering_pass >;
+
+	class rendering_pass_shadow : public rendering_pass, public smart_pointers<rendering_pass_shadow>
+	{
+		
+		effect::ptr		   m_effect;
+		effect::technique* m_technique_shadow;
+
+	public:
+
+		rendering_pass_shadow(resources_manager& resources);
+
+		virtual void draw_pass(
+			vec4&  clear_color,
+			vec4&  ambient_color,
+			entity::ptr e_camera,
+			render_queues& queues
+		);
+	};
 
 	class rendering_system : public system_component, public smart_pointers< rendering_system >
 	{
@@ -91,6 +117,8 @@ namespace hcube
 
 		void add_rendering_pass(rendering_pass_ptr pass);
 
+		void add_shadow_rendering_pass(rendering_pass_ptr pass);
+
 		void draw();
 
 		const vec4& get_clear_color() const;
@@ -106,17 +134,16 @@ namespace hcube
 		void stop_frustum_culling(bool stop_culling);
 
 	protected:
-
-		void build_renderables_queue(entity::ptr select_camera);
-
+		
 		bool m_update_frustum{ true };
 		bool m_stop_frustum_culling{ false };
 
-		vec4                         m_clear_color;
-		vec4                         m_ambient_color;
+		vec4                              m_clear_color;
+		vec4                              m_ambient_color;
 		entity::ptr						  m_camera;
 		render_queues					  m_renderables;
 		std::vector< rendering_pass_ptr > m_rendering_pass;
-
+		//light
+		rendering_pass_ptr				  m_shadow_pass;
 	};
 }

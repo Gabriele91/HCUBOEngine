@@ -10,6 +10,8 @@
 #include <smart_pointers.h>
 #include <vector_math.h>
 #include <shader.h>
+#include <camera.h>
+#include <shadow_buffer.h>
 
 
 namespace hcube
@@ -45,7 +47,7 @@ namespace hcube
 		//init all params
 		light
 		(
-			light_type       type,
+			light_type  type,
 			const vec3& diffuse,
 			const vec3& specular,
 			float       constant,
@@ -116,8 +118,34 @@ namespace hcube
 			m_diffuse = diffuse;
 			m_specular = specular;
 		}
+
+		//shadow
+		bool set_shadow(const ivec2& size);
+
+		void disable_shadow();
+
+		bool is_enable_shadow() const;
+
+		camera::ptr get_shadow_camera() const;
+
+		frustum* get_frustum() const;
+
+		const shadow_buffer& get_shadow_buffer() const;
 		//copy
 		virtual component_ptr copy() const;
+
+	protected:
+		//shadow struct
+		struct light_shadow
+		{
+			bool		  m_enable{ false   };
+			camera::ptr   m_camera{ nullptr };
+			shadow_buffer m_buffer;
+		}
+		m_shadow;
+		//update
+		void update_shadow_projection_matrix();
+
 	};
 	using light_ptr = std::shared_ptr< light >;
 	using light_uptr = std::unique_ptr< light >;

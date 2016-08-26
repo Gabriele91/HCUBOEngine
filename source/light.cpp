@@ -70,4 +70,62 @@ namespace hcube
     {
         return m_valid;
     }
+
+	//shadow
+	bool light::set_shadow(const ivec2& size)
+	{
+		if (m_type != light::SPOT_LIGHT) return false;
+		//set to true
+		m_shadow.m_enable = true;
+		m_shadow.m_camera = camera::snew();
+		m_shadow.m_buffer.init(size);
+		//projection
+		float aspect = float(size.x) / float(size.y);
+		m_shadow.m_camera->set_viewport(ivec4{ 0, 0, size.x, size.y });
+		m_shadow.m_camera->set_perspective(m_outer_cut_off, aspect, 0.1f, m_radius);
+	}
+
+	void light::disable_shadow()
+	{
+		if (m_shadow.m_enable)
+		{
+			m_shadow.m_enable = false;
+			m_shadow.m_camera = nullptr;
+			m_shadow.m_buffer.destoy();
+		}
+	}
+
+	bool light::is_enable_shadow() const
+	{
+		return m_shadow.m_enable;
+	}
+
+	camera::ptr light::get_shadow_camera() const
+	{
+		return m_shadow.m_camera;
+	}
+
+	frustum* light::get_frustum() const
+	{
+		if (m_shadow.m_camera) return &m_shadow.m_camera->get_frustum();
+		return nullptr;
+	}
+
+	const shadow_buffer& light::get_shadow_buffer() const
+	{
+		return m_shadow.m_buffer;
+	}
+
+	void light::update_shadow_projection_matrix()
+	{
+		if (m_shadow.m_enable)
+		{
+			//get size
+			ivec2 size = m_shadow.m_buffer.get_size();
+			//projection
+			float aspect = float(size.x) / float(size.y);
+			m_shadow.m_camera->set_perspective(m_outer_cut_off, aspect, 0.1f, m_radius);
+		}
+	}
+
 }

@@ -227,8 +227,8 @@ namespace hcube
 				std::vector< vertex > vertices
 				{
 					{{-square_size_h.x,  square_size_h.y, 0.0f  },{ 0,0,1.0 }, {0.0f, 1.0f } },
+					{{ square_size_h.x,  square_size_h.y, 0.0f  },{ 0,0,1.0 },{ 1.0f, 1.0f } },
 					{{-square_size_h.x, -square_size_h.y, 0.0f  },{ 0,0,1.0 }, {0.0f, 0.0f } },
-					{{ square_size_h.x,  square_size_h.y, 0.0f  },{ 0,0,1.0 }, {1.0f, 1.0f } },
 					{{ square_size_h.x, -square_size_h.y, 0.0f  },{ 0,0,1.0 }, {1.0f, 0.0f } }
 				};
 				//set size
@@ -261,8 +261,8 @@ namespace hcube
 				std::vector< vertex > vertices
 				{
 					{ { -square_size_h.x,  square_size_h.y, 0.0f },{ 0,0,1.0 } },
-					{ { -square_size_h.x, -square_size_h.y, 0.0f },{ 0,0,1.0 } },
 					{ {  square_size_h.x,  square_size_h.y, 0.0f },{ 0,0,1.0 } },
+					{ { -square_size_h.x, -square_size_h.y, 0.0f },{ 0,0,1.0 } },
 					{ {  square_size_h.x, -square_size_h.y, 0.0f },{ 0,0,1.0 } }
 				};
 				//set size

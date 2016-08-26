@@ -243,11 +243,11 @@ namespace hcube
 			{
 				//skeep '{'
 				++ptr;
+				//skeep spaces
+				skeep_space_end_comment(ptr);
 				//read all values
 				while (!is_end_table(*ptr) && *ptr != EOF && *ptr != '\0')
 				{
-					//skeep spaces
-					skeep_space_end_comment(ptr);
 					//alloc uniform field
 					parameter_field field;
 					//parse
@@ -451,11 +451,11 @@ namespace hcube
 			{
 				//skeep '{'
 				++ptr;
+				//skeep spaces
+				skeep_space_end_comment(ptr);
 				//read all values
 				while (!is_end_table(*ptr) && *ptr != EOF && *ptr != '\0')
 				{
-					//skeep spaces
-					skeep_space_end_comment(ptr);
 					//search source attribute
 					if (CSTRCMP_SKIP(ptr, "pass"))
 					{
@@ -474,6 +474,8 @@ namespace hcube
 						push_error("Keyword not valid");
 						return false;
 					}
+					//skeep spaces
+					skeep_space_end_comment(ptr);
 
 				}
 				//end while
@@ -496,11 +498,11 @@ namespace hcube
 			{
 				//skeep '{'
 				++ptr;
+				//skeep spaces
+				skeep_space_end_comment(ptr);
 				//read all values
 				while (!is_end_table(*ptr) && *ptr != EOF && *ptr != '\0')
 				{
-					//skeep spaces
-					skeep_space_end_comment(ptr);
 					//all casses
 					if (CSTRCMP(ptr, "blend"))
 					{
@@ -552,7 +554,8 @@ namespace hcube
 						push_error("Keyword not valid");
 						return false;
 					}
-
+					//skeep spaces
+					skeep_space_end_comment(ptr);
 				}
 				//end while
 				if (!is_end_table(*ptr))
@@ -752,15 +755,17 @@ namespace hcube
 				//read all values
 				while (*ptr != EOF && *ptr != '\0')
 				{
-					//break case
-					if (is_end_table(*ptr) && !c_inside)
-					{ 
-						--p_count; 
-						if (!p_count) break; 
-					}
 					//comment test
-						    if (is_start_multy_line_comment(ptr)) { c_inside = true;  }
-					else if (is_end_multy_line_comment(ptr))   { c_inside = false; }
+						 if (is_start_multy_line_comment(ptr)) { c_inside = true;  }
+					else if (is_end_multy_line_comment(ptr)  ) { c_inside = false; }
+					//inc case
+					if (is_start_table(*ptr) && !c_inside) ++p_count;
+					//dec case
+					if (is_end_table(*ptr) && !c_inside) --p_count;			
+					//exit case
+					if (!p_count) break;
+					//inc count line
+					if (*ptr == '\n') ++m_context->m_line;
 					//append
 					pass.m_shader.m_text += *ptr; 
 					//next

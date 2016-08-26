@@ -15,11 +15,13 @@
 #include <glm/mat4x4.hpp>
 #include <glm/gtc/quaternion.hpp>
 
-#include <glm/gtx/norm.hpp>
-#include <glm/gtx/matrix_operation.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp> 
 #include <glm/gtc/matrix_access.hpp> 
+
+#include <glm/gtx/matrix_operation.hpp>
+#include <glm/gtx/quaternion.hpp>
+#include <glm/gtx/norm.hpp>
 
 namespace hcube
 {
@@ -204,14 +206,36 @@ namespace hcube
     {
         return glm::quat_cast(q_m);
     }
-    
+
+	template < class T >
+	inline auto mat3_cast(const T& q_v) -> decltype(glm::mat3_cast(q_v))
+	{
+		return glm::mat3_cast(q_v);
+	}
+
     template < class T >
     inline auto mat4_cast(const T& q_v) -> decltype(  glm::mat4_cast(q_v) )
     {
         return glm::mat4_cast(q_v);
     }
     
-    
+	template < class T >
+	inline auto to_quat(const T& q_m) -> decltype(glm::toQuat(q_m))
+	{
+		return glm::toQuat(q_m);
+	}
+
+	template < class T >
+	inline auto to_mat3(const T& q_v) -> decltype(glm::toMat3(q_v))
+	{
+		return glm::toMat3(q_v);
+	}
+
+	template < class T >
+	inline auto to_mat4(const T& q_v) -> decltype(glm::toMat4(q_v))
+	{
+		return glm::toMat4(q_v);
+	}
     /*
     * eigenvalues rotate
     */
@@ -219,8 +243,8 @@ namespace hcube
     {
         double a = c * mat[i0][j0] - s * mat[i1][j1];
         double b = s * mat[i0][j0] + c * mat[i1][j1];
-        mat[i0][j0] = a;
-        mat[i1][j1] = b;
+        mat[i0][j0] = (float)a;
+        mat[i1][j1] = (float)b;
     }
     
     /**
@@ -259,12 +283,12 @@ namespace hcube
                     double mii1 = c * c * mii - 2 * s * c * mij + s * s * mjj;
                     double mjj1 = s * s * mii + 2 * s * c * mij + c * c * mjj;
                     if (std::abs(mii - mii1) < 0.00001 || (mjj - mjj1) < 0.00001) {
-                        ret[i] = mii1;
-                        ret[j] = mjj1;
-                        mat[i][j] = 0.0;
-                        for (unsigned int k = 0; k < i; k++) eigenvalues_rotate(mat, c, s, k, i, k, j);
-                        for (int k = i + 1; k < j; k++) eigenvalues_rotate(mat, c, s, i, k, k, j);
-                        for (int k = j + 1; k < 3; k++) eigenvalues_rotate(mat, c, s, i, k, j, k);
+                        ret[i]    = (float)mii1;
+                        ret[j]    = (float)mjj1;
+                        mat[i][j] = (float)0.0;
+                        for (int k = 0;     k < i; ++k) eigenvalues_rotate(mat, c, s, k, i, k, j);
+                        for (int k = i + 1; k < j; ++k) eigenvalues_rotate(mat, c, s, i, k, k, j);
+                        for (int k = j + 1; k < 3; ++k) eigenvalues_rotate(mat, c, s, i, k, j, k);
                         //rotate eigenvectors
                         for (int k = 0; k < 3; k++) eigenvalues_rotate(E, c, s, k, i, k, j);
                     }

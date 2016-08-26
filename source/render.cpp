@@ -8,7 +8,7 @@
 #include <render.h>
 #include <OpenGL4.h>
 #include <iostream>
-
+#define DIRECTX_MODE
 
 namespace hcube
 {
@@ -156,6 +156,8 @@ namespace hcube
 			glProvokingVertex(GL_FIRST_VERTEX_CONVENTION);
 			//DirectX like z buffer
 			glDepthRange(0.0f, 1.0f);
+			//Front face
+			glFrontFace(GL_CW);
 #endif
 			//test
 			render::print_errors();
@@ -301,7 +303,12 @@ namespace hcube
 			if (s_render_state.m_viewport != vs)
 			{
 				s_render_state.m_viewport = vs;
-				glViewport(vs.m_viewport.x, vs.m_viewport.y, vs.m_viewport.z, vs.m_viewport.w);
+				glViewport(
+					(GLint)vs.m_viewport.x, 
+					(GLint)vs.m_viewport.y, 
+					(GLsizei)vs.m_viewport.z, 
+					(GLsizei)vs.m_viewport.w
+				);
 			}
 		}
 

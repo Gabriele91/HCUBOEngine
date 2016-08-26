@@ -154,6 +154,10 @@ namespace hcube
 
 	void app_basic::start(application& app)
 	{
+		//commond assets
+		m_resources.add_directory("common/effects");
+		m_resources.add_directory("common/shaders");
+		m_resources.add_directory("common/textures");
 		//get info about window
 		m_window_mode_info = window_info
 		{
@@ -162,15 +166,13 @@ namespace hcube
 		};
 		//alloc all systems
 		rendering_system::ptr m_rendering = rendering_system::snew();
+		//add shadow support
+		m_rendering->add_shadow_rendering_pass(rendering_pass_shadow::snew(m_resources));
 		//add into system
 		m_systems.add_system(m_rendering);
+#if 1
 		//gbuffer size
 		ivec2 g_size = app.get_window_size();
-		//deferred alloc
-		m_resources.add_directory("common/effects");
-		m_resources.add_directory("common/shaders");
-		m_resources.add_directory("common/textures");
-#if 0
 		auto rendering_pass = rendering_pass_deferred::snew(g_size, m_resources);
 		rendering_pass->set_ambient_occlusion(true);
 		m_rendering->add_rendering_pass(rendering_pass);
@@ -206,13 +208,31 @@ namespace hcube
 			//set camera
 			m_systems.add_entity(m_camera);
 			//add cube
-			auto cube = gameobject::node_new(
+			auto cube_grid = gameobject::node_new(
 				basic_meshs::cube({ 5,5,5 }, true)
 			);
-			cube->get_component<renderable>()->set_material(
+			cube_grid->get_component<renderable>()->set_material(
 				m_resources.get_material("box2_grid_mat")
 			);
-			m_systems.add_entity(cube);
+			cube_grid->get_component<transform>()->look_at(
+				vec3{ 0.0f, 0.0,  0.0f},
+				vec3{ 0.0f,-0.5f, 2.0f },
+				vec3{ 0.0f, 1.0f, 0.0f }
+			);
+			cube_grid->set_name("cube_grid");
+			m_systems.add_entity(cube_grid);
+			//cube floor
+			auto cube_floor = gameobject::node_new(
+				basic_meshs::cube({ 50,0.1,50 }, true)
+			);
+			cube_floor->get_component<renderable>()->set_material(
+				m_resources.get_material("w_box_mat")
+			); 
+			cube_floor->get_component<transform>()->translation(
+				vec3{0,-20,0}
+			);
+			cube_floor->set_name("cube_floor");
+			m_systems.add_entity(cube_floor);
 			//ship
 			m_model = m_resources.get_prefab("ship")->instantiate();
 			auto t_model = m_model->get_component<transform>();
@@ -252,12 +272,12 @@ namespace hcube
 			t_model_light2->position(vec3{ 16.4,9.5f,19 });
 			t_model_light2->rotation(quat({ radians(0.0), radians(0.0), 0.0 }));
 			l_model_light2->spot({ 1.0f, 0.8f, 0.1f },
-			{ 1.0f, 1.0f, 1.0f },
-				1.0,
-				10.0,
-				30.0,
-				radians(10.0),
-				radians(15.0));
+								 { 1.0f, 1.0f, 1.0f },
+								   1.0,
+								   10.0,
+								   30.0,
+								   radians(10.0),
+								   radians(15.0));
 			m_model->add_child(e_model_light2);
 
 			//add to render
@@ -302,7 +322,6 @@ namespace hcube
 				l_lights[i]->m_radius = 35.0;
 			}
 
-
 			for (int i = 1; i != 4; ++i)
 			{
 				t_lights[i - 1]->position({
@@ -321,6 +340,25 @@ namespace hcube
 			//add to render
 			m_systems.add_entity(m_lights);
 
+			//add shadow light
+			auto e_model_light_shadow = gameobject::light_new();
+			auto l_model_light_shadow = e_model_light_shadow->get_component<light>();
+			auto t_model_light_shadow = e_model_light_shadow->get_component<transform>();
+			t_model_light_shadow->position(vec3{ 0,20.0f,0 });
+			t_model_light_shadow->rotation(quat({ radians(90.0), radians(0.0), radians(0.0) }));
+			l_model_light_shadow->spot({ 1.0f, 1.0f, 1.0f },
+									   { 1.0f, 1.0f, 1.0f },
+										1.0,
+										30.0,
+										60.0,
+										radians(35.0),
+										radians(45.0));
+			l_model_light_shadow->set_shadow({ 256,256 });
+			m_systems.add_entity(e_model_light_shadow);
+#if 0
+			t_camera->position(vec3{ 0,20.0f,0 });
+			t_camera->rotation(quat({ radians(35.0), radians(0.0), radians(0.0) }));
+#endif 
 			//ambient color
 			m_rendering->set_ambient_color(vec4{ 0.26, 0.26, 0.26, 1.0 });
 
@@ -330,15 +368,19 @@ namespace hcube
 	bool app_basic::run(application& app, double delta_time)
 	{
 		//////////////////////////////////////////////////////////
-		//angle
-		static float acc_delta_time = 0;
-		//update angle
-		acc_delta_time += 1.0f * delta_time;
-		//////////////////////////////////////////////////////////
 		//update
 		//m_model->get_component<transform>()->turn(quat{ {0.0, radians(5.0*delta_time), 0.0} });
+		/*m_camera
+			->get_component<transform>()
+			->turn(quat{ { radians(delta_time*4.0), 0.0, 0.0 } });
+			*/
+		m_systems.get_entities_by_name("cube_grid")[0]
+			->get_component<transform>()
+			->turn(quat{ {radians(delta_time*4.0), 0.0, 0.0} });
 		//for all lights
-		m_lights->get_component<transform>()->turn(quat{ {0.0, radians(20.0*delta_time), 0.0} });
+		m_lights
+			->get_component<transform>()
+			->turn(quat{ {0.0, radians(20.0*delta_time), 0.0} });
 		//////////////////////////////////////////////////////////
 		//////////////////////////////////////////////////////////
 		//draw

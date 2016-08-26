@@ -37,23 +37,28 @@ namespace hcube
 		render::delete_texture(m_depth_texture);
 	}
 
-	void shadow_buffer::bind()
+	void shadow_buffer::bind() const
 	{
 		render::enable_render_target(m_target);
 	}
 
-	void shadow_buffer::unbind()
+	void shadow_buffer::unbind() const
 	{
 		render::disable_render_target(m_target);
 	}
 
-	void shadow_buffer::set_texture_buffer_depth(size_t n_texture)
+	void shadow_buffer::set_texture_buffer_depth(size_t n_texture) const
 	{
 		render::bind_texture(m_depth_texture, n_texture);
 	}
 
-	void shadow_buffer::disable_depth_texture()
+	void shadow_buffer::disable_depth_texture() const
 	{
 		render::unbind_texture(m_depth_texture);
+	}
+
+	ivec2 shadow_buffer::get_size() const
+	{
+		return ivec2{ m_width,m_height };
 	}
 }

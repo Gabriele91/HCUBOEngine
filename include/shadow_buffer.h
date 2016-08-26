@@ -14,17 +14,25 @@ namespace hcube
 	class shadow_buffer
 	{
 
+	public:
+		
+		shadow_buffer() {}
+
+		virtual ~shadow_buffer() { destoy(); }
+
 		bool init(const ivec2& shadow_size);
 
 		void destoy();
 
-		void bind();
+		void bind() const;
 
-		void unbind();
+		void unbind() const;
 
-		void set_texture_buffer_depth(size_t n_texture = 0);
+		void set_texture_buffer_depth(size_t n_texture = 0) const;
 
-		void disable_depth_texture();
+		void disable_depth_texture() const;
+
+		ivec2 get_size() const;
 
 	protected:
 

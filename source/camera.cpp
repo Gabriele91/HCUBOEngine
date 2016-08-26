@@ -19,7 +19,7 @@ namespace hcube
 
 	void camera::set_perspective(float fov, float aspect, float in_near, float in_far)
 	{
-		m_projection     = perspective(fov, aspect, in_near, in_far);
+		m_projection     = hcube::perspective(fov, aspect, in_near, in_far);
 		m_projection_inv = inverse(m_projection);
 	}
 

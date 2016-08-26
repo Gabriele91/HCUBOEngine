@@ -8,6 +8,7 @@
 #include <transform.h>
 #include <entity.h>
 #include <vector_math.h>
+#define OPENGL_VIEW //todo render api fix
 
 namespace hcube
 {
@@ -19,8 +20,8 @@ namespace hcube
 		rotation(l_rotation);
 		position(eye);
 #else
-        const hcube::mat4 m4_look_at = hcube::look_at(eye, center, up);
-        const hcube::quat q_look_at  = hcube::quat_cast(m4_look_at);
+        const hcube::mat4 m4_look_at = hcube::look_at(-eye, center, up);
+        const hcube::quat q_look_at  = hcube::to_quat(m4_look_at);
 		rotation(hcube::conjugate(q_look_at));
 		position(eye);
 #endif
@@ -145,7 +146,7 @@ namespace hcube
 		{
 			//T*R*S
 			m_model_local  = hcube::translate(mat4(1.0f), m_tranform.m_position);
-			m_model_local *= hcube::mat4_cast(m_tranform.m_rotation);
+			m_model_local *= hcube::to_mat4(  m_tranform.m_rotation );
             m_model_local  = hcube::scale(m_model_local, m_tranform.m_scale);
 			//inverse
 			m_model_local_inv = inverse(m_model_local);
@@ -161,6 +162,17 @@ namespace hcube
 				m_model_global = m_model_local;
 				m_model_global_inv = m_model_local_inv;
 			}
+#ifdef OPENGL_VIEW
+			m_model_local_inv[0][2] *= -1;
+			m_model_local_inv[1][2] *= -1;
+		    m_model_local_inv[2][2] *= -1;
+		    m_model_local_inv[3][2] *= -1;
+
+			m_model_global_inv[0][2] *= -1;
+			m_model_global_inv[1][2] *= -1;
+			m_model_global_inv[2][2] *= -1;
+		    m_model_global_inv[3][2] *= -1;
+#endif
 		}
 	}
 }
