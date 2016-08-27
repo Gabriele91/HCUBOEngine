@@ -89,7 +89,10 @@ namespace hcube
 		//get ext
 		std::string ext = filesystem::get_extension(path);
 		//test
-		if (ext != ".png" && ext != ".tga") return false;
+		if (   ext != ".png"
+			&& ext != ".jpg"
+			&& ext != ".jpeg"
+			&& ext != ".tga") return false;
 		//read all file
 		std::vector<char> data_file = filesystem::file_read_all(path);
 		//fail to read?
@@ -101,7 +104,9 @@ namespace hcube
 		texture_format image_format;
 		std::vector<unsigned char> image;
 		//png
-		if (ext == ".png")
+		if (   ext == ".png" 
+			|| ext == ".jpg" 
+			|| ext == ".jpeg")
 		{
 			stbi_set_flip_vertically_on_load(true);
 			//rgb/rgba attribute
@@ -136,7 +141,7 @@ namespace hcube
 			//delete alpha channel from attributes (if needed)
 			attr_png.m_type = image_type;
 			attr_png.m_format = image_format;
-			//copyt into C++ buffer
+			//copy into C++ buffer
 			image.resize(width*height*components);
 			std::memcpy(&image[0], data, image.size());
 			//build

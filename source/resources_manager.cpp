@@ -26,7 +26,10 @@ namespace hcube
 			std::string ext = filesystem::get_extension(filename);
 			std::string basename = filesystem::get_basename(filename);
 			//types
-			if (ext == ".png" || ext == ".tga")
+			if (   ext == ".png" 
+				|| ext == ".jpg" 
+				|| ext == ".jpeg"
+				|| ext == ".tga")
 			{
 				set_texture_path(basename, directory + "/" + filename);
 			}
