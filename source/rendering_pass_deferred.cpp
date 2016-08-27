@@ -15,19 +15,22 @@ namespace hcube
 
 		m_square = basic_meshs::square3D({ 2.0,2.0 }, true);
 		m_shader = resources.get_shader("deferred_light");
-		m_position = m_shader->get_uniform("g_vertex");
+		m_position = m_shader->get_uniform("g_position");
 		m_normal = m_shader->get_uniform("g_normal");
 		m_albedo = m_shader->get_uniform("g_albedo_spec");
 		m_occlusion = m_shader->get_uniform("g_occlusion");
+		m_view = m_shader->get_uniform("view");
 		//uniforms
 		m_ambient_light = m_shader->get_uniform("ambient_light");
 		m_uniform_n_lights_used = m_shader->get_uniform("n_lights_used");
 		//alloc lights
 		m_uniform_lights.resize(m_max_lights);
+		m_uniform_shadow_lights.resize(m_max_lights);
 		//get unfirom lights
 		for (unsigned i = 0; i != m_max_lights; ++i)
 		{
 			m_uniform_lights[i].get_uniform(i, m_shader);
+			m_uniform_shadow_lights[i].get_uniform(i, m_shader);
 		}
 	}
 
@@ -110,19 +113,14 @@ namespace hcube
 		////////////////////////////////////////////////////////////////////////////////
 		////////////////////////////////////////////////////////////////////////////////
 		m_shader->bind();
-		//set texture g_buffer
-		m_g_buffer.set_texture_buffer(g_buffer::G_BUFFER_TEXTURE_TYPE_POSITION);
-		m_g_buffer.set_texture_buffer(g_buffer::G_BUFFER_TEXTURE_TYPE_NORMAL);
-		m_g_buffer.set_texture_buffer(g_buffer::G_BUFFER_TEXTURE_TYPE_ALBEDO);
-		//set texture ssao
-		m_ssao.set_texture(3);
-		//set uniform id
-		m_position->set_value(0);
-		m_normal->set_value(1);
-		m_albedo->set_value(2);
-		m_occlusion->set_value(3);
+		//set gbuffer and ssao
+		m_position->set_value(m_g_buffer.get_texture(g_buffer::G_BUFFER_TEXTURE_TYPE_POSITION));
+		m_normal->set_value(m_g_buffer.get_texture(g_buffer::G_BUFFER_TEXTURE_TYPE_NORMAL));
+		m_albedo->set_value(m_g_buffer.get_texture(g_buffer::G_BUFFER_TEXTURE_TYPE_ALBEDO));
+		m_occlusion->set_value(m_ssao.get_texture());
+		m_view->set_value(t_camera->get_matrix_inv());
 		//add info
-		m_ambient_light->set_value(ambient_color);;
+		m_ambient_light->set_value(ambient_color);
 		//init loop
 		int light_count = 0;
 		render_queues::element* weak_element = queues.m_cull_light;
@@ -131,12 +129,23 @@ namespace hcube
 			   weak_element = weak_element->m_next, ++light_count)
 		{
 			auto l_entity = weak_element->lock();
+			//get light
+			light_ptr l_light = l_entity->get_component<light>();
+			transform_ptr t_light = l_entity->get_component<transform>();
 			//uniform light
 			m_uniform_lights[light_count].uniform(
-				l_entity->get_component<light>(),
+				l_light,
 				t_camera->get_matrix_inv(),
-				l_entity->get_component<transform>()->get_matrix()
+				t_light->get_matrix()
 			);
+			//uniform shadow
+			if (l_light->is_enable_shadow())
+			{
+				m_uniform_shadow_lights[light_count].uniform(
+					l_light,
+					t_light->get_matrix_inv()
+				);
+			}
 		}
 		//compute max lights
 		m_uniform_n_lights_used->set_value((int)light_count);

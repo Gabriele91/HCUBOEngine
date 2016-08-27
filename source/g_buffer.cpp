@@ -45,7 +45,7 @@ namespace hcube
 		target_texture_type types[G_BUFFER_NUM_TEXTURES];
 
 		//specify type
-		types[G_BUFFER_TEXTURE_TYPE_POSITION] = target_texture_type(TF_RGB16F, TT_RGB, TTF_FLOAT);
+		types[G_BUFFER_TEXTURE_TYPE_POSITION] = target_texture_type(TF_RGBA32F, TT_RGBA, TTF_FLOAT);
 		types[G_BUFFER_TEXTURE_TYPE_NORMAL] = target_texture_type(TF_RGB8, TT_RGB, TTF_FLOAT);
 		types[G_BUFFER_TEXTURE_TYPE_ALBEDO] = target_texture_type(TF_RGBA8, TT_RGBA, TTF_UNSIGNED_BYTE);
 
@@ -186,6 +186,17 @@ namespace hcube
 
 	}
 
+	context_texture* g_buffer::get_texture(G_BUFFER_TEXTURE_TYPE texture_type) const
+	{
+		switch (texture_type)
+		{
+		case G_BUFFER_TEXTURE_TYPE_POSITION: return  m_textures[G_BUFFER_TEXTURE_TYPE_POSITION];
+		case G_BUFFER_TEXTURE_TYPE_NORMAL: return  m_textures[G_BUFFER_TEXTURE_TYPE_NORMAL];
+		case G_BUFFER_TEXTURE_TYPE_ALBEDO: return m_textures[G_BUFFER_TEXTURE_TYPE_ALBEDO];
+		default: return nullptr;
+		}
+	}
+
 	void g_buffer::set_read_buffer_depth()
 	{
 		//glReadBuffer(GL_DEPTH_ATTACHMENT);
@@ -200,6 +211,11 @@ namespace hcube
 	void g_buffer::disable_depth_texture()
 	{
 		render::unbind_texture(m_depth_texture);
+	}
+
+	context_texture* g_buffer::get_texture_buffer_depth() const
+	{
+		return m_depth_texture;
 	}
 
 	unsigned int g_buffer::get_width() const

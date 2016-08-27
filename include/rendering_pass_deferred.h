@@ -45,11 +45,13 @@ namespace hcube
 		uniform*    m_albedo;
 		uniform*    m_occlusion;
 		uniform*    m_ambient_light;
+		uniform*    m_view;
 
 		bool m_enable_ambient_occlusion{ true };
 
 		//uniform lights
 		std::vector < uniform_light > m_uniform_lights;
+		std::vector < uniform_shadow_light > m_uniform_shadow_lights;
 
 		//size lights
 		uniform* m_uniform_n_lights_used;

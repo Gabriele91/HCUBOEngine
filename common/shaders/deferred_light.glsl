@@ -18,11 +18,11 @@ in vec2 frag_uvcoord;
 //out
 out vec4 frag_color;
 //uniform
-uniform sampler2D g_vertex;
+uniform sampler2D g_position;
 uniform sampler2D g_normal;
 uniform sampler2D g_albedo_spec;
 uniform sampler2D g_occlusion;
-uniform vec3 view_pos;
+uniform mat4 view;
 //include lights lib
 const int MAX_LIGHTS = 32;
 #pragma include "lib/lights.glsl"
@@ -32,7 +32,7 @@ const int MAX_LIGHTS = 32;
 void main()
 {
 	// Retrieve data from gbuffer
-	vec3  position  = texture(g_vertex,      frag_uvcoord).rgb;
+	vec4  position  = texture(g_position,    frag_uvcoord).rgba;
 	vec3  normal    = texture(g_normal,      frag_uvcoord).rgb;
 	vec3  diffuse   = texture(g_albedo_spec, frag_uvcoord).rgb;
 	float specular  = texture(g_albedo_spec, frag_uvcoord).a;
@@ -44,12 +44,16 @@ void main()
     //todo: material
     float shininess = 16.0f;
 	
+	//view pos
+	vec3 view_pos = vec3(view*position);
+	
 	//view dir
-	vec3 view_dir = normalize(vec3(0.0) - position);
+	vec3 view_dir = normalize(vec3(0.0) - view_pos);
 
 	// Then calculate lighting as usual
 	vec3 lighting =  compute_all_lights(diffuse * occlusion,
 								        position,
+										view_pos,
 								        view_dir,
 								        normal,
 								        diffuse,

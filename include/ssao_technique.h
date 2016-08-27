@@ -22,6 +22,8 @@ namespace hcube
 		void applay(entity::ptr e_camera, g_buffer& buffer, mesh::ptr square);
 
 		void set_texture(int n_text = 0);
+		
+		context_texture* ssao_technique::get_texture() const;
 
 		void clear();
 

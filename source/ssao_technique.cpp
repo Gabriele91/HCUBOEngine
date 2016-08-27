@@ -221,6 +221,11 @@ namespace hcube
 		render::unbind_texture(m_ssao_blur_texture);
 	}
 
+	context_texture* ssao_technique::get_texture() const
+	{
+		return m_ssao_blur_texture;
+	}
+
 	void ssao_technique::set_kernel_size(unsigned int kernel_size)
 	{
 		m_kernel_size = kernel_size < m_max_kernel_size ? kernel_size : m_max_kernel_size;
