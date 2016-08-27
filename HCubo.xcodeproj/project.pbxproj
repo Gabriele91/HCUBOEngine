@@ -62,6 +62,8 @@
 		E03EDCA91D34187500C0C22A /* text_mesh.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E03EDC831D34186900C0C22A /* text_mesh.cpp */; };
 		E03EDCAA1D34187500C0C22A /* texture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E03EDC841D34186900C0C22A /* texture.cpp */; };
 		E03EDCC21D3418F200C0C22A /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = E09799451D2E5DD2006D1F13 /* Info.plist */; };
+		E054AC7E1D72274600A3EE81 /* rendering_pass_forward.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E054AC7C1D72274600A3EE81 /* rendering_pass_forward.cpp */; };
+		E054AC7F1D72274600A3EE81 /* shadow_buffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E054AC7D1D72274600A3EE81 /* shadow_buffer.cpp */; };
 		E06C1B0F1D61885000098352 /* render.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E06C1B0E1D61885000098352 /* render.cpp */; };
 		E06C1B101D61885000098352 /* render.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E06C1B0E1D61885000098352 /* render.cpp */; };
 		E089AC0D1D2E5ECE009F0CDD /* assets in Resources */ = {isa = PBXBuildFile; fileRef = E089AC0B1D2E5ECE009F0CDD /* assets */; };
@@ -160,6 +162,11 @@
 		E03EDCBF1D3418CF00C0C22A /* smart_pointers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smart_pointers.h; sourceTree = "<group>"; };
 		E03EDCC01D3418CF00C0C22A /* text_mesh.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = text_mesh.h; sourceTree = "<group>"; };
 		E03EDCC11D3418CF00C0C22A /* texture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = texture.h; sourceTree = "<group>"; };
+		E054AC7C1D72274600A3EE81 /* rendering_pass_forward.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = rendering_pass_forward.cpp; sourceTree = "<group>"; };
+		E054AC7D1D72274600A3EE81 /* shadow_buffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = shadow_buffer.cpp; sourceTree = "<group>"; };
+		E054AC801D72275100A3EE81 /* effect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = effect.h; sourceTree = "<group>"; };
+		E054AC811D72275100A3EE81 /* rendering_pass_forward.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rendering_pass_forward.h; sourceTree = "<group>"; };
+		E054AC821D72275100A3EE81 /* shadow_buffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = shadow_buffer.h; sourceTree = "<group>"; };
 		E06C1B0E1D61885000098352 /* render.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = render.cpp; sourceTree = "<group>"; };
 		E089AC0B1D2E5ECE009F0CDD /* assets */ = {isa = PBXFileReference; lastKnownFileType = folder; path = assets; sourceTree = "<group>"; };
 		E08DB6B51D44ABF400EF554F /* system_manager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = system_manager.h; sourceTree = "<group>"; };
@@ -208,6 +215,8 @@
 		E00ABDB81D23C3BE004E4CFD /* source */ = {
 			isa = PBXGroup;
 			children = (
+				E054AC7C1D72274600A3EE81 /* rendering_pass_forward.cpp */,
+				E054AC7D1D72274600A3EE81 /* shadow_buffer.cpp */,
 				E01334BA1D6EDEA0001C6B41 /* effect.cpp */,
 				E01334BB1D6EDEA0001C6B41 /* light.cpp */,
 				E0D8F21C1D4E6B2D006EA26C /* frustum.cpp */,
@@ -269,6 +278,9 @@
 		E01A2EE41D22C2A900A8BA77 /* include */ = {
 			isa = PBXGroup;
 			children = (
+				E054AC801D72275100A3EE81 /* effect.h */,
+				E054AC811D72275100A3EE81 /* rendering_pass_forward.h */,
+				E054AC821D72275100A3EE81 /* shadow_buffer.h */,
 				E01334C01D6F03AA001C6B41 /* vector_math.h */,
 				E0D8F2211D4E6B39006EA26C /* frustum.h */,
 				E0D8F2221D4E6B39006EA26C /* obb.h */,
@@ -443,6 +455,7 @@
 				E01583A11D43E9FE0029D6F5 /* transform.cpp in Sources */,
 				E01334BE1D6EDEA0001C6B41 /* light.cpp in Sources */,
 				E03EDC8C1D34186900C0C22A /* json11.cpp in Sources */,
+				E054AC7E1D72274600A3EE81 /* rendering_pass_forward.cpp in Sources */,
 				E03EDC881D34186900C0C22A /* basic_meshs.cpp in Sources */,
 				E03EDC961D34186900C0C22A /* text_mesh.cpp in Sources */,
 				E01583A41D43FCBC0029D6F5 /* entity.cpp in Sources */,
@@ -451,6 +464,7 @@
 				E03EDC8D1D34186900C0C22A /* main.cpp in Sources */,
 				E03EDC931D34186900C0C22A /* rendering_system.cpp in Sources */,
 				E03EDC921D34186900C0C22A /* query_performance.cpp in Sources */,
+				E054AC7F1D72274600A3EE81 /* shadow_buffer.cpp in Sources */,
 				E0D8F21E1D4E6B2D006EA26C /* frustum.cpp in Sources */,
 				E03EDC8F1D34186900C0C22A /* mesh.cpp in Sources */,
 				E03EDC861D34186900C0C22A /* app_basic.cpp in Sources */,

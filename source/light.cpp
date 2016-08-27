@@ -116,7 +116,10 @@ namespace hcube
 		float aspect = float(size.x) / float(size.y);
 		m_shadow.m_camera->set_viewport(ivec4{ 0, 0, size.x, size.y });
 		m_shadow.m_camera->set_perspective(m_outer_cut_off, aspect, 0.1f, m_radius);
+        
+        return true;
 	}
+    
 
 	void light::disable_shadow()
 	{

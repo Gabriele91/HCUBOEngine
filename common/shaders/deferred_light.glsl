@@ -24,7 +24,7 @@ uniform sampler2D g_albedo_spec;
 uniform sampler2D g_occlusion;
 uniform mat4 view;
 //include lights lib
-const int MAX_LIGHTS = 32;
+const int MAX_LIGHTS = 12;
 #pragma include "lib/lights.glsl"
 
 

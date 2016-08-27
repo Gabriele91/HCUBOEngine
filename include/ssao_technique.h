@@ -23,7 +23,7 @@ namespace hcube
 
 		void set_texture(int n_text = 0);
 		
-		context_texture* ssao_technique::get_texture() const;
+		context_texture* get_texture() const;
 
 		void clear();
 
