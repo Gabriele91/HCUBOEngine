@@ -45,7 +45,7 @@ namespace hcube
 		target_texture_type types[G_BUFFER_NUM_TEXTURES];
 
 		//specify type
-		types[G_BUFFER_TEXTURE_TYPE_POSITION] = target_texture_type(TF_RGBA32F, TT_RGBA, TTF_FLOAT);
+		types[G_BUFFER_TEXTURE_TYPE_POSITION] = target_texture_type(TF_RGBA16F, TT_RGBA, TTF_FLOAT);
 		types[G_BUFFER_TEXTURE_TYPE_NORMAL] = target_texture_type(TF_RGB8, TT_RGB, TTF_FLOAT);
 		types[G_BUFFER_TEXTURE_TYPE_ALBEDO] = target_texture_type(TF_RGBA8, TT_RGBA, TTF_UNSIGNED_BYTE);
 
