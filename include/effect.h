@@ -116,6 +116,7 @@ namespace hcube
 			uniform* m_uniform_ambient_light{ nullptr };
 			uniform* m_uniform_n_lights_used{ nullptr };
 			std::vector< uniform_light > m_uniform_lights;
+			std::vector< uniform_shadow_light > m_uniform_shadow_lights;
 			//unsafe
 			void bind(
 				const glm::vec4& viewport,

@@ -57,6 +57,11 @@ namespace hcube
 		render::unbind_texture(m_depth_texture);
 	}
 
+	context_texture* shadow_buffer::get_depth_texture() const
+	{
+		return m_depth_texture;
+	}
+
 	ivec2 shadow_buffer::get_size() const
 	{
 		return ivec2{ m_width,m_height };

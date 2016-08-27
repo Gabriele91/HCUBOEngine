@@ -28,13 +28,15 @@ namespace hcube
 		m_uniform_diffuse = shader->get_uniform((lights_i + ".m_diffuse").c_str());
 		m_uniform_specular = shader->get_uniform((lights_i + ".m_specular").c_str());
 
-		m_uniform_inv_constant           = shader->get_uniform((lights_i + ".m_inv_constant").c_str());
-		m_uniform_inv_quad_inside_radius = shader->get_uniform((lights_i + ".m_inv_quad_inside_radius").c_str());
-		m_uniform_inv_quad_radius        = shader->get_uniform((lights_i + ".m_inv_quad_radius").c_str());
+		m_uniform_constant      = shader->get_uniform((lights_i + ".m_constant").c_str());
+		m_uniform_inside_radius = shader->get_uniform((lights_i + ".m_inside_radius").c_str());
+		m_uniform_radius        = shader->get_uniform((lights_i + ".m_radius").c_str());
 
 		m_uniform_inner_cut_off = shader->get_uniform((lights_i + ".m_inner_cut_off").c_str());
 		m_uniform_outer_cut_off = shader->get_uniform((lights_i + ".m_outer_cut_off").c_str());
-        
+
+		m_uniform_shadow = shader->get_uniform((lights_i + ".m_shadow").c_str());
+
         //test
         m_valid =
            m_uniform_type
@@ -42,11 +44,12 @@ namespace hcube
         && m_uniform_direction
         && m_uniform_diffuse
         && m_uniform_specular
-        && m_uniform_inv_constant
-        && m_uniform_inv_quad_inside_radius
-        && m_uniform_inv_quad_radius
+        && m_uniform_constant
+        && m_uniform_inside_radius
+        && m_uniform_radius
         && m_uniform_inner_cut_off
-        && m_uniform_outer_cut_off;
+        && m_uniform_outer_cut_off
+		&& m_uniform_shadow;
 	}
 
 	void uniform_light::uniform(light_wptr weak_light, const mat4& view, const mat4& model)
@@ -59,17 +62,47 @@ namespace hcube
 		m_uniform_direction->set_value((vec3)(view * model * vec4(0, 0, 1.0, 0.0)));
 		m_uniform_diffuse->set_value(light->m_diffuse);
 		m_uniform_specular->set_value(light->m_specular);
-		m_uniform_inv_constant->set_value(1.f / light->m_constant);
-		m_uniform_inv_quad_inside_radius->set_value(1.f / (light->m_inside_radius*light->m_inside_radius));
-		m_uniform_inv_quad_radius->set_value(1.f / (light->m_radius*light->m_radius));
+		m_uniform_constant->set_value(light->m_constant);
+		m_uniform_inside_radius->set_value(light->m_inside_radius);
+		m_uniform_radius->set_value(light->m_radius);
 		m_uniform_inner_cut_off->set_value(light->m_inner_cut_off);
 		m_uniform_outer_cut_off->set_value(light->m_outer_cut_off);
+		m_uniform_shadow->set_value(light->is_enable_shadow() ? 1 : 0);
     }
     
     bool uniform_light::is_valid() const
     {
         return m_valid;
     }
+
+	void uniform_shadow_light::get_uniform(int i, shader::ptr shader)
+	{
+		std::string lights_i("shadow_lights[" + std::to_string(i) + "]");
+		m_uniform_projection = shader->get_uniform((lights_i + ".m_projection").c_str());
+		m_uniform_view = shader->get_uniform((lights_i + ".m_view").c_str());
+		m_uniform_shadow_map = shader->get_uniform((lights_i + ".m_shadow_map").c_str());
+		//test
+		m_valid =
+			   m_uniform_projection
+			&& m_uniform_view
+			&& m_uniform_shadow_map;
+	}
+
+	void uniform_shadow_light::uniform(light_wptr weak_light, 
+									   const mat4& shadow_view)
+	{
+		if (!is_valid()) return;
+
+		auto this_light = weak_light.lock();
+		m_uniform_projection->set_value(this_light->get_shadow_camera()->get_projection());
+		m_uniform_view->set_value(shadow_view);
+		m_uniform_shadow_map->set_value(this_light->get_shadow_buffer().get_depth_texture());
+	}
+
+	bool uniform_shadow_light::is_valid() const
+	{
+		return m_valid;
+	}
 
 	//shadow
 	bool light::set_shadow(const ivec2& size)

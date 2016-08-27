@@ -1442,10 +1442,13 @@ namespace hcube
 					this_technique[p].m_uniform_n_lights_used = this_technique[p].m_shader->get_uniform("n_lights_used");
 					//alloc
 					this_technique[p].m_uniform_lights.resize(parser_pass.m_lights.m_n_lights);
+					//alloc
+					this_technique[p].m_uniform_shadow_lights.resize(parser_pass.m_lights.m_n_lights);
 					//add uniforms
 					for (size_t l = 0; l != parser_pass.m_lights.m_n_lights; ++l)
 					{
 						this_technique[p].m_uniform_lights[l].get_uniform(l, this_technique[p].m_shader);
+						this_technique[p].m_uniform_shadow_lights[l].get_uniform(l, this_technique[p].m_shader);
 					}
 				}
 				//get uniforms

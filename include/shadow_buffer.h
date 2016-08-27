@@ -32,6 +32,8 @@ namespace hcube
 
 		void disable_depth_texture() const;
 
+		context_texture* get_depth_texture() const;
+
 		ivec2 get_size() const;
 
 	protected:

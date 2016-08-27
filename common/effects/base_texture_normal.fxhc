@@ -13,9 +13,10 @@ technique "forward"
 		zbuffer less
 		blend off
 		cullface back
-		lights 32
+		lights 8
 		shader source 
 		{
+			const int MAX_LIGHTS = 8;
 			#pragma import "lib/base_texture_normal.glsl"
 		}
 	}

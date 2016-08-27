@@ -170,7 +170,7 @@ namespace hcube
 		m_rendering->add_shadow_rendering_pass(rendering_pass_shadow::snew(m_resources));
 		//add into system
 		m_systems.add_system(m_rendering);
-#if 1
+#if 0
 		//gbuffer size
 		ivec2 g_size = app.get_window_size();
 		auto rendering_pass = rendering_pass_deferred::snew(g_size, m_resources);
@@ -212,7 +212,7 @@ namespace hcube
 				basic_meshs::cube({ 5,5,5 }, true)
 			);
 			cube_grid->get_component<renderable>()->set_material(
-				m_resources.get_material("box2_grid_mat")
+				m_resources.get_material("box2_mat")
 			);
 			cube_grid->get_component<transform>()->look_at(
 				vec3{ 0.0f, 0.0,  0.0f},
@@ -226,10 +226,10 @@ namespace hcube
 				basic_meshs::cube({ 50,0.1,50 }, true)
 			);
 			cube_floor->get_component<renderable>()->set_material(
-				m_resources.get_material("w_box_mat")
+				m_resources.get_material("rocks_mat")
 			); 
 			cube_floor->get_component<transform>()->translation(
-				vec3{0,-20,0}
+				vec3{0,-10,0}
 			);
 			cube_floor->set_name("cube_floor");
 			m_systems.add_entity(cube_floor);
@@ -248,8 +248,8 @@ namespace hcube
 			l_model_light->m_diffuse = { 1.0f, 0.8f, 0.1f };
 			l_model_light->m_specular = { 1.0f, 0.8f, 0.1f };
 			l_model_light->m_constant = 1.0;
-			l_model_light->m_inside_radius = 7.0;
-			l_model_light->m_radius = 7.0;
+			l_model_light->m_inside_radius = 2.0;
+			l_model_light->m_radius = 8.0;
 			m_model->add_child(e_model_light);
 
 			auto e_model_light1 = gameobject::light_new();
@@ -260,7 +260,7 @@ namespace hcube
 			l_model_light1->spot({ 1.0f, 0.8f, 0.1f },
 			{ 1.0f, 1.0f, 1.0f },
 				1.0,
-				10.0,
+				20.0,
 				30.0,
 				radians(10.0),
 				radians(15.0));
@@ -274,7 +274,7 @@ namespace hcube
 			l_model_light2->spot({ 1.0f, 0.8f, 0.1f },
 								 { 1.0f, 1.0f, 1.0f },
 								   1.0,
-								   10.0,
+								   20.0,
 								   30.0,
 								   radians(10.0),
 								   radians(15.0));
@@ -318,8 +318,8 @@ namespace hcube
 			for (short i = 0; i != 3; ++i)
 			{
 				l_lights[i]->m_constant = 1.1;
-				l_lights[i]->m_inside_radius = 18.0f;
-				l_lights[i]->m_radius = 35.0;
+				l_lights[i]->m_inside_radius = 5.0f;
+				l_lights[i]->m_radius = 28.0;
 			}
 
 			for (int i = 1; i != 4; ++i)
@@ -338,23 +338,26 @@ namespace hcube
 			m_lights->add_child(e_lights[2]);
 
 			//add to render
-			m_systems.add_entity(m_lights);
+			//m_systems.add_entity(m_lights);
 
-			//add shadow light
-			auto e_model_light_shadow = gameobject::light_new();
-			auto l_model_light_shadow = e_model_light_shadow->get_component<light>();
-			auto t_model_light_shadow = e_model_light_shadow->get_component<transform>();
-			t_model_light_shadow->position(vec3{ 0,20.0f,0 });
-			t_model_light_shadow->rotation(quat({ radians(90.0), radians(0.0), radians(0.0) }));
-			l_model_light_shadow->spot({ 1.0f, 1.0f, 1.0f },
-									   { 1.0f, 1.0f, 1.0f },
-										1.0,
-										30.0,
-										60.0,
-										radians(35.0),
-										radians(45.0));
-			l_model_light_shadow->set_shadow({ 256,256 });
-			m_systems.add_entity(e_model_light_shadow);
+			for (int i = 0; i != 2; ++i)
+			{
+				//add shadow light
+				auto e_model_light_shadow = gameobject::light_new();
+				auto l_model_light_shadow = e_model_light_shadow->get_component<light>();
+				auto t_model_light_shadow = e_model_light_shadow->get_component<transform>();
+				t_model_light_shadow->position(vec3{ -15.+30.*i,40.0f,0 });
+				t_model_light_shadow->rotation(quat({ radians(90.0), radians(-30.+60.0*i), radians(0.0) }));
+				l_model_light_shadow->spot({ 1.0f, 1.0f, 1.0f },
+										   { 1.0f, 1.0f, 1.0f },
+											1.0,
+											50.0,
+											70.0,
+											radians(10.0),
+											radians(25.0));
+				l_model_light_shadow->set_shadow({ 1024,1024 });
+				m_systems.add_entity(e_model_light_shadow);
+			}
 #if 0
 			t_camera->position(vec3{ 0,20.0f,0 });
 			t_camera->rotation(quat({ radians(35.0), radians(0.0), radians(0.0) }));

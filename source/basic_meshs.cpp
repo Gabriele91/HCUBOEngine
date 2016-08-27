@@ -268,8 +268,12 @@ namespace hcube
 				//set size
 				range.m_max = (unsigned int)vertices.size();
 				//build
-				mesh_square->build(layout, range,
-					(const mesh::byte*)vertices.data(), vertices.size() * sizeof(vertex));
+				mesh_square->build(
+					layout, 
+					range,
+					(const mesh::byte*)vertices.data(), 
+					vertices.size() * sizeof(vertex)
+				);
 			}
 			//return cube
 			return mesh_square;

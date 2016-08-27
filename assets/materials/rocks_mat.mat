@@ -1,0 +1,6 @@
+effect "base_texture_normal"
+{
+	diffuse_map  texture("rocks")
+	normal_map   texture("rocks_normal")
+	color        vec4(1.0,1.0,1.0,1.0)
+}

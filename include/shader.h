@@ -25,6 +25,7 @@ namespace hcube
 	public:
 
 		void set_value(texture::ptr in_texture);
+		void set_value(context_texture* in_texture);
 		void set_value(int i);
 		void set_value(float f);
 		void set_value(const vec2& v2);

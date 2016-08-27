@@ -43,10 +43,24 @@ namespace hcube
 
 		material_ptr copy() const;
 
+		enum default_parameters
+		{
+			MAT_DEFAULT_DIFFUSE_MAP,
+			MAT_DEFAULT_NORMAL_MAP,
+			MAT_DEFAULT_SPECULAR_MAP,
+			MAT_DEFAULT_COLOR,
+			MAT_DEFAULT_MAX
+		};
+
+		const effect::parameter* get_default_parameter(default_parameters dp) const;
+
 	protected:
 
+		//effect class
 		effect::ptr m_effect;
+		//effect parameters
 		effect::parameters* m_parameters;
-
+		//dafault params
+		int m_default_parameters[MAT_DEFAULT_MAX]{ -1 };
 	};
 }

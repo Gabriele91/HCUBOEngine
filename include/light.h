@@ -159,20 +159,22 @@ namespace hcube
 	
 	struct uniform_light
 	{
-		uniform* m_uniform_type;
+		uniform* m_uniform_type{ nullptr };
 
-		uniform* m_uniform_position;
-		uniform* m_uniform_direction;
+		uniform* m_uniform_position { nullptr };
+		uniform* m_uniform_direction{ nullptr };
 
-		uniform* m_uniform_diffuse;
-		uniform* m_uniform_specular;
+		uniform* m_uniform_diffuse { nullptr };
+		uniform* m_uniform_specular{ nullptr };
 
-		uniform* m_uniform_inv_constant;
-		uniform* m_uniform_inv_quad_inside_radius;
-		uniform* m_uniform_inv_quad_radius;
+		uniform* m_uniform_constant     { nullptr };
+		uniform* m_uniform_inside_radius{ nullptr };
+		uniform* m_uniform_radius       { nullptr };
 
-		uniform* m_uniform_inner_cut_off;
-		uniform* m_uniform_outer_cut_off;
+		uniform* m_uniform_inner_cut_off{ nullptr };
+		uniform* m_uniform_outer_cut_off{ nullptr };
+
+		uniform* m_uniform_shadow{ nullptr };
 
 		void get_uniform(int i, shader::ptr shader);
 
@@ -184,6 +186,25 @@ namespace hcube
         
         bool m_valid{ false };
         
+	};
+
+	struct uniform_shadow_light
+	{
+		uniform* m_uniform_projection{ nullptr };
+		uniform* m_uniform_view      { nullptr };
+		uniform* m_uniform_shadow_map{ nullptr };
+
+		void get_uniform(int i, shader::ptr shader);
+
+		void uniform(light_wptr weak_light,
+					 const mat4& shadow_view);
+
+		bool is_valid() const;
+
+	protected:
+
+		bool m_valid{ false };
+
 	};
 
 }

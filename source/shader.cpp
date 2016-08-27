@@ -658,6 +658,15 @@ R"GLSL(
 		glUniform1i(m_id, n_texture);
 	}
 
+	void uniform::set_value(context_texture* in_texture)
+	{
+		int n_texture = ++m_shader->m_uniform_ntexture;
+		//bind texture
+		render::bind_texture(in_texture, n_texture);
+		//bind id
+		glUniform1i(m_id, n_texture);
+	}
+
 	void uniform::set_value(int i)
 	{
 		glUniform1i(m_id, i);

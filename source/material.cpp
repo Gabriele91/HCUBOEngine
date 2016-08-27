@@ -630,6 +630,25 @@ namespace hcube
 
 	material::~material() { if (m_parameters) delete m_parameters; };
 
+	static std::string name_of_default_parameters[material::MAT_DEFAULT_MAX] =
+	{
+		"diffuse_map",
+		"normal_map",
+		"specular_map",
+		"color"
+	};
+	static void save_if_is_a_default_parameter(int id_param,const std::string& name, int default_parameters[])
+	{
+		for (int i = 0; i != material::MAT_DEFAULT_MAX; ++i)
+		{
+			if (name_of_default_parameters[i] == name)
+			{
+				default_parameters[i] = id_param;
+				return;
+			}
+		}
+	}
+
 	bool material::load(resources_manager& resources,const std::string& path)
 	{
     
@@ -664,7 +683,7 @@ namespace hcube
 				if (id_param < 0) continue;
 				//get pram
 				effect::parameter* param                     = (*m_parameters)[id_param].get();
-
+				//select
 				switch (ctx_param.m_type)
 				{
 				default:
@@ -680,6 +699,8 @@ namespace hcube
 				case effect::PT_VEC4:	param->set_value(ctx_param.m_value.m_vec4); break;
 				case effect::PT_MAT4:	param->set_value(ctx_param.m_value.m_mat4); break;
 				}
+				//if a default parameter
+				save_if_is_a_default_parameter(id_param, ctx_param.m_name, m_default_parameters);
 			}
 		}
 		return true;
@@ -689,6 +710,13 @@ namespace hcube
 
 	effect::parameters* material::get_parameters() const { return m_parameters; }
 	
+	const effect::parameter* material::get_default_parameter(material::default_parameters dp) const
+	{
+		int id_param = m_default_parameters[dp];
+		if(id_param>=0) return (*m_parameters)[ m_default_parameters[dp] ].get();
+		return nullptr;
+	}
+
 	material_ptr material::copy() const
 	{
 		auto omaterial = material_snew();

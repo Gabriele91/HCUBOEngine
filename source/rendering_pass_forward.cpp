@@ -55,18 +55,31 @@ namespace hcube
 							pass.m_uniform_ambient_light->set_value(ambient_color);
 						//init loop
 						int light_count = 0;
+						int shadow_light_count = 0;
 						render_queues::element* weak_element = queues.m_cull_light;
 						//pass lights
 						for (; weak_element && light_count < pass.m_uniform_lights.size();
-							weak_element = weak_element->m_next, ++light_count)
+							   weak_element = weak_element->m_next, 
+							 ++light_count)
 						{
 							auto l_entity = weak_element->lock();
+							//get light
+							light_ptr l_light     = l_entity->get_component<light>();
+							transform_ptr t_light = l_entity->get_component<transform>();
 							//uniform light
 							pass.m_uniform_lights[light_count].uniform(
-								l_entity->get_component<light>(),
+								l_light,
 								t_camera->get_matrix_inv(),
-								l_entity->get_component<transform>()->get_matrix()
+								t_light->get_matrix()
 							);
+							//uniform shadow
+							if (l_light->is_enable_shadow())
+							{
+								pass.m_uniform_shadow_lights[light_count].uniform(
+									l_light,
+									t_light->get_matrix_inv()
+								);
+							}
 						}
 						//pass n lights
 						if (pass.m_uniform_n_lights_used)
