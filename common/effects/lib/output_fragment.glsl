@@ -33,6 +33,9 @@ void output_fragment(vec4  model_position,
     //todo: material
     float shininess = 16.0f;
 	
+	//unpack
+	normal = normalize(normal * 2.0 - 1.0);
+	
 	//view dir
 	vec3 view_dir = normalize(vec3(0.0) - position);
 	
