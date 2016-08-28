@@ -507,6 +507,7 @@ R"GLSL(
 							 const std::string& gs_str, size_t line_gs,
 							 const std::vector<std::string>& defines)
 	{
+		bool success_to_compile = true;
 		//delete last shader
 		delete_program();
 		//int variables
@@ -537,6 +538,7 @@ R"GLSL(
         {
             glDeleteShader(m_shader_vs);
             m_shader_vs=0;
+			success_to_compile = false;
         }
 		////////////////////////////////////////////////////////////////////////////////
 		//fragmentx
@@ -564,6 +566,7 @@ R"GLSL(
         {
             glDeleteShader(m_shader_fs);
             m_shader_fs = 0;
+			success_to_compile = false;
         }
 		////////////////////////////////////////////////////////////////////////////////
 		if (gs_str.size())
@@ -589,6 +592,7 @@ R"GLSL(
             {
                 glDeleteShader(m_shader_gs);
                 m_shader_gs = 0;
+				success_to_compile = false;
             }
 		}
 		////////////////////////////////////////////////////////////////////////////////
@@ -630,9 +634,9 @@ R"GLSL(
 			m_shader_gs = 0;
 			m_shader_id = 0;
 			//fail
-			return false;
+			success_to_compile = false;
 		}
-		return true;
+		return success_to_compile;
 	}
 
 	void shader::delete_program()
