@@ -1,9 +1,7 @@
-
+#define SHOFT_SHADOW
 //structs
 struct spot_light
 {
-    int   m_type;
-    
     vec3  m_position;
     vec3  m_direction;
     
@@ -28,6 +26,30 @@ struct spot_light_res
     vec3 m_diffuse;
     vec3 m_specular;
 };
+//soft shadow
+float pcf_shadow(in spot_light light0,
+                 in float bias,
+                 in vec3 proj_coords)
+{
+    //depth of current pos
+    float current_depth = proj_coords.z;
+    //start shadow
+    float shadow = 0.0;
+    //size
+    vec2 tex_size = 1.0 / textureSize(light0.m_shadow_map, 0);
+    //pcf
+    for(int x = -1; x <= 1; ++x)
+    {
+        for(int y = -1; y <= 1; ++y)
+        {
+            float pcf_depth = texture(light0.m_shadow_map, proj_coords.xy + vec2(x, y) * tex_size).r;
+            shadow += (current_depth-bias) <= pcf_depth  ? 1.0 : 0.0;
+        }    
+    }
+    shadow /= 9.0;
+    //return
+    return shadow;
+}
 //attenuation
 float spot_light_compute_attenuation(in spot_light light0, in vec3  frag_position)
 {
@@ -41,7 +63,7 @@ vec4 spot_light_compute_shadow_light_pos(in spot_light light0,vec4 frag_pos)
 	return light0.m_shadow_projection * light0.m_shadow_view * frag_pos;
 }
 //compute shadow light 
-float spot_light_compute_shadow_light(in spot_light light0,vec4 frag_pos)
+float spot_light_compute_shadow_light(in spot_light light0,vec4 frag_pos,float bias)
 {
 	// compute pos 
 	vec4 frag_pos_light_space = spot_light_compute_shadow_light_pos(light0,frag_pos);
@@ -52,12 +74,16 @@ float spot_light_compute_shadow_light(in spot_light light0,vec4 frag_pos)
 	//clamp
 	if(proj_coords.x <= 0.0f || proj_coords.x >=1.0) return 1.0;
 	if(proj_coords.y <= 0.0f || proj_coords.y >=1.0) return 1.0;
+#ifdef SHOFT_SHADOW
+    float shadow = pcf_shadow(light0,bias,proj_coords.xyz);
+#else
 	//depth of shadow map
 	float closest_depth = texture(light0.m_shadow_map, proj_coords.xy).r; 
 	//depth of current pos
 	float current_depth = proj_coords.z;  
     // check whether current frag pos is in shadow
-    float shadow = current_depth <= closest_depth  ? 1.0 : 0.0;
+    float shadow = (current_depth-bias) <= closest_depth  ? 1.0 : 0.0;
+#endif
 	//return
     return shadow;
 }
@@ -87,8 +113,11 @@ void compute_spot_light(in spot_light light0,
     results.m_specular = light0.m_specular * spec * attenuation * intensity;
 	//shadow?
 	if(light0.m_use_shadow)
-	{
-		float shadow_factor = spot_light_compute_shadow_light(light0,frag_model_position);
+    {
+        //compute bias
+        float bias = 0.00001;
+        //compute shadow
+		float shadow_factor = spot_light_compute_shadow_light(light0,frag_model_position,bias);
 		results.m_diffuse  *= shadow_factor;
 		results.m_specular *= shadow_factor;
 	}

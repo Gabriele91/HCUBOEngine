@@ -30,7 +30,7 @@ out vec4 frag_color;
 void forward_color_output_fragment(in vec4 albedo)
 {	
     //output
-	frag_color = albedo * ambient_light;
+    frag_color = albedo * ambient_light;
 }
 
 #elif defined( FORWARD_RENDERING_SPOT_LIGHT )
@@ -42,10 +42,11 @@ uniform spot_light spot_lights[1];
 out vec4 frag_color;
 //define 
 #define output_fragment(position,normal,albedo,specular)\
-	forward_light_output_fragment(position,normal,specular)
+	forward_light_output_fragment(position,normal,albedo,specular)
 //compute
 void forward_light_output_fragment(in vec4  position,
 								   in vec3  normal,
+                                   in vec4  albedo,
 								   in float specular)
 {	
     //todo: material
@@ -69,8 +70,87 @@ void forward_light_output_fragment(in vec4  position,
 						shininess,
 						light_results);
     //output
-	frag_color = vec4(light_results.m_diffuse + light_results.m_specular * specular,1.0);
+    frag_color = vec4(albedo.rgb*(light_results.m_diffuse + light_results.m_specular * specular),albedo.a);
 }
+
+#elif defined( FORWARD_RENDERING_POINT_LIGHT )
+//light uniform
+#pragma include "point_light.glsl"
+//uniform
+uniform point_light point_lights[1];
+//output
+out vec4 frag_color;
+//define
+#define output_fragment(position,normal,albedo,specular)\
+    forward_light_output_fragment(position,normal,albedo,specular)
+//compute
+void forward_light_output_fragment(in vec4  position,
+                                   in vec3  normal,
+                                   in vec4  albedo,
+                                   in float specular)
+{
+    //todo: material
+    float shininess = 16.0f;
+    
+    //pos view
+    vec3 view_pos = vec3(view*position);
+    
+    //view dir
+    vec3 view_dir = normalize(vec3(0.0) - view_pos);
+    
+    //result
+    point_light_res light_results;
+    
+    // Then calculate lighting as usual
+    compute_point_light(point_lights[0],
+                        view_pos,
+                        view_dir,
+                        normal,
+                        shininess,
+                        light_results);
+    //output
+    frag_color = vec4(albedo.rgb*(light_results.m_diffuse + light_results.m_specular * specular),albedo.a);
+}
+
+
+#elif defined( FORWARD_RENDERING_DIRECTION_LIGHT )
+//light uniform
+#pragma include "direction_light.glsl"
+//uniform
+uniform direction_light direction_lights[1];
+//output
+out vec4 frag_color;
+//define
+#define output_fragment(position,normal,albedo,specular)\
+    forward_light_output_fragment(position,normal,albedo,specular)
+//compute
+void forward_light_output_fragment(in vec4  position,
+                                   in vec3  normal,
+                                   in vec4  albedo,
+                                   in float specular)
+{
+    //todo: material
+    float shininess = 16.0f;
+    
+    //pos view
+    vec3 view_pos = vec3(view*position);
+    
+    //view dir
+    vec3 view_dir = normalize(vec3(0.0) - view_pos);
+    
+    //result
+    direction_light_res light_results;
+    
+    // Then calculate lighting as usual
+    compute_direction_light(direction_lights[0],
+                            view_dir,
+                            normal,
+                            shininess,
+                            light_results);
+    //output
+    frag_color = vec4(albedo.rgb*(light_results.m_diffuse + light_results.m_specular * specular),albedo.a);
+}
+
 
 #else
 //output

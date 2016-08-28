@@ -74,7 +74,41 @@ namespace hcube
 							//draw
 							entity->get_component<renderable>()->draw();
 						}
-					}
+                    }
+                    //draw all point lights
+                    else if(pass.m_uniform_point.is_valid())
+                    {
+                        HCUBE_FOREACH_QUEUE(weak_light, queues.m_cull_light_point)
+                        {
+                            auto e_light = weak_light->lock();
+                            auto l_light = e_light->get_component<light>();
+                            auto t_light = e_light->get_component<transform>();
+                            pass.m_uniform_point.uniform(
+                                                        l_light,
+                                                        t_camera->get_matrix_inv(),
+                                                        t_light ->get_matrix()
+                                                        );
+                            //draw
+                            entity->get_component<renderable>()->draw();
+                        }
+                    }
+                    //draw all direction lights
+                    else if(pass.m_uniform_direction.is_valid())
+                    {
+                        HCUBE_FOREACH_QUEUE(weak_light, queues.m_cull_light_direction)
+                        {
+                            auto e_light = weak_light->lock();
+                            auto l_light = e_light->get_component<light>();
+                            auto t_light = e_light->get_component<transform>();
+                            pass.m_uniform_direction.uniform(
+                                                            l_light,
+                                                            t_camera->get_matrix_inv(),
+                                                            t_light ->get_matrix()
+                                                            );
+                            //draw
+                            entity->get_component<renderable>()->draw();
+                        }
+                    }
 					//end
 					pass.unbind();
 				

@@ -215,7 +215,6 @@
 		E00ABDB81D23C3BE004E4CFD /* source */ = {
 			isa = PBXGroup;
 			children = (
-				E054AC7C1D72274600A3EE81 /* rendering_pass_forward.cpp */,
 				E054AC7D1D72274600A3EE81 /* shadow_buffer.cpp */,
 				E01334BA1D6EDEA0001C6B41 /* effect.cpp */,
 				E01334BB1D6EDEA0001C6B41 /* light.cpp */,
@@ -241,6 +240,7 @@
 				E08DB6B61D44AD7300EF554F /* system_manager.cpp */,
 				E01461AA1D34D2EC008A2574 /* resources_manager.cpp */,
 				E03EDC801D34186900C0C22A /* rendering_system.cpp */,
+				E054AC7C1D72274600A3EE81 /* rendering_pass_forward.cpp */,
 				E022AF4B1D3EB487009F76D5 /* rendering_pass_deferred.cpp */,
 				E03EDC7F1D34186900C0C22A /* query_performance.cpp */,
 				E03EDC781D34186900C0C22A /* filesystem.cpp */,

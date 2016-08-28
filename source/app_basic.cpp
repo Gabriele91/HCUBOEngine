@@ -214,25 +214,30 @@ namespace hcube
 			cube_grid->get_component<renderable>()->set_material(
 				m_resources.get_material("box2_mat")
 			);
-			cube_grid->get_component<transform>()->look_at(
-				vec3{ 0.0f, 0.0,  0.0f},
-				vec3{ 0.0f,-0.5f, 2.0f },
-				vec3{ 0.0f, 1.0f, 0.0f }
-			);
+            cube_grid->get_component<transform>()->translation(
+                vec3{0.0,-7.5,.0}
+            );
 			cube_grid->set_name("cube_grid");
 			m_systems.add_entity(cube_grid);
 			//cube floor
-			auto cube_floor = gameobject::node_new(
-				basic_meshs::cube({ 50,0.1,50 }, true)
-			);
-			cube_floor->get_component<renderable>()->set_material(
-				m_resources.get_material("rocks_mat")
-			); 
-			cube_floor->get_component<transform>()->translation(
-				vec3{0,-10,0}
-			);
-			cube_floor->set_name("cube_floor");
-			m_systems.add_entity(cube_floor);
+            for(int x=-2;x!=2;++x)
+            for(int y=-2;y!=2;++y)
+            {
+                auto cube_floor = gameobject::node_new(
+                    basic_meshs::cube({ 50,0.1,50 }, true)
+                );
+                cube_floor->get_component<renderable>()->set_material(
+                    m_resources.get_material(
+                                             "rocks_mat"
+                                             //"box_mat"
+                                             )
+                ); 
+                cube_floor->get_component<transform>()->translation(
+                    vec3{x*50.,-10,y*50.}
+                );
+                cube_floor->set_name("cube_floor");
+                m_systems.add_entity(cube_floor);
+            }
 			//ship
 			m_model = m_resources.get_prefab("ship")->instantiate();
 			auto t_model = m_model->get_component<transform>();
@@ -266,7 +271,7 @@ namespace hcube
 				30.0,
 				radians(10.0),
 				radians(15.0));
-			m_model->add_child(e_model_light1);
+            m_model->add_child(e_model_light1);
 
 			auto e_model_light2 = gameobject::light_new();
 			auto l_model_light2 = e_model_light2->get_component<light>();
@@ -338,7 +343,7 @@ namespace hcube
 			m_lights->add_child(e_lights[2]);
 
 			//add to render
-			//m_systems.add_entity(m_lights);
+			m_systems.add_entity(m_lights);
 
 			for (int i = 0; i != 2; ++i)
 			{
@@ -351,17 +356,13 @@ namespace hcube
 				l_model_light_shadow->spot({ 1.0f, 1.0f, 1.0f },
 										   { 1.0f, 1.0f, 1.0f },
 											1.0,
-											50.0,
-											70.0,
-											radians(10.0),
-											radians(25.0));
-				l_model_light_shadow->set_shadow({ 1024,1024 });
+											30.0,
+											65.0,
+											radians(20.0),
+											radians(35.0));
+				l_model_light_shadow->set_shadow({ 512,512 });
 				m_systems.add_entity(e_model_light_shadow);
 			}
-#if 0
-			t_camera->position(vec3{ 0,20.0f,0 });
-			t_camera->rotation(quat({ radians(35.0), radians(0.0), radians(0.0) }));
-#endif 
 			//ambient color
 			m_rendering->set_ambient_color(vec4{ 0.26, 0.26, 0.26, 1.0 });
 
@@ -379,7 +380,7 @@ namespace hcube
 			*/
 		m_systems.get_entities_by_name("cube_grid")[0]
 			->get_component<transform>()
-			->turn(quat{ {radians(delta_time*4.0), 0.0, 0.0} });
+			->turn(quat{ {0, radians(delta_time*4.0), 0.0} });
 		//for all lights
 		m_lights
 			->get_component<transform>()

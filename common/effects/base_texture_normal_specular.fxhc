@@ -12,13 +12,13 @@ technique "forward"
 	pass 
 	{
 		zbuffer less
-		blend one zero
+		blend off
 		cullface back
 		lights only_ambient
 		shader source 
 		{
 			#define FORWARD_RENDERING_COLOR
-			#pragma import "lib/base_texture_normal.glsl"
+			#pragma import "lib/base_texture_normal_specular.glsl"
 		}
 	}
 	pass 
@@ -30,7 +30,47 @@ technique "forward"
 		shader source 
 		{
 			#define FORWARD_RENDERING_SPOT_LIGHT
-			#pragma import "lib/base_texture_normal.glsl"
+			#pragma import "lib/base_texture_normal_specular.glsl"
 		}
 	}
+    pass
+    {
+        zbuffer equal
+        blend one one
+        cullface back
+        lights point
+        shader source
+        {
+            #define FORWARD_RENDERING_POINT_LIGHT
+            #pragma import "lib/base_texture_normal_specular.glsl"
+        }
+    }
+    pass
+    {
+        zbuffer equal
+        blend one one
+        cullface back
+        lights point
+        shader source
+        {
+            #define FORWARD_RENDERING_DIRECTION_LIGHT
+            #pragma import "lib/base_texture_normal_specular.glsl"
+        }
+    }
+}
+
+technique "deferred"
+{
+    pass
+    {
+        zbuffer less
+        blend off
+        cullface back
+        lights only_ambient
+        shader source
+        {
+            #define DEFERRED_RENDERING
+            #pragma import "lib/base_texture_normal_specular.glsl"
+        }
+    }
 }

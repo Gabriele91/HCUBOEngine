@@ -1,6 +1,6 @@
 effect "base_texture_normal_specular"
 {
-	diffuse_map  texture("rocks_2")
-	normal_map   texture("rocks_2_normal")
+	diffuse_map  texture("rocks")
+	normal_map   texture("rocks_normal")
 	color        vec4(1.0,1.0,1.0,1.0)
 }

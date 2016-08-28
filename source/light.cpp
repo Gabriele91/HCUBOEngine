@@ -193,7 +193,7 @@ namespace hcube
 		//projection
 		float aspect = float(size.x) / float(size.y);
 		m_shadow.m_camera->set_viewport(ivec4{ 0, 0, size.x, size.y });
-		m_shadow.m_camera->set_perspective(m_outer_cut_off, aspect, 0.1f, m_radius);
+		m_shadow.m_camera->set_perspective(m_outer_cut_off * 2.0f, aspect, 0.1f, m_radius);
         
         return true;
 	}
@@ -237,7 +237,7 @@ namespace hcube
 			ivec2 size = m_shadow.m_buffer.get_size();
 			//projection
 			float aspect = float(size.x) / float(size.y);
-			m_shadow.m_camera->set_perspective(m_outer_cut_off, aspect, 0.1f, m_radius);
+			m_shadow.m_camera->set_perspective(m_outer_cut_off * 2.0f, aspect, 0.1f, m_radius);
 		}
 	}
 
