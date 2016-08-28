@@ -43,11 +43,15 @@ namespace hcube
 		queue m_translucent;
 
 		//culling
-		element* m_cull_light{ nullptr };
+		element* m_cull_light_spot     { nullptr };
+		element* m_cull_light_point    { nullptr };
+		element* m_cull_light_direction{ nullptr };
 		element* m_cull_opaque{ nullptr };
 		element* m_cull_translucent{ nullptr };
 
-		void add_call_light(element* e);
+		void add_call_light_spot(element* e);
+		void add_call_light_point(element* e);
+		void add_call_light_direction(element* e);
 		void add_call_opaque(element* e);
 		void add_call_translucent(element* e);
 
@@ -61,6 +65,9 @@ namespace hcube
 		void compute_opaque_queue(const frustum& view_frustum);
 		void compute_translucent_queue(const frustum& view_frustum);
 	};
+
+	#define HCUBE_FOREACH_QUEUE(name,queue)\
+		for (render_queues::element* name = queue; name; name = name->m_next)
 
 	class rendering_pass
 	{
@@ -79,7 +86,9 @@ namespace hcube
 	{
 		
 		effect::ptr		   m_effect;
-		effect::technique* m_technique_shadow;
+		effect::technique* m_technique_shadow_spot;
+		effect::technique* m_technique_shadow_point;
+		effect::technique* m_technique_shadow_direction;
 
 	public:
 

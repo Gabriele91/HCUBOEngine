@@ -6,8 +6,6 @@ const int SPOT_LIGHT      = 2;
 //structs
 struct light
 {
-    int   m_type;
-    
     vec3  m_position;
     vec3  m_direction;
     

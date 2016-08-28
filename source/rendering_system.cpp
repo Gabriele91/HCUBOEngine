@@ -127,13 +127,13 @@ namespace hcube
 		return f_camera.distance_from_near_plane((vec3)(t_entity->get_matrix()*vec4(0, 0, 0, 1)));
 	}
 
-	void render_queues::add_call_light(element* e)
+	void render_queues::add_call_light_spot(element* e)
 	{
 		// next to void
 		e->m_next = nullptr;
 		// loop vars
 		element* last = nullptr;
-		element* current = m_cull_light;
+		element* current = m_cull_light_spot;
 		// insert sort, front to back
 		for (; current;
 			   last = current,
@@ -149,11 +149,65 @@ namespace hcube
 		}
 		else
 		{
-			e->m_next = m_cull_light;
-			m_cull_light = e;
+			e->m_next = m_cull_light_spot;
+			m_cull_light_spot = e;
 		}
 	}
 
+	void render_queues::add_call_light_point(element* e)
+	{
+		// next to void
+		e->m_next = nullptr;
+		// loop vars
+		element* last = nullptr;
+		element* current = m_cull_light_point;
+		// insert sort, front to back
+		for (; current;
+			last = current,
+			current = current->m_next)
+		{
+			if (current->m_depth < e->m_depth) break;
+		}
+		// last iteration
+		if (last)
+		{
+			e->m_next = current;
+			last->m_next = e;
+		}
+		else
+		{
+			e->m_next = m_cull_light_point;
+			m_cull_light_point = e;
+		}
+	}
+
+	void render_queues::add_call_light_direction(element* e)
+	{
+		// next to void
+		e->m_next = nullptr;
+		// loop vars
+		element* last = nullptr;
+		element* current = m_cull_light_direction;
+		// insert sort, front to back
+		for (; current;
+			last = current,
+			current = current->m_next)
+		{
+			if (current->m_depth < e->m_depth) break;
+		}
+		// last iteration
+		if (last)
+		{
+			e->m_next = current;
+			last->m_next = e;
+		}
+		else
+		{
+			e->m_next = m_cull_light_direction;
+			m_cull_light_direction = e;
+		}
+	}
+	
 	void render_queues::add_call_opaque(element* e)
 	{
 		e->m_next = nullptr;
@@ -209,7 +263,10 @@ namespace hcube
 
 	void render_queues::compute_light_queue(const frustum& view_frustum)
 	{
-		m_cull_light = nullptr;
+		m_cull_light_spot	   = nullptr;
+		m_cull_light_point	   = nullptr;
+		m_cull_light_direction = nullptr;
+
 		//build queue lights
 		for (render_queues::element& weak_element : m_lights)
 		{
@@ -217,15 +274,24 @@ namespace hcube
 			auto t_entity = entity->get_component<transform>();
 			auto l_entity = entity->get_component<light>();
 			const auto l_pos = (vec3)(t_entity->get_matrix()*vec4(0, 0, 0, 1.));
-			const auto l_radius = l_entity->m_radius;
+			const auto l_radius = l_entity->get_radius();
+			
 			if (l_entity->is_enabled() && view_frustum.test_sphere(l_pos, l_radius))
 			{
 				weak_element.m_depth = compute_camera_depth(view_frustum, t_entity);
-				add_call_light(&weak_element);
+				switch (l_entity->get_type())
+				{
+					case light::SPOT_LIGHT:      add_call_light_spot(&weak_element);     break;
+					case light::POINT_LIGHT:     add_call_light_point(&weak_element);     break;
+					case light::DIRECTION_LIGHT: add_call_light_direction(&weak_element); break;
+					default: break;
+				};
+
 			}
 		}
 
 	}
+
 	void render_queues::compute_opaque_queue(const frustum& view_frustum)
 	{
 		m_cull_opaque = nullptr;
@@ -246,6 +312,7 @@ namespace hcube
 		}
 
 	}
+
 	void render_queues::compute_translucent_queue(const frustum& view_frustum)
 	{
 		//init
@@ -272,7 +339,9 @@ namespace hcube
 	rendering_pass_shadow::rendering_pass_shadow(resources_manager& resources)
 	{
 		m_effect		   = resources.get_effect("build_shadow");
-		m_technique_shadow = m_effect->get_technique("shadow");
+		m_technique_shadow_spot      = m_effect->get_technique("shadow_spot");
+		m_technique_shadow_point     = m_effect->get_technique("shadow_point");
+		m_technique_shadow_direction = m_effect->get_technique("shadow_direction");
 	}
 
 	void rendering_pass_shadow::draw_pass(
@@ -283,7 +352,7 @@ namespace hcube
 	)
 	{
 		//pass
-		effect::pass& shadow_pass = (*m_technique_shadow)[0];
+		effect::pass& shadow_pass = (*m_technique_shadow_spot)[0];
 		//shadow map
 		auto l_light = e_light->get_component<light>();
 		//enable shadow?
@@ -293,8 +362,7 @@ namespace hcube
 		transform_ptr t_light = e_light->get_component<transform>();
 		frustum&      f_light = c_light->get_frustum();
 		//update view frustum
-		f_light.update_frustum(c_light->get_projection()*
-							   t_light->get_matrix_inv());
+		f_light.update_frustum(c_light->get_projection()*t_light->get_matrix_inv());
 		//build queue
 		queues.compute_opaque_queue(f_light);
 		//enable shadow buffer/texture
@@ -312,10 +380,7 @@ namespace hcube
 		//set viewport
 		render::set_viewport_state({ c_light->get_viewport() });
 		//draw objs
-		for (render_queues::element*
-			weak_element = queues.m_cull_opaque;
-			weak_element;
-			weak_element = weak_element->m_next)
+		HCUBE_FOREACH_QUEUE(weak_element, queues.m_cull_opaque)
 		{
 			auto entity = weak_element->lock();
 			auto t_entity = entity->get_component<transform>();
@@ -342,10 +407,7 @@ namespace hcube
 		//update queue
 		m_renderables.compute_light_queue(f_camera);
 		//build shadow map
-		for(render_queues::element*
-			weak_light = m_renderables.m_cull_light;
-			weak_light && m_shadow_pass;
-			weak_light = weak_light->m_next)
+		if (m_shadow_pass) HCUBE_FOREACH_QUEUE(weak_light, m_renderables.m_cull_light_spot)
 		{
 			//get light
 			auto e_light = weak_light->lock();

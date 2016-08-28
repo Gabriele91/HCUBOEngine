@@ -143,10 +143,13 @@ namespace hcube
 			size_t      m_line{ 0 };
 		};
 
-		struct lights_field
+		enum lights_field
 		{
-			bool m_on  { false };
-			int  m_n_lights{ 0 };
+			LF_NONE,
+			LF_AMBIENT,
+			LF_SPOT,
+			LF_POINT,
+			LF_DIRECTION
 		};
 
 		struct pass_field
@@ -155,7 +158,7 @@ namespace hcube
 			depth_buffer_state m_depth;
 			blend_state        m_blend;
 			shader_field       m_shader;
-			lights_field	   m_lights;
+			lights_field	   m_lights{ LF_NONE };
 		};
 
 		struct technique_field
@@ -677,33 +680,37 @@ namespace hcube
 			//is off?
 			if ((CSTRCMP_SKIP(ptr, "off")))
 			{
-				pass.m_lights.m_on = false;
-				pass.m_lights.m_n_lights = 0;
+				pass.m_lights = LF_NONE;
 				return true;
 			}
 			//is only_ambient?
 			if ((CSTRCMP_SKIP(ptr, "only_ambient")))
 			{
-				pass.m_lights.m_on = true;
-				pass.m_lights.m_n_lights = 0;
+				pass.m_lights = LF_AMBIENT;
 				return true;
 			}
-			//number
-			if (!is_uint_number(*ptr))
+			//spot
+			if ((CSTRCMP_SKIP(ptr, "spot")))
 			{
-				push_error("Lights command required int parameter");
-				return false;
+				pass.m_lights = LF_SPOT;
+				return true;
 			}
-			//enable lights
-			pass.m_lights.m_on = true;
-			//parse int
-			if(!parse_int(ptr, &ptr, pass.m_lights.m_n_lights))
+			//spot
+			if ((CSTRCMP_SKIP(ptr, "point")))
 			{
-				push_error("Lights command required valid int parameter");
-				return false;
+				pass.m_lights = LF_POINT;
+				return true;
 			}
+			//spot
+			if ((CSTRCMP_SKIP(ptr, "direction")))
+			{
+				pass.m_lights = LF_DIRECTION;
+				return true;
+			}
+			//error
+			push_error("Lights parameter not valid");
 			//end
-			return true;
+			return false;
 		}
 		bool parse_shader(const char*& ptr, pass_field& pass)
 		{
@@ -1431,25 +1438,24 @@ namespace hcube
 				this_technique[p].m_uniform_view       = this_technique[p].m_shader->get_uniform("view");
 				this_technique[p].m_uniform_projection = this_technique[p].m_shader->get_uniform("projection");
 				this_technique[p].m_uniform_viewport   = this_technique[p].m_shader->get_uniform("viewport");
+				//default true
+				this_technique[p].m_support_light = true;
 				//lights uniforms
-				if (parser_pass.m_lights.m_on)
+				switch (parser_pass.m_lights)
 				{
-					//add support lights
-					this_technique[p].m_support_light = true;
-					//ambient
-					this_technique[p].m_uniform_ambient_light = this_technique[p].m_shader->get_uniform("ambient_light");
-					//n lights
-					this_technique[p].m_uniform_n_lights_used = this_technique[p].m_shader->get_uniform("n_lights_used");
-					//alloc
-					this_technique[p].m_uniform_lights.resize(parser_pass.m_lights.m_n_lights);
-					//alloc
-					this_technique[p].m_uniform_shadow_lights.resize(parser_pass.m_lights.m_n_lights);
-					//add uniforms
-					for (size_t l = 0; l != parser_pass.m_lights.m_n_lights; ++l)
-					{
-						this_technique[p].m_uniform_lights[l].get_uniform(l, this_technique[p].m_shader);
-						this_technique[p].m_uniform_shadow_lights[l].get_uniform(l, this_technique[p].m_shader);
-					}
+					case effect_parser::LF_AMBIENT: 
+						this_technique[p].m_uniform_ambient_light = this_technique[p].m_shader->get_uniform("ambient_light"); 
+					break;
+					case effect_parser::LF_SPOT:
+						this_technique[p].m_uniform_spot.get_uniform(0, this_technique[p].m_shader);
+					break;
+					case effect_parser::LF_POINT:
+						this_technique[p].m_uniform_point.get_uniform(0, this_technique[p].m_shader);
+					break;
+					case effect_parser::LF_DIRECTION:
+						this_technique[p].m_uniform_direction.get_uniform(0, this_technique[p].m_shader);
+					break;
+					default: this_technique[p].m_support_light = false; break;
 				}
 				//get uniforms
 				for (auto it : m_map_parameters)

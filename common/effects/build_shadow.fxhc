@@ -2,7 +2,7 @@ parameters
 {
 }
 
-technique "shadow"
+technique "shadow_spot"
 {
 	pass 
 	{

@@ -245,11 +245,13 @@ namespace hcube
 			auto l_model_light = e_model_light->get_component<light>();
 			auto t_model_light = e_model_light->get_component<transform>();
 			t_model_light->position(vec3{ 0,6.0f,-80 });
-			l_model_light->m_diffuse = { 1.0f, 0.8f, 0.1f };
-			l_model_light->m_specular = { 1.0f, 0.8f, 0.1f };
-			l_model_light->m_constant = 1.0;
-			l_model_light->m_inside_radius = 2.0;
-			l_model_light->m_radius = 8.0;
+			l_model_light->point(
+				{ 1.0f, 0.8f, 0.1f },
+				{ 1.0f, 0.8f, 0.1f },
+				1.0,
+				2.0,
+				8.0
+			);
 			m_model->add_child(e_model_light);
 
 			auto e_model_light1 = gameobject::light_new();
@@ -302,25 +304,23 @@ namespace hcube
 				e_lights[1]->get_component<transform>(),
 				e_lights[2]->get_component<transform>()
 			};
-
-			l_lights[0]->m_diffuse = { 0.0f, 1.0f, 0.0f };
-			l_lights[0]->m_specular = { 0.0f, 1.0f, 0.0f };
-			e_lights[0]->set_name("light_green");
-
-			l_lights[1]->m_diffuse = { 1.0f, 0.0f, 0.0f };
-			l_lights[1]->m_specular = { 1.0f, 0.0f, 0.0f };
-			e_lights[1]->set_name("light_red");
-
-			l_lights[2]->m_diffuse = { 0.0f, 0.0f, 1.0f };
-			l_lights[2]->m_specular = { 0.0f, 0.0f, 1.0f };
-			e_lights[2]->set_name("light_blue");
-
 			for (short i = 0; i != 3; ++i)
 			{
-				l_lights[i]->m_constant = 1.1;
-				l_lights[i]->m_inside_radius = 5.0f;
-				l_lights[i]->m_radius = 28.0;
+				l_lights[i]->set_radius(
+					5.0,
+					28.0
+				);
 			}
+
+			l_lights[0]->set_color({ 0.0f, 1.0f, 0.0f }, { 0.0f, 1.0f, 0.0f });
+			e_lights[0]->set_name("light_green");
+
+			l_lights[1]->set_color({ 1.0f, 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f });
+			e_lights[1]->set_name("light_red");
+
+			l_lights[2]->set_color({ 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f, 1.0f });
+			e_lights[2]->set_name("light_blue");
+
 
 			for (int i = 1; i != 4; ++i)
 			{

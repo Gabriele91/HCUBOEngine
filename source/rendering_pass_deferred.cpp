@@ -23,6 +23,7 @@ namespace hcube
 		//uniforms
 		m_ambient_light = m_shader->get_uniform("ambient_light");
 		m_uniform_n_lights_used = m_shader->get_uniform("n_lights_used");
+#if 0
 		//alloc lights
 		m_uniform_lights.resize(m_max_lights);
 		m_uniform_shadow_lights.resize(m_max_lights);
@@ -32,6 +33,7 @@ namespace hcube
 			m_uniform_lights[i].get_uniform(i, m_shader);
 			m_uniform_shadow_lights[i].get_uniform(i, m_shader);
 		}
+#endif
 	}
 
 	void rendering_pass_deferred::set_ambient_occlusion(bool enable)
@@ -123,7 +125,7 @@ namespace hcube
 		m_ambient_light->set_value(ambient_color);
 		//init loop
 		int light_count = 0;
-		render_queues::element* weak_element = queues.m_cull_light;
+		render_queues::element* weak_element = queues.m_cull_light_spot;
 		//pass lights
 		for (; weak_element && light_count < m_max_lights;
 			   weak_element = weak_element->m_next, ++light_count)
@@ -133,6 +135,7 @@ namespace hcube
 			light_ptr l_light = l_entity->get_component<light>();
 			transform_ptr t_light = l_entity->get_component<transform>();
 			//uniform light
+#if 0
 			m_uniform_lights[light_count].uniform(
 				l_light,
 				t_camera->get_matrix_inv(),
@@ -146,6 +149,7 @@ namespace hcube
 					t_light->get_matrix_inv()
 				);
 			}
+#endif
 		}
 		//compute max lights
 		m_uniform_n_lights_used->set_value((int)light_count);

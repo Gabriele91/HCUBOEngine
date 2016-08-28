@@ -10,7 +10,8 @@
 namespace hcube
 {
 
-	class rendering_pass_deferred : public rendering_pass,
+	class rendering_pass_deferred :
+		public rendering_pass,
 		public smart_pointers< rendering_pass_deferred >
 	{
 	public:
@@ -50,8 +51,9 @@ namespace hcube
 		bool m_enable_ambient_occlusion{ true };
 
 		//uniform lights
-		std::vector < uniform_light > m_uniform_lights;
-		std::vector < uniform_shadow_light > m_uniform_shadow_lights;
+		std::vector < uniform_light_spot >      m_uniform_lights_spot;
+		std::vector < uniform_light_point >     m_uniform_lights_point;
+		std::vector < uniform_light_direction > m_uniform_lights_direction;
 
 		//size lights
 		uniform* m_uniform_n_lights_used;
