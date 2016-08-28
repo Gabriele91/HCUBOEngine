@@ -65,7 +65,11 @@ namespace hcube
 
 	public:
 
+		using uniform_map  = std::unordered_map< std::string, uniform >;
+		using filepath_map = std::unordered_map< int, std::string >;
+
 		shader() {}
+
 		virtual ~shader();
 
 		bool load(resources_manager& resources, const std::string& path)
@@ -132,7 +136,10 @@ namespace hcube
 		long m_uniform_ntexture{ -1 };
 
 		//uniforms
-		std::unordered_map< std::string, uniform > m_uniform_map;
+		uniform_map m_uniform_map;
+
+		//file error mapping
+		filepath_map m_file_path_id;
 
 	private:
 

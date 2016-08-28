@@ -11,7 +11,8 @@
 
 namespace hcube
 {
-	static const char default_glsl_defines[] =
+
+static const char default_glsl_defines[] =
 R"GLSL(
 //POSITION TRANSFORM
 #define ATT_POSITIONT 0
@@ -38,26 +39,6 @@ R"GLSL(
 #define ATT_COLOR2    17
 )GLSL";
 
-	static bool log_error(unsigned int shader, int status, const std::string& type)
-	{
-		if (!status)
-		{
-			//get len
-			GLint info_len = 0;
-			glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &info_len);
-			//print
-			if (info_len > 1)
-			{
-				char* info_log = (char*)malloc(sizeof(char) * info_len);
-				glGetShaderInfoLog(shader, info_len, NULL, info_log);
-				std::cout << type << ", error compiling shader:\n" << info_log << std::endl;
-				free(info_log);
-			}
-			return false;
-		}
-		return true;
-	}
-#if 0
 	static const char* glsl_type_to_string(GLenum type)
 	{
 		switch (type)
@@ -79,7 +60,71 @@ R"GLSL(
 		}
 		return "other";
 	}
-#endif
+
+
+	static void skeep_error_line_space(const char*& inout)
+	{
+		while ((*inout) == ' ' || (*inout) == '\t' || (*inout) == '\r') ++(inout);
+	}
+
+	static bool parse_error_file_id(const char* in, const char** cout, int& out)
+	{
+		skeep_error_line_space(in);
+		out = (int)std::strtod(in, (char**)cout);
+		return in != (*cout);
+	}
+
+	static std::string parsing_error_log(shader::filepath_map& filepath_map, const char* error)
+	{
+		std::stringstream stream_error(error);
+		std::string error_line;
+		std::stringstream stream_output;
+		//start to parse
+		while (std::getline(stream_error, error_line))
+		{
+			const char* c_error_line_in  = error_line.c_str();
+			const char* c_error_line_out = c_error_line_in;
+			int line_id = -1;
+			if (parse_error_file_id(c_error_line_in, &c_error_line_out, line_id))
+			{
+				//get file path
+				auto it_filepat_map = filepath_map.find(line_id);
+				//put file path to output
+				if (it_filepat_map != filepath_map.end())
+				{
+					stream_output << it_filepat_map->second << " : ";
+					stream_output << c_error_line_out << "\n";
+					continue;
+				}
+			}
+			//put file path to output
+			stream_output << error_line << "\n";
+		}
+		return stream_output.str();
+	}
+
+	static bool log_error(shader::filepath_map& filepath_map,
+						  unsigned int shader,
+						  int status, 
+						  const std::string& type)
+	{
+		if (!status)
+		{
+			//get len
+			GLint info_len = 0;
+			glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &info_len);
+			//print
+			if (info_len > 1)
+			{
+				char* info_log = (char*)malloc(sizeof(char) * info_len);
+				glGetShaderInfoLog(shader, info_len, NULL, info_log);
+				std::cout << type << ", error compiling shader:\n" << parsing_error_log(filepath_map,info_log) << std::endl;
+				free(info_log);
+			}
+			return false;
+		}
+		return true;
+	}
 
 
 	inline void jmp_spaces(const char*& str)
@@ -169,7 +214,8 @@ R"GLSL(
 		return false;
 	}
 
-	inline bool process_include(std::string& output,
+	inline bool process_include(shader::filepath_map& filepath_map, 
+								std::string& output,
 								const std::string& path_file,
 								size_t& n_files,
 								size_t level = 1)
@@ -196,6 +242,8 @@ R"GLSL(
 		size_t this_file = n_files++;
 		//start line
 		output += "#line 1 " + std::to_string(this_file) + "\n";
+		//add into the map
+		filepath_map[this_file] = path_file;
 		//start to parse
 		while (std::getline(effect, effect_line))
 		{
@@ -223,7 +271,7 @@ R"GLSL(
 						return false;
 					}
 					//add include
-					if (!process_include(output_include, filedir + "/" + path_include, n_files, level + 1))
+					if (!process_include(filepath_map,output_include, filedir + "/" + path_include, n_files, level + 1))
 					{
 						return false;
 					}
@@ -238,7 +286,8 @@ R"GLSL(
 		return true;
 	}
 
-	inline bool process_import(std::stringstream& effect, 
+	inline bool process_import(shader::filepath_map& filepath_map,
+							   std::stringstream& effect, 
 							   const std::string& path_effect_file,
 							   const std::vector<std::string>& defines,
 							   std::string& out_vertex,
@@ -281,6 +330,8 @@ R"GLSL(
 		size_t  this_file = n_files++;
 		//put line of "all" buffer
 		all += "#line "+ std::to_string(line + 1) + " " + std::to_string(this_file) + "\n";
+		//add into the map
+		filepath_map[this_file] = path_effect_file;
 		//start to parse
 		while (std::getline(effect, effect_line))
 		{
@@ -328,7 +379,7 @@ R"GLSL(
 						return false;
 					}
 					//add include
-					if (!process_include(output_include, filedir + "/" + path_include, n_files, level + 1))
+					if (!process_include(filepath_map,output_include, filedir + "/" + path_include, n_files, level + 1))
 					{
 						return false;
 					}
@@ -353,7 +404,7 @@ R"GLSL(
 					//input stream
 					std::stringstream import_effect(filesystem::text_file_read_all(import_path));
 					//add include
-					if (!process_import(import_effect, import_path, defines, vertex, fragment, geometry, n_files, line, level + 1))
+					if (!process_import(filepath_map, import_effect, import_path, defines, vertex, fragment, geometry, n_files, line, level + 1))
 					{
 						return false;
 					}
@@ -387,7 +438,8 @@ R"GLSL(
 		//input stream
 		std::stringstream stream_effect(filesystem::text_file_read_all(effect_file));
 		//process
-		if (!process_import(stream_effect,
+		if (!process_import(m_file_path_id, 
+							stream_effect,
 						    effect_file,
 							defines, 
 							vertex, 
@@ -417,7 +469,8 @@ R"GLSL(
 		//input stream
 		std::stringstream stream_effect(effect);
 		//process
-		if (!process_import(stream_effect,
+		if (!process_import(m_file_path_id,
+							stream_effect,
 							effect_file,
 							defines,
 							vertex,
@@ -432,6 +485,7 @@ R"GLSL(
 						  geometry, 0,
 						  defines);
 	}
+
 	bool shader::load(const std::string& vs_file,
 		              const std::string& fs_file,
 		              const std::string& gs_file,
@@ -479,7 +533,7 @@ R"GLSL(
 		compiled = 0;
 		glCompileShader(m_shader_vs);
 		glGetShaderiv(m_shader_vs, GL_COMPILE_STATUS, &compiled);
-		if (!log_error(m_shader_vs, compiled, "vertex shader"))
+		if (!log_error(m_file_path_id,m_shader_vs, compiled, "vertex shader"))
         {
             glDeleteShader(m_shader_vs);
             m_shader_vs=0;
@@ -506,7 +560,7 @@ R"GLSL(
 		compiled = 0;
 		glCompileShader(m_shader_fs);
 		glGetShaderiv(m_shader_fs, GL_COMPILE_STATUS, &compiled);
-		if (!log_error(m_shader_fs, compiled, "fragment shader"))
+		if (!log_error(m_file_path_id, m_shader_fs, compiled, "fragment shader"))
         {
             glDeleteShader(m_shader_fs);
             m_shader_fs = 0;
@@ -531,7 +585,7 @@ R"GLSL(
 			compiled = 0;
 			glCompileShader(m_shader_gs);
 			glGetShaderiv(m_shader_gs, GL_COMPILE_STATUS, &compiled);
-            if (!log_error(m_shader_gs, compiled, "Geometry"))
+            if (!log_error(m_file_path_id, m_shader_gs, compiled, "Geometry"))
             {
                 glDeleteShader(m_shader_gs);
                 m_shader_gs = 0;
@@ -556,7 +610,7 @@ R"GLSL(
 			{
 				char* info_log = (char*)malloc(sizeof(char) * info_len);
 				glGetProgramInfoLog(m_shader_id, info_len, NULL, info_log);
-				std::cout << "error linking program: \n" << info_log << std::endl;
+				std::cout << "error linking program: \n" << parsing_error_log(m_file_path_id,info_log) << std::endl;
 				free(info_log);
 			}
 			std::cout << "error linking" << std::endl;
