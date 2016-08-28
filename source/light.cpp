@@ -81,7 +81,6 @@ namespace hcube
 		std::string lights_i("point_lights[" + std::to_string(i) + "]");
 
 		m_uniform_position = shader->get_uniform((lights_i + ".m_position").c_str());
-		m_uniform_direction = shader->get_uniform((lights_i + ".m_direction").c_str());
 
 		m_uniform_diffuse = shader->get_uniform((lights_i + ".m_diffuse").c_str());
 		m_uniform_specular = shader->get_uniform((lights_i + ".m_specular").c_str());
@@ -94,7 +93,6 @@ namespace hcube
 		//test
 		m_valid =
 			   m_uniform_position
-			&& m_uniform_direction
 			&& m_uniform_diffuse
 			&& m_uniform_specular
 			&& m_uniform_constant
@@ -110,7 +108,6 @@ namespace hcube
 
 		auto light = weak_light.lock();
 		m_uniform_position->set_value((vec3)(view * model * vec4(0, 0, 0, 1.0)));
-		m_uniform_direction->set_value((vec3)(view * model * vec4(0, 0, 1.0, 0.0)));
 		m_uniform_diffuse->set_value(light->m_diffuse);
 		m_uniform_specular->set_value(light->m_specular);
 		m_uniform_constant->set_value(light->m_constant);
@@ -128,7 +125,6 @@ namespace hcube
 	{
 		std::string lights_i("direction_lights[" + std::to_string(i) + "]");
 
-		m_uniform_position = shader->get_uniform((lights_i + ".m_position").c_str());
 		m_uniform_direction = shader->get_uniform((lights_i + ".m_direction").c_str());
 
 		m_uniform_diffuse = shader->get_uniform((lights_i + ".m_diffuse").c_str());
@@ -136,8 +132,7 @@ namespace hcube
 		
 		//test
 		m_valid =
-			   m_uniform_position
-			&& m_uniform_direction
+			   m_uniform_direction
 			&& m_uniform_diffuse
 			&& m_uniform_specular;
 	}
@@ -149,7 +144,6 @@ namespace hcube
 		if (!is_valid()) return;
 
 		auto light = weak_light.lock();
-		m_uniform_position->set_value((vec3)(view * model * vec4(0, 0, 0, 1.0)));
 		m_uniform_direction->set_value((vec3)(view * model * vec4(0, 0, 1.0, 0.0)));
 		m_uniform_diffuse->set_value(light->m_diffuse);
 		m_uniform_specular->set_value(light->m_specular);

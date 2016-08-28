@@ -265,7 +265,6 @@ namespace hcube
 	struct uniform_light_point
 	{
 		uniform* m_uniform_position{ nullptr };
-		uniform* m_uniform_direction{ nullptr };
 
 		uniform* m_uniform_diffuse{ nullptr };
 		uniform* m_uniform_specular{ nullptr };
@@ -290,7 +289,6 @@ namespace hcube
 
 	struct uniform_light_direction
 	{
-		uniform* m_uniform_position{ nullptr };
 		uniform* m_uniform_direction{ nullptr };
 
 		uniform* m_uniform_diffuse{ nullptr };

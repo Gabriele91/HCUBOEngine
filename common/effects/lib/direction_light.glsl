@@ -2,7 +2,6 @@
 //structs
 struct direction_light
 {
-    vec3  m_position;
     vec3  m_direction;
     
     vec3  m_diffuse;
