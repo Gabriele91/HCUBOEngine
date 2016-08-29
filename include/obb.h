@@ -33,28 +33,28 @@ namespace hcube
 		void build_from_triangles(const std::vector< vec3 > &points, const std::vector<unsigned int>& triangles);
 
 		void build_from_triangles(const unsigned char* points,
-			size_t pos_offset,
-			size_t vertex_size,
-			size_t n_points,
-			const unsigned int* triangles,
-			size_t size);
+								  size_t pos_offset,
+								  size_t vertex_size,
+								  size_t n_points,
+								  const unsigned int* triangles,
+								  size_t size);
 
 		// builds an OBB from triangles specified as an array of
 		// points 3 by 3
 		void build_from_sequenzial_triangles(const std::vector< vec3 >& points);
 
 		void build_from_sequenzial_triangles(const unsigned char* points,
-			size_t pos_offset,
-			size_t vertex_size,
-			size_t n_points);
+											 size_t pos_offset,
+											 size_t vertex_size,
+											 size_t n_points);
 
 		// builds an OBB from points specified as an array.
 		void build_from_points(const std::vector< vec3 >& points);
 
 		void build_from_points(const unsigned char* points,
-			size_t pos_offset,
-			size_t vertex_size,
-			size_t n_points);
+							   size_t pos_offset,
+							   size_t vertex_size,
+							   size_t n_points);
 
 		// constructs the corner of the aligned bounding box
 		// in world space
@@ -71,6 +71,23 @@ namespace hcube
 		// get volume
 		float volume() const;
 
+		//obb rot/trans
+		void applay(const mat4& model);
+
+		//test
+		vec3 closest_point(const vec3& target) const;
+
+		//test
+		bool is_inside(const mat4& model,			//obb model matrix
+					   const vec3& sphere_center, 	//sphere center
+					   float radius) const;		    //sphere radius
+
+		bool is_inside(const vec3& sphere_center, 	//sphere center
+			           float radius) const;			//sphere radius
+		/*
+		// todo
+		bool is_inside(const obb& in);
+		*/
 		//get info
 		const mat3& get_rotation_matrix() const { return m_rotation; }
 		const vec3& get_position() const { return m_position; }

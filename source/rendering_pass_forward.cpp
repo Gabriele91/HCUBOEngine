@@ -4,6 +4,7 @@
 namespace hcube
 {
 
+	#define ENABLE_RADIUS_TEST
 
 	void rendering_pass_forward::draw_pass(
 		vec4&  clear_color,
@@ -48,14 +49,14 @@ namespace hcube
 					if (!pass.m_support_light)
 					{
 						//draw
-						entity->get_component<renderable>()->draw();
+						r_entity->draw();
 					}
 					//ambient draw
 					else if (pass.m_uniform_ambient_light)
 					{
 						pass.m_uniform_ambient_light->set_value(ambient_color);
 						//draw
-						entity->get_component<renderable>()->draw();
+						r_entity->draw();
 					}
 					//draw all spot lights
 					else if(pass.m_uniform_spot.is_valid())
@@ -65,14 +66,25 @@ namespace hcube
 							auto e_light = weak_light->lock();
 							auto l_light = e_light->get_component<light>();
 							auto t_light = e_light->get_component<transform>();
-							pass.m_uniform_spot.uniform(
-								l_light,
-								t_light ->get_matrix_inv(),
-								t_camera->get_matrix_inv(),
-								t_light ->get_matrix()
-							);
-							//draw
-							entity->get_component<renderable>()->draw();
+#ifdef ENABLE_RADIUS_TEST //todo frustum test
+							if (r_entity
+								->get_bounding_box()
+								.is_inside(
+									t_entity->get_matrix(),
+									t_light->get_global_position(),
+									l_light->get_radius())
+								)
+#endif
+							{
+								pass.m_uniform_spot.uniform(
+									l_light,
+									t_light->get_matrix_inv(),
+									t_camera->get_matrix_inv(),
+									t_light->get_matrix()
+								);
+								//draw
+								r_entity->draw();
+							}
 						}
                     }
                     //draw all point lights
@@ -83,13 +95,25 @@ namespace hcube
                             auto e_light = weak_light->lock();
                             auto l_light = e_light->get_component<light>();
                             auto t_light = e_light->get_component<transform>();
-                            pass.m_uniform_point.uniform(
-                                                        l_light,
-                                                        t_camera->get_matrix_inv(),
-                                                        t_light ->get_matrix()
-                                                        );
-                            //draw
-                            entity->get_component<renderable>()->draw();
+#ifdef ENABLE_RADIUS_TEST
+							if (r_entity
+								->get_bounding_box()
+								.is_inside(
+									t_entity->get_matrix(),
+									t_light->get_global_position(),
+									l_light->get_radius())
+								)
+#endif
+							{
+								pass.m_uniform_point.uniform
+								(
+									l_light,
+									t_camera->get_matrix_inv(),
+									t_light->get_matrix()
+								);
+								//draw
+								r_entity->draw();
+							}
                         }
                     }
                     //draw all direction lights
@@ -106,7 +130,7 @@ namespace hcube
                                                             t_light ->get_matrix()
                                                             );
                             //draw
-                            entity->get_component<renderable>()->draw();
+							r_entity->draw();
                         }
                     }
 					//end

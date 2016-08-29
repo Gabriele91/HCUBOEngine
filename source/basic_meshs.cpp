@@ -189,6 +189,8 @@ namespace hcube
 					ibuffer.data(), ibuffer.size(),
 					(const mesh::byte*)vertices.data(), vertices.size() * sizeof(vertex));
 			}
+			//set obb
+			mesh_cube->set_bounding_box(obb(mat3(1), vec3(0, 0, 0), cube_size_h));
 			//return cube
 			return mesh_cube;
 		}
@@ -275,6 +277,8 @@ namespace hcube
 					vertices.size() * sizeof(vertex)
 				);
 			}
+			//set obb
+			mesh_square->set_bounding_box(obb(mat3(1), vec3(0, 0, 0), vec3(square_size_h,0.001f)));
 			//return cube
 			return mesh_square;
 

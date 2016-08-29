@@ -13,6 +13,7 @@
 #include <rendering_pass_forward.h>
 #include <gameobject.h>
 #include <transform.h>
+#include <renderable.h>
 #include <iostream>
 #include <frustum.h>
 
@@ -20,6 +21,9 @@ namespace hcube
 {
 	void app_basic::key_event(application& app, int key, int scancode, int action, int mods)
 	{
+
+		//get model
+		auto e_model = m_systems.get_entities_by_name("cube1")[0];
 
 		if (key == GLFW_KEY_ESCAPE)
 		{
@@ -66,12 +70,12 @@ namespace hcube
 		else if (key == GLFW_KEY_RIGHT)       m_camera->get_component<transform>()->translation({ -1,0,0 });
 		else if (key == GLFW_KEY_PAGE_UP)    m_camera->get_component<transform>()->translation({ 0,1,0 });
 		else if (key == GLFW_KEY_PAGE_DOWN)  m_camera->get_component<transform>()->translation({ 0,-1,0 });
-		else if (key == GLFW_KEY_W)    m_model->get_component<transform>()->translation({ 0,0,1 });
-		else if (key == GLFW_KEY_S)    m_model->get_component<transform>()->translation({ 0,0,-1 });
-		else if (key == GLFW_KEY_A)    m_model->get_component<transform>()->translation({ 1,0,0 });
-		else if (key == GLFW_KEY_D)    m_model->get_component<transform>()->translation({ -1,0,0 });
-		else if (key == GLFW_KEY_R)    m_model->get_component<transform>()->translation({ 0,1,0 });
-		else if (key == GLFW_KEY_F)    m_model->get_component<transform>()->translation({ 0,-1,0 });
+		else if (key == GLFW_KEY_W)    e_model->get_component<transform>()->translation({ 0,0,1 });
+		else if (key == GLFW_KEY_S)    e_model->get_component<transform>()->translation({ 0,0,-1 });
+		else if (key == GLFW_KEY_A)    e_model->get_component<transform>()->translation({ 1,0,0 });
+		else if (key == GLFW_KEY_D)    e_model->get_component<transform>()->translation({ -1,0,0 });
+		else if (key == GLFW_KEY_R)    e_model->get_component<transform>()->translation({ 0,1,0 });
+		else if (key == GLFW_KEY_F)    e_model->get_component<transform>()->translation({ 0,-1,0 });
 		else if ((mods == GLFW_MOD_SUPER ||
 			mods == GLFW_MOD_CONTROL) &&
 			action == GLFW_PRESS)
@@ -208,17 +212,36 @@ namespace hcube
 			//set camera
 			m_systems.add_entity(m_camera);
 			//add cube
-			auto cube_grid = gameobject::node_new(
-				basic_meshs::cube({ 5,5,5 }, true)
-			);
-			cube_grid->get_component<renderable>()->set_material(
-				m_resources.get_material("box2_mat")
-			);
-            cube_grid->get_component<transform>()->translation(
-                vec3{0.0,-7.5,.0}
-            );
-			cube_grid->set_name("cube_grid");
-			m_systems.add_entity(cube_grid);
+			{
+				auto cube_grid = gameobject::node_new(
+					basic_meshs::cube({ 5,5,5 }, true)
+				);
+				cube_grid->get_component<renderable>()->set_material(
+					m_resources.get_material("box2_mat")
+				);
+				cube_grid->get_component<transform>()->translation(
+					vec3{ 0.0,-7.5,.0 }
+				);
+				cube_grid->get_component<transform>()->scale(
+					vec3{ 4.0,1.0,4.0 }
+				);
+				cube_grid->set_name("cube1");
+				m_systems.add_entity(cube_grid);
+			}
+			//add cube 2
+			{
+				auto cube_grid = gameobject::node_new(
+					basic_meshs::cube({ 5,5,5 }, true)
+				);
+				cube_grid->get_component<renderable>()->set_material(
+					m_resources.get_material("box_mat")
+				);
+				cube_grid->get_component<transform>()->translation(
+					vec3{ 0.0,-7.5,.0 }
+				);
+				cube_grid->set_name("cube2");
+				m_systems.add_entity(cube_grid);
+			}
 			//cube floor
             for(int x=-2;x!=2;++x)
             for(int y=-2;y!=2;++y)
@@ -241,6 +264,8 @@ namespace hcube
 			//ship
 			m_model = m_resources.get_prefab("ship")->instantiate();
 			auto t_model = m_model->get_component<transform>();
+			//set name
+			m_model->set_name("ship");
 			//set info
 			t_model->position({ 0.0f, -5.0f, 0.0f });
 			t_model->rotation(quat({ radians(15.0), radians(0.0), 0.0 }));
@@ -361,6 +386,7 @@ namespace hcube
 											radians(20.0),
 											radians(35.0));
 				l_model_light_shadow->set_shadow({ 512,512 });
+				e_model_light_shadow->set_name("light_shadow" + std::to_string(i));
 				m_systems.add_entity(e_model_light_shadow);
 			}
 			//ambient color
@@ -378,9 +404,47 @@ namespace hcube
 			->get_component<transform>()
 			->turn(quat{ { radians(delta_time*4.0), 0.0, 0.0 } });
 			*/
-		m_systems.get_entities_by_name("cube_grid")[0]
-			->get_component<transform>()
-			->turn(quat{ {0, radians(delta_time*4.0), 0.0} });
+
+		auto e_cube1 = m_systems.get_entities_by_name("cube1")[0];
+		auto t_cube1 = e_cube1->get_component<transform>();
+		auto r_cube1 = e_cube1->get_component<renderable>();
+#if 0
+		auto e_cube2 = m_systems.get_entities_by_name("cube2")[0];
+		auto t_cube2 = e_cube2->get_component<transform>();
+		auto r_cube2 = e_cube2->get_component<renderable>();
+		obb obb_cube2 = r_cube2->get_bounding_box();
+		obb_cube2.applay(t_cube2->get_matrix());
+		//test
+		if (obb_cube1.is_inside(obb_cube2))
+		{
+			system("cls");
+			std::cout << "se toccano!\n";
+		}
+		else
+		{
+			system("cls");
+			std::cout << "non se toccano!\n";
+		}
+#elif 0
+
+		auto e_light_shadow0 = m_systems.get_entities_by_name("light_shadow0")[0];
+		auto t_light_shadow0 = e_light_shadow0->get_component<transform>();
+		auto l_light_shadow0 = e_light_shadow0->get_component<light>();
+		//test
+		if (r_cube1->get_bounding_box().is_inside(
+								t_cube1->get_matrix(),
+								t_light_shadow0->get_position(),
+							    l_light_shadow0->get_radius()))
+		{
+			system("cls");
+			std::cout << "se toccano!\n";
+		}
+		else
+		{
+			system("cls");
+			std::cout << "non se toccano!\n";
+		}
+#endif
 		//for all lights
 		m_lights
 			->get_component<transform>()

@@ -1,6 +1,6 @@
 #include <obb.h>
 #include <vector_math.h>
-
+#include <glm/gtx/matrix_decompose.hpp>
 
 namespace hcube
 {
@@ -365,6 +365,80 @@ namespace hcube
 		std::vector< vec3 > p;
 		get_bounding_box(p, model);
 		return p;
+	}
+
+	//obb rot/trans
+	void obb::applay(const mat4& model)
+	{
+		mat4
+		transform = translate(mat4(1), m_position);
+		transform*= mat4(m_rotation);
+		transform = scale(transform, m_extension);
+		//new box
+		transform = model * transform;
+#if 0
+		//decompone
+		glm::vec3 scale;
+		glm::quat rotation;
+		glm::vec3 translation;
+		glm::vec3 skew;
+		glm::vec4 perspective;
+		glm::decompose(transform, scale, rotation, translation, skew, perspective);
+		//to obb
+		m_position  = translation;
+		m_rotation  = mat3_cast( rotation );
+		m_extension = scale;
+#else
+		//to obb
+		m_position   = vec3(transform[3]);
+		//rotation / scale
+		auto r_scale = mat3(transform);
+		m_extension  = vec3(length(r_scale[0]),
+							length(r_scale[1]),
+							length(r_scale[2]));
+		r_scale[0] /= m_extension[0];
+		r_scale[1] /= m_extension[1];
+		r_scale[2] /= m_extension[2];
+		m_rotation = traspose(inverse(r_scale));
+#endif
+	}
+
+	// The implementation of this function is from Christer Ericson's Real-Time Collision Detection, p.133.
+	vec3 obb::closest_point(const vec3& target) const
+	{
+		// Best: 33.412 nsecs / 89.952 ticks, Avg: 33.804 nsecs, Worst: 34.180 nsecs
+		vec3 d = target - m_position;
+		// Start at the center point of the OBB.
+		vec3 closest_point = m_position; 
+		//axis
+		const mat3& axis = transpose(m_rotation);
+		// Project the target onto the OBB axes and walk towards that point.
+		for (int i = 0; i < 3; ++i)
+		{
+			closest_point += clamp(dot(d, axis[i]), -m_extension[i], m_extension[i]) * axis[i];
+		}
+
+		return closest_point;
+	}
+
+	// test collision
+	bool obb::is_inside(const mat4& model,const vec3& sphere_center, float radius)  const
+	{
+		obb new_obb(*this); new_obb.applay(model);
+		return new_obb.is_inside(sphere_center, radius);
+	}
+	// The implementation of the OBB-Sphere intersection test follows Christer Ericson's Real-Time Collision Detection, p. 166. [groupSyntax]
+	bool obb::is_inside(const vec3& sphere_center, float radius)  const
+	{
+		// Find the point on this AABB closest to the sphere center.
+		vec3 pt = closest_point(sphere_center);
+
+		//squere dist
+		vec3  diff    = pt - sphere_center;
+		float sq_dist = dot(diff, diff);
+
+		//test sq distance
+		return sq_dist <= radius * radius;
 	}
 
 	void obb::build_from_covariance_matrix(const mat3& C, const std::vector< vec3 >& points)

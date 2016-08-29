@@ -40,6 +40,10 @@ namespace hcube
 		quat get_rotation() const;
 		vec3 get_scale() const;
 
+		vec3 get_global_position();
+		quat get_global_rotation();
+		vec3 get_global_scale();
+
 		mat4 const& get_local_matrix();
 		mat4 const& get_local_matrix_inv();
 

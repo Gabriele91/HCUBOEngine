@@ -72,6 +72,35 @@ namespace hcube
 		return m_tranform.m_scale;
 	}
 
+	vec3 transform::get_global_position()
+	{
+		return vec3(get_matrix()[3]);
+	}
+
+	quat transform::get_global_rotation()
+	{
+		mat3 rot_scale(get_matrix());
+		//len
+		vec3 scale(length(rot_scale[0]),
+				   length(rot_scale[1]),
+			       length(rot_scale[2]));
+		//normalize 
+		rot_scale[0] /= scale[0];
+		rot_scale[1] /= scale[1];
+		rot_scale[2] /= scale[2];
+		//must to be a ortogonal matrix
+		return  quat_cast(traspose(inverse(rot_scale)));
+	}
+
+	vec3 transform::get_global_scale()
+	{
+		mat3 rot_scale(get_matrix());
+
+		return vec3(length(rot_scale[0]),
+					length(rot_scale[1]),
+					length(rot_scale[2]));
+	}
+
 	mat4 const& transform::get_local_matrix()
 	{
 		compute_matrix();
