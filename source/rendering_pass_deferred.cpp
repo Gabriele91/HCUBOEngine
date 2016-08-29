@@ -161,7 +161,71 @@ namespace hcube
     {
         m_shader->unbind();
     }
-    
+
+	void rendering_pass_deferred::direction_light_shader::init(const std::string& path)
+	{
+		//compile
+		m_shader = shader::snew();
+		m_shader->load(path, std::vector<std::string>{ "DIRECTION_LIGHTS" });
+
+		m_position = m_shader->get_uniform("g_position");
+		m_normal = m_shader->get_uniform("g_normal");
+		m_albedo = m_shader->get_uniform("g_albedo_spec");
+		m_occlusion = m_shader->get_uniform("g_occlusion");
+		m_view = m_shader->get_uniform("view");
+		//lights
+		m_n_direction_lights = m_shader->get_uniform("n_direction_lights");
+		//get all spot lights
+		for (unsigned i = 0; i != s_max_direction_lights; ++i)
+		{
+			m_direction_lights[i].get_uniform(i, m_shader);
+		}
+
+	}
+	
+	void rendering_pass_deferred::direction_light_shader::uniform(g_buffer& gbuffer,
+															      context_texture* ssao,
+															      const mat4& view,
+															      const vec4& ambient_light,
+															      render_queues& queues)
+	{
+		m_shader->bind();
+		//uniform g_buffer and etc...
+		m_position->set_value(gbuffer.get_texture(g_buffer::G_BUFFER_TEXTURE_TYPE_POSITION));
+		m_normal->set_value(gbuffer.get_texture(g_buffer::G_BUFFER_TEXTURE_TYPE_NORMAL));
+		m_albedo->set_value(gbuffer.get_texture(g_buffer::G_BUFFER_TEXTURE_TYPE_ALBEDO));
+		m_occlusion->set_value(ssao);
+		m_view->set_value(view);
+		//counter
+		int i_light_count = 0;
+		//uniform all lights
+		HCUBE_FOREACH_QUEUE(weak_light, queues.m_cull_light_direction)
+		{
+			if (i_light_count >= s_max_direction_lights) break;
+
+			auto e_light = weak_light->lock();
+			auto l_light = e_light->get_component<light>();
+			auto t_light = e_light->get_component<transform>();
+
+			m_direction_lights[i_light_count++].uniform
+			(
+				l_light,
+				//camera view
+				view,
+				//light pos
+				t_light->get_matrix()
+			);
+		}
+		//uniform number of lights used
+		m_n_direction_lights->set_value(i_light_count);
+	}
+
+	void rendering_pass_deferred::direction_light_shader::unbind()
+	{
+		m_shader->unbind();
+	}
+
+
     
     rendering_pass_deferred::rendering_pass_deferred(const ivec2& w_size, resources_manager& resources)
     {
@@ -174,7 +238,8 @@ namespace hcube
         m_square = basic_meshs::square3D({ 2.0,2.0 }, true);
         m_ambient_light.init(resources.get_shader_path("deferred_ambient_light"));
         m_spot_lights.init(resources.get_shader_path("deferred_spot_light"));
-        m_point_lights.init(resources.get_shader_path("deferred_point_light"));
+		m_point_lights.init(resources.get_shader_path("deferred_point_light"));
+		m_direction_lights.init(resources.get_shader_path("deferred_direction_light"));
     }
     
 	void rendering_pass_deferred::set_ambient_occlusion(bool enable)
@@ -266,13 +331,26 @@ namespace hcube
         m_square->draw();
         m_ambient_light.unbind();
         //SPOT LIGHTS
-        m_spot_lights.uniform(m_g_buffer, m_ssao.get_texture(), t_camera->get_matrix_inv(), ambient_color, queues);
-        m_square->draw();
-        m_spot_lights.unbind();
+		if (queues.m_cull_light_spot)
+		{
+			m_spot_lights.uniform(m_g_buffer, m_ssao.get_texture(), t_camera->get_matrix_inv(), ambient_color, queues);
+			m_square->draw();
+			m_spot_lights.unbind();
+		}
         //POINT LIGHTS
-        m_point_lights.uniform(m_g_buffer, m_ssao.get_texture(), t_camera->get_matrix_inv(), ambient_color, queues);
-        m_square->draw();
-        m_point_lights.unbind();
+		if (queues.m_cull_light_point)
+		{
+			m_point_lights.uniform(m_g_buffer, m_ssao.get_texture(), t_camera->get_matrix_inv(), ambient_color, queues);
+			m_square->draw();
+			m_point_lights.unbind();
+		}
+		//DIRECTION LIGHTS
+		if (queues.m_cull_light_direction)
+		{
+			m_direction_lights.uniform(m_g_buffer, m_ssao.get_texture(), t_camera->get_matrix_inv(), ambient_color, queues);
+			m_square->draw();
+			m_direction_lights.unbind();
+		}
         ////////////////////////////////////////////////////////////////////////////////
         //reset state
         render::set_render_state(render_state);

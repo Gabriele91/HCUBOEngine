@@ -243,22 +243,20 @@
     <None Include="..\assets\ship\ship.smhc" />
     <None Include="..\assets\ship\vehicle_playerShip_glass_mat.mat" />
     <None Include="..\assets\ship\vehicle_playerShip_metal_mat.mat" />
-    <None Include="..\common\effects\base.fxhc" />
-    <None Include="..\common\effects\base_texture.fxhc" />
-    <None Include="..\common\effects\base_texture_normal.fxhc" />
     <None Include="..\common\effects\base_texture_normal_specular.fxhc" />
-    <None Include="..\common\effects\base_texture_specular.fxhc" />
     <None Include="..\common\effects\build_shadow.fxhc" />
     <None Include="..\common\effects\lib\base.glsl" />
     <None Include="..\common\effects\lib\base_texture.glsl" />
     <None Include="..\common\effects\lib\base_texture_normal.glsl" />
     <None Include="..\common\effects\lib\base_texture_normal_specular.glsl" />
     <None Include="..\common\effects\lib\base_texture_specular.glsl" />
-    <None Include="..\common\effects\lib\lights.glsl" />
+    <None Include="..\common\effects\lib\direction_light.glsl" />
     <None Include="..\common\effects\lib\output_fragment.glsl" />
-    <None Include="..\common\shaders\deferred_light.glsl" />
-    <None Include="..\common\shaders\lib\lights.glsl" />
-    <None Include="..\common\shaders\lib\output_fragment.glsl" />
+    <None Include="..\common\effects\lib\point_light.glsl" />
+    <None Include="..\common\effects\lib\spot_light.glsl" />
+    <None Include="..\common\shaders\deferred_ambient_light.glsl" />
+    <None Include="..\common\shaders\deferred_point_light.glsl" />
+    <None Include="..\common\shaders\deferred_spot_light.glsl" />
     <None Include="..\common\shaders\lib\ssao_kernel.glsl" />
     <None Include="..\common\shaders\ssao_blur.glsl" />
     <None Include="..\common\shaders\ssao_pass.glsl" />
@@ -291,6 +289,7 @@
     <Image Include="..\assets\textures\font.png" />
     <Image Include="..\assets\textures\NormalMap.png" />
     <Image Include="..\common\textures\black.tga" />
+    <Image Include="..\common\textures\normal_up.tga" />
     <Image Include="..\common\textures\white.tga" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

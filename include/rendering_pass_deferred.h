@@ -102,16 +102,41 @@ namespace hcube
                          render_queues& queues);
             void unbind();
         };
-        
+
+		class direction_light_shader
+		{
+		public:
+			static const int s_max_direction_lights = 12;
+
+			shader::ptr        m_shader;
+
+			uniform*           m_position;
+			uniform*           m_normal;
+			uniform*           m_albedo;
+			uniform*           m_occlusion;
+			uniform*           m_view;
+			uniform*           m_n_direction_lights;
+
+			uniform_light_direction m_direction_lights[s_max_direction_lights];
+
+			void init(const std::string& path);
+			void uniform(g_buffer& gbuffer,
+						 context_texture* ssao,
+						 const mat4& view,
+						 const vec4& ambient_light,
+						 render_queues& queues);
+			void unbind();
+		};
         //size
         ivec2    m_q_size;
         //buffer
         g_buffer m_g_buffer;
         //draw buffer elements
-        mesh::ptr            m_square;
-        ambient_light_shader m_ambient_light;
-        spot_light_shader    m_spot_lights;
-        point_light_shader   m_point_lights;
+        mesh::ptr              m_square;
+        ambient_light_shader   m_ambient_light;
+        spot_light_shader      m_spot_lights;
+        point_light_shader	   m_point_lights;
+		direction_light_shader m_direction_lights;
         //effects
         ssao_technique    m_ssao;
         
