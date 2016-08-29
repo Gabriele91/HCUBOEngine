@@ -45,8 +45,9 @@ namespace hcube
 
 		shader::ptr	m_shader;
 
-		uniform* m_uniform_noise_scale;
-		uniform* m_uniform_projection;
+        uniform* m_uniform_noise_scale;
+        uniform* m_uniform_projection;
+        uniform* m_uniform_view;
 		uniform* m_uniform_kernel_size;
 		uniform* m_uniform_radius;
 

@@ -1,1 +1,0 @@
-#pragma include "../../effects/lib/lights.glsl"

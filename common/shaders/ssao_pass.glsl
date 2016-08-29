@@ -24,15 +24,16 @@ uniform sampler2D g_position;
 uniform sampler2D g_normal;
 uniform sampler2D t_noise;
 
-uniform mat4 projection;
-uniform vec2 noise_scale;
-uniform int kernel_size = 64;
+uniform mat4  projection;
+uniform mat4  view;
+uniform vec2  noise_scale;
+uniform int   kernel_size = 64;
 uniform float radius = 2.0;
 
 void main()
 {
 	//get info
-	vec3  position = texture(g_position, frag_uvcoord).rgb;
+	vec3  position = vec3(view*texture(g_position, frag_uvcoord));
 	vec3  normal   = texture(g_normal, frag_uvcoord).rgb;
 	vec3  randv    = texture(t_noise, frag_uvcoord*noise_scale).rgb;
 
@@ -61,7 +62,7 @@ void main()
 		offset.xyz  = offset.xyz * 0.5 + 0.5; // transform to range 0.0 - 1.0
 
 		// get sample depth
-		float sample_depth = texture(g_position, offset.xy).z;
+		float sample_depth = (view*texture(g_position, frag_uvcoord)).z;
 
         // range check & accumulate
 		float range_check = smoothstep(0.0, 1.0, radius / abs(position.z - sample_depth));

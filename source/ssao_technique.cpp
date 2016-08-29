@@ -1,5 +1,6 @@
 #include <OpenGL4.h>
 #include <ssao_technique.h>
+#include <transform.h>
 #include <cmath>
 #include <cstdlib>
 
@@ -9,8 +10,9 @@ namespace hcube
 	{
 		//load shader ssao
 		m_shader = resources.get_shader("ssao_pass");
-		m_uniform_noise_scale = m_shader->get_uniform("noise_scale");
-		m_uniform_projection = m_shader->get_uniform("projection");
+        m_uniform_noise_scale = m_shader->get_uniform("noise_scale");
+        m_uniform_projection = m_shader->get_uniform("projection");
+        m_uniform_view = m_shader->get_uniform("view");
 		m_uniform_kernel_size = m_shader->get_uniform("kernel_size");
 		m_uniform_radius = m_shader->get_uniform("radius");
 		m_position = m_shader->get_uniform("g_position");
@@ -118,8 +120,9 @@ namespace hcube
 		render::set_cullface_state(CF_BACK);
 		render::set_depth_buffer_state({ false });
 		render::set_clear_color_state(clear_color_state(vec4{ 1.,1.,1.,1. }));
-		//draw
-		camera::ptr   c_camera = e_camera->get_component<camera>();
+        //draw
+        camera::ptr   c_camera = e_camera->get_component<camera>();
+        transform_ptr t_camera = e_camera->get_component<transform>();
 		//enable fbo
 		render::enable_render_target(m_fbo);
 		//clear buffer not necessary (?)
@@ -128,7 +131,9 @@ namespace hcube
 		m_shader->bind();
 		//////////////////////////////////////////////////////////////////////////////////////////////////////
 		//bind kernel/proj/scale noise
-		m_uniform_projection->set_value(c_camera->get_projection());
+		if(m_uniform_projection) m_uniform_projection->set_value(c_camera->get_projection());
+        if(m_uniform_view)       m_uniform_view->set_value(t_camera->get_matrix_inv());
+        
 		m_uniform_noise_scale->set_value((vec2)c_camera->get_viewport_size() / vec2(4, 4));
 		m_uniform_kernel_size->set_value((int)m_kernel_size);
 		m_uniform_radius->set_value(m_radius);
