@@ -1,4 +1,4 @@
-effect "box2_grid_effect" 
+effect "no_cull_effect" 
 {
 	diffuse_map  texture("box2_grid")
 	specular_map texture("box2_specular")

@@ -23,7 +23,7 @@ namespace hcube
 	{
 
 		//get model
-		auto e_model = m_systems.get_entities_by_name("cube1")[0];
+		auto e_model = m_systems.get_entities_by_name("ship")[0];
 
 		if (key == GLFW_KEY_ESCAPE)
 		{
@@ -217,13 +217,13 @@ namespace hcube
 					basic_meshs::cube({ 5,5,5 }, true)
 				);
 				cube_grid->get_component<renderable>()->set_material(
-					m_resources.get_material("box2_mat")
+					m_resources.get_material("box2_grid_mat")
 				);
 				cube_grid->get_component<transform>()->translation(
-					vec3{ 0.0,-7.5,.0 }
+					vec3{ 0.0,-7.5,-10.0 }
 				);
 				cube_grid->get_component<transform>()->scale(
-					vec3{ 4.0,1.0,4.0 }
+					vec3{ 1.0,1.0,1.0 }
 				);
 				cube_grid->set_name("cube1");
 				m_systems.add_entity(cube_grid);
