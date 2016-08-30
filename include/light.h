@@ -25,7 +25,7 @@ namespace hcube
 	class light : public component
 	{
 
-		COMPONENT_DEC(light)
+		HCUBE_COMPONENT_DEC(light)
 
 	public:
 		//light type

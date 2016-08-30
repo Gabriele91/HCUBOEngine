@@ -14,7 +14,7 @@ namespace hcube
 	class transform : public component
 	{
 
-		COMPONENT_DEC(transform)
+		HCUBE_COMPONENT_DEC(transform)
 
 	public:
 

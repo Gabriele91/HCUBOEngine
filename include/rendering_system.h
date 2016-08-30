@@ -105,7 +105,7 @@ namespace hcube
 	class rendering_system : public system_component, public smart_pointers< rendering_system >
 	{
 
-		SYSTEM_COMPONENT_DEC(rendering_system);
+		HCUBE_SYSTEM_COMPONENT_DEC(rendering_system);
 
 	public:
 

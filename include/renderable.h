@@ -16,7 +16,7 @@ namespace hcube
 	class renderable : public component
 	{
 
-		COMPONENT_DEC(renderable)
+		HCUBE_COMPONENT_DEC(renderable)
 
 	public:
 

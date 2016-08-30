@@ -274,10 +274,7 @@ namespace hcube
 		//save state
 		auto render_state = render::get_render_state();
 		//draw
-		for (render_queues::element*
-			weak_element = queues.m_cull_opaque;
-			weak_element;
-			weak_element = weak_element->m_next)
+		HCUBE_FOREACH_QUEUE(weak_element, queues.m_cull_opaque)
 		{
 			auto entity = weak_element->lock();
 			auto t_entity = entity->get_component<transform>();

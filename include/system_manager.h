@@ -31,7 +31,7 @@ namespace hcube
 	using system_component_uptr = std::unique_ptr< system_component >;
 	using system_component_wptr = std::weak_ptr< system_component >;
 
-#define SYSTEM_COMPONENT_DEC(T)\
+#define HCUBE_SYSTEM_COMPONENT_DEC(T)\
     public: static system_component_id type(){ static system_component_id type=typeid(T); return type; }\
     public: system_component_id get_id() const { return type(); }\
     private:

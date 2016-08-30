@@ -17,7 +17,7 @@ namespace hcube
 	class camera : public component, public smart_pointers< camera >
 	{
 
-		COMPONENT_DEC(camera)
+		HCUBE_COMPONENT_DEC(camera)
 
 	public:
 
