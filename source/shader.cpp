@@ -250,7 +250,9 @@ R"GLSL(
 			//line count
 			++line;
 			//ptr to line
-			const char* c_effect_line = effect_line.c_str();
+            const char* c_effect_line = effect_line.c_str();
+            //jmp space
+            jmp_spaces(c_effect_line);
 			//pragma
 			if (compare_and_jmp_keyword(c_effect_line, "#pragma"))
 			{
