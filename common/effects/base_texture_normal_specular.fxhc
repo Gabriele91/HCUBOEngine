@@ -1,6 +1,6 @@
 parameters
 {
-    mask float(0.0)
+    mask float(-1.0)
     diffuse_map texture("white")
     normal_map texture("normal_up")
     specular_map texture("black")

@@ -635,7 +635,8 @@ namespace hcube
 		"diffuse_map",
 		"normal_map",
 		"specular_map",
-		"color"
+		"color",
+        "mask"
 	};
 	static void save_if_is_a_default_parameter(int id_param,const std::string& name, int default_parameters[])
 	{

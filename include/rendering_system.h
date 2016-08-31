@@ -85,10 +85,15 @@ namespace hcube
 	class rendering_pass_shadow : public rendering_pass, public smart_pointers<rendering_pass_shadow>
 	{
 		
-		effect::ptr		   m_effect;
+        effect::ptr		   m_effect;
+        effect::parameter* m_mask;
+        effect::parameter* m_diffuse_map;
 		effect::technique* m_technique_shadow_spot;
 		effect::technique* m_technique_shadow_point;
-		effect::technique* m_technique_shadow_direction;
+        effect::technique* m_technique_shadow_direction;
+        uniform*           m_shadow_spot_mask     { nullptr };
+        uniform*           m_shadow_point_mask    { nullptr };
+        uniform*           m_shadow_direction_mask{ nullptr };
 
 	public:
 

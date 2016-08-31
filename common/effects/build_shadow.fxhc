@@ -1,5 +1,6 @@
 parameters
 {
+    mask float(-1.0)
     diffuse_map texture("white")
 }
 
@@ -9,7 +10,7 @@ technique "shadow_spot"
 	{
 		zbuffer less
 		blend off
-		cullface off //front
+		cullface front
 		lights off
 		shader source 
 		{
@@ -38,14 +39,15 @@ technique "shadow_spot"
 			//input
 			in vec2 frag_uvcoord;
 			//map
-			uniform sampler2D diffuse_map; 
-			
+            uniform sampler2D diffuse_map;
+            uniform float mask;
+
 			void main()
 			{
 				//get alpha
 				vec4 texture_color = texture(diffuse_map, frag_uvcoord);
 				//mask
-				if (texture_color.a < 0.5)
+				if (texture_color.a <= mask)
 				{
 					discard;
 				}
