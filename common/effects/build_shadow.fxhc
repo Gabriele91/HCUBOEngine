@@ -1,5 +1,6 @@
 parameters
 {
+    diffuse_map texture("white")
 }
 
 technique "shadow_spot"
@@ -8,30 +9,46 @@ technique "shadow_spot"
 	{
 		zbuffer less
 		blend off
-		cullface front
+		cullface off //front
 		lights off
 		shader source 
 		{
 			#pragma vertex
 			//input vertex
 			layout(location = ATT_POSITIONT) in vec3 vertex;
+			layout(location = ATT_TEXCOORD0) in vec2 uvcoord;
 			//uniform
 			uniform mat4 projection;
 			uniform mat4 view;
 			uniform mat4 model;
+			//output
+			out vec2 frag_uvcoord;
 			//compute vertex
 			void main()
 			{
 				//vertex
 				vec4 view_vertex = view * model * vec4(vertex, 1.0);
 				gl_Position = projection *  view_vertex;
+				//uvmap
+				frag_uvcoord = uvcoord;
 			}
 			
 			#pragma fragment
 			
+			//input
+			in vec2 frag_uvcoord;
+			//map
+			uniform sampler2D diffuse_map; 
+			
 			void main()
 			{
-				//no color
+				//get alpha
+				vec4 texture_color = texture(diffuse_map, frag_uvcoord);
+				//mask
+				if (texture_color.a < 0.5)
+				{
+					discard;
+				}
 			}
 		}
 	}

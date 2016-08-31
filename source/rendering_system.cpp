@@ -377,14 +377,29 @@ namespace hcube
 			t_light->get_matrix_inv(),
 			mat4(1)
 		);
+		//default texture
+		texture::ptr default_texture = m_effect->get_parameter(0)->get_texture();
 		//set viewport
 		render::set_viewport_state({ c_light->get_viewport() });
 		//draw objs
 		HCUBE_FOREACH_QUEUE(weak_element, queues.m_cull_opaque)
 		{
-			auto entity = weak_element->lock();
-			auto t_entity = entity->get_component<transform>();
-			auto r_entity = entity->get_component<renderable>();
+			auto entity     = weak_element->lock();
+			auto t_entity   = entity->get_component<transform>();
+			auto r_entity   = entity->get_component<renderable>();
+			//test
+			if (auto e_material = r_entity->get_material())
+			if (auto p_texture = e_material->get_default_parameter(material::MAT_DEFAULT_DIFFUSE_MAP))
+			if (auto t_texture = p_texture->get_texture())
+			{
+				//diffuse map
+				render::bind_texture(t_texture->get_context_texture(), 0);
+			}
+			else
+			{
+				//diffuse map
+				render::bind_texture(default_texture->get_context_texture(), 0);
+			}
 			//set transform
 			shadow_pass.m_uniform_model->set_value(t_entity->get_matrix());
 			//draw

@@ -217,10 +217,10 @@ namespace hcube
 					basic_meshs::cube({ 5,5,5 }, true)
 				);
 				cube_grid->get_component<renderable>()->set_material(
-					m_resources.get_material("box2_grid_mat")
+					m_resources.get_material("cross_mat")
 				);
 				cube_grid->get_component<transform>()->translation(
-					vec3{ 0.0,-7.5,-10.0 }
+					vec3{ -5.0,-7.5,-10.0 }
 				);
 				cube_grid->get_component<transform>()->scale(
 					vec3{ 1.0,1.0,1.0 }
@@ -234,10 +234,10 @@ namespace hcube
 					basic_meshs::cube({ 5,5,5 }, true)
 				);
 				cube_grid->get_component<renderable>()->set_material(
-					m_resources.get_material("box_mat")
+					m_resources.get_material("box2_grid_mat")
 				);
 				cube_grid->get_component<transform>()->translation(
-					vec3{ 0.0,-7.5,.0 }
+					vec3{ 5.0,-7.5,-10.0 }
 				);
 				cube_grid->set_name("cube2");
 				m_systems.add_entity(cube_grid);
@@ -247,7 +247,7 @@ namespace hcube
             for(int y=-2;y!=2;++y)
             {
                 auto cube_floor = gameobject::node_new(
-                    basic_meshs::cube({ 50,0.1,50 }, true)
+                    basic_meshs::cube({ 50,50,50 }, true)
                 );
                 cube_floor->get_component<renderable>()->set_material(
                     m_resources.get_material(
@@ -256,7 +256,7 @@ namespace hcube
                                              )
                 ); 
                 cube_floor->get_component<transform>()->translation(
-                    vec3{x*50.,-10,y*50.}
+                    vec3{x*50.,-36,y*50.}
                 );
                 cube_floor->set_name("cube_floor");
                 m_systems.add_entity(cube_floor);
@@ -356,7 +356,7 @@ namespace hcube
 			{
 				t_lights[i - 1]->position({
                     std::sin((constants::pi<float>()*0.66)*i)*15.,
-					0.0,
+					5.0,
                     std::cos((constants::pi<float>()*0.66)*i)*15.,
 				});
 			}
@@ -376,7 +376,7 @@ namespace hcube
 				auto e_model_light_shadow = gameobject::light_new();
 				auto l_model_light_shadow = e_model_light_shadow->get_component<light>();
 				auto t_model_light_shadow = e_model_light_shadow->get_component<transform>();
-				t_model_light_shadow->position(vec3{ -15.+30.*i,40.0f,0 });
+				t_model_light_shadow->position(vec3{ -15.+30.*i,40.0f,-10.0 });
 				t_model_light_shadow->rotation(quat({ radians(90.0), radians(-30.+60.0*i), radians(0.0) }));
 				l_model_light_shadow->spot({ 1.0f, 1.0f, 1.0f },
 										   { 1.0f, 1.0f, 1.0f },
@@ -385,7 +385,7 @@ namespace hcube
 											65.0,
 											radians(20.0),
 											radians(35.0));
-				l_model_light_shadow->set_shadow({ 512,512 });
+				l_model_light_shadow->set_shadow({ 1024,1024 });
 				e_model_light_shadow->set_name("light_shadow" + std::to_string(i));
 				m_systems.add_entity(e_model_light_shadow);
 			}

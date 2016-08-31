@@ -1125,7 +1125,7 @@ namespace hcube
 			m_value = value;
 		}
 		//get value
-		virtual texture::ptr get_texture() 
+		virtual texture::ptr get_texture() const 
 		{ 
 			return m_value;
 		}
@@ -1151,7 +1151,7 @@ namespace hcube
 			m_value = i;
 		}
 		//get value
-		virtual int get_int()
+		virtual int get_int() const
 		{
 			return m_value;
 		}
@@ -1177,7 +1177,7 @@ namespace hcube
 			m_value = f;
 		}
 		//get value
-		virtual float get_float()
+		virtual float get_float() const 
 		{
 			return m_value;
 		}
@@ -1207,7 +1207,7 @@ namespace hcube
 			m_value = value;
 		}
 		//get value
-		virtual const vec2& get_vec2()
+		virtual const vec2& get_vec2() const
 		{
 			return m_value;
 		}
@@ -1237,7 +1237,7 @@ namespace hcube
 			m_value = value;
 		}
 		//get value
-		virtual const vec3& get_vec3()
+		virtual const vec3& get_vec3() const
 		{
 			return m_value;
 		}
@@ -1267,7 +1267,7 @@ namespace hcube
 			m_value = value;
 		}
 		//get value
-		virtual const vec4& get_vec4()
+		virtual const vec4& get_vec4() const
 		{
 			return m_value;
 		}
@@ -1297,7 +1297,7 @@ namespace hcube
 			m_value = value;
 		}
 		//get value
-		virtual const mat4& get_mat4()
+		virtual const mat4& get_mat4() const
 		{
 			return m_value;
 		}

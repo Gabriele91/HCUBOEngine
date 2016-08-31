@@ -54,9 +54,9 @@ namespace hcube
 										sizeof(vertex),
 										{
 											 attribute{ ATT_POSITIONT, AST_FLOAT3, offsetof(vertex, m_position) },
-											 attribute{ ATT_NORMAL0, AST_FLOAT3, offsetof(vertex, m_normal)     },
+											 attribute{ ATT_NORMAL0, AST_FLOAT3,   offsetof(vertex, m_normal)   },
 											 attribute{ ATT_TEXCOORD0, AST_FLOAT2, offsetof(vertex, m_uvmap)    },
-											 attribute{ ATT_TANGENT0, AST_FLOAT3, offsetof(vertex, m_tangent)   },
+											 attribute{ ATT_TANGENT0, AST_FLOAT3,  offsetof(vertex, m_tangent)  },
 											 attribute{ ATT_BINORMAL0, AST_FLOAT3, offsetof(vertex, m_bitangent)}
 										}
 									  }),

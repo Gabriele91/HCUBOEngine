@@ -67,20 +67,20 @@ namespace hcube
 			virtual bool is_valid() { return m_id >= 0; }
 			parameter_type get_type() { return m_type; }
 
-			virtual texture::ptr get_texture() { return texture::ptr(nullptr); }
-			virtual int          get_int()     { return 0;    }
-			virtual float        get_float()   { return 0.0f; }
-			virtual const glm::vec2& get_vec2() { return glm::vec2();  }
-			virtual const glm::vec3& get_vec3() { return glm::vec3();  }
-			virtual const glm::vec4& get_vec4() { return glm::vec4();  }
-			virtual const glm::mat4& get_mat4() { return glm::mat4();  }
+			virtual texture::ptr get_texture()   const { return texture::ptr(nullptr); }
+			virtual int          get_int()       const { return 0;    }
+			virtual float        get_float()     const { return 0.0f; }
+			virtual const glm::vec2& get_vec2()  const { return glm::vec2();  }
+			virtual const glm::vec3& get_vec3()  const { return glm::vec3();  }
+			virtual const glm::vec4& get_vec4()  const { return glm::vec4();  }
+			virtual const glm::mat4& get_mat4()  const { return glm::mat4();  }
 
-			virtual const std::vector<int>&       get_int_array()  { return{}; }
-			virtual const std::vector<float>&     get_float_array(){ return{}; }
-			virtual const std::vector<glm::vec2>& get_vec2_array() { return{}; }
-			virtual const std::vector<glm::vec3>& get_vec3_array() { return{}; }
-			virtual const std::vector<glm::vec4>& get_vec4_array() { return{}; }
-			virtual const std::vector<glm::mat4>& get_mat4_array() { return{}; }
+			virtual const std::vector<int>&       get_int_array()   const { return{}; }
+			virtual const std::vector<float>&     get_float_array() const { return{}; }
+			virtual const std::vector<glm::vec2>& get_vec2_array()  const { return{}; }
+			virtual const std::vector<glm::vec3>& get_vec3_array()  const { return{}; }
+			virtual const std::vector<glm::vec4>& get_vec4_array()  const { return{}; }
+			virtual const std::vector<glm::mat4>& get_mat4_array()  const { return{}; }
 
 			virtual parameter* copy() const = 0;
 
