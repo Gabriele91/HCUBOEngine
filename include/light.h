@@ -133,7 +133,7 @@ namespace hcube
 		{
 			m_inside_radius = inside_radius;
 			m_radius = radius;
-			update_shadow_projection_matrix();
+			update_projection_matrix();
 		}
 
 		void set_radius
@@ -146,7 +146,7 @@ namespace hcube
 			m_constant = constant;
 			m_inside_radius = inside_radius;
 			m_radius = radius;
-			update_shadow_projection_matrix();
+			update_projection_matrix();
 		}
 		//change cone
 		void set_spot
@@ -157,7 +157,7 @@ namespace hcube
 		{
 			m_inner_cut_off = std::cos(inner_cut_off);
 			m_outer_cut_off = std::cos(outer_cut_off);
-			update_shadow_projection_matrix();
+			update_projection_matrix();
 		}
 
 		//get
@@ -178,9 +178,13 @@ namespace hcube
 
 		bool is_enable_shadow() const;
 
-		camera::ptr get_shadow_camera() const;
+		const ivec4& get_viewport() const;
 
-		frustum* get_frustum() const;
+		const mat4& get_projection() const;
+
+		const frustum& get_frustum() const;
+
+		const frustum& update_frustum();
 
 		const shadow_buffer& get_shadow_buffer() const;
 		//copy
@@ -200,16 +204,19 @@ namespace hcube
 		//spot light info
 		float      m_inner_cut_off{ -1.0 };
 		float      m_outer_cut_off{ -1.0 };
+		//frustum spot light
+		frustum	   m_frustum;
+		mat4       m_projection;
 		//shadow struct
 		struct light_shadow
 		{
 			bool		  m_enable{ false   };
-			camera::ptr   m_camera{ nullptr };
+			ivec4		  m_viewport;
 			shadow_buffer m_buffer;
 		}
 		m_shadow;
 		//update
-		void update_shadow_projection_matrix();
+		void update_projection_matrix();
 		//friend
 		friend class light;
 		friend struct uniform_light_spot;

@@ -43,44 +43,44 @@ namespace hcube
 			virtual void set_value(texture::ptr in_texture) {}
 			virtual void set_value(int i) {}
 			virtual void set_value(float f) {}
-			virtual void set_value(const glm::vec2& v2) {}
-			virtual void set_value(const glm::vec3& v3) {}
-			virtual void set_value(const glm::vec4& v4) {}
-			virtual void set_value(const glm::mat4& m4) {}
+			virtual void set_value(const vec2& v2) {}
+			virtual void set_value(const vec3& v3) {}
+			virtual void set_value(const vec4& v4) {}
+			virtual void set_value(const mat4& m4) {}
 
 			virtual void set_value(const int* i, size_t n) {}
 			virtual void set_value(const float* f, size_t n) {}
-			virtual void set_value(const glm::vec2* v2, size_t n) {}
-			virtual void set_value(const glm::vec3* v3, size_t n) {}
-			virtual void set_value(const glm::vec4* v4, size_t n) {}
-			virtual void set_value(const glm::mat4* m4, size_t n) {}
+			virtual void set_value(const vec2* v2, size_t n) {}
+			virtual void set_value(const vec3* v3, size_t n) {}
+			virtual void set_value(const vec4* v4, size_t n) {}
+			virtual void set_value(const mat4* m4, size_t n) {}
 
 			virtual void set_value(const std::vector < int >& i) {}
 			virtual void set_value(const std::vector < float >& f) {}
-			virtual void set_value(const std::vector < glm::vec2 >& v2) {}
-			virtual void set_value(const std::vector < glm::vec3 >& v3) {}
-			virtual void set_value(const std::vector < glm::vec4 >& v4) {}
-			virtual void set_value(const std::vector < glm::mat4 >& m4) {}
+			virtual void set_value(const std::vector < vec2 >& v2) {}
+			virtual void set_value(const std::vector < vec3 >& v3) {}
+			virtual void set_value(const std::vector < vec4 >& v4) {}
+			virtual void set_value(const std::vector < mat4 >& m4) {}
 
 			parameter() {}
 
 			virtual bool is_valid() { return m_id >= 0; }
 			parameter_type get_type() { return m_type; }
 
-			virtual texture::ptr get_texture()   const { return texture::ptr(nullptr); }
-			virtual int          get_int()       const { return 0;    }
-			virtual float        get_float()     const { return 0.0f; }
-			virtual const glm::vec2& get_vec2()  const { return glm::vec2();  }
-			virtual const glm::vec3& get_vec3()  const { return glm::vec3();  }
-			virtual const glm::vec4& get_vec4()  const { return glm::vec4();  }
-			virtual const glm::mat4& get_mat4()  const { return glm::mat4();  }
+			virtual texture::ptr get_texture() const { return texture::ptr(nullptr); }
+			virtual int          get_int()     const { return 0;    }
+			virtual float        get_float()   const { return 0.0f; }
+			virtual const vec2&  get_vec2()    const { return vec2();  }
+			virtual const vec3&  get_vec3()    const { return vec3();  }
+			virtual const vec4&  get_vec4()    const { return vec4();  }
+			virtual const mat4&  get_mat4()    const { return mat4();  }
 
 			virtual const std::vector<int>&       get_int_array()   const { return{}; }
 			virtual const std::vector<float>&     get_float_array() const { return{}; }
-			virtual const std::vector<glm::vec2>& get_vec2_array()  const { return{}; }
-			virtual const std::vector<glm::vec3>& get_vec3_array()  const { return{}; }
-			virtual const std::vector<glm::vec4>& get_vec4_array()  const { return{}; }
-			virtual const std::vector<glm::mat4>& get_mat4_array()  const { return{}; }
+			virtual const std::vector<vec2>& get_vec2_array()  const { return{}; }
+			virtual const std::vector<vec3>& get_vec3_array()  const { return{}; }
+			virtual const std::vector<vec4>& get_vec4_array()  const { return{}; }
+			virtual const std::vector<mat4>& get_mat4_array()  const { return{}; }
 
 			virtual parameter* copy() const = 0;
 

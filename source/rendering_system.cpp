@@ -373,30 +373,26 @@ namespace hcube
 		auto l_light = e_light->get_component<light>();
 		//enable shadow?
 		if (!l_light->is_enable_shadow()) return;
-		//get camera
-		camera::ptr   c_light = l_light->get_shadow_camera();
-		transform_ptr t_light = e_light->get_component<transform>();
-		frustum&      f_light = c_light->get_frustum();
-		//update view frustum
-		f_light.update_frustum(c_light->get_projection()*t_light->get_matrix_inv());
-		//build queue
-		queues.compute_opaque_queue(f_light);
+		//update view frustum and queue
+		queues.compute_opaque_queue(l_light->update_frustum());
 		//enable shadow buffer/texture
 		l_light->get_shadow_buffer().bind();
 		//clear
 		render::clear();
+		//get transform
+		transform_ptr t_light = e_light->get_component<transform>();
 		//applay pass
 		auto state = shadow_pass.safe_bind
 		(
-			c_light->get_viewport(),
-			c_light->get_projection(),
+			l_light->get_viewport(),
+			l_light->get_projection(),
 			t_light->get_matrix_inv(),
 			mat4(1)
 		);
 		//default texture
 		texture::ptr default_texture = m_diffuse_map->get_texture();
 		//set viewport
-		render::set_viewport_state({ c_light->get_viewport() });
+		render::set_viewport_state({ l_light->get_viewport() });
 		//draw objs
 		HCUBE_FOREACH_QUEUE(weak_element, queues.m_cull_opaque)
 		{

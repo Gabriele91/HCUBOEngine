@@ -1,4 +1,7 @@
 #include <light.h>
+#include <vector_math.h>
+#include <entity.h>
+#include <transform.h>
 
 namespace hcube
 {
@@ -64,7 +67,7 @@ namespace hcube
 
 		if (light->is_enable_shadow())
 		{
-			m_uniform_shadow_projection->set_value(light->get_shadow_camera()->get_projection());
+			m_uniform_shadow_projection->set_value(light->get_projection());
 			m_uniform_shadow_view->set_value(shadow_view);
 			m_uniform_shadow_map->set_value(light->get_shadow_buffer().get_depth_texture());
 		}
@@ -182,13 +185,12 @@ namespace hcube
 		if (m_type != light::SPOT_LIGHT) return false;
 		//set to true
 		m_shadow.m_enable = true;
-		m_shadow.m_camera = camera::snew();
 		m_shadow.m_buffer.init(size);
-		//projection
-		float aspect = float(size.x) / float(size.y);
-		m_shadow.m_camera->set_viewport(ivec4{ 0, 0, size.x, size.y });
-		m_shadow.m_camera->set_perspective(m_outer_cut_off * 2.0f, aspect, 0.1f, m_radius);
-        
+		//viewport
+		m_shadow.m_viewport = ivec4{ 0, 0, size.x, size.y };
+		//update projection
+		update_projection_matrix();
+        //end
         return true;
 	}
   
@@ -197,7 +199,6 @@ namespace hcube
 		if (m_shadow.m_enable)
 		{
 			m_shadow.m_enable = false;
-			m_shadow.m_camera = nullptr;
 			m_shadow.m_buffer.destoy();
 		}
 	}
@@ -207,15 +208,36 @@ namespace hcube
 		return m_shadow.m_enable;
 	}
 
-	camera::ptr light::get_shadow_camera() const
+	const ivec4& light::get_viewport() const
 	{
-		return m_shadow.m_camera;
+		return m_shadow.m_viewport;
 	}
 
-	frustum* light::get_frustum() const
+	const mat4& light::get_projection() const
 	{
-		if (m_shadow.m_camera) return &m_shadow.m_camera->get_frustum();
-		return nullptr;
+		return m_projection;
+	}
+
+	const frustum& light::get_frustum() const
+	{
+		return m_frustum;
+	}
+
+	const frustum& light::update_frustum()
+	{
+		entity*       e_this = nullptr;
+		transform_ptr t_this = nullptr;
+
+		if( (e_this = get_entity()) && (t_this = e_this->get_component<transform>()))
+		{
+			m_frustum.update_frustum(m_projection*t_this->get_matrix_inv());
+		}
+		else
+		{
+			m_frustum.update_frustum(m_projection);
+		}
+
+		return m_frustum;
 	}
 
 	const shadow_buffer& light::get_shadow_buffer() const
@@ -223,16 +245,20 @@ namespace hcube
 		return m_shadow.m_buffer;
 	}
 
-	void light::update_shadow_projection_matrix()
+	void light::update_projection_matrix()
 	{
+		//aspect
+		float aspect = 1.0f;
+		//shadow texture?
 		if (m_shadow.m_enable)
 		{
 			//get size
 			ivec2 size = m_shadow.m_buffer.get_size();
 			//projection
-			float aspect = float(size.x) / float(size.y);
-			m_shadow.m_camera->set_perspective(m_outer_cut_off * 2.0f, aspect, 0.1f, m_radius);
+			aspect = float(size.x) / float(size.y);
 		}
+		//update
+		m_projection = hcube::perspective(m_outer_cut_off * 2.0f, aspect, 0.1f, m_radius);
 	}
 
 }

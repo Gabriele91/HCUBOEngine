@@ -178,7 +178,7 @@ namespace hcube
 		//gbuffer size
 		ivec2 g_size = app.get_window_size();
 		auto rendering_pass = rendering_pass_deferred::snew(g_size, m_resources);
-		rendering_pass->set_ambient_occlusion(true);
+		rendering_pass->set_ambient_occlusion(false);
 		m_rendering->add_rendering_pass(rendering_pass);
 #else
 		auto rendering_pass = rendering_pass_forward::snew();
