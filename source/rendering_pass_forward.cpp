@@ -67,7 +67,7 @@ namespace hcube
 							auto l_light = e_light->get_component<light>();
 							auto t_light = e_light->get_component<transform>();
 #ifdef ENABLE_RADIUS_TEST 
-							#if 1
+							#if 0
 							if (!r_entity->has_support_culling() ||
 								r_entity->get_bounding_box().is_inside(t_entity->get_matrix(),
 									t_light->get_global_position(),

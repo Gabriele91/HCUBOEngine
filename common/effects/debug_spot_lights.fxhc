@@ -1,0 +1,54 @@
+parameters
+{
+    color vec4(0.1,0.1,0.1,0.5)
+}
+
+technique "forward"
+{
+    pass
+    {
+        zbuffer less
+        blend one one_minus_src_alpha
+        cullface off
+        lights off
+        shader source
+        {
+            #pragma vertex
+            //in
+            layout(location = ATT_POSITIONT) in vec3 vertex;
+            layout(location = ATT_NORMAL0)   in vec3 normal;
+            //out
+            out vec4 frag_position;
+            out vec3 frag_normal;
+            //uniform
+            uniform mat4 projection;
+            uniform mat4 view;
+            uniform mat4 model;
+            
+            void main()
+            {
+                //vertex
+                frag_position     = model * vec4(vertex, 1.0);
+                gl_Position 	  = projection * view * frag_position;
+                //normal
+                mat3 normal_matrix = transpose(inverse(mat3(view * model)));
+                frag_normal = normal_matrix * normal;
+            }
+            
+            #pragma fragment
+            //in
+            in vec4 frag_position;
+            in vec3 frag_normal;
+            //out
+            layout(location = 0) out vec4 frag_out_color;
+            //uniform
+            uniform vec4 color;
+            
+            void main()
+            {
+                //output
+                frag_out_color  = vec4(color.rgba);
+            }
+        }
+    }
+}

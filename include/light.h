@@ -59,6 +59,7 @@ namespace hcube
 			m_radius        = radius;
 			m_inner_cut_off = inner_cut_off;
 			m_outer_cut_off = outer_cut_off;
+            update_projection_matrix();
 		}
 
 		//init point type
@@ -77,6 +78,7 @@ namespace hcube
 			m_constant = constant;
 			m_inside_radius = inside_radius;
 			m_radius = radius;
+            update_projection_matrix();
 		}
 
 		//init sport type
@@ -99,6 +101,7 @@ namespace hcube
 			m_radius = radius;
 			m_inner_cut_off = std::cos(inner_cut_off);
 			m_outer_cut_off = std::cos(outer_cut_off);
+            update_projection_matrix();
 		}
 
 		//init direction type
@@ -179,14 +182,18 @@ namespace hcube
 		bool is_enable_shadow() const;
 
 		const ivec4& get_viewport() const;
-
-		const mat4& get_projection() const;
+        
+        const mat4& get_projection() const;
+        
+        const mat4 get_view() const;
 
 		const frustum& get_frustum() const;
 
 		const frustum& update_frustum();
 
-		const shadow_buffer& get_shadow_buffer() const;
+        const shadow_buffer& get_shadow_buffer() const;
+        //update
+        void update_projection_matrix();
 		//copy
 		virtual component_ptr copy() const;
 
@@ -215,8 +222,6 @@ namespace hcube
 			shadow_buffer m_buffer;
 		}
 		m_shadow;
-		//update
-		void update_projection_matrix();
 		//friend
 		friend class light;
 		friend struct uniform_light_spot;

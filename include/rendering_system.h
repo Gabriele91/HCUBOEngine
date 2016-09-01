@@ -106,6 +106,24 @@ namespace hcube
 			render_queues& queues
 		);
 	};
+    
+    class rendering_pass_debug_spot_lights : public rendering_pass, public smart_pointers<rendering_pass_debug_spot_lights>
+    {
+        
+        effect::ptr m_effect;
+        entity::ptr m_cube;
+        
+    public:
+        
+        rendering_pass_debug_spot_lights(resources_manager& resources);
+        
+        virtual void draw_pass(
+                               vec4&  clear_color,
+                               vec4&  ambient_color,
+                               entity::ptr e_camera,
+                               render_queues& queues
+                               );
+    };
 
 	class rendering_system : public system_component, public smart_pointers< rendering_system >
 	{

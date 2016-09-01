@@ -212,11 +212,42 @@ namespace hcube
 	{
 		return m_shadow.m_viewport;
 	}
-
-	const mat4& light::get_projection() const
-	{
-		return m_projection;
-	}
+    
+    const mat4& light::get_projection() const
+    {
+        return m_projection;
+    }
+    
+    const mat4 light::get_view() const
+    {
+        entity*       e_this = nullptr;
+        transform_ptr t_this = nullptr;
+        
+        if( (e_this = get_entity()) && (t_this = e_this->get_component<transform>()))
+        {
+            //todo, update when is dirty
+            vec3 scale = t_this->get_global_scale();
+            mat4 view  = t_this->get_matrix();
+            
+            view[0][0] /= scale[0];
+            view[0][1] /= scale[0];
+            view[0][2] /= scale[0];
+            
+            view[1][0] /= scale[1];
+            view[1][1] /= scale[1];
+            view[1][2] /= scale[1];
+            
+            view[2][0] /= scale[2];
+            view[2][1] /= scale[2];
+            view[2][2] /= scale[2];
+            
+            view[2] *= -1;
+            
+            return inverse(view);
+        }
+        
+        return mat4(1);
+    }
 
 	const frustum& light::get_frustum() const
 	{
@@ -225,6 +256,7 @@ namespace hcube
 
 	const frustum& light::update_frustum()
 	{
+#if 0
 		entity*       e_this = nullptr;
 		transform_ptr t_this = nullptr;
 
@@ -236,7 +268,9 @@ namespace hcube
 		{
 			m_frustum.update_frustum(m_projection);
 		}
-
+#else 
+        m_frustum.update_frustum(m_projection*get_view());
+#endif
 		return m_frustum;
 	}
 

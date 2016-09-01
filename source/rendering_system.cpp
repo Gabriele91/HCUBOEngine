@@ -10,7 +10,7 @@
 #include <entity.h>
 #include <rendering_system.h>
 #include <resources_manager.h>
-
+#include <gameobject.h>
 
 namespace hcube
 {
@@ -379,14 +379,12 @@ namespace hcube
 		l_light->get_shadow_buffer().bind();
 		//clear
 		render::clear();
-		//get transform
-		transform_ptr t_light = e_light->get_component<transform>();
 		//applay pass
 		auto state = shadow_pass.safe_bind
 		(
 			l_light->get_viewport(),
 			l_light->get_projection(),
-			t_light->get_matrix_inv(),
+			l_light->get_view(),
 			mat4(1)
 		);
 		//default texture
@@ -435,6 +433,53 @@ namespace hcube
 		//disable shadow buffer/texture
 		l_light->get_shadow_buffer().unbind();
 	}
+    
+    
+    
+    rendering_pass_debug_spot_lights::rendering_pass_debug_spot_lights(resources_manager& resources)
+    {
+        m_effect = resources.get_effect("debug_spot_lights");
+        m_cube   = gameobject::cube_new({0.5,0.5,0.5},true);
+    }
+    
+    void rendering_pass_debug_spot_lights::draw_pass(
+                           vec4&  clear_color,
+                           vec4&  ambient_color,
+                           entity::ptr e_camera,
+                           render_queues& queues
+                           )
+    {
+        
+        effect::pass& pass = (*m_effect->get_technique("forward"))[0];
+        
+        auto c_camera = e_camera->get_component<camera>();
+        auto t_camera = e_camera->get_component<transform>();
+        
+        auto state = render::get_render_state();
+        //viewport
+        render::set_viewport_state({ c_camera->get_viewport() });
+        
+        
+        HCUBE_FOREACH_QUEUE(weak_light, queues.m_cull_light_spot)
+        {
+            auto e_light    = weak_light->lock();
+            auto l_light    = e_light->get_component<light>();
+            auto t_light    = e_light->get_component<transform>();
+            
+            l_light->update_projection_matrix();
+            pass.bind(c_camera->get_viewport(),
+                      c_camera->get_projection(),
+                      t_camera->get_matrix_inv(),
+                      //inverse(inverse(l_light->get_projection())*l_light->get_view())
+                      inverse(inverse(l_light->get_projection())*t_light->get_matrix_inv())
+                      );
+            
+            m_cube->get_component<renderable>()->draw();
+            
+            pass.unbind();
+        }
+        render::set_render_state(state);
+    }
 
 	void rendering_system::draw()
 	{
