@@ -65,15 +65,22 @@ namespace hcube
 						{
 							auto e_light = weak_light->lock();
 							auto l_light = e_light->get_component<light>();
+							auto t_light = e_light->get_component<transform>();
 #ifdef ENABLE_RADIUS_TEST 
+							#if 1
+							if (!r_entity->has_support_culling() ||
+								r_entity->get_bounding_box().is_inside(t_entity->get_matrix(),
+									t_light->get_global_position(),
+									l_light->get_radius())
+								)
+							#else 
 							if (!r_entity->has_support_culling() ||
 								 l_light->update_frustum().test_obb(r_entity->get_bounding_box(), 
 																    t_entity->get_matrix())
 								)
+							#endif
 #endif
 							{
-								//get get transform
-								auto t_light = e_light->get_component<transform>();
 								//update shader
 								pass.m_uniform_spot.uniform(
 									l_light,

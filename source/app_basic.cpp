@@ -174,7 +174,7 @@ namespace hcube
 		m_rendering->add_shadow_rendering_pass(rendering_pass_shadow::snew(m_resources));
 		//add into system
 		m_systems.add_system(m_rendering);
-#if 1
+#if 0
 		//gbuffer size
 		ivec2 g_size = app.get_window_size();
 		auto rendering_pass = rendering_pass_deferred::snew(g_size, m_resources);
@@ -311,7 +311,6 @@ namespace hcube
 								   radians(10.0),
 								   radians(15.0));
 			m_model->add_child(e_model_light2);
-
 			//add to render
 			m_systems.add_entity(m_model);
 
@@ -370,13 +369,17 @@ namespace hcube
 			//add to render
 			m_systems.add_entity(m_lights);
 
+			//shadow lights
+			auto shadow_lights = gameobject::node_new();
+			shadow_lights->set_name("shadow_lights");
+
 			for (int i = 0; i != 2; ++i)
 			{
 				//add shadow light
 				auto e_model_light_shadow = gameobject::light_new();
 				auto l_model_light_shadow = e_model_light_shadow->get_component<light>();
 				auto t_model_light_shadow = e_model_light_shadow->get_component<transform>();
-				t_model_light_shadow->position(vec3{ -15.+30.*i,40.0f,-10.0 });
+				t_model_light_shadow->position(vec3{ -20.+40.*i,40.0f,-10.0 });
 				t_model_light_shadow->rotation(quat({ radians(90.0), radians(-30.+60.0*i), radians(0.0) }));
 				l_model_light_shadow->spot({ 1.0f, 1.0f, 1.0f },
 										   { 1.0f, 1.0f, 1.0f },
@@ -387,8 +390,9 @@ namespace hcube
 											radians(35.0));
 				l_model_light_shadow->set_shadow({ 1024,1024 });
 				e_model_light_shadow->set_name("light_shadow" + std::to_string(i));
-				m_systems.add_entity(e_model_light_shadow);
+				shadow_lights->add_child(e_model_light_shadow);
 			}
+			m_systems.add_entity(shadow_lights);
 			//ambient color
 			m_rendering->set_ambient_color(vec4{ 0.26, 0.26, 0.26, 1.0 });
 
@@ -449,6 +453,10 @@ namespace hcube
 		m_lights
 			->get_component<transform>()
 			->turn(quat{ {0.0, radians(20.0*delta_time), 0.0} });
+		//for all shadow lights
+		m_systems.get_entities_by_name("shadow_lights")[0]
+			->get_component<transform>()
+			->turn(quat{ { 0.0, radians(-30.0*delta_time), 0.0 } });
 		//////////////////////////////////////////////////////////
 		//////////////////////////////////////////////////////////
 		//draw
