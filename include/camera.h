@@ -29,10 +29,18 @@ namespace hcube
 		const ivec4& get_viewport() const;
 		const mat4&  get_projection() const;
 		const mat4&  get_projection_inv() const;
+		const mat4&  get_view();
+
+		//events
+		void on_attach(entity& entity);
+		bool on_activate();
+		void on_message(const message& message);
 
 		frustum& get_frustum();
 		const frustum& get_frustum() const;
+
 		void update_view_frustum();
+		void update_view_matrix();
 
 		virtual component_ptr copy() const;
 
@@ -42,6 +50,7 @@ namespace hcube
 		ivec4    m_viewport;
 		mat4     m_projection;
 		mat4     m_projection_inv;
-
+		mat4     m_view;
+		bool     m_view_is_dirty{ true };
 	};
 }

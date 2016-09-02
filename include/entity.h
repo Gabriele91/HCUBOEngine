@@ -98,15 +98,15 @@ namespace hcube
 
 		void send_message_to_components(const message& message);
 
-		void send_message_to_components_upwards(const message& message);
+		void send_message_to_components_upwards(const message& message,bool to_this_entity=false);
 
-		void send_message_to_components_downwards(const message& message);
+		void send_message_to_components_downwards(const message& message, bool to_this_entity = false);
 
 		void send_message_to_component(component_id id, const message& message);
 
-		void send_message_to_component_upwards(component_id id, const message& message);
+		void send_message_to_component_upwards(component_id id, const message& message, bool to_this_entity = false);
 
-		void send_message_to_component_downwards(component_id id, const message& message);
+		void send_message_to_component_downwards(component_id id, const message& message, bool to_this_entity = false);
 
 		entity::ptr copy() const;
 

@@ -122,7 +122,6 @@ namespace hcube
 		render::set_clear_color_state(clear_color_state(vec4{ 1.,1.,1.,1. }));
         //draw
         camera::ptr   c_camera = e_camera->get_component<camera>();
-        transform_ptr t_camera = e_camera->get_component<transform>();
 		//enable fbo
 		render::enable_render_target(m_fbo);
 		//clear buffer not necessary (?)
@@ -132,7 +131,7 @@ namespace hcube
 		//////////////////////////////////////////////////////////////////////////////////////////////////////
 		//bind kernel/proj/scale noise
 		if(m_uniform_projection) m_uniform_projection->set_value(c_camera->get_projection());
-        if(m_uniform_view)       m_uniform_view->set_value(t_camera->get_matrix_inv());
+        if(m_uniform_view)       m_uniform_view->set_value(c_camera->get_view());
         
 		m_uniform_noise_scale->set_value((vec2)c_camera->get_viewport_size() / vec2(4, 4));
 		m_uniform_kernel_size->set_value((int)m_kernel_size);

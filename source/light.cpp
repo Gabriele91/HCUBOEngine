@@ -218,36 +218,28 @@ namespace hcube
         return m_projection;
     }
     
-    const mat4 light::get_view() const
-    {
-        entity*       e_this = nullptr;
-        transform_ptr t_this = nullptr;
-        
-        if( (e_this = get_entity()) && (t_this = e_this->get_component<transform>()))
-        {
-            //todo, update when is dirty
-            vec3 scale = t_this->get_global_scale();
-            mat4 view  = t_this->get_matrix();
-            
-            view[0][0] /= scale[0];
-            view[0][1] /= scale[0];
-            view[0][2] /= scale[0];
-            
-            view[1][0] /= scale[1];
-            view[1][1] /= scale[1];
-            view[1][2] /= scale[1];
-            
-            view[2][0] /= scale[2];
-            view[2][1] /= scale[2];
-            view[2][2] /= scale[2];
-            
-            view[2] *= -1;
-            
-            return inverse(view);
-        }
-        
-        return mat4(1);
-    }
+    const mat4& light::get_view()
+	{
+		update_view_matrix();
+		return m_view;
+	}
+
+	void light::on_attach(entity& entity)
+	{
+		m_view_is_dirty = true;
+	}
+
+	bool light::on_activate()
+	{
+		m_view_is_dirty = true;
+		return true;
+	}
+
+	void light::on_message(const message& message)
+	{
+		if (message.m_id == transform::MSG_DIRTY) m_view_is_dirty = true;
+	}
+
 
 	const frustum& light::get_frustum() const
 	{
@@ -256,21 +248,7 @@ namespace hcube
 
 	const frustum& light::update_frustum()
 	{
-#if 0
-		entity*       e_this = nullptr;
-		transform_ptr t_this = nullptr;
-
-		if( (e_this = get_entity()) && (t_this = e_this->get_component<transform>()))
-		{
-			m_frustum.update_frustum(m_projection*t_this->get_matrix_inv());
-		}
-		else
-		{
-			m_frustum.update_frustum(m_projection);
-		}
-#else 
         m_frustum.update_frustum(m_projection*get_view());
-#endif
 		return m_frustum;
 	}
 
@@ -295,4 +273,36 @@ namespace hcube
 		m_projection = hcube::perspective(m_outer_cut_off * 2.0f, aspect, 0.1f, m_radius);
 	}
 
+	void light::update_view_matrix()
+	{
+		if (!m_view_is_dirty) return;
+
+		entity*       e_light = get_entity();
+		transform_ptr t_light = nullptr;
+
+		if (!e_light || !(t_light = get_entity()->get_component<transform>()))
+		{
+			m_view = mat4(1);
+			m_view_is_dirty = false;
+		}
+		//get matrix
+		vec3 scale = t_light->get_global_scale();
+		mat4 view = t_light->get_matrix();
+		//remove scale
+		view[0][0] /= scale[0];
+		view[0][1] /= scale[0];
+		view[0][2] /= scale[0];
+
+		view[1][0] /= scale[1];
+		view[1][1] /= scale[1];
+		view[1][2] /= scale[1];
+
+		view[2][0] /= scale[2];
+		view[2][1] /= scale[2];
+		view[2][2] /= scale[2];
+		//OpenGL LH, z*-1
+		view[2] *= -1;
+		//M^-1 = V
+		m_view = inverse(view);
+	}
 }

@@ -263,7 +263,6 @@ namespace hcube
 	{
 		//camera
 		camera::ptr   c_camera = e_camera->get_component<camera>();
-		transform_ptr t_camera = e_camera->get_component<transform>();
 		const vec4&   viewport = c_camera->get_viewport();
 		//buffer
 		m_g_buffer.bind();
@@ -291,7 +290,7 @@ namespace hcube
 					pass.bind(
 						viewport,
 						c_camera->get_projection(),
-						t_camera->get_matrix_inv(),
+						c_camera->get_view(),
 						t_entity->get_matrix(),
 						e_material->get_parameters()
 					);
@@ -330,21 +329,21 @@ namespace hcube
         //SPOT LIGHTS
 		if (queues.m_cull_light_spot)
 		{
-			m_spot_lights.uniform(m_g_buffer, m_ssao.get_texture(), t_camera->get_matrix_inv(), ambient_color, queues);
+			m_spot_lights.uniform(m_g_buffer, m_ssao.get_texture(), c_camera->get_view(), ambient_color, queues);
 			m_square->draw();
 			m_spot_lights.unbind();
 		}
         //POINT LIGHTS
 		if (queues.m_cull_light_point)
 		{
-			m_point_lights.uniform(m_g_buffer, m_ssao.get_texture(), t_camera->get_matrix_inv(), ambient_color, queues);
+			m_point_lights.uniform(m_g_buffer, m_ssao.get_texture(), c_camera->get_view(), ambient_color, queues);
 			m_square->draw();
 			m_point_lights.unbind();
 		}
 		//DIRECTION LIGHTS
 		if (queues.m_cull_light_direction)
 		{
-			m_direction_lights.uniform(m_g_buffer, m_ssao.get_texture(), t_camera->get_matrix_inv(), ambient_color, queues);
+			m_direction_lights.uniform(m_g_buffer, m_ssao.get_texture(), c_camera->get_view(), ambient_color, queues);
 			m_square->draw();
 			m_direction_lights.unbind();
 		}

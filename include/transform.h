@@ -55,6 +55,11 @@ namespace hcube
 			return get_matrix();
 		}
 
+		inline bool is_dirty() const
+		{
+			return m_tranform.m_dirty;
+		}
+
 		virtual component_ptr copy() const;
 
 	private:

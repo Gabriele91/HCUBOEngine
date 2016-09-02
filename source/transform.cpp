@@ -148,7 +148,7 @@ namespace hcube
 	{
 		if (get_entity())
 		{
-			get_entity()->send_message_to_component_downwards(type(), { MSG_DIRTY });
+			get_entity()->send_message_to_components_downwards({ MSG_DIRTY }, true);
 		}
 	}
 
@@ -191,17 +191,7 @@ namespace hcube
 				m_model_global = m_model_local;
 				m_model_global_inv = m_model_local_inv;
 			}
-#ifdef OPENGL_VIEW
-			m_model_local_inv[0][2] *= -1;
-			m_model_local_inv[1][2] *= -1;
-		    m_model_local_inv[2][2] *= -1;
-		    m_model_local_inv[3][2] *= -1;
-
-			m_model_global_inv[0][2] *= -1;
-			m_model_global_inv[1][2] *= -1;
-			m_model_global_inv[2][2] *= -1;
-		    m_model_global_inv[3][2] *= -1;
-#endif
+			m_tranform.m_dirty = false;
 		}
 	}
 }

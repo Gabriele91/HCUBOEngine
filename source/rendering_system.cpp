@@ -452,9 +452,7 @@ namespace hcube
         
         effect::pass& pass = (*m_effect->get_technique("forward"))[0];
         
-        auto c_camera = e_camera->get_component<camera>();
-        auto t_camera = e_camera->get_component<transform>();
-        
+        auto c_camera = e_camera->get_component<camera>();        
         auto state = render::get_render_state();
         //viewport
         render::set_viewport_state({ c_camera->get_viewport() });
@@ -469,7 +467,7 @@ namespace hcube
             l_light->update_projection_matrix();
             pass.bind(c_camera->get_viewport(),
                       c_camera->get_projection(),
-                      t_camera->get_matrix_inv(),
+                      c_camera->get_view(),
                       //inverse(inverse(l_light->get_projection())*l_light->get_view())
                       inverse(inverse(l_light->get_projection())*t_light->get_matrix_inv())
                       );
@@ -485,10 +483,9 @@ namespace hcube
 	{
 		//culling
 		camera::ptr   c_camera = m_camera->get_component<camera>();
-		transform_ptr t_camera = m_camera->get_component<transform>();
 		frustum&      f_camera = c_camera->get_frustum();
 		//update view frustum
-		f_camera.update_frustum(c_camera->get_projection()*t_camera->get_matrix_inv());
+		f_camera.update_frustum(c_camera->get_projection()*c_camera->get_view());
 		//update queue
 		m_renderables.compute_light_queue(f_camera);
 		//build shadow map

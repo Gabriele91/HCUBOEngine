@@ -174,6 +174,13 @@ namespace hcube
 			return m_radius;
 		}
 
+		//event
+		void on_attach(entity& entity);
+
+		bool on_activate();
+
+		void on_message(const message& message);
+
 		//shadow
 		bool set_shadow(const ivec2& size);
 
@@ -185,15 +192,19 @@ namespace hcube
         
         const mat4& get_projection() const;
         
-        const mat4 get_view() const;
+        const mat4& get_view();
 
 		const frustum& get_frustum() const;
 
 		const frustum& update_frustum();
 
         const shadow_buffer& get_shadow_buffer() const;
+
         //update
-        void update_projection_matrix();
+		void update_projection_matrix();
+
+		void update_view_matrix();
+
 		//copy
 		virtual component_ptr copy() const;
 
@@ -214,6 +225,8 @@ namespace hcube
 		//frustum spot light
 		frustum	   m_frustum;
 		mat4       m_projection;
+		mat4	   m_view;
+		bool       m_view_is_dirty{ true };
 		//shadow struct
 		struct light_shadow
 		{
