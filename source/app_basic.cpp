@@ -174,7 +174,7 @@ namespace hcube
 		m_rendering->add_shadow_rendering_pass(rendering_pass_shadow::snew(m_resources));
 		//add into system
 		m_systems.add_system(m_rendering);
-#if 0
+#if 1
 		//gbuffer size
 		ivec2 g_size = app.get_window_size();
 		auto rendering_pass = rendering_pass_deferred::snew(g_size, m_resources);

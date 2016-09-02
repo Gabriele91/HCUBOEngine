@@ -83,7 +83,6 @@ namespace hcube
 								//update shader
 								pass.m_uniform_spot.uniform(
 									l_light,
-									l_light->get_view(),
 									c_camera->get_view(),
 									t_light->get_matrix()
 								);

@@ -81,8 +81,6 @@ namespace hcube
             m_spot_lights[i_light_count++].uniform
             (
                 l_light,
-                //shadow view
-                t_light->get_matrix_inv(),
                 //camera view
                 view,
                 //light pos

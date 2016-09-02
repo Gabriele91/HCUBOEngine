@@ -47,7 +47,6 @@ namespace hcube
 	}
 
 	void uniform_light_spot::uniform(light_wptr weak_light,
-							   	     const mat4& shadow_view, 
 							  	     const mat4& view,
 								     const mat4& model)
 	{
@@ -68,7 +67,7 @@ namespace hcube
 		if (light->is_enable_shadow())
 		{
 			m_uniform_shadow_projection->set_value(light->get_projection());
-			m_uniform_shadow_view->set_value(shadow_view);
+			m_uniform_shadow_view->set_value(light->get_view());
 			m_uniform_shadow_map->set_value(light->get_shadow_buffer().get_depth_texture());
 		}
     }

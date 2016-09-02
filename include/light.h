@@ -275,7 +275,6 @@ namespace hcube
 		void get_uniform(int i, shader::ptr shader);
 
 		void uniform(light_wptr light,
-					 const mat4& shadow_view,
 					 const mat4& view, 
 					 const mat4& model);
     
