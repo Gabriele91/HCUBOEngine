@@ -545,7 +545,6 @@ namespace hcube
             if(s_bind_context.m_vertex_buffer == vbo)
             {
                 unbind_VBO(s_bind_context.m_vertex_buffer);
-                s_bind_context.m_vertex_buffer = nullptr;
             }
             //safe delete
 			glDeleteBuffers(1, *vbo);
@@ -559,7 +558,6 @@ namespace hcube
             if(s_bind_context.m_index_buffer == ibo)
             {
                 unbind_IBO(s_bind_context.m_index_buffer);
-                s_bind_context.m_index_buffer = nullptr;
             }
             //safe delete
 			glDeleteBuffers(1, *ibo);
