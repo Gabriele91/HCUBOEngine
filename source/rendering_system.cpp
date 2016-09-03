@@ -139,7 +139,7 @@ namespace hcube
 			   last = current,
 			   current = current->m_next)
 		{
-			if (current->m_depth < e->m_depth) break;
+			if (current->m_depth > e->m_depth) break;
 		}
 		// last iteration
 		if (last)
@@ -166,7 +166,7 @@ namespace hcube
 			last = current,
 			current = current->m_next)
 		{
-			if (current->m_depth < e->m_depth) break;
+			if (current->m_depth > e->m_depth) break;
 		}
 		// last iteration
 		if (last)
@@ -193,7 +193,7 @@ namespace hcube
 			last = current,
 			current = current->m_next)
 		{
-			if (current->m_depth < e->m_depth) break;
+			if (current->m_depth > e->m_depth) break;
 		}
 		// last iteration
 		if (last)
@@ -219,7 +219,7 @@ namespace hcube
 			   last = current,
 			   current = current->m_next)
 		{
-			if (current->m_depth < e->m_depth) break;
+			if (current->m_depth > e->m_depth) break;
 		}
 		//last iteration
 		if (last)
@@ -245,7 +245,7 @@ namespace hcube
 			last = current,
 			current = current->m_next)
 		{
-			if (current->m_depth > e->m_depth) break;
+			if (current->m_depth < e->m_depth) break;
 		}
 		//last iteration
 		if (last)
@@ -259,7 +259,6 @@ namespace hcube
 			m_cull_translucent = e;
 		}
 	}
-
 
 	void render_queues::compute_light_queue(const frustum& view_frustum)
 	{
@@ -338,7 +337,7 @@ namespace hcube
 
 	rendering_pass_shadow::rendering_pass_shadow(resources_manager& resources)
 	{
-		m_effect		   = resources.get_effect("build_shadow");
+		m_effect					 = resources.get_effect("build_shadow");
 		m_technique_shadow_spot      = m_effect->get_technique("shadow_spot");
 		m_technique_shadow_point     = m_effect->get_technique("shadow_point");
 		m_technique_shadow_direction = m_effect->get_technique("shadow_direction");
@@ -468,8 +467,8 @@ namespace hcube
             pass.bind(c_camera->get_viewport(),
                       c_camera->get_projection(),
                       c_camera->get_view(),
-                      //inverse(inverse(l_light->get_projection())*l_light->get_view())
-                      inverse(inverse(l_light->get_projection())*t_light->get_matrix_inv())
+                      inverse(inverse(l_light->get_projection())*l_light->get_view())
+                    //inverse(inverse(l_light->get_projection())*t_light->get_matrix_inv())
                       );
             
             m_cube->get_component<renderable>()->draw();

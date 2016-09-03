@@ -245,6 +245,7 @@
     <None Include="..\assets\ship\vehicle_playerShip_metal_mat.mat" />
     <None Include="..\common\effects\base_texture_normal_specular.fxhc" />
     <None Include="..\common\effects\build_shadow.fxhc" />
+    <None Include="..\common\effects\debug_spot_lights.fxhc" />
     <None Include="..\common\effects\lib\base.glsl" />
     <None Include="..\common\effects\lib\base_texture.glsl" />
     <None Include="..\common\effects\lib\base_texture_normal.glsl" />
@@ -254,6 +255,7 @@
     <None Include="..\common\effects\lib\output_fragment.glsl" />
     <None Include="..\common\effects\lib\point_light.glsl" />
     <None Include="..\common\effects\lib\spot_light.glsl" />
+    <None Include="..\common\effects\no_cull_effect.fxhc" />
     <None Include="..\common\shaders\deferred_ambient_light.glsl" />
     <None Include="..\common\shaders\deferred_point_light.glsl" />
     <None Include="..\common\shaders\deferred_spot_light.glsl" />

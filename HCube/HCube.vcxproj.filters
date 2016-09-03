@@ -361,6 +361,12 @@
     <None Include="..\common\shaders\wireframe.glsl">
       <Filter>File di risorse\common\shaders</Filter>
     </None>
+    <None Include="..\common\effects\no_cull_effect.fxhc">
+      <Filter>File di risorse\common\effects</Filter>
+    </None>
+    <None Include="..\common\effects\debug_spot_lights.fxhc">
+      <Filter>File di risorse\common\effects</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\assets\textures\box.png">

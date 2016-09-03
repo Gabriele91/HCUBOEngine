@@ -388,7 +388,7 @@ namespace hcube
 											65.0,
 											radians(20.0),
 											radians(35.0));
-				l_model_light_shadow->set_shadow({ 1024,1024 });
+				l_model_light_shadow->set_shadow({ 512,512 });
 				e_model_light_shadow->set_name("light_shadow" + std::to_string(i));
 				shadow_lights->add_child(e_model_light_shadow);
 			}
@@ -454,9 +454,11 @@ namespace hcube
 			->get_component<transform>()
 			->turn(quat{ {0.0, radians(20.0*delta_time), 0.0} });
 		//for all shadow lights
+#if 0
 		m_systems.get_entities_by_name("shadow_lights")[0]
 			->get_component<transform>()
 			->turn(quat{ { 0.0, radians(-30.0*delta_time), 0.0 } });
+#endif
 		//////////////////////////////////////////////////////////
 		//////////////////////////////////////////////////////////
 		//draw

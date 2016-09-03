@@ -34,14 +34,23 @@ void compute_point_light(in point_light light0,
                          in float shininess,
                          out point_light_res results)
 {
+
+	// Attenuation
+	float attenuation = point_light_compute_attenuation(light0, frag_position);
+	// Exit case
+	if (attenuation <= 0.0)
+	{
+		results.m_diffuse = vec3(0.0);
+		results.m_specular = vec3(0.0);
+		return;
+	}
+	//  Light dir
     vec3 light_dir = normalize(light0.m_position - frag_position);
     // Diffuse shading
     float diff = max(dot(normal, light_dir), 0.0);
     // Specular shading
     vec3  reflect_dir = reflect(-light_dir, normal);
     float spec        = pow(max(dot(view_dir, reflect_dir), 0.0), shininess);
-    // Attenuation
-	float attenuation = point_light_compute_attenuation(light0, frag_position);
     // Combine results
     results.m_diffuse  = light0.m_diffuse  * diff * attenuation;
     results.m_specular = light0.m_specular * spec * attenuation;
