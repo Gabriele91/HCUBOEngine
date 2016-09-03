@@ -45,10 +45,7 @@ namespace hcube
 		vec3 get_global_scale();
 
 		mat4 const& get_local_matrix();
-		mat4 const& get_local_matrix_inv();
-
 		mat4 const& get_matrix();
-		mat4 const& get_matrix_inv();
 
 		inline operator const mat4& ()
 		{
@@ -77,9 +74,7 @@ namespace hcube
 		void    send_dirty();
 		//matrix
 		mat4  m_model_local;
-		mat4  m_model_local_inv;
 		mat4  m_model_global;
-		mat4  m_model_global_inv;
 		//compute
 		void compute_matrix();
 
