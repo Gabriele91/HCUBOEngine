@@ -86,7 +86,10 @@ namespace hcube
                 //light pos
                 t_light->get_matrix()
             );
+            //print
+            //printf("|%s|\t",e_light->get_name().c_str());
         }
+        //printf("\n");
         //uniform number of lights used
         m_n_spot_lights->set_value(i_light_count);
     }

@@ -689,16 +689,11 @@ R"GLSL(
 		//disable textures
 		while (m_uniform_ntexture >= 0)
 		{
-			glActiveTexture((GLenum)(GL_TEXTURE0 + m_uniform_ntexture));
-			glBindTexture(GL_TEXTURE_2D, 0);
+            render::unbind_texture((int)m_uniform_ntexture);
 			--m_uniform_ntexture;
 		}
 		//disable program
 		glUseProgram(0);
-		//unbind vbo
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		//unbind ibo
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	}
 
 	//id programma

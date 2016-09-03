@@ -296,6 +296,7 @@ namespace hcube
 				30.0,
 				radians(10.0),
 				radians(15.0));
+            e_model_light1->set_name("ship_light1");
             m_model->add_child(e_model_light1);
 
 			auto e_model_light2 = gameobject::light_new();
@@ -310,6 +311,7 @@ namespace hcube
 								   30.0,
 								   radians(10.0),
 								   radians(15.0));
+            e_model_light2->set_name("ship_light2");
 			m_model->add_child(e_model_light2);
 			//add to render
 			m_systems.add_entity(m_model);

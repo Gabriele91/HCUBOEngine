@@ -35,27 +35,34 @@ namespace hcube
 
 	void shadow_buffer::destoy()
 	{
-		render::delete_render_target(m_target);
-		render::delete_texture(m_depth_texture);
+        if(m_target)
+        {
+            render::delete_render_target(m_target);
+            render::delete_texture(m_depth_texture);
+        }
 	}
 
 	void shadow_buffer::bind() const
 	{
+        assert(m_target);
 		render::enable_render_target(m_target);
 	}
 
 	void shadow_buffer::unbind() const
-	{
+    {
+        assert(m_target);
 		render::disable_render_target(m_target);
 	}
 
 	void shadow_buffer::set_texture_buffer_depth(size_t n_texture) const
-	{
-		render::bind_texture(m_depth_texture, n_texture);
+    {
+        assert(m_depth_texture);
+		render::bind_texture(m_depth_texture, (int)n_texture);
 	}
 
 	void shadow_buffer::disable_depth_texture() const
-	{
+    {
+        assert(m_depth_texture);
 		render::unbind_texture(m_depth_texture);
 	}
 

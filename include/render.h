@@ -591,6 +591,7 @@ namespace hcube
 		);
 		LIB_EXPORT void bind_texture(context_texture*, int n);
 		LIB_EXPORT void unbind_texture(context_texture*);
+        LIB_EXPORT void unbind_texture(int n);
 		LIB_EXPORT void delete_texture(context_texture*&);
 
 

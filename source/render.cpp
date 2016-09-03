@@ -122,14 +122,25 @@ namespace hcube
 		{
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		}
-	};
-	////////////////////
+    };
+    ////////////////////
+    struct bind_context
+    {
+        context_texture*       m_textures[32] { nullptr };
+        context_vertex_buffer* m_vertex_buffer{ nullptr };
+        context_index_buffer*  m_index_buffer { nullptr };
+        context_input_layout*  m_input_layout { nullptr };
+        context_render_target* m_render_target{ nullptr };
+    };
+    
+    ////////////////////
 	//     RENDER     //
 	////////////////////
 	namespace render
 	{
 		///////////////////////
 		//globals
+        bind_context s_bind_context;
 		render_state s_render_state;
 		GLuint       s_vao_attributes;
 		///////////////////////
@@ -602,24 +613,43 @@ namespace hcube
 
 		void bind_IL(context_input_layout* layout)
 		{
-			for (const attribute& data : layout->m_list)
-			{
-				glEnableVertexAttribArray(data.m_attribute);
-				glVertexAttribPointer(data.m_attribute,
-					(GLint)data.components(),
-					type_component(data.m_strip),
-					GL_FALSE,
-					(GLuint)layout->m_list.size(),
-					((char *)NULL + (data.m_offset)));
-			}
+            if(layout && s_bind_context.m_input_layout != layout)
+            {
+                //bind?
+                if(s_bind_context.m_input_layout)
+                {
+                    unbind_IL(s_bind_context.m_input_layout);
+                }
+                //bind
+                for (const attribute& data : layout->m_list)
+                {
+                    glEnableVertexAttribArray(data.m_attribute);
+                    glVertexAttribPointer(data.m_attribute,
+                        (GLint)data.components(),
+                        type_component(data.m_strip),
+                        GL_FALSE,
+                        (GLuint)layout->m_list.size(),
+                        ((char *)NULL + (data.m_offset)));
+                }
+                //save
+                s_bind_context.m_input_layout = layout;
+            }
 		}
 
 		void unbind_IL(context_input_layout* layout)
 		{
-			for (const attribute& data : layout->m_list)
-			{
-				glDisableVertexAttribArray(data.m_attribute);
-			}
+            if(layout)
+            {
+                //test
+                assert(s_bind_context.m_input_layout==layout);
+                //unbind
+                for (const attribute& data : layout->m_list)
+                {
+                    glDisableVertexAttribArray(data.m_attribute);
+                }
+                //safe
+                s_bind_context.m_input_layout = nullptr;
+            }
 		}
 
 		void delete_IL(context_input_layout*& il)
@@ -875,20 +905,47 @@ namespace hcube
 			//return texture
 			return ctx_texture;
 		}
+        
 		void bind_texture(context_texture* ctx_texture, int n)
 		{
-			if (ctx_texture) ctx_texture->enable_TBO(n);
+            if (ctx_texture && ctx_texture != s_bind_context.m_textures[n])
+            {
+                //enable
+                ctx_texture->enable_TBO(n);
+                //disable last
+                if(s_bind_context.m_textures[n])
+                    s_bind_context.m_textures[n]->m_last_bind = -1;
+                //add this
+                s_bind_context.m_textures[n] = ctx_texture;
+            }
 		}
 
 		void unbind_texture(context_texture* ctx_texture)
 		{
-			if (ctx_texture) ctx_texture->disable_TBO();
+            if (ctx_texture)
+            {
+                //to null
+                s_bind_context.m_textures[ctx_texture->m_last_bind] = nullptr;
+                //disable
+                ctx_texture->disable_TBO();
+            }
 		}
-
-		void delete_texture(context_texture*& texture)
-		{
-			delete texture;
-			texture = nullptr;
+        
+        void unbind_texture(int n)
+        {
+            unbind_texture(s_bind_context.m_textures[n]);
+        }
+        
+		void delete_texture(context_texture*& ctx_texture)
+        {
+            //bind?
+            if(ctx_texture->m_last_bind)
+            {
+                unbind_texture(ctx_texture);
+            }
+            //safe delete
+			delete ctx_texture;
+			ctx_texture = nullptr;
 		}
 		/*
 		 FBO
@@ -963,18 +1020,33 @@ namespace hcube
 			return fbo;
 		}
 
-		void enable_render_target(context_render_target* rdtex)
+		void enable_render_target(context_render_target* r_target)
 		{
-			rdtex->enable_FBO();
+            if(r_target && s_bind_context.m_render_target != r_target)
+            {
+                r_target->enable_FBO();
+                s_bind_context.m_render_target = r_target;
+            }
 		}
 
-		void disable_render_target(context_render_target* rdtex)
+		void disable_render_target(context_render_target* r_target)
 		{
-			rdtex->disable_FBO();
+            if(r_target)
+            {
+                assert(s_bind_context.m_render_target == r_target);
+                r_target->disable_FBO();
+                s_bind_context.m_render_target = nullptr;
+            }
 		}
 
 		void delete_render_target(context_render_target*& r_target)
-		{
+        {
+            //bind?
+            if(s_bind_context.m_render_target == r_target)
+            {
+                disable_render_target(r_target);
+            }
+            //safe delete
 			delete r_target;
 			r_target = nullptr;
 		}
