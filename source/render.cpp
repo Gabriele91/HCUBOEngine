@@ -16,12 +16,11 @@ namespace hcube
 	class context_texture
 	{
 	public:
+		GLenum       m_type_texture{ GL_TEXTURE_2D };
 		int          m_last_bind{ -1 };
-		unsigned int m_width{ 0 };
-		unsigned int m_height{ 0 };
 		unsigned int m_tbo{ 0 };
 
-		context_texture(unsigned int width, unsigned int height) :m_width(width), m_height(height) {}
+		context_texture()  {}
 
 		virtual ~context_texture()
 		{
@@ -37,7 +36,7 @@ namespace hcube
 		{
 			m_last_bind = n;
 			glActiveTexture((GLenum)(GL_TEXTURE0 + m_last_bind));
-			glBindTexture(GL_TEXTURE_2D, m_tbo);
+			glBindTexture(m_type_texture, m_tbo);
 		}
 
 		inline void disable_TBO()
@@ -45,7 +44,7 @@ namespace hcube
 			if (m_last_bind >= 0)
 			{
 				glActiveTexture((GLenum)(GL_TEXTURE0 + m_last_bind));
-				glBindTexture(GL_TEXTURE_2D, (GLuint)0);
+				glBindTexture(m_type_texture, (GLuint)0);
 				m_last_bind = -1;
 			}
 		}
@@ -776,12 +775,8 @@ namespace hcube
 			}
 		}
 
-		context_texture* create_texture(texture_format format,
-			unsigned int w,
-			unsigned int h,
-			const unsigned char* bytes,
-			texture_type   type,
-			texture_type_format type_format,
+		context_texture* create_texture(
+			texture_raw_data_information data,
 			texture_min_filter_type min_type,
 			texture_mag_filter_type mag_type,
 			texture_edge_type       edge_s,
@@ -790,40 +785,96 @@ namespace hcube
 		{
 
 			//new texture
-			context_texture* ctx_texture = new context_texture(w, h);
+			context_texture* ctx_texture = new context_texture();
 			//create a texture id
 			ctx_texture->create_TBO();
 			//format
-			GLenum gl_format = get_texture_format(format);
-			GLenum gl_type = get_texture_type(type);
-			GLenum gl_type_format = get_texture_type_format(type_format);
+			GLenum gl_format = get_texture_format(data.m_format);
+			GLenum gl_type = get_texture_type(data.m_type);
+			GLenum gl_type_format = get_texture_type_format(data.m_type_format);
 			//enable texture
-			glBindTexture(GL_TEXTURE_2D, ctx_texture->m_tbo);
+			glBindTexture(ctx_texture->m_type_texture, ctx_texture->m_tbo);
 			//create texture buffer
-			glTexImage2D(GL_TEXTURE_2D,
+			glTexImage2D(
+				ctx_texture->m_type_texture,
 				0,
 				gl_format,
-				ctx_texture->m_width,
-				ctx_texture->m_height,
+				data.m_width,
+				data.m_height,
 				0,
 				gl_type,
 				gl_type_format,
-				bytes);
+				data.m_bytes
+			);
 			//set filters
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, get_texture_min_filter(min_type));
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, get_texture_mag_filter(mag_type));
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, get_texture_edge_type(edge_s));
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, get_texture_edge_type(edge_t));
+			glTexParameteri(ctx_texture->m_type_texture, GL_TEXTURE_MIN_FILTER, get_texture_min_filter(min_type));
+			glTexParameteri(ctx_texture->m_type_texture, GL_TEXTURE_MAG_FILTER, get_texture_mag_filter(mag_type));
+			glTexParameteri(ctx_texture->m_type_texture, GL_TEXTURE_WRAP_S, get_texture_edge_type(edge_s));
+			glTexParameteri(ctx_texture->m_type_texture, GL_TEXTURE_WRAP_T, get_texture_edge_type(edge_t));
 			// Generate mipmaps, by the way.
-			if (build_mipmap) glGenerateMipmap(GL_TEXTURE_2D);
+			if (build_mipmap) glGenerateMipmap(ctx_texture->m_type_texture);
 			//disable texture
-			glBindTexture(GL_TEXTURE_2D, 0);
+			glBindTexture(ctx_texture->m_type_texture, 0);
 			//test
 			print_errors();
 			//return texture
 			return ctx_texture;
 		}
 
+		context_texture* create_cube_texture
+		(
+			texture_raw_data_information data[6],
+			texture_min_filter_type		 min_type,
+			texture_mag_filter_type		 mag_type,
+			texture_edge_type			 edge_s,
+			texture_edge_type			 edge_t,
+			bool						build_mipmap
+		)
+		{
+
+			//new texture
+			context_texture* ctx_texture = new context_texture();
+			//set type
+			ctx_texture->m_type_texture = GL_TEXTURE_CUBE_MAP;
+			//create a texture id
+			ctx_texture->create_TBO();
+			//add texture
+			for (int i = 0; i != 6; ++i)
+			{
+				//format
+				GLenum gl_format	  = get_texture_format(data[i].m_format);
+				GLenum gl_type		  = get_texture_type(data[i].m_type);
+				GLenum gl_type_format = get_texture_type_format(data[i].m_type_format);
+				//enable texture
+				glBindTexture(ctx_texture->m_type_texture, ctx_texture->m_tbo);
+				//create texture buffer
+				glTexImage2D
+				(
+					GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+					0,
+					gl_format,
+					data[i].m_width,
+					data[i].m_height,
+					0,
+					gl_type,
+					gl_type_format,
+					data[i].m_bytes
+				);
+			}
+			//set filters
+			glTexParameteri(ctx_texture->m_type_texture, GL_TEXTURE_MIN_FILTER, get_texture_min_filter(min_type));
+			glTexParameteri(ctx_texture->m_type_texture, GL_TEXTURE_MAG_FILTER, get_texture_mag_filter(mag_type));
+			glTexParameteri(ctx_texture->m_type_texture, GL_TEXTURE_WRAP_S, get_texture_edge_type(edge_s));
+			glTexParameteri(ctx_texture->m_type_texture, GL_TEXTURE_WRAP_T, get_texture_edge_type(edge_t));
+			// Generate mipmaps, by the way.
+			if (build_mipmap) glGenerateMipmap(ctx_texture->m_type_texture);
+			//disable texture
+			glBindTexture(ctx_texture->m_type_texture, 0);
+			//test
+			print_errors();
+			//return texture
+			return ctx_texture;
+		}
 		void bind_texture(context_texture* ctx_texture, int n)
 		{
 			if (ctx_texture) ctx_texture->enable_TBO(n);
@@ -872,7 +923,7 @@ namespace hcube
 				{
 					glFramebufferTexture2D(GL_FRAMEBUFFER,
 						(GLenum)(GL_COLOR_ATTACHMENT0 + (color_count++)),
-						GL_TEXTURE_2D,
+						t_field.m_texture->m_type_texture,
 						t_field.m_texture->m_tbo,
 						0);
 				}
@@ -880,7 +931,7 @@ namespace hcube
 				{
 					glFramebufferTexture2D(GL_FRAMEBUFFER,
 						GL_DEPTH_ATTACHMENT,
-						GL_TEXTURE_2D,
+						t_field.m_texture->m_type_texture,
 						t_field.m_texture->m_tbo,
 						0);
 					depth_attach = true;
@@ -889,7 +940,7 @@ namespace hcube
 				{
 					glFramebufferTexture2D(GL_FRAMEBUFFER,
 						GL_DEPTH_STENCIL_ATTACHMENT,
-						GL_TEXTURE_2D,
+						t_field.m_texture->m_type_texture,
 						t_field.m_texture->m_tbo,
 						0);
 					depth_attach = true;

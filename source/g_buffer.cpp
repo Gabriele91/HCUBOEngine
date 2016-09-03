@@ -54,12 +54,15 @@ namespace hcube
 		for (unsigned int i = 0; i != G_BUFFER_NUM_TEXTURES; i++)
 		{
 			m_textures[i] =
-				render::create_texture(types[i].m_format,
-					width,
-					height,
-					nullptr,
-					types[i].m_type,
-					types[i].m_type_format,
+				render::create_texture(
+					{ 
+						types[i].m_format,
+						width,
+						height,
+						nullptr,
+						types[i].m_type,
+						types[i].m_type_format 
+					},
 					TMIN_NEAREST,
 					TMAG_NEAREST,
 					TEDGE_CLAMP,
@@ -68,12 +71,15 @@ namespace hcube
 		}
 		//depth
 		m_depth_texture =
-			render::create_texture(TF_DEPTH_COMPONENT32,
-				width,
-				height,
-				nullptr,
-				TT_DEPTH,
-				TTF_FLOAT,
+			render::create_texture(
+				{
+					TF_DEPTH_COMPONENT32,
+					width,
+					height,
+					nullptr,
+					TT_DEPTH,
+					TTF_FLOAT 
+				},
 				TMIN_NEAREST,
 				TMAG_NEAREST,
 				TEDGE_CLAMP,

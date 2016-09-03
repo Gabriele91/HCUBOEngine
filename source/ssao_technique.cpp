@@ -23,12 +23,15 @@ namespace hcube
 		m_uniform_ssoa_input = m_shader_blur->get_uniform("g_ssao_input");
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 		m_ssao_texture =
-			render::create_texture(TF_R8,
-				w_size.x,
-				w_size.y,
-				nullptr,
-				TT_RGB,
-				TTF_FLOAT,
+			render::create_texture(
+				{ 
+					TF_R8,
+					(unsigned int)w_size.x,
+					(unsigned int)w_size.y,
+					nullptr,
+					TT_RGB,
+					TTF_FLOAT 
+				},
 				TMIN_NEAREST,
 				TMAG_NEAREST,
 				TEDGE_REPEAT,
@@ -41,12 +44,15 @@ namespace hcube
 		});
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 		m_ssao_blur_texture =
-			render::create_texture(TF_R8,
-				w_size.x,
-				w_size.y,
-				nullptr,
-				TT_RGB,
-				TTF_FLOAT,
+			render::create_texture(
+				{
+					TF_R8,
+					(unsigned int)w_size.x,
+					(unsigned int)w_size.y,
+					nullptr,
+					TT_RGB,
+					TTF_FLOAT 
+				},
 				TMIN_NEAREST,
 				TMAG_NEAREST,
 				TEDGE_REPEAT,
@@ -76,12 +82,15 @@ namespace hcube
 		}
 		//build noise texture
 		m_noise_texture =
-			render::create_texture(TF_RGB16F,
-				4,
-				4,
-				(const unsigned char*)noise_buffer.data(),
-				TT_RGB,
-				TTF_FLOAT,
+			render::create_texture(
+				{ 
+					TF_RGB16F,
+					4,
+					4,
+					(const unsigned char*)noise_buffer.data(),
+					TT_RGB,
+					TTF_FLOAT
+				},
 				TMIN_NEAREST,
 				TMAG_NEAREST,
 				TEDGE_REPEAT,

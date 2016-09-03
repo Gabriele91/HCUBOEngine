@@ -489,6 +489,16 @@ namespace hcube
 		MAP_WRITE_AND_READ
 	};
 
+	struct texture_raw_data_information
+	{
+		texture_format		m_format;
+		unsigned int		m_width;
+		unsigned int		m_height;
+		const unsigned char*m_bytes;
+		texture_type		m_type;
+		texture_type_format m_type_format;
+	};
+
 #define LIB_EXPORT
 	namespace render
 	{
@@ -561,20 +571,28 @@ namespace hcube
 		LIB_EXPORT vec4 get_color(const vec2& pixel);
 
 		//texture
-		LIB_EXPORT context_texture* create_texture(texture_format format,
-			unsigned int w,
-			unsigned int h,
-			const unsigned char* bytes,
-			texture_type   type,
-			texture_type_format type_format,
-			texture_min_filter_type min_type,
-			texture_mag_filter_type mag_type,
-			texture_edge_type       edge_s,
-			texture_edge_type       edge_t,
-			bool                    build_mipmap);
+		LIB_EXPORT context_texture* create_texture
+		(
+			texture_raw_data_information data,
+			texture_min_filter_type      min_type,
+			texture_mag_filter_type		 mag_type,
+			texture_edge_type			 edge_s,
+			texture_edge_type			 edge_t,
+			bool						 build_mipmap
+		);
+		LIB_EXPORT context_texture* create_cube_texture
+		(
+			texture_raw_data_information data[6],
+			texture_min_filter_type		 min_type,
+			texture_mag_filter_type		 mag_type,
+			texture_edge_type			 edge_s,
+			texture_edge_type			 edge_t,
+			bool						build_mipmap
+		);
 		LIB_EXPORT void bind_texture(context_texture*, int n);
 		LIB_EXPORT void unbind_texture(context_texture*);
 		LIB_EXPORT void delete_texture(context_texture*&);
+
 
 		//target
 		LIB_EXPORT context_render_target* create_render_target(const std::vector< target_field >& textures);

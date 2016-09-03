@@ -11,12 +11,14 @@ namespace hcube
 		m_height = shadow_size.y;
 		//depth
 		m_depth_texture = render::create_texture(
-			TF_DEPTH_COMPONENT32,
-			m_width,
-			m_height,
-			nullptr,
-			TT_DEPTH,
-			TTF_FLOAT,
+			{
+				TF_DEPTH_COMPONENT32,
+				m_width,
+				m_height,
+				nullptr,
+				TT_DEPTH,
+				TTF_FLOAT
+			},
 			TMIN_NEAREST,
 			TMAG_NEAREST,
 			TEDGE_CLAMP,

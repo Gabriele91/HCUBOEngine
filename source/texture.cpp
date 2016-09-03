@@ -194,12 +194,15 @@ namespace hcube
 		m_height = height;
 		//create texture
 		m_ctx_texture =
-			render::create_texture(format,
-			(unsigned int)m_width,
-				(unsigned int)m_height,
-				buffer,
-				type,
-				TTF_UNSIGNED_BYTE,
+			render::create_texture(
+				{
+					format,
+					(unsigned int)m_width,
+					(unsigned int)m_height,
+					buffer,
+					type,
+					TTF_UNSIGNED_BYTE 
+				},
 				attr.m_min_filter,
 				attr.m_mag_filter,
 				attr.m_clamp_to_border ? TEDGE_CLAMP : TEDGE_REPEAT,
