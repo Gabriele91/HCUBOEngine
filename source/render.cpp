@@ -453,22 +453,54 @@ namespace hcube
 
 		void bind_VBO(context_vertex_buffer* vbo)
 		{
-			glBindBuffer(GL_ARRAY_BUFFER, *vbo);
+            if(vbo && s_bind_context.m_vertex_buffer != vbo)
+            {
+                //unbind
+                if(s_bind_context.m_vertex_buffer)
+                {
+                    unbind_VBO(s_bind_context.m_vertex_buffer);
+                }
+                //bind
+                glBindBuffer(GL_ARRAY_BUFFER, *vbo);
+                //update
+                s_bind_context.m_vertex_buffer = vbo;
+            }
 		}
 
 		void bind_IBO(context_index_buffer* ibo)
-		{
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, *ibo);
+        {
+            if(ibo && s_bind_context.m_index_buffer != ibo)
+            {
+                //unbind
+                if(s_bind_context.m_index_buffer)
+                {
+                    unbind_IBO(s_bind_context.m_index_buffer);
+                }
+                //bind
+                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, *ibo);
+                //update
+                s_bind_context.m_index_buffer = ibo;
+            }
 		}
 
 		void unbind_VBO(context_vertex_buffer* vbo)
 		{
-			glBindBuffer(GL_ARRAY_BUFFER, 0);
+            if(vbo)
+            {
+                assert(s_bind_context.m_vertex_buffer == vbo);
+                glBindBuffer(GL_ARRAY_BUFFER, 0);
+                s_bind_context.m_vertex_buffer = nullptr;
+            }
 		}
 
 		void unbind_IBO(context_index_buffer* ibo)
-		{
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+        {
+            if(ibo)
+            {
+                assert(s_bind_context.m_index_buffer == ibo);
+                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+                s_bind_context.m_index_buffer = nullptr;
+            }
 		}
 
 		GLbitfield get_mapping_type(mapping_type type)
@@ -509,13 +541,27 @@ namespace hcube
 
 		void delete_VBO(context_vertex_buffer*& vbo)
 		{
+            //test
+            if(s_bind_context.m_vertex_buffer == vbo)
+            {
+                unbind_VBO(s_bind_context.m_vertex_buffer);
+                s_bind_context.m_vertex_buffer = nullptr;
+            }
+            //safe delete
 			glDeleteBuffers(1, *vbo);
 			delete vbo;
 			vbo = nullptr;
 		}
 
 		void delete_IBO(context_index_buffer*& ibo)
-		{
+        {
+            //test
+            if(s_bind_context.m_index_buffer == ibo)
+            {
+                unbind_IBO(s_bind_context.m_index_buffer);
+                s_bind_context.m_index_buffer = nullptr;
+            }
+            //safe delete
 			glDeleteBuffers(1, *ibo);
 			delete ibo;
 			ibo = nullptr;
