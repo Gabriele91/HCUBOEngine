@@ -72,12 +72,22 @@ namespace hcube
 									t_light->get_global_position(),
 									l_light->get_radius())
 								)
-							#else 
+							#elif 0
 							if (!r_entity->has_support_culling() ||
 								 l_light->update_frustum().test_obb(r_entity->get_bounding_box(), 
 																    t_entity->get_matrix())
 								)
-							#endif
+                            #else
+                            if (!r_entity->has_support_culling() ||
+                                    (
+                                    r_entity->get_bounding_box().is_inside(t_entity->get_matrix(),
+                                                                           t_light->get_global_position(),
+                                                                           l_light->get_radius()) &&
+                                    l_light->update_frustum().test_obb(r_entity->get_bounding_box(),
+                                                                       t_entity->get_matrix())
+                                    )
+                                )
+                            #endif
 #endif
 							{
 								//update shader

@@ -438,7 +438,7 @@ namespace hcube
     rendering_pass_debug_spot_lights::rendering_pass_debug_spot_lights(resources_manager& resources)
     {
         m_effect = resources.get_effect("debug_spot_lights");
-        m_cube   = gameobject::cube_new({0.5,0.5,0.5},true);
+        m_cube   = gameobject::cube_new({2.0,2.0,2.0},true);
     }
     
     void rendering_pass_debug_spot_lights::draw_pass(
@@ -467,8 +467,7 @@ namespace hcube
             pass.bind(c_camera->get_viewport(),
                       c_camera->get_projection(),
                       c_camera->get_view(),
-                      inverse(inverse(l_light->get_projection())*l_light->get_view())
-                    //inverse(inverse(l_light->get_projection())*t_light->get_matrix_inv())
+                      inverse(l_light->get_projection()*l_light->get_view())
                       );
             
             m_cube->get_component<renderable>()->draw();
