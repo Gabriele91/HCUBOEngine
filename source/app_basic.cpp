@@ -346,7 +346,6 @@ namespace hcube
 			l_lights[0]->set_color({ 0.0f, 1.0f, 0.0f }, { 0.0f, 1.0f, 0.0f });
 			e_lights[0]->set_name("light_green");
 
-			l_lights[1]->set_shadow({ 256,256 });
 			l_lights[1]->set_color({ 1.0f, 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f });
 			e_lights[1]->set_name("light_red");
 
@@ -372,6 +371,21 @@ namespace hcube
 			//add to render
 			m_systems.add_entity(m_lights);
 
+            {
+                
+                auto e_shadow_point = gameobject::light_new();
+                auto l_shadow_point = e_shadow_point->get_component<light>();
+                auto t_shadow_point = e_shadow_point->get_component<transform>();
+                t_shadow_point->position(vec3{ 0,20.0f,0 });
+                l_shadow_point->point({ 1.0f, 1.0f, 1.0f },
+                                      { 1.0f, 1.0f, 1.0f },
+                                      1.0,
+                                      30.0,
+                                      60.0);
+                l_shadow_point->set_shadow({ 256,256 });
+                e_shadow_point->set_name("shadow_point");
+                m_systems.add_entity(e_shadow_point);
+            }
 			//shadow lights
 			auto shadow_lights = gameobject::node_new();
 			shadow_lights->set_name("shadow_lights");

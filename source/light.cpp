@@ -311,20 +311,18 @@ namespace hcube
 			{
 				l_position = t_light->get_global_position();
 			}
-			//
-			m_cube_view.push_back(glm::lookAt(l_position, l_position + glm::vec3(1.0, 0.0, 0.0),  glm::vec3(0.0, -1.0, 0.0)));
-			m_cube_view.push_back(glm::lookAt(l_position, l_position + glm::vec3(-1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0)));
-			m_cube_view.push_back(glm::lookAt(l_position, l_position + glm::vec3(0.0, 1.0, 0.0),  glm::vec3(0.0, 0.0, 1.0)));
-			m_cube_view.push_back(glm::lookAt(l_position, l_position + glm::vec3(0.0, -1.0, 0.0), glm::vec3(0.0, 0.0, -1.0)));
-			m_cube_view.push_back(glm::lookAt(l_position, l_position + glm::vec3(0.0, 0.0, 1.0),  glm::vec3(0.0, -1.0, 0.0)));
-			m_cube_view.push_back(glm::lookAt(l_position, l_position + glm::vec3(0.0, 0.0, -1.0), glm::vec3(0.0, -1.0, 0.0)));
+            //(+x -x +y -y +z -z)^-1
+            m_cube_view.push_back(glm::lookAt(l_position, l_position + glm::vec3(-1.0,0.0, 0.0),  glm::vec3(0.0,  1.0,  0.0)));
+			m_cube_view.push_back(glm::lookAt(l_position, l_position + glm::vec3( 1.0,0.0, 0.0),  glm::vec3(0.0,  1.0,  0.0)));
+			m_cube_view.push_back(glm::lookAt(l_position, l_position + glm::vec3(0.0, 1.0, 0.0),  glm::vec3(0.0,  0.0, -1.0)));
+			m_cube_view.push_back(glm::lookAt(l_position, l_position + glm::vec3(0.0,-1.0, 0.0),  glm::vec3(0.0,  0.0,  1.0)));
+			m_cube_view.push_back(glm::lookAt(l_position, l_position + glm::vec3(0.0, 0.0, 1.0),  glm::vec3(0.0,  1.0,  0.0)));
+			m_cube_view.push_back(glm::lookAt(l_position, l_position + glm::vec3(0.0, 0.0,-1.0),  glm::vec3(0.0,  1.0,  0.0)));
 			//
 			for (mat4& view : m_cube_view)
 			{
 				//OpenGL LH, z*-1
 				view[2] *= -1;
-				//M^-1 = V
-				view = inverse(view);
 			}
 		}
 		break;
