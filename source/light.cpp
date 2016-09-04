@@ -83,6 +83,7 @@ namespace hcube
 		std::string lights_i("point_lights[" + std::to_string(i) + "]");
 
 		m_uniform_position = shader->get_uniform((lights_i + ".m_position").c_str());
+		m_uniform_model_position = shader->get_uniform((lights_i + ".m_model_position").c_str());
 
 		m_uniform_diffuse = shader->get_uniform((lights_i + ".m_diffuse").c_str());
 		m_uniform_specular = shader->get_uniform((lights_i + ".m_specular").c_str());
@@ -91,15 +92,20 @@ namespace hcube
 		m_uniform_inside_radius = shader->get_uniform((lights_i + ".m_inside_radius").c_str());
 		m_uniform_radius = shader->get_uniform((lights_i + ".m_radius").c_str());
 
+		m_uniform_use_shadow = shader->get_uniform((lights_i + ".m_use_shadow").c_str());
+		m_uniform_shadow_map = shader->get_uniform((lights_i + ".m_shadow_map").c_str());
 
 		//test
 		m_valid =
 			   m_uniform_position
+			&& m_uniform_model_position
 			&& m_uniform_diffuse
 			&& m_uniform_specular
 			&& m_uniform_constant
 			&& m_uniform_inside_radius
-			&& m_uniform_radius;
+			&& m_uniform_radius
+			&& m_uniform_use_shadow
+			&& m_uniform_shadow_map;
 	}
 
 	void uniform_light_point::uniform(light_wptr weak_light,
@@ -109,12 +115,21 @@ namespace hcube
 		if (!is_valid()) return;
 
 		auto light = weak_light.lock();
-		m_uniform_position->set_value((vec3)(view * model * vec4(0, 0, 0, 1.0)));
+		vec4 model_position = model * vec4(0, 0, 0, 1.0);
+
+		m_uniform_position->set_value((vec3)(view * model_position));
+		m_uniform_model_position->set_value((vec3)(model_position));
 		m_uniform_diffuse->set_value(light->m_diffuse);
 		m_uniform_specular->set_value(light->m_specular);
 		m_uniform_constant->set_value(light->m_constant);
 		m_uniform_inside_radius->set_value(light->m_inside_radius);
 		m_uniform_radius->set_value(light->m_radius);
+		m_uniform_use_shadow->set_value(light->is_enable_shadow() ? 1 : 0);
+
+		if (light->is_enable_shadow())
+		{
+			m_uniform_shadow_map->set_value(light->get_shadow_buffer().get_depth_texture());
+		}
 	}
 
 	bool uniform_light_point::is_valid() const
@@ -311,19 +326,13 @@ namespace hcube
 			{
 				l_position = t_light->get_global_position();
 			}
-            //(+x -x +y -y +z -z)^-1
-            m_cube_view.push_back(glm::lookAt(l_position, l_position + glm::vec3(-1.0,0.0, 0.0),  glm::vec3(0.0,  1.0,  0.0)));
-			m_cube_view.push_back(glm::lookAt(l_position, l_position + glm::vec3( 1.0,0.0, 0.0),  glm::vec3(0.0,  1.0,  0.0)));
-			m_cube_view.push_back(glm::lookAt(l_position, l_position + glm::vec3(0.0, 1.0, 0.0),  glm::vec3(0.0,  0.0, -1.0)));
-			m_cube_view.push_back(glm::lookAt(l_position, l_position + glm::vec3(0.0,-1.0, 0.0),  glm::vec3(0.0,  0.0,  1.0)));
-			m_cube_view.push_back(glm::lookAt(l_position, l_position + glm::vec3(0.0, 0.0, 1.0),  glm::vec3(0.0,  1.0,  0.0)));
-			m_cube_view.push_back(glm::lookAt(l_position, l_position + glm::vec3(0.0, 0.0,-1.0),  glm::vec3(0.0,  1.0,  0.0)));
-			//
-			for (mat4& view : m_cube_view)
-			{
-				//OpenGL LH, z*-1
-				view[2] *= -1;
-			}
+			//(+x -x +y -y +z -z)^-1
+			m_cube_view.push_back(glm::lookAt(l_position, l_position + glm::vec3( 1.0, 0.0, 0.0), glm::vec3(0.0,-1.0, 0.0)));
+			m_cube_view.push_back(glm::lookAt(l_position, l_position + glm::vec3(-1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0)));
+			m_cube_view.push_back(glm::lookAt(l_position, l_position + glm::vec3(0.0, 1.0, 0.0), glm::vec3(0.0,  0.0, 1.0)));
+			m_cube_view.push_back(glm::lookAt(l_position, l_position + glm::vec3(0.0,-1.0, 0.0), glm::vec3(0.0,  0.0,-1.0)));
+			m_cube_view.push_back(glm::lookAt(l_position, l_position + glm::vec3(0.0, 0.0, 1.0), glm::vec3(0.0, -1.0, 0.0)));
+			m_cube_view.push_back(glm::lookAt(l_position, l_position + glm::vec3(0.0, 0.0, -1.0), glm::vec3(0.0,-1.0, 0.0)));
 		}
 		break;
 		case hcube::light::SPOT_LIGHT:

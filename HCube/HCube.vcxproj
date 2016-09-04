@@ -253,6 +253,7 @@
     <None Include="..\common\effects\lib\base_texture_specular.glsl" />
     <None Include="..\common\effects\lib\direction_light.glsl" />
     <None Include="..\common\effects\lib\output_fragment.glsl" />
+    <None Include="..\common\effects\lib\output_fragment_forward.glsl" />
     <None Include="..\common\effects\lib\point_light.glsl" />
     <None Include="..\common\effects\lib\spot_light.glsl" />
     <None Include="..\common\effects\no_cull_effect.fxhc" />

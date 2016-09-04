@@ -107,8 +107,8 @@ technique "shadow_point"
 					for(int i = 0; i < 3; ++i) 
 					{
 						frag_uvcoord  = geom_uvcoord[i]; 
-						frag_position = view[face] * gl_in[i].gl_Position;
-						gl_Position   = projection * frag_position;
+						frag_position = gl_in[i].gl_Position;
+						gl_Position   = projection * view[face] * frag_position;
 						EmitVertex();
 					}    
 					//end primitive
@@ -121,8 +121,8 @@ technique "shadow_point"
 			//input
 			in vec4 frag_position;
 			in vec2 frag_uvcoord;
-			//light
-			//uniform vec3  light_position;
+			//uniform
+			uniform vec3  light_position;
 			uniform float far_plane;
 			//map
             uniform sampler2D diffuse_map;
@@ -132,16 +132,20 @@ technique "shadow_point"
 			{
 				//get alpha
 				vec4 texture_color = texture(diffuse_map, frag_uvcoord);
+				
 				//mask
 				if (texture_color.a <= mask)
 				{
 					discard;
 				}
-				// get distance between fragment and light source
-				float light_distance = length(frag_position.xyz);
-				// map to [0;1] range by dividing by far_plane
+				
+				//compute distance between fragment and light source
+				float light_distance = length(frag_position.xyz - light_position);
+    
+				//[0,1] range
 				light_distance = light_distance / far_plane;
-				// write this as modified depth
+				
+				//write as depth
 				gl_FragDepth = light_distance;
 			}
 		}

@@ -50,7 +50,7 @@
         #define in_lights point_lights
         #define output_light_computation point_light_res
         #define compute_light(light,position,view_pos,view_dir,normal,shininess,light_results)\
-            compute_point_light(light, view_pos, view_dir, normal, shininess, light_results)
+            compute_point_light(light, position, view_pos, view_dir, normal, shininess, light_results)
 
     #elif defined( RENDERING_DIRECTION_LIGHT )
 

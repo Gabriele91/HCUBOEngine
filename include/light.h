@@ -292,13 +292,17 @@ namespace hcube
 	struct uniform_light_point
 	{
 		uniform* m_uniform_position{ nullptr };
-
+		uniform* m_uniform_model_position{ nullptr };
+		
 		uniform* m_uniform_diffuse{ nullptr };
 		uniform* m_uniform_specular{ nullptr };
 
 		uniform* m_uniform_constant{ nullptr };
 		uniform* m_uniform_inside_radius{ nullptr };
 		uniform* m_uniform_radius{ nullptr };
+
+		uniform* m_uniform_use_shadow{ nullptr };
+		uniform* m_uniform_shadow_map{ nullptr };
 		
 		void get_uniform(int i, shader::ptr shader);
 

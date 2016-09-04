@@ -174,7 +174,7 @@ namespace hcube
 		m_rendering->add_shadow_rendering_pass(rendering_pass_shadow::snew(m_resources));
 		//add into system
 		m_systems.add_system(m_rendering);
-#if 0
+#if 1
 		//gbuffer size
 		ivec2 g_size = app.get_window_size();
 		auto rendering_pass = rendering_pass_deferred::snew(g_size, m_resources);
@@ -338,17 +338,20 @@ namespace hcube
 			for (short i = 0; i != 3; ++i)
 			{
 				l_lights[i]->set_radius(
-					5.0,
-					28.0
+					6.0,
+					30.0
 				);
 			}
 
+			l_lights[0]->set_shadow({ 256,256 });
 			l_lights[0]->set_color({ 0.0f, 1.0f, 0.0f }, { 0.0f, 1.0f, 0.0f });
 			e_lights[0]->set_name("light_green");
 
+			l_lights[1]->set_shadow({ 256,256 });
 			l_lights[1]->set_color({ 1.0f, 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f });
 			e_lights[1]->set_name("light_red");
 
+			l_lights[2]->set_shadow({ 256,256 });
 			l_lights[2]->set_color({ 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f, 1.0f });
 			e_lights[2]->set_name("light_blue");
 
@@ -357,7 +360,7 @@ namespace hcube
 			{
 				t_lights[i - 1]->position({
                     std::sin((constants::pi<float>()*0.66)*i)*15.,
-					10.0,
+					5.0,
                     std::cos((constants::pi<float>()*0.66)*i)*15.,
 				});
 			}
@@ -371,21 +374,23 @@ namespace hcube
 			//add to render
 			m_systems.add_entity(m_lights);
 
+#if 0
             {
                 
                 auto e_shadow_point = gameobject::light_new();
                 auto l_shadow_point = e_shadow_point->get_component<light>();
                 auto t_shadow_point = e_shadow_point->get_component<transform>();
-                t_shadow_point->position(vec3{ 0,20.0f,0 });
+                t_shadow_point->position(vec3{ 0,10.0f,0 });
                 l_shadow_point->point({ 1.0f, 1.0f, 1.0f },
                                       { 1.0f, 1.0f, 1.0f },
                                       1.0,
-                                      30.0,
-                                      60.0);
-                l_shadow_point->set_shadow({ 256,256 });
+                                      20.0,
+                                      50.0);
+                l_shadow_point->set_shadow({ 512,512 });
                 e_shadow_point->set_name("shadow_point");
                 m_systems.add_entity(e_shadow_point);
             }
+#endif
 			//shadow lights
 			auto shadow_lights = gameobject::node_new();
 			shadow_lights->set_name("shadow_lights");

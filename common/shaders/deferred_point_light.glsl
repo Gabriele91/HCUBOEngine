@@ -65,6 +65,7 @@ void main()
     {
         // then calculate lighting as usual
         compute_point_light(point_lights[i],
+							position,
                             view_pos,
                             view_dir,
                             normal,

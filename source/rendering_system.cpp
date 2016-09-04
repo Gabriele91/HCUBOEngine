@@ -439,8 +439,14 @@ namespace hcube
 			);
 			//uniform
 			shadow_pass.m_uniform_view->set_value(l_light->get_cube_view());
+			//position
+			if (m_shadow_point_light_position)
+				m_shadow_point_light_position->set_value(
+					e_light->get_component<transform>()->get_global_position()
+			    );
 			//radius
-			m_shadow_point_far_plane->set_value(l_light->get_radius());
+			if (m_shadow_point_far_plane)
+				m_shadow_point_far_plane->set_value(l_light->get_radius());
 		break;
 		default: break;
 		}

@@ -367,6 +367,9 @@
     <None Include="..\common\effects\debug_spot_lights.fxhc">
       <Filter>File di risorse\common\effects</Filter>
     </None>
+    <None Include="..\common\effects\lib\output_fragment_forward.glsl">
+      <Filter>File di risorse\common\effects\lib</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\assets\textures\box.png">

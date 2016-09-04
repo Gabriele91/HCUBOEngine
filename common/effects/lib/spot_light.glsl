@@ -27,9 +27,7 @@ struct spot_light_res
     vec3 m_specular;
 };
 //soft shadow
-float pcf_shadow(in spot_light light0,
-                 in float bias,
-                 in vec3 proj_coords)
+float spot_light_pcf_shadow(in spot_light light0,  in vec3 proj_coords, in float bias)
 {
     //depth of current pos
     float current_depth = proj_coords.z;
@@ -58,7 +56,7 @@ float spot_light_compute_attenuation(in spot_light light0, in vec3  frag_positio
 	return attenuation;
 }
 //compute shadow light position
-vec4 spot_light_compute_shadow_light_pos(in spot_light light0,vec4 frag_pos)
+vec4 spot_light_compute_shadow_light_pos(in spot_light light0,in vec4 frag_pos)
 {
 	return light0.m_shadow_projection * light0.m_shadow_view * frag_pos;
 }
@@ -75,7 +73,7 @@ float spot_light_compute_shadow_light(in spot_light light0,vec4 frag_pos,float b
 	if(proj_coords.x <= 0.0f || proj_coords.x >=1.0) return 1.0;
 	if(proj_coords.y <= 0.0f || proj_coords.y >=1.0) return 1.0;
 #ifdef SHOFT_SHADOW
-    float shadow = pcf_shadow(light0,bias,proj_coords.xyz);
+    float shadow = spot_light_pcf_shadow(light0, proj_coords.xyz, bias);
 #else
 	//depth of shadow map
 	float closest_depth = texture(light0.m_shadow_map, proj_coords.xy).r; 
