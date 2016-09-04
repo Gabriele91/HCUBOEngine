@@ -96,7 +96,8 @@ namespace hcube
 
 		//rander target
 		m_target =
-			render::create_render_target({
+		render::create_render_target
+		({
 				target_field{ m_textures[G_BUFFER_TEXTURE_TYPE_POSITION], RT_COLOR },
 				target_field{ m_textures[G_BUFFER_TEXTURE_TYPE_NORMAL],   RT_COLOR },
 				target_field{ m_textures[G_BUFFER_TEXTURE_TYPE_ALBEDO],   RT_COLOR },

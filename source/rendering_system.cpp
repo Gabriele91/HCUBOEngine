@@ -359,19 +359,29 @@ namespace hcube
         }
 	}
 
-	void rendering_pass_shadow::draw_pass(
+	void rendering_pass_shadow::draw_pass
+	(
 		vec4&  clear_color,
 		vec4&  ambient_color,
 		entity::ptr e_light,
 		render_queues& queues
 	)
 	{
-		//pass
-		effect::pass& shadow_pass = (*m_technique_shadow_spot)[0];
 		//shadow map
 		auto l_light = e_light->get_component<light>();
 		//enable shadow?
 		if (!l_light->is_enable_shadow()) return;
+		//point to current 
+		effect::technique* current_technique = nullptr;
+		//type
+		switch (l_light->get_type())
+		{
+			case light::SPOT_LIGHT:  current_technique = m_technique_shadow_spot; break;
+			case light::POINT_LIGHT: current_technique = m_technique_shadow_point; break;
+			default: return;
+		}
+		//pass
+		effect::pass& shadow_pass = (*current_technique)[0];
 		//update view frustum and queue
 		queues.compute_opaque_queue(l_light->update_frustum());
 		//enable shadow buffer/texture
@@ -487,16 +497,24 @@ namespace hcube
 		//update queue
 		m_renderables.compute_light_queue(f_camera);
 		//build shadow map
-		if (m_shadow_pass) HCUBE_FOREACH_QUEUE(weak_light, m_renderables.m_cull_light_spot)
+		if (m_shadow_pass)
 		{
-			//get light
-			auto e_light = weak_light->lock();
-			//get pass
+			//spot lights
+			HCUBE_FOREACH_QUEUE(weak_light, m_renderables.m_cull_light_spot)
 			m_shadow_pass->draw_pass
 			(
 				m_clear_color,
 				m_ambient_color,
-				e_light,
+				weak_light->lock(),
+				m_renderables
+			);
+			//point lights
+			HCUBE_FOREACH_QUEUE(weak_light, m_renderables.m_cull_light_point)
+			m_shadow_pass->draw_pass
+			(
+				m_clear_color,
+				m_ambient_color,
+				weak_light->lock(),
 				m_renderables
 			);
 		}
