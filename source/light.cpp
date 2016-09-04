@@ -223,23 +223,10 @@ namespace hcube
 		return m_view;
 	}
 
-	const std::vector<mat4> light::get_cube_view()
+	const std::vector<mat4>& light::get_cube_view()
 	{
-		//cube view
-		std::vector<mat4> output;
-		//reserve
-		output.reserve(6);
-		//X
-		output.push_back(rotate(get_view(), radians(90.0f), { 0.0f, 1.0f, 0.0f })); // +x
-		output.push_back(rotate(get_view(), radians(90.0f), { 0.0f,-1.0f, 0.0f })); // -x
-		//Y
-		output.push_back(rotate(get_view(), radians(90.0f), {  1.0f, 0.0f, 0.0f })); // +y
-		output.push_back(rotate(get_view(), radians(90.0f), { -1.0f, 0.0f, 0.0f }));// -y
-		//Z
-		output.push_back(get_view());											    // +z
-		output.push_back(rotate(get_view(), radians(180.0f), { 0.0f, 1.0f, 0.0f }));// -z
-		//return
-		return output;
+		update_view_matrix();
+		return m_cube_view;
 	}
 
 	void light::on_attach(entity& entity)
@@ -288,7 +275,20 @@ namespace hcube
 			aspect = float(size.x) / float(size.y);
 		}
 		//update
-		m_projection = hcube::perspective(m_outer_cut_off * 2.0f, aspect, 0.1f, m_radius);
+		switch (m_type)
+		{
+		case hcube::light::DIRECTION_LIGHT:
+			m_projection = hcube::perspective(radians(180.0f), aspect, 0.1f, m_radius);
+			break;
+		case hcube::light::POINT_LIGHT:
+			m_projection = hcube::perspective(radians(90.0f), aspect, 0.1f, m_radius);
+			break;
+		case hcube::light::SPOT_LIGHT:
+			m_projection = hcube::perspective(m_outer_cut_off * 2.0f, aspect, 0.1f, m_radius);
+			break;
+		default:
+			break;
+		}
 	}
 
 	void light::update_view_matrix()
@@ -298,29 +298,67 @@ namespace hcube
 		entity*       e_light = get_entity();
 		transform_ptr t_light = nullptr;
 
-		if (!e_light || !(t_light = get_entity()->get_component<transform>()))
+		switch (m_type)
 		{
-			m_view = mat4(1);
-			m_view_is_dirty = false;
+		case hcube::light::POINT_LIGHT:
+		{
+			m_cube_view.resize(0);
+			m_cube_view.reserve(6);
+			//position
+			vec3 l_position;
+			//get position
+			if (e_light && (t_light = e_light->get_component<transform>()))
+			{
+				l_position = t_light->get_global_position();
+			}
+			//
+			m_cube_view.push_back(glm::lookAt(l_position, l_position + glm::vec3(1.0, 0.0, 0.0),  glm::vec3(0.0, -1.0, 0.0)));
+			m_cube_view.push_back(glm::lookAt(l_position, l_position + glm::vec3(-1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0)));
+			m_cube_view.push_back(glm::lookAt(l_position, l_position + glm::vec3(0.0, 1.0, 0.0),  glm::vec3(0.0, 0.0, 1.0)));
+			m_cube_view.push_back(glm::lookAt(l_position, l_position + glm::vec3(0.0, -1.0, 0.0), glm::vec3(0.0, 0.0, -1.0)));
+			m_cube_view.push_back(glm::lookAt(l_position, l_position + glm::vec3(0.0, 0.0, 1.0),  glm::vec3(0.0, -1.0, 0.0)));
+			m_cube_view.push_back(glm::lookAt(l_position, l_position + glm::vec3(0.0, 0.0, -1.0), glm::vec3(0.0, -1.0, 0.0)));
+			//
+			for (mat4& view : m_cube_view)
+			{
+				//OpenGL LH, z*-1
+				view[2] *= -1;
+				//M^-1 = V
+				view = inverse(view);
+			}
 		}
-		//get matrix
-		vec3 scale = t_light->get_global_scale();
-		mat4 view = t_light->get_matrix();
-		//remove scale
-		view[0][0] /= scale[0];
-		view[0][1] /= scale[0];
-		view[0][2] /= scale[0];
+		break;
+		case hcube::light::SPOT_LIGHT:
+		{
+			if (!e_light || !(t_light = e_light->get_component<transform>()))
+			{
+				m_view = mat4(1);
+				m_view_is_dirty = false;
+			}
+			//get matrix
+			vec3 scale = t_light->get_global_scale();
+			mat4 view  = t_light->get_matrix();
+			//remove scale
+			view[0][0] /= scale[0];
+			view[0][1] /= scale[0];
+			view[0][2] /= scale[0];
 
-		view[1][0] /= scale[1];
-		view[1][1] /= scale[1];
-		view[1][2] /= scale[1];
+			view[1][0] /= scale[1];
+			view[1][1] /= scale[1];
+			view[1][2] /= scale[1];
 
-		view[2][0] /= scale[2];
-		view[2][1] /= scale[2];
-		view[2][2] /= scale[2];
-		//OpenGL LH, z*-1
-		view[2] *= -1;
-		//M^-1 = V
-		m_view = inverse(view);
+			view[2][0] /= scale[2];
+			view[2][1] /= scale[2];
+			view[2][2] /= scale[2];
+			//OpenGL LH, z*-1
+			view[2] *= -1;
+			//M^-1 = V
+			m_view = inverse(view);
+		}
+		break;
+		default: break;
+		}
+		//to false
+		m_view_is_dirty = false;
 	}
 }

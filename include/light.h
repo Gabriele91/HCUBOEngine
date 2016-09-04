@@ -194,7 +194,7 @@ namespace hcube
         
         const mat4& get_view();
 
-		const std::vector<mat4> get_cube_view();
+		const std::vector<mat4>& get_cube_view();
 
 		const frustum& get_frustum() const;
 
@@ -225,10 +225,11 @@ namespace hcube
 		float      m_inner_cut_off{ -1.0 };
 		float      m_outer_cut_off{ -1.0 };
 		//frustum spot light
-		frustum	   m_frustum;
-		mat4       m_projection;
-		mat4	   m_view;
-		bool       m_view_is_dirty{ true };
+		frustum			    m_frustum;
+		mat4			    m_projection;
+		mat4				m_view;
+		std::vector<mat4>   m_cube_view;
+		bool				m_view_is_dirty{ true };
 		//shadow struct
 		struct light_shadow
 		{
