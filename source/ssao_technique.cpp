@@ -1,5 +1,6 @@
 #include <OpenGL4.h>
 #include <ssao_technique.h>
+#include <transform.h>
 #include <cmath>
 #include <cstdlib>
 
@@ -9,8 +10,9 @@ namespace hcube
 	{
 		//load shader ssao
 		m_shader = resources.get_shader("ssao_pass");
-		m_uniform_noise_scale = m_shader->get_uniform("noise_scale");
-		m_uniform_projection = m_shader->get_uniform("projection");
+        m_uniform_noise_scale = m_shader->get_uniform("noise_scale");
+        m_uniform_projection = m_shader->get_uniform("projection");
+        m_uniform_view = m_shader->get_uniform("view");
 		m_uniform_kernel_size = m_shader->get_uniform("kernel_size");
 		m_uniform_radius = m_shader->get_uniform("radius");
 		m_position = m_shader->get_uniform("g_position");
@@ -21,17 +23,24 @@ namespace hcube
 		m_uniform_ssoa_input = m_shader_blur->get_uniform("g_ssao_input");
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 		m_ssao_texture =
-			render::create_texture(TF_R8,
-				w_size.x,
-				w_size.y,
+		render::create_texture
+		(
+			{ 
+				TF_R8,
+				(unsigned int)w_size.x,
+				(unsigned int)w_size.y,
 				nullptr,
 				TT_RGB,
-				TTF_FLOAT,
+				TTF_FLOAT 
+			},
+			{
 				TMIN_NEAREST,
 				TMAG_NEAREST,
 				TEDGE_REPEAT,
 				TEDGE_REPEAT,
-				false);
+				false 
+			}
+		);
 		//create frame buffer texture
 		m_fbo =
 			render::create_render_target({
@@ -39,17 +48,24 @@ namespace hcube
 		});
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 		m_ssao_blur_texture =
-			render::create_texture(TF_R8,
-				w_size.x,
-				w_size.y,
+		render::create_texture
+		(
+			{
+				TF_R8,
+				(unsigned int)w_size.x,
+				(unsigned int)w_size.y,
 				nullptr,
 				TT_RGB,
-				TTF_FLOAT,
+				TTF_FLOAT 
+			},
+			{
 				TMIN_NEAREST,
 				TMAG_NEAREST,
 				TEDGE_REPEAT,
 				TEDGE_REPEAT,
-				false);
+				false
+			}
+		);
 		m_fbo_blur =
 			render::create_render_target({
 				target_field{ m_ssao_blur_texture, RT_COLOR }
@@ -74,17 +90,24 @@ namespace hcube
 		}
 		//build noise texture
 		m_noise_texture =
-			render::create_texture(TF_RGB16F,
+		render::create_texture
+		(
+			{ 
+				TF_RGB16F,
 				4,
 				4,
 				(const unsigned char*)noise_buffer.data(),
 				TT_RGB,
-				TTF_FLOAT,
+				TTF_FLOAT
+			},
+			{
 				TMIN_NEAREST,
 				TMAG_NEAREST,
 				TEDGE_REPEAT,
 				TEDGE_REPEAT,
-				false);
+				false 
+			}
+		);
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 	}
 
@@ -118,8 +141,8 @@ namespace hcube
 		render::set_cullface_state(CF_BACK);
 		render::set_depth_buffer_state({ false });
 		render::set_clear_color_state(clear_color_state(vec4{ 1.,1.,1.,1. }));
-		//draw
-		camera::ptr   c_camera = e_camera->get_component<camera>();
+        //draw
+        camera::ptr   c_camera = e_camera->get_component<camera>();
 		//enable fbo
 		render::enable_render_target(m_fbo);
 		//clear buffer not necessary (?)
@@ -128,7 +151,9 @@ namespace hcube
 		m_shader->bind();
 		//////////////////////////////////////////////////////////////////////////////////////////////////////
 		//bind kernel/proj/scale noise
-		m_uniform_projection->set_value(c_camera->get_projection());
+		if(m_uniform_projection) m_uniform_projection->set_value(c_camera->get_projection());
+        if(m_uniform_view)       m_uniform_view->set_value(c_camera->get_view());
+        
 		m_uniform_noise_scale->set_value((vec2)c_camera->get_viewport_size() / vec2(4, 4));
 		m_uniform_kernel_size->set_value((int)m_kernel_size);
 		m_uniform_radius->set_value(m_radius);

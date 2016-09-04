@@ -13,6 +13,7 @@
 #include <rendering_pass_forward.h>
 #include <gameobject.h>
 #include <transform.h>
+#include <renderable.h>
 #include <iostream>
 #include <frustum.h>
 
@@ -20,6 +21,9 @@ namespace hcube
 {
 	void app_basic::key_event(application& app, int key, int scancode, int action, int mods)
 	{
+
+		//get model
+		auto e_model = m_systems.get_entities_by_name("ship")[0];
 
 		if (key == GLFW_KEY_ESCAPE)
 		{
@@ -66,12 +70,12 @@ namespace hcube
 		else if (key == GLFW_KEY_RIGHT)       m_camera->get_component<transform>()->translation({ -1,0,0 });
 		else if (key == GLFW_KEY_PAGE_UP)    m_camera->get_component<transform>()->translation({ 0,1,0 });
 		else if (key == GLFW_KEY_PAGE_DOWN)  m_camera->get_component<transform>()->translation({ 0,-1,0 });
-		else if (key == GLFW_KEY_W)    m_model->get_component<transform>()->translation({ 0,0,1 });
-		else if (key == GLFW_KEY_S)    m_model->get_component<transform>()->translation({ 0,0,-1 });
-		else if (key == GLFW_KEY_A)    m_model->get_component<transform>()->translation({ 1,0,0 });
-		else if (key == GLFW_KEY_D)    m_model->get_component<transform>()->translation({ -1,0,0 });
-		else if (key == GLFW_KEY_R)    m_model->get_component<transform>()->translation({ 0,1,0 });
-		else if (key == GLFW_KEY_F)    m_model->get_component<transform>()->translation({ 0,-1,0 });
+		else if (key == GLFW_KEY_W)    e_model->get_component<transform>()->translation({ 0,0,1 });
+		else if (key == GLFW_KEY_S)    e_model->get_component<transform>()->translation({ 0,0,-1 });
+		else if (key == GLFW_KEY_A)    e_model->get_component<transform>()->translation({ 1,0,0 });
+		else if (key == GLFW_KEY_D)    e_model->get_component<transform>()->translation({ -1,0,0 });
+		else if (key == GLFW_KEY_R)    e_model->get_component<transform>()->translation({ 0,1,0 });
+		else if (key == GLFW_KEY_F)    e_model->get_component<transform>()->translation({ 0,-1,0 });
 		else if ((mods == GLFW_MOD_SUPER ||
 			mods == GLFW_MOD_CONTROL) &&
 			action == GLFW_PRESS)
@@ -170,15 +174,15 @@ namespace hcube
 		m_rendering->add_shadow_rendering_pass(rendering_pass_shadow::snew(m_resources));
 		//add into system
 		m_systems.add_system(m_rendering);
-#if 0
+#if 1
 		//gbuffer size
 		ivec2 g_size = app.get_window_size();
 		auto rendering_pass = rendering_pass_deferred::snew(g_size, m_resources);
-		rendering_pass->set_ambient_occlusion(true);
+		rendering_pass->set_ambient_occlusion(false);
 		m_rendering->add_rendering_pass(rendering_pass);
 #else
-		auto rendering_pass = rendering_pass_forward::snew();
-		m_rendering->add_rendering_pass(rendering_pass);
+		m_rendering->add_rendering_pass(rendering_pass_forward::snew());
+        //m_rendering->add_rendering_pass(rendering_pass_debug_spot_lights::snew(m_resources));
 #endif
 		//load assets
 		m_resources.add_directory("assets/effects");
@@ -208,34 +212,60 @@ namespace hcube
 			//set camera
 			m_systems.add_entity(m_camera);
 			//add cube
-			auto cube_grid = gameobject::node_new(
-				basic_meshs::cube({ 5,5,5 }, true)
-			);
-			cube_grid->get_component<renderable>()->set_material(
-				m_resources.get_material("box2_mat")
-			);
-			cube_grid->get_component<transform>()->look_at(
-				vec3{ 0.0f, 0.0,  0.0f},
-				vec3{ 0.0f,-0.5f, 2.0f },
-				vec3{ 0.0f, 1.0f, 0.0f }
-			);
-			cube_grid->set_name("cube_grid");
-			m_systems.add_entity(cube_grid);
+			{
+				auto cube_grid = gameobject::node_new(
+					basic_meshs::cube({ 5,5,5 }, true)
+				);
+				cube_grid->get_component<renderable>()->set_material(
+					m_resources.get_material("cross_mat")
+				);
+				cube_grid->get_component<transform>()->translation(
+					vec3{ -5.0,-7.5,-10.0 }
+				);
+				cube_grid->get_component<transform>()->scale(
+					vec3{ 1.0,1.0,1.0 }
+				);
+				cube_grid->set_name("cube1");
+				m_systems.add_entity(cube_grid);
+			}
+			//add cube 2
+			{
+				auto cube_grid = gameobject::node_new(
+					basic_meshs::cube({ 5,5,5 }, true)
+				);
+				cube_grid->get_component<renderable>()->set_material(
+					m_resources.get_material("box2_grid_mat")
+				);
+				cube_grid->get_component<transform>()->translation(
+					vec3{ 5.0,-7.5,-10.0 }
+				);
+				cube_grid->set_name("cube2");
+				m_systems.add_entity(cube_grid);
+			}
 			//cube floor
-			auto cube_floor = gameobject::node_new(
-				basic_meshs::cube({ 50,0.1,50 }, true)
-			);
-			cube_floor->get_component<renderable>()->set_material(
-				m_resources.get_material("rocks_mat")
-			); 
-			cube_floor->get_component<transform>()->translation(
-				vec3{0,-10,0}
-			);
-			cube_floor->set_name("cube_floor");
-			m_systems.add_entity(cube_floor);
+            for(int x=-2;x!=2;++x)
+            for(int y=-2;y!=2;++y)
+            {
+                auto cube_floor = gameobject::node_new(
+                    basic_meshs::cube({ 50,50,50 }, true)
+                );
+                cube_floor->get_component<renderable>()->set_material(
+                    m_resources.get_material(
+                                             "rocks_mat"
+                                             //"box_mat"
+                                             )
+                ); 
+                cube_floor->get_component<transform>()->translation(
+                    vec3{x*50.,-36,y*50.}
+                );
+                cube_floor->set_name("cube_floor");
+                m_systems.add_entity(cube_floor);
+            }
 			//ship
 			m_model = m_resources.get_prefab("ship")->instantiate();
 			auto t_model = m_model->get_component<transform>();
+			//set name
+			m_model->set_name("ship");
 			//set info
 			t_model->position({ 0.0f, -5.0f, 0.0f });
 			t_model->rotation(quat({ radians(15.0), radians(0.0), 0.0 }));
@@ -245,11 +275,13 @@ namespace hcube
 			auto l_model_light = e_model_light->get_component<light>();
 			auto t_model_light = e_model_light->get_component<transform>();
 			t_model_light->position(vec3{ 0,6.0f,-80 });
-			l_model_light->m_diffuse = { 1.0f, 0.8f, 0.1f };
-			l_model_light->m_specular = { 1.0f, 0.8f, 0.1f };
-			l_model_light->m_constant = 1.0;
-			l_model_light->m_inside_radius = 2.0;
-			l_model_light->m_radius = 8.0;
+			l_model_light->point(
+				{ 1.0f, 0.8f, 0.1f },
+				{ 1.0f, 0.8f, 0.1f },
+				1.0,
+				2.0,
+				8.0
+			);
 			m_model->add_child(e_model_light);
 
 			auto e_model_light1 = gameobject::light_new();
@@ -264,7 +296,8 @@ namespace hcube
 				30.0,
 				radians(10.0),
 				radians(15.0));
-			m_model->add_child(e_model_light1);
+            e_model_light1->set_name("ship_light1");
+            m_model->add_child(e_model_light1);
 
 			auto e_model_light2 = gameobject::light_new();
 			auto l_model_light2 = e_model_light2->get_component<light>();
@@ -278,8 +311,8 @@ namespace hcube
 								   30.0,
 								   radians(10.0),
 								   radians(15.0));
+            e_model_light2->set_name("ship_light2");
 			m_model->add_child(e_model_light2);
-
 			//add to render
 			m_systems.add_entity(m_model);
 
@@ -302,31 +335,32 @@ namespace hcube
 				e_lights[1]->get_component<transform>(),
 				e_lights[2]->get_component<transform>()
 			};
-
-			l_lights[0]->m_diffuse = { 0.0f, 1.0f, 0.0f };
-			l_lights[0]->m_specular = { 0.0f, 1.0f, 0.0f };
-			e_lights[0]->set_name("light_green");
-
-			l_lights[1]->m_diffuse = { 1.0f, 0.0f, 0.0f };
-			l_lights[1]->m_specular = { 1.0f, 0.0f, 0.0f };
-			e_lights[1]->set_name("light_red");
-
-			l_lights[2]->m_diffuse = { 0.0f, 0.0f, 1.0f };
-			l_lights[2]->m_specular = { 0.0f, 0.0f, 1.0f };
-			e_lights[2]->set_name("light_blue");
-
 			for (short i = 0; i != 3; ++i)
 			{
-				l_lights[i]->m_constant = 1.1;
-				l_lights[i]->m_inside_radius = 5.0f;
-				l_lights[i]->m_radius = 28.0;
+				l_lights[i]->set_radius(
+					6.0,
+					30.0
+				);
 			}
+
+			l_lights[0]->set_shadow({ 256,256 });
+			l_lights[0]->set_color({ 0.0f, 1.0f, 0.0f }, { 0.0f, 1.0f, 0.0f });
+			e_lights[0]->set_name("light_green");
+
+			l_lights[1]->set_shadow({ 256,256 });
+			l_lights[1]->set_color({ 1.0f, 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f });
+			e_lights[1]->set_name("light_red");
+
+			l_lights[2]->set_shadow({ 256,256 });
+			l_lights[2]->set_color({ 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f, 1.0f });
+			e_lights[2]->set_name("light_blue");
+
 
 			for (int i = 1; i != 4; ++i)
 			{
 				t_lights[i - 1]->position({
                     std::sin((constants::pi<float>()*0.66)*i)*15.,
-					0.0,
+					5.0,
                     std::cos((constants::pi<float>()*0.66)*i)*15.,
 				});
 			}
@@ -338,7 +372,28 @@ namespace hcube
 			m_lights->add_child(e_lights[2]);
 
 			//add to render
-			//m_systems.add_entity(m_lights);
+			m_systems.add_entity(m_lights);
+
+#if 0
+            {
+                
+                auto e_shadow_point = gameobject::light_new();
+                auto l_shadow_point = e_shadow_point->get_component<light>();
+                auto t_shadow_point = e_shadow_point->get_component<transform>();
+                t_shadow_point->position(vec3{ 0,10.0f,0 });
+                l_shadow_point->point({ 1.0f, 1.0f, 1.0f },
+                                      { 1.0f, 1.0f, 1.0f },
+                                      1.0,
+                                      20.0,
+                                      50.0);
+                l_shadow_point->set_shadow({ 512,512 });
+                e_shadow_point->set_name("shadow_point");
+                m_systems.add_entity(e_shadow_point);
+            }
+#endif
+			//shadow lights
+			auto shadow_lights = gameobject::node_new();
+			shadow_lights->set_name("shadow_lights");
 
 			for (int i = 0; i != 2; ++i)
 			{
@@ -346,22 +401,20 @@ namespace hcube
 				auto e_model_light_shadow = gameobject::light_new();
 				auto l_model_light_shadow = e_model_light_shadow->get_component<light>();
 				auto t_model_light_shadow = e_model_light_shadow->get_component<transform>();
-				t_model_light_shadow->position(vec3{ -15.+30.*i,40.0f,0 });
+				t_model_light_shadow->position(vec3{ -20.+40.*i,40.0f,-10.0 });
 				t_model_light_shadow->rotation(quat({ radians(90.0), radians(-30.+60.0*i), radians(0.0) }));
 				l_model_light_shadow->spot({ 1.0f, 1.0f, 1.0f },
 										   { 1.0f, 1.0f, 1.0f },
 											1.0,
-											50.0,
-											70.0,
-											radians(10.0),
-											radians(25.0));
-				l_model_light_shadow->set_shadow({ 1024,1024 });
-				m_systems.add_entity(e_model_light_shadow);
+											30.0,
+											65.0,
+											radians(20.0),
+											radians(35.0));
+				l_model_light_shadow->set_shadow({ 512,512 });
+				e_model_light_shadow->set_name("light_shadow" + std::to_string(i));
+				shadow_lights->add_child(e_model_light_shadow);
 			}
-#if 0
-			t_camera->position(vec3{ 0,20.0f,0 });
-			t_camera->rotation(quat({ radians(35.0), radians(0.0), radians(0.0) }));
-#endif 
+			m_systems.add_entity(shadow_lights);
 			//ambient color
 			m_rendering->set_ambient_color(vec4{ 0.26, 0.26, 0.26, 1.0 });
 
@@ -377,13 +430,57 @@ namespace hcube
 			->get_component<transform>()
 			->turn(quat{ { radians(delta_time*4.0), 0.0, 0.0 } });
 			*/
-		m_systems.get_entities_by_name("cube_grid")[0]
-			->get_component<transform>()
-			->turn(quat{ {radians(delta_time*4.0), 0.0, 0.0} });
+
+		auto e_cube1 = m_systems.get_entities_by_name("cube1")[0];
+		auto t_cube1 = e_cube1->get_component<transform>();
+		auto r_cube1 = e_cube1->get_component<renderable>();
+#if 0
+		auto e_cube2 = m_systems.get_entities_by_name("cube2")[0];
+		auto t_cube2 = e_cube2->get_component<transform>();
+		auto r_cube2 = e_cube2->get_component<renderable>();
+		obb obb_cube2 = r_cube2->get_bounding_box();
+		obb_cube2.applay(t_cube2->get_matrix());
+		//test
+		if (obb_cube1.is_inside(obb_cube2))
+		{
+			system("cls");
+			std::cout << "se toccano!\n";
+		}
+		else
+		{
+			system("cls");
+			std::cout << "non se toccano!\n";
+		}
+#elif 0
+
+		auto e_light_shadow0 = m_systems.get_entities_by_name("light_shadow0")[0];
+		auto t_light_shadow0 = e_light_shadow0->get_component<transform>();
+		auto l_light_shadow0 = e_light_shadow0->get_component<light>();
+		//test
+		if (r_cube1->get_bounding_box().is_inside(
+								t_cube1->get_matrix(),
+								t_light_shadow0->get_position(),
+							    l_light_shadow0->get_radius()))
+		{
+			system("cls");
+			std::cout << "se toccano!\n";
+		}
+		else
+		{
+			system("cls");
+			std::cout << "non se toccano!\n";
+		}
+#endif
 		//for all lights
 		m_lights
 			->get_component<transform>()
 			->turn(quat{ {0.0, radians(20.0*delta_time), 0.0} });
+		//for all shadow lights
+#if 0
+		m_systems.get_entities_by_name("shadow_lights")[0]
+			->get_component<transform>()
+			->turn(quat{ { 0.0, radians(-30.0*delta_time), 0.0 } });
+#endif
 		//////////////////////////////////////////////////////////
 		//////////////////////////////////////////////////////////
 		//draw

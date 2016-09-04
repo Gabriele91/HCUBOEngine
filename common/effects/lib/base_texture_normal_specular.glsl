@@ -50,9 +50,21 @@ uniform sampler2D specular_map;
 vec3 compute_normal()
 {
     //get normal texture
-    vec3 text_normal = normalize( texture(normal_map, frag_uvcoord).rgb * 2.0f - 1.0f );
+	vec3 tex_normal = texture(normal_map, frag_uvcoord).rgb;
+	//
+#if defined (INV_X_NORMAL_MAP)
+	tex_normal.r = 1.0f-tex_normal.r;
+#endif
+#if defined (INV_Y_NORMAL_MAP)
+	tex_normal.g = 1.0f-tex_normal.g;
+#endif
+#if defined (INV_Z_NORMAL_MAP)
+	tex_normal.b = 1.0f-tex_normal.b;
+#endif
+	//normal image
+    vec3 normal = normalize( tex_normal * 2.0f - 1.0f );
     //return
-    return tbn*text_normal;
+    return tbn*normal;
 }
 
 void main()

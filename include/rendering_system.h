@@ -43,11 +43,15 @@ namespace hcube
 		queue m_translucent;
 
 		//culling
-		element* m_cull_light{ nullptr };
+		element* m_cull_light_spot     { nullptr };
+		element* m_cull_light_point    { nullptr };
+		element* m_cull_light_direction{ nullptr };
 		element* m_cull_opaque{ nullptr };
 		element* m_cull_translucent{ nullptr };
 
-		void add_call_light(element* e);
+		void add_call_light_spot(element* e);
+		void add_call_light_point(element* e);
+		void add_call_light_direction(element* e);
 		void add_call_opaque(element* e);
 		void add_call_translucent(element* e);
 
@@ -60,7 +64,12 @@ namespace hcube
 		void compute_light_queue(const frustum& view_frustum);
 		void compute_opaque_queue(const frustum& view_frustum);
 		void compute_translucent_queue(const frustum& view_frustum);
+		//sphere
+		void compute_opaque_queue(const vec3& position, float radius);
 	};
+
+	#define HCUBE_FOREACH_QUEUE(name,queue)\
+		for (render_queues::element* name = queue; name; name = name->m_next)
 
 	class rendering_pass
 	{
@@ -78,8 +87,20 @@ namespace hcube
 	class rendering_pass_shadow : public rendering_pass, public smart_pointers<rendering_pass_shadow>
 	{
 		
-		effect::ptr		   m_effect;
-		effect::technique* m_technique_shadow;
+        effect::ptr		   m_effect;
+        effect::parameter* m_mask;
+        effect::parameter* m_diffuse_map;
+		effect::technique* m_technique_shadow_spot;
+		effect::technique* m_technique_shadow_point;
+        effect::technique* m_technique_shadow_direction;
+		//spot light
+        uniform*           m_shadow_spot_mask		    { nullptr };
+		//point light
+		uniform*           m_shadow_point_mask			{ nullptr };
+		uniform*           m_shadow_point_light_position{ nullptr };
+		uniform*           m_shadow_point_far_plane		{ nullptr };
+		//direction light
+        uniform*           m_shadow_direction_mask		{ nullptr };
 
 	public:
 
@@ -92,11 +113,29 @@ namespace hcube
 			render_queues& queues
 		);
 	};
+    
+    class rendering_pass_debug_spot_lights : public rendering_pass, public smart_pointers<rendering_pass_debug_spot_lights>
+    {
+        
+        effect::ptr m_effect;
+        entity::ptr m_cube;
+        
+    public:
+        
+        rendering_pass_debug_spot_lights(resources_manager& resources);
+        
+        virtual void draw_pass(
+                               vec4&  clear_color,
+                               vec4&  ambient_color,
+                               entity::ptr e_camera,
+                               render_queues& queues
+                               );
+    };
 
 	class rendering_system : public system_component, public smart_pointers< rendering_system >
 	{
 
-		SYSTEM_COMPONENT_DEC(rendering_system);
+		HCUBE_SYSTEM_COMPONENT_DEC(rendering_system);
 
 	public:
 

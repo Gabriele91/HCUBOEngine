@@ -183,28 +183,35 @@ namespace hcube
 	}
 
 	bool texture::build(const attributes& attr,
-		const unsigned char* buffer,
-		unsigned long width,
-		unsigned long height,
-		texture_format format,
-		texture_type   type)
+						const unsigned char* buffer,
+						unsigned long width,
+						unsigned long height,
+						texture_format format,
+						texture_type   type)
 	{
 		//save size
 		m_width = width;
 		m_height = height;
 		//create texture
 		m_ctx_texture =
-			render::create_texture(format,
-			(unsigned int)m_width,
-				(unsigned int)m_height,
-				buffer,
-				type,
-				TTF_UNSIGNED_BYTE,
-				attr.m_min_filter,
-				attr.m_mag_filter,
-				attr.m_clamp_to_border ? TEDGE_CLAMP : TEDGE_REPEAT,
-				attr.m_clamp_to_border ? TEDGE_CLAMP : TEDGE_REPEAT,
-				attr.m_build_mipmap);
+		render::create_texture
+		(
+				{
+					format,
+					(unsigned int)m_width,
+					(unsigned int)m_height,
+					buffer,
+					type,
+					TTF_UNSIGNED_BYTE 
+				},
+				{
+					attr.m_min_filter,
+					attr.m_mag_filter,
+					attr.m_clamp_to_border ? TEDGE_CLAMP : TEDGE_REPEAT,
+					attr.m_clamp_to_border ? TEDGE_CLAMP : TEDGE_REPEAT,
+					attr.m_build_mipmap
+				}
+		);
 		//ok
 		return m_ctx_texture != nullptr;
 	}

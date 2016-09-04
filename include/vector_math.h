@@ -182,13 +182,13 @@ namespace hcube
     }
     
     template < class T >
-    inline auto perspective(const T& fovy,const T& aspect,const T& near,const T& far) -> decltype( glm::perspective(fovy, aspect, near, far) )
+    inline mat4 perspective(const T& fovy,const T& aspect,const T& near,const T& far)
     {
-        return glm::perspective(fovy, aspect, near, far);
+        return glm::perspective<T>(fovy, aspect, near, far);
     }
     
     template < class T >
-    inline auto look_at(const T& eye,const T& center, const T& up) -> decltype( glm::lookAt(eye, center, up) )
+    inline mat4 look_at(const T& eye,const T& center, const T& up)
     {
         return glm::lookAt(eye, center, up);
     }

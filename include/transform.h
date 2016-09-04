@@ -14,7 +14,7 @@ namespace hcube
 	class transform : public component
 	{
 
-		COMPONENT_DEC(transform)
+		HCUBE_COMPONENT_DEC(transform)
 
 	public:
 
@@ -40,15 +40,21 @@ namespace hcube
 		quat get_rotation() const;
 		vec3 get_scale() const;
 
-		mat4 const& get_local_matrix();
-		mat4 const& get_local_matrix_inv();
+		vec3 get_global_position();
+		quat get_global_rotation();
+		vec3 get_global_scale();
 
+		mat4 const& get_local_matrix();
 		mat4 const& get_matrix();
-		mat4 const& get_matrix_inv();
 
 		inline operator const mat4& ()
 		{
 			return get_matrix();
+		}
+
+		inline bool is_dirty() const
+		{
+			return m_tranform.m_dirty;
 		}
 
 		virtual component_ptr copy() const;
@@ -68,9 +74,7 @@ namespace hcube
 		void    send_dirty();
 		//matrix
 		mat4  m_model_local;
-		mat4  m_model_local_inv;
 		mat4  m_model_global;
-		mat4  m_model_global_inv;
 		//compute
 		void compute_matrix();
 

@@ -54,35 +54,50 @@ namespace hcube
 		for (unsigned int i = 0; i != G_BUFFER_NUM_TEXTURES; i++)
 		{
 			m_textures[i] =
-				render::create_texture(types[i].m_format,
+			render::create_texture
+			(
+				{ 
+					types[i].m_format,
 					width,
 					height,
 					nullptr,
 					types[i].m_type,
-					types[i].m_type_format,
+					types[i].m_type_format 
+				},
+				{
 					TMIN_NEAREST,
 					TMAG_NEAREST,
 					TEDGE_CLAMP,
 					TEDGE_CLAMP,
-					false);
+					false 
+				}
+			);
 		}
 		//depth
 		m_depth_texture =
-			render::create_texture(TF_DEPTH_COMPONENT32,
+		render::create_texture
+		(
+			{
+				TF_DEPTH_COMPONENT32,
 				width,
 				height,
 				nullptr,
 				TT_DEPTH,
-				TTF_FLOAT,
+				TTF_FLOAT 
+			},
+			{
 				TMIN_NEAREST,
 				TMAG_NEAREST,
 				TEDGE_CLAMP,
 				TEDGE_CLAMP,
-				false);
+				false
+			}
+		);
 
 		//rander target
 		m_target =
-			render::create_render_target({
+		render::create_render_target
+		({
 				target_field{ m_textures[G_BUFFER_TEXTURE_TYPE_POSITION], RT_COLOR },
 				target_field{ m_textures[G_BUFFER_TEXTURE_TYPE_NORMAL],   RT_COLOR },
 				target_field{ m_textures[G_BUFFER_TEXTURE_TYPE_ALBEDO],   RT_COLOR },

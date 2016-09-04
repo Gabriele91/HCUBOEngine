@@ -250,7 +250,9 @@ R"GLSL(
 			//line count
 			++line;
 			//ptr to line
-			const char* c_effect_line = effect_line.c_str();
+            const char* c_effect_line = effect_line.c_str();
+            //jmp space
+            jmp_spaces(c_effect_line);
 			//pragma
 			if (compare_and_jmp_keyword(c_effect_line, "#pragma"))
 			{
@@ -687,16 +689,11 @@ R"GLSL(
 		//disable textures
 		while (m_uniform_ntexture >= 0)
 		{
-			glActiveTexture((GLenum)(GL_TEXTURE0 + m_uniform_ntexture));
-			glBindTexture(GL_TEXTURE_2D, 0);
+            render::unbind_texture((int)m_uniform_ntexture);
 			--m_uniform_ntexture;
 		}
 		//disable program
 		glUseProgram(0);
-		//unbind vbo
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		//unbind ibo
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	}
 
 	//id programma
@@ -762,20 +759,20 @@ R"GLSL(
 
 	void uniform::set_value(const vec2* v2, size_t n)
 	{
-		glUniform2fv(m_id, n, (const float*)v2);
+		glUniform2fv(m_id, n, value_ptr(*v2));
 	}
 
 	void uniform::set_value(const vec3* v3, size_t n)
 	{
-		glUniform3fv(m_id, n, (const float*)v3);
+		glUniform3fv(m_id, n, value_ptr(*v3));
 	}
 	void uniform::set_value(const vec4* v4, size_t n)
 	{
-		glUniform4fv(m_id, n, (const float*)v4);
+		glUniform4fv(m_id, n, value_ptr(*v4));
 	}
 	void uniform::set_value(const mat4* m4, size_t n)
 	{
-		glUniformMatrix4fv(m_id, n, GL_FALSE, (const float*)m4);
+		glUniformMatrix4fv(m_id, n, GL_FALSE, value_ptr(*m4));
 	}
 
 	void uniform::set_value(const std::vector < int >& i)

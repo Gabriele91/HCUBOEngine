@@ -37,7 +37,7 @@ namespace hcube
 		}
 	};
 
-#define COMPONENT_DEC(T)\
+#define HCUBE_COMPONENT_DEC(T)\
     public: static component_id type(){ static component_id type=typeid(T); return type; }\
     public: component_id get_id() const { return type(); }\
     private:

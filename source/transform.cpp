@@ -72,16 +72,39 @@ namespace hcube
 		return m_tranform.m_scale;
 	}
 
+	vec3 transform::get_global_position()
+	{
+		return vec3(get_matrix()[3]);
+	}
+
+	quat transform::get_global_rotation()
+	{
+		mat3 rot_scale(get_matrix());
+		//len
+		vec3 scale(length(rot_scale[0]),
+				   length(rot_scale[1]),
+			       length(rot_scale[2]));
+		//normalize 
+		rot_scale[0] /= scale[0];
+		rot_scale[1] /= scale[1];
+		rot_scale[2] /= scale[2];
+		//must to be a ortogonal matrix
+		return  quat_cast(traspose(inverse(rot_scale)));
+	}
+
+	vec3 transform::get_global_scale()
+	{
+		mat3 rot_scale(get_matrix());
+
+		return vec3(length(rot_scale[0]),
+					length(rot_scale[1]),
+					length(rot_scale[2]));
+	}
+
 	mat4 const& transform::get_local_matrix()
 	{
 		compute_matrix();
-		return m_model_local_inv;
-	}
-
-	mat4 const& transform::get_local_matrix_inv()
-	{
-		compute_matrix();
-		return m_model_local_inv;
+		return m_model_local;
 	}
 
 	mat4 const& transform::get_matrix()
@@ -89,13 +112,7 @@ namespace hcube
 		compute_matrix();
 		return m_model_global;
 	}
-
-	mat4 const& transform::get_matrix_inv()
-	{
-		compute_matrix();
-		return m_model_global_inv;
-	}
-
+	
 	void transform::on_attach(entity& ent)
 	{
 		set_dirty();
@@ -119,7 +136,7 @@ namespace hcube
 	{
 		if (get_entity())
 		{
-			get_entity()->send_message_to_component_downwards(type(), { MSG_DIRTY });
+			get_entity()->send_message_to_components_downwards({ MSG_DIRTY }, true);
 		}
 	}
 
@@ -133,9 +150,7 @@ namespace hcube
 		auto cpytransform = transform_snew();
 		cpytransform->m_tranform = m_tranform;
 		cpytransform->m_model_local = m_model_local;
-		cpytransform->m_model_local_inv = m_model_local_inv;
 		cpytransform->m_model_global = m_model_global;
-		cpytransform->m_model_global_inv = m_model_global_inv;
 		cpytransform->m_tranform.m_dirty = true;
 		return cpytransform;
 	}
@@ -148,31 +163,16 @@ namespace hcube
 			m_model_local  = hcube::translate(mat4(1.0f), m_tranform.m_position);
 			m_model_local *= hcube::to_mat4(  m_tranform.m_rotation );
             m_model_local  = hcube::scale(m_model_local, m_tranform.m_scale);
-			//inverse
-			m_model_local_inv = inverse(m_model_local);
 			//global
 			if (get_entity() && get_entity()->get_parent())
 			{
 				m_model_global = get_entity()->get_parent()->get_component<transform>()->get_matrix() * m_model_local;
-				//inverse
-				m_model_global_inv = inverse(m_model_global);
 			}
 			else
 			{
 				m_model_global = m_model_local;
-				m_model_global_inv = m_model_local_inv;
 			}
-#ifdef OPENGL_VIEW
-			m_model_local_inv[0][2] *= -1;
-			m_model_local_inv[1][2] *= -1;
-		    m_model_local_inv[2][2] *= -1;
-		    m_model_local_inv[3][2] *= -1;
-
-			m_model_global_inv[0][2] *= -1;
-			m_model_global_inv[1][2] *= -1;
-			m_model_global_inv[2][2] *= -1;
-		    m_model_global_inv[3][2] *= -1;
-#endif
+			m_tranform.m_dirty = false;
 		}
 	}
 }

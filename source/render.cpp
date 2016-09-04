@@ -16,12 +16,11 @@ namespace hcube
 	class context_texture
 	{
 	public:
+		GLenum       m_type_texture{ GL_TEXTURE_2D };
 		int          m_last_bind{ -1 };
-		unsigned int m_width{ 0 };
-		unsigned int m_height{ 0 };
 		unsigned int m_tbo{ 0 };
 
-		context_texture(unsigned int width, unsigned int height) :m_width(width), m_height(height) {}
+		context_texture()  {}
 
 		virtual ~context_texture()
 		{
@@ -37,7 +36,7 @@ namespace hcube
 		{
 			m_last_bind = n;
 			glActiveTexture((GLenum)(GL_TEXTURE0 + m_last_bind));
-			glBindTexture(GL_TEXTURE_2D, m_tbo);
+			glBindTexture(m_type_texture, m_tbo);
 		}
 
 		inline void disable_TBO()
@@ -45,7 +44,7 @@ namespace hcube
 			if (m_last_bind >= 0)
 			{
 				glActiveTexture((GLenum)(GL_TEXTURE0 + m_last_bind));
-				glBindTexture(GL_TEXTURE_2D, (GLuint)0);
+				glBindTexture(m_type_texture, (GLuint)0);
 				m_last_bind = -1;
 			}
 		}
@@ -123,14 +122,25 @@ namespace hcube
 		{
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		}
-	};
-	////////////////////
+    };
+    ////////////////////
+    struct bind_context
+    {
+        context_texture*       m_textures[32] { nullptr };
+        context_vertex_buffer* m_vertex_buffer{ nullptr };
+        context_index_buffer*  m_index_buffer { nullptr };
+        context_input_layout*  m_input_layout { nullptr };
+        context_render_target* m_render_target{ nullptr };
+    };
+    
+    ////////////////////
 	//     RENDER     //
 	////////////////////
 	namespace render
 	{
 		///////////////////////
 		//globals
+        bind_context s_bind_context;
 		render_state s_render_state;
 		GLuint       s_vao_attributes;
 		///////////////////////
@@ -443,22 +453,54 @@ namespace hcube
 
 		void bind_VBO(context_vertex_buffer* vbo)
 		{
-			glBindBuffer(GL_ARRAY_BUFFER, *vbo);
+            if(vbo && s_bind_context.m_vertex_buffer != vbo)
+            {
+                //unbind
+                if(s_bind_context.m_vertex_buffer)
+                {
+                    unbind_VBO(s_bind_context.m_vertex_buffer);
+                }
+                //bind
+                glBindBuffer(GL_ARRAY_BUFFER, *vbo);
+                //update
+                s_bind_context.m_vertex_buffer = vbo;
+            }
 		}
 
 		void bind_IBO(context_index_buffer* ibo)
-		{
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, *ibo);
+        {
+            if(ibo && s_bind_context.m_index_buffer != ibo)
+            {
+                //unbind
+                if(s_bind_context.m_index_buffer)
+                {
+                    unbind_IBO(s_bind_context.m_index_buffer);
+                }
+                //bind
+                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, *ibo);
+                //update
+                s_bind_context.m_index_buffer = ibo;
+            }
 		}
 
 		void unbind_VBO(context_vertex_buffer* vbo)
 		{
-			glBindBuffer(GL_ARRAY_BUFFER, 0);
+            if(vbo)
+            {
+                assert(s_bind_context.m_vertex_buffer == vbo);
+                glBindBuffer(GL_ARRAY_BUFFER, 0);
+                s_bind_context.m_vertex_buffer = nullptr;
+            }
 		}
 
 		void unbind_IBO(context_index_buffer* ibo)
-		{
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+        {
+            if(ibo)
+            {
+                assert(s_bind_context.m_index_buffer == ibo);
+                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+                s_bind_context.m_index_buffer = nullptr;
+            }
 		}
 
 		GLbitfield get_mapping_type(mapping_type type)
@@ -499,13 +541,25 @@ namespace hcube
 
 		void delete_VBO(context_vertex_buffer*& vbo)
 		{
+            //test
+            if(s_bind_context.m_vertex_buffer == vbo)
+            {
+                unbind_VBO(s_bind_context.m_vertex_buffer);
+            }
+            //safe delete
 			glDeleteBuffers(1, *vbo);
 			delete vbo;
 			vbo = nullptr;
 		}
 
 		void delete_IBO(context_index_buffer*& ibo)
-		{
+        {
+            //test
+            if(s_bind_context.m_index_buffer == ibo)
+            {
+                unbind_IBO(s_bind_context.m_index_buffer);
+            }
+            //safe delete
 			glDeleteBuffers(1, *ibo);
 			delete ibo;
 			ibo = nullptr;
@@ -603,24 +657,43 @@ namespace hcube
 
 		void bind_IL(context_input_layout* layout)
 		{
-			for (const attribute& data : layout->m_list)
-			{
-				glEnableVertexAttribArray(data.m_attribute);
-				glVertexAttribPointer(data.m_attribute,
-					(GLint)data.components(),
-					type_component(data.m_strip),
-					GL_FALSE,
-					(GLuint)layout->m_list.size(),
-					((char *)NULL + (data.m_offset)));
-			}
+            if(layout && s_bind_context.m_input_layout != layout)
+            {
+                //bind?
+                if(s_bind_context.m_input_layout)
+                {
+                    unbind_IL(s_bind_context.m_input_layout);
+                }
+                //bind
+                for (const attribute& data : layout->m_list)
+                {
+                    glEnableVertexAttribArray(data.m_attribute);
+                    glVertexAttribPointer(data.m_attribute,
+                        (GLint)data.components(),
+                        type_component(data.m_strip),
+                        GL_FALSE,
+                        (GLuint)layout->m_list.size(),
+                        ((char *)NULL + (data.m_offset)));
+                }
+                //save
+                s_bind_context.m_input_layout = layout;
+            }
 		}
 
 		void unbind_IL(context_input_layout* layout)
 		{
-			for (const attribute& data : layout->m_list)
-			{
-				glDisableVertexAttribArray(data.m_attribute);
-			}
+            if(layout)
+            {
+                //test
+                assert(s_bind_context.m_input_layout==layout);
+                //unbind
+                for (const attribute& data : layout->m_list)
+                {
+                    glDisableVertexAttribArray(data.m_attribute);
+                }
+                //safe
+                s_bind_context.m_input_layout = nullptr;
+            }
 		}
 
 		void delete_IL(context_input_layout*& il)
@@ -776,68 +849,143 @@ namespace hcube
 			}
 		}
 
-		context_texture* create_texture(texture_format format,
-			unsigned int w,
-			unsigned int h,
-			const unsigned char* bytes,
-			texture_type   type,
-			texture_type_format type_format,
-			texture_min_filter_type min_type,
-			texture_mag_filter_type mag_type,
-			texture_edge_type       edge_s,
-			texture_edge_type       edge_t,
-			bool                    build_mipmap)
+		context_texture* create_texture
+		(
+			const texture_raw_data_information& data,
+			const texture_gpu_data_information& info
+		)
 		{
 
 			//new texture
-			context_texture* ctx_texture = new context_texture(w, h);
+			context_texture* ctx_texture = new context_texture();
 			//create a texture id
 			ctx_texture->create_TBO();
 			//format
-			GLenum gl_format = get_texture_format(format);
-			GLenum gl_type = get_texture_type(type);
-			GLenum gl_type_format = get_texture_type_format(type_format);
+			GLenum gl_format = get_texture_format(data.m_format);
+			GLenum gl_type = get_texture_type(data.m_type);
+			GLenum gl_type_format = get_texture_type_format(data.m_type_format);
 			//enable texture
-			glBindTexture(GL_TEXTURE_2D, ctx_texture->m_tbo);
+			glBindTexture(ctx_texture->m_type_texture, ctx_texture->m_tbo);
 			//create texture buffer
-			glTexImage2D(GL_TEXTURE_2D,
+			glTexImage2D
+			(
+				ctx_texture->m_type_texture,
 				0,
 				gl_format,
-				ctx_texture->m_width,
-				ctx_texture->m_height,
+				data.m_width,
+				data.m_height,
 				0,
 				gl_type,
 				gl_type_format,
-				bytes);
+				data.m_bytes
+			);
 			//set filters
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, get_texture_min_filter(min_type));
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, get_texture_mag_filter(mag_type));
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, get_texture_edge_type(edge_s));
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, get_texture_edge_type(edge_t));
+			glTexParameteri(ctx_texture->m_type_texture, GL_TEXTURE_MIN_FILTER, get_texture_min_filter(info.m_min_type));
+			glTexParameteri(ctx_texture->m_type_texture, GL_TEXTURE_MAG_FILTER, get_texture_mag_filter(info.m_mag_type));
+			glTexParameteri(ctx_texture->m_type_texture, GL_TEXTURE_WRAP_S, get_texture_edge_type(info.m_edge_s));
+			glTexParameteri(ctx_texture->m_type_texture, GL_TEXTURE_WRAP_T, get_texture_edge_type(info.m_edge_t));
 			// Generate mipmaps, by the way.
-			if (build_mipmap) glGenerateMipmap(GL_TEXTURE_2D);
+			if (info.m_build_mipmap) glGenerateMipmap(ctx_texture->m_type_texture);
 			//disable texture
-			glBindTexture(GL_TEXTURE_2D, 0);
+			glBindTexture(ctx_texture->m_type_texture, 0);
 			//test
 			print_errors();
 			//return texture
 			return ctx_texture;
 		}
 
+		context_texture* create_cube_texture
+		(
+			const texture_raw_data_information data[6],
+			const texture_gpu_data_information& info
+		)
+		{
+
+			//new texture
+			context_texture* ctx_texture = new context_texture();
+			//set type
+			ctx_texture->m_type_texture = GL_TEXTURE_CUBE_MAP;
+			//create a texture id
+			ctx_texture->create_TBO();
+			//add texture
+			for (int i = 0; i != 6; ++i)
+			{
+				//format
+				GLenum gl_format = get_texture_format(data[i].m_format);
+				GLenum gl_type = get_texture_type(data[i].m_type);
+				GLenum gl_type_format = get_texture_type_format(data[i].m_type_format);
+				//enable texture
+				glBindTexture(ctx_texture->m_type_texture, ctx_texture->m_tbo);
+				//create texture buffer
+				glTexImage2D
+				(
+					GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+					0,
+					gl_format,
+					data[i].m_width,
+					data[i].m_height,
+					0,
+					gl_type,
+					gl_type_format,
+					data[i].m_bytes
+				);
+			}
+			//set filters
+			glTexParameteri(ctx_texture->m_type_texture, GL_TEXTURE_MIN_FILTER, get_texture_min_filter(info.m_min_type));
+			glTexParameteri(ctx_texture->m_type_texture, GL_TEXTURE_MAG_FILTER, get_texture_mag_filter(info.m_mag_type));
+			glTexParameteri(ctx_texture->m_type_texture, GL_TEXTURE_WRAP_S, get_texture_edge_type(info.m_edge_s));
+			glTexParameteri(ctx_texture->m_type_texture, GL_TEXTURE_WRAP_T, get_texture_edge_type(info.m_edge_t));
+			glTexParameteri(ctx_texture->m_type_texture, GL_TEXTURE_WRAP_R, get_texture_edge_type(info.m_edge_r));
+			// Generate mipmaps, by the way.
+			if (info.m_build_mipmap) glGenerateMipmap(ctx_texture->m_type_texture);
+			//disable texture
+			glBindTexture(ctx_texture->m_type_texture, 0);
+			//test
+			print_errors();
+			//return texture
+			return ctx_texture;
+		}
+        
 		void bind_texture(context_texture* ctx_texture, int n)
 		{
-			if (ctx_texture) ctx_texture->enable_TBO(n);
+            if (ctx_texture && ctx_texture != s_bind_context.m_textures[n])
+            {
+                //enable
+                ctx_texture->enable_TBO(n);
+                //disable last
+                if(s_bind_context.m_textures[n])
+                    s_bind_context.m_textures[n]->m_last_bind = -1;
+                //add this
+                s_bind_context.m_textures[n] = ctx_texture;
+            }
 		}
 
 		void unbind_texture(context_texture* ctx_texture)
 		{
-			if (ctx_texture) ctx_texture->disable_TBO();
+            if (ctx_texture)
+            {
+                //to null
+                s_bind_context.m_textures[ctx_texture->m_last_bind] = nullptr;
+                //disable
+                ctx_texture->disable_TBO();
+            }
 		}
-
-		void delete_texture(context_texture*& texture)
-		{
-			delete texture;
-			texture = nullptr;
+        
+        void unbind_texture(int n)
+        {
+            unbind_texture(s_bind_context.m_textures[n]);
+        }
+        
+		void delete_texture(context_texture*& ctx_texture)
+        {
+            //bind?
+            if(ctx_texture->m_last_bind)
+            {
+                unbind_texture(ctx_texture);
+            }
+            //safe delete
+			delete ctx_texture;
+			ctx_texture = nullptr;
 		}
 		/*
 		 FBO
@@ -870,28 +1018,31 @@ namespace hcube
 			{
 				if (t_field.m_type == RT_COLOR)
 				{
-					glFramebufferTexture2D(GL_FRAMEBUFFER,
+					glFramebufferTexture(
+						GL_FRAMEBUFFER,
 						(GLenum)(GL_COLOR_ATTACHMENT0 + (color_count++)),
-						GL_TEXTURE_2D,
 						t_field.m_texture->m_tbo,
-						0);
+						0
+					);
 				}
 				else if ((!depth_attach) && t_field.m_type == RT_DEPTH)
 				{
-					glFramebufferTexture2D(GL_FRAMEBUFFER,
+					glFramebufferTexture(
+						GL_FRAMEBUFFER,
 						GL_DEPTH_ATTACHMENT,
-						GL_TEXTURE_2D,
 						t_field.m_texture->m_tbo,
-						0);
+						0
+					);
 					depth_attach = true;
 				}
 				else if ((!depth_attach) && t_field.m_type == RT_DEPTH_STENCIL)
 				{
-					glFramebufferTexture2D(GL_FRAMEBUFFER,
+					glFramebufferTexture(
+						GL_FRAMEBUFFER,
 						GL_DEPTH_STENCIL_ATTACHMENT,
-						GL_TEXTURE_2D,
 						t_field.m_texture->m_tbo,
-						0);
+						0
+					);
 					depth_attach = true;
 				}
 			}
@@ -912,18 +1063,33 @@ namespace hcube
 			return fbo;
 		}
 
-		void enable_render_target(context_render_target* rdtex)
+		void enable_render_target(context_render_target* r_target)
 		{
-			rdtex->enable_FBO();
+            if(r_target && s_bind_context.m_render_target != r_target)
+            {
+                r_target->enable_FBO();
+                s_bind_context.m_render_target = r_target;
+            }
 		}
 
-		void disable_render_target(context_render_target* rdtex)
+		void disable_render_target(context_render_target* r_target)
 		{
-			rdtex->disable_FBO();
+            if(r_target)
+            {
+                assert(s_bind_context.m_render_target == r_target);
+                r_target->disable_FBO();
+                s_bind_context.m_render_target = nullptr;
+            }
 		}
 
 		void delete_render_target(context_render_target*& r_target)
-		{
+        {
+            //bind?
+            if(s_bind_context.m_render_target == r_target)
+            {
+                disable_render_target(r_target);
+            }
+            //safe delete
 			delete r_target;
 			r_target = nullptr;
 		}

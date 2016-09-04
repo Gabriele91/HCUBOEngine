@@ -143,10 +143,18 @@ namespace hcube
 			size_t      m_line{ 0 };
 		};
 
-		struct lights_field
-		{
-			bool m_on  { false };
-			int  m_n_lights{ 0 };
+		enum lights_field
+        {
+            LF_NONE                 = 0b00000,
+            LF_BASE                 = 0b00001,
+			LF_AMBIENT              = 0b00010,
+			LF_SPOT                 = 0b00100,
+			LF_POINT                = 0b01000,
+            LF_DIRECTION            = 0b10000,
+            LF_SPOT_POINT           = LF_SPOT | LF_POINT,
+            LF_SPOT_DIRECTION       = LF_SPOT | LF_DIRECTION,
+            LF_POINT_DIRECTION      = LF_POINT| LF_DIRECTION,
+            LF_SPOT_POINT_DIRECTION = LF_SPOT | LF_POINT | LF_DIRECTION
 		};
 
 		struct pass_field
@@ -155,7 +163,7 @@ namespace hcube
 			depth_buffer_state m_depth;
 			blend_state        m_blend;
 			shader_field       m_shader;
-			lights_field	   m_lights;
+			lights_field	   m_lights{ LF_BASE };
 		};
 
 		struct technique_field
@@ -207,6 +215,7 @@ namespace hcube
 			const char* c_ptr = source.c_str();
 			return parse(default_context, c_ptr);
 		}
+        
 		bool parse(context& default_context, const char*& ptr)
 		{
 			m_context = &default_context;
@@ -677,33 +686,61 @@ namespace hcube
 			//is off?
 			if ((CSTRCMP_SKIP(ptr, "off")))
 			{
-				pass.m_lights.m_on = false;
-				pass.m_lights.m_n_lights = 0;
+                //default pass.m_lights
 				return true;
 			}
 			//is only_ambient?
 			if ((CSTRCMP_SKIP(ptr, "only_ambient")))
 			{
-				pass.m_lights.m_on = true;
-				pass.m_lights.m_n_lights = 0;
+				pass.m_lights = LF_AMBIENT;
+				return true;
+            }
+            //spot point and direction
+            if ((CSTRCMP_SKIP(ptr, "spot_point_direction")))
+            {
+                pass.m_lights = LF_SPOT_POINT_DIRECTION;
+                return true;
+            }
+            //spot and point
+            if ((CSTRCMP_SKIP(ptr, "spot_point")))
+            {
+                pass.m_lights = LF_SPOT_POINT;
+                return true;
+            }
+            //spot and direction
+            if ((CSTRCMP_SKIP(ptr, "spot_direction")))
+            {
+                pass.m_lights = LF_SPOT_DIRECTION;
+                return true;
+            }
+            //point and direction
+            if ((CSTRCMP_SKIP(ptr, "point_direction")))
+            {
+                pass.m_lights = LF_POINT_DIRECTION;
+                return true;
+            }
+			//spot
+			if ((CSTRCMP_SKIP(ptr, "spot")))
+			{
+				pass.m_lights = LF_SPOT;
 				return true;
 			}
-			//number
-			if (!is_uint_number(*ptr))
+			//spot
+			if ((CSTRCMP_SKIP(ptr, "point")))
 			{
-				push_error("Lights command required int parameter");
-				return false;
-			}
-			//enable lights
-			pass.m_lights.m_on = true;
-			//parse int
-			if(!parse_int(ptr, &ptr, pass.m_lights.m_n_lights))
-			{
-				push_error("Lights command required valid int parameter");
-				return false;
-			}
+				pass.m_lights = LF_POINT;
+				return true;
+            }
+            //spot
+            if ((CSTRCMP_SKIP(ptr, "direction")))
+            {
+                pass.m_lights = LF_DIRECTION;
+                return true;
+            }
+			//error
+			push_error("Lights parameter not valid");
 			//end
-			return true;
+			return false;
 		}
 		bool parse_shader(const char*& ptr, pass_field& pass)
 		{
@@ -1088,7 +1125,7 @@ namespace hcube
 			m_value = value;
 		}
 		//get value
-		virtual texture::ptr get_texture() 
+		virtual texture::ptr get_texture() const 
 		{ 
 			return m_value;
 		}
@@ -1114,7 +1151,7 @@ namespace hcube
 			m_value = i;
 		}
 		//get value
-		virtual int get_int()
+		virtual int get_int() const
 		{
 			return m_value;
 		}
@@ -1140,7 +1177,7 @@ namespace hcube
 			m_value = f;
 		}
 		//get value
-		virtual float get_float()
+		virtual float get_float() const 
 		{
 			return m_value;
 		}
@@ -1170,7 +1207,7 @@ namespace hcube
 			m_value = value;
 		}
 		//get value
-		virtual const vec2& get_vec2()
+		virtual const vec2& get_vec2() const
 		{
 			return m_value;
 		}
@@ -1200,7 +1237,7 @@ namespace hcube
 			m_value = value;
 		}
 		//get value
-		virtual const vec3& get_vec3()
+		virtual const vec3& get_vec3() const
 		{
 			return m_value;
 		}
@@ -1230,7 +1267,7 @@ namespace hcube
 			m_value = value;
 		}
 		//get value
-		virtual const vec4& get_vec4()
+		virtual const vec4& get_vec4() const
 		{
 			return m_value;
 		}
@@ -1260,7 +1297,7 @@ namespace hcube
 			m_value = value;
 		}
 		//get value
-		virtual const mat4& get_mat4()
+		virtual const mat4& get_mat4() const
 		{
 			return m_value;
 		}
@@ -1274,23 +1311,30 @@ namespace hcube
 
 
 	//enable pass effect
-	void effect::pass::bind(
+	void effect::pass::bind
+	(
 		const vec4& viewport,
 		const mat4& projection,
 		const mat4& view,
 		const mat4& model, 
 		parameters* params
-	)
+	) const
 	{
-		render::set_blend_state(m_blend);
-		render::set_cullface_state(m_cullface);
-		render::set_depth_buffer_state(m_depth);
-		m_shader->bind();
+		//bind
+		bind(params);
 		//default uniforms
 		if (m_uniform_projection) m_uniform_projection->set_value(projection);
 		if (m_uniform_view)       m_uniform_view->set_value(view);
 		if (m_uniform_model)      m_uniform_model->set_value(model);
 		if (m_uniform_viewport)   m_uniform_viewport->set_value(viewport);
+	}
+
+	void effect::pass::bind(parameters* params) const
+	{
+		render::set_blend_state(m_blend);
+		render::set_cullface_state(m_cullface);
+		render::set_depth_buffer_state(m_depth);
+		m_shader->bind();
 		//if null use default
 		if (!params) params = &m_effect->m_parameters;
 		//uniform
@@ -1304,8 +1348,8 @@ namespace hcube
 			case PT_TEXTURE_ARRAY:
 			case PT_NONE:
 				/* void */
-			break;
-			//uniform
+				break;
+				//uniform
 			case PT_INT: m_uniform[i]->set_value(param->get_int()); break;
 			case PT_FLOAT: m_uniform[i]->set_value(param->get_float()); break;
 			case PT_TEXTURE: m_uniform[i]->set_value(param->get_texture()); break;
@@ -1330,19 +1374,26 @@ namespace hcube
 	}
 
 	//safe enable pass effect
-	render_state effect::pass::safe_bind(
+	render_state effect::pass::safe_bind
+	(
 		const vec4& viewport,
 		const mat4& projection,
 		const mat4& view,
 		const mat4& model, 
 		parameters* params
-	)
+	) const
 	{
 		render_state state = render::get_render_state();
 		bind(viewport, projection,view,model,params);
 		return state;
 	}
 
+	render_state effect::pass::safe_bind(parameters* params) const
+	{
+		render_state state = render::get_render_state();
+		bind(params);
+		return state;
+	}
 	//safe disable pass effect
 	void effect::pass::safe_unbind(const render_state& state)
 	{
@@ -1350,6 +1401,24 @@ namespace hcube
 		unbind();
 	}
 
+    enum shader_define_rendering
+    {
+        DEF_RENDERING_COLOR,
+        DEF_RENDERING_AMBIENT_LIGHT,
+        DEF_RENDERING_DIRECTION_LIGHT,
+        DEF_RENDERING_POINT_LIGHT,
+        DEF_RENDERING_SPOT_LIGHT
+    };
+    
+    const std::string shader_define_table[]=
+    {
+        "RENDERING_COLOR",
+        "RENDERING_AMBIENT_LIGHT",
+        "RENDERING_DIRECTION_LIGHT",
+        "RENDERING_POINT_LIGHT",
+        "RENDERING_SPOT_LIGHT"
+    };
+    
 	//load effect
 	bool effect::load(resources_manager& resources, const std::string& path)
 	{
@@ -1383,89 +1452,145 @@ namespace hcube
 			default: assert(0); break;
 			}
 			//save id
-			m_parameters[i]->m_id = i;
+			m_parameters[i]->m_id = (int)i;
 			//add into map
-			m_map_parameters[e_context.m_parameters[i].m_name] = i;
+			m_map_parameters[e_context.m_parameters[i].m_name] = (int)i;
 		}
+        //n_pass
+        size_t n_techniques_parser = e_context.m_techniques.size();
 		//add tech
-		for (size_t t = 0; t != e_context.m_techniques.size(); ++t)
+		for (size_t t = 0; t != n_techniques_parser; ++t)
 		{
 			//add into map
-			technique& this_technique = m_map_techniques[e_context.m_techniques[t].m_name];
+            technique& this_technique = m_map_techniques[e_context.m_techniques[t].m_name];
+            //n pass
+            size_t n_pass_parser = e_context.m_techniques[t].m_pass.size();
 			//alloc pass
-			this_technique.resize(e_context.m_techniques[t].m_pass.size());
+			this_technique.reserve(n_pass_parser);
 			//add pass
-			for (size_t p = 0; p != this_technique.size(); ++p)
-			{
-				//ref
-				effect_parser::pass_field& parser_pass = e_context.m_techniques[t].m_pass[p];
-				//get all values
-				this_technique[p].m_effect   = this;
-				this_technique[p].m_blend    = parser_pass.m_blend;
-				this_technique[p].m_cullface = parser_pass.m_cullface;
-				this_technique[p].m_depth    = parser_pass.m_depth;
-				//shader
-				if (parser_pass.m_shader.m_name)
-				{
-					this_technique[p].m_shader = resources.get_shader(parser_pass.m_shader.m_text);
-				}
-				else
-				{
-					this_technique[p].m_shader = shader::snew();
-					if (!this_technique[p].m_shader->load_effect(
-						parser_pass.m_shader.m_text,
-						path,
-						parser_pass.m_shader.m_line - 1,
-						{}))
-					{
-						std::cout << "Effect: "
-								  << path
-								  << std::endl
-								  << "Error from technique: " << e_context.m_techniques[t].m_name << ", pass["<< p+1 << "]"
-								  << std::endl;
+			for (size_t p = 0; p != n_pass_parser; ++p)
+            {
+                //ref
+                effect_parser::pass_field& parser_pass = e_context.m_techniques[t].m_pass[p];
+                //lights sub pass
+                int light_sub_pass = parser_pass.m_lights;
+                //Type render
+                shader_define_rendering current_shader_def = DEF_RENDERING_COLOR;
+                //pass
+                while(light_sub_pass)
+                {
+                    //sub light
+                    if(light_sub_pass & effect_parser::LF_BASE)
+                    {
+                        current_shader_def = DEF_RENDERING_COLOR;
+                        light_sub_pass    ^= effect_parser::LF_BASE;
+                    }
+                    else if(light_sub_pass & effect_parser::LF_AMBIENT)
+                    {
+                        current_shader_def = DEF_RENDERING_AMBIENT_LIGHT;
+                        light_sub_pass    ^= effect_parser::LF_AMBIENT;
+                    }
+                    else if(light_sub_pass & effect_parser::LF_DIRECTION)
+                    {
+                        current_shader_def = DEF_RENDERING_DIRECTION_LIGHT;
+                        light_sub_pass    ^= effect_parser::LF_DIRECTION;
+                    }
+                    else if(light_sub_pass & effect_parser::LF_POINT)
+                    {
+                        current_shader_def = DEF_RENDERING_POINT_LIGHT;
+                        light_sub_pass    ^= effect_parser::LF_POINT;
+                    }
+                    else if(light_sub_pass & effect_parser::LF_SPOT)
+                    {
+                        current_shader_def = DEF_RENDERING_SPOT_LIGHT;
+                        light_sub_pass    ^= effect_parser::LF_SPOT;
+                    }
+                    //add pass
+                    this_technique.push_back(effect::pass());
+                    //pass
+                    effect::pass& this_pass = this_technique[this_technique.size()-1];
+                    //get all values
+                    this_pass.m_effect   = this;
+                    this_pass.m_blend    = parser_pass.m_blend;
+                    this_pass.m_cullface = parser_pass.m_cullface;
+                    this_pass.m_depth    = parser_pass.m_depth;
+                    //shader
+                    if (parser_pass.m_shader.m_name)
+                    {
+                        this_pass.m_shader = resources.get_shader(parser_pass.m_shader.m_text);
+                    }
+                    else
+                    {
+                        std::vector< std::string > shader_defines{shader_define_table[current_shader_def]};
+                        //shader
+                        this_pass.m_shader = shader::snew();
+                        //load effect
+                        if (!this_pass.m_shader->load_effect(
+                             parser_pass.m_shader.m_text,
+                             path,
+                             parser_pass.m_shader.m_line - 1,
+                             shader_defines))
+                        {
+                            //defines
+                            std::string debug_defines;
+                            for(std::string& def : shader_defines) debug_defines += (def+" ");
+                            //
+                            std::cout << "Effect: "
+                                      << path
+                                      << std::endl
+                                      << "Error from technique: " << e_context.m_techniques[t].m_name << ", pass["<< p << "] "
+                                      << debug_defines
+                                      << std::endl;
 
-					}
-				}
-				//default uniform
-				this_technique[p].m_uniform_model      = this_technique[p].m_shader->get_uniform("model");
-				this_technique[p].m_uniform_view       = this_technique[p].m_shader->get_uniform("view");
-				this_technique[p].m_uniform_projection = this_technique[p].m_shader->get_uniform("projection");
-				this_technique[p].m_uniform_viewport   = this_technique[p].m_shader->get_uniform("viewport");
-				//lights uniforms
-				if (parser_pass.m_lights.m_on)
-				{
-					//add support lights
-					this_technique[p].m_support_light = true;
-					//ambient
-					this_technique[p].m_uniform_ambient_light = this_technique[p].m_shader->get_uniform("ambient_light");
-					//n lights
-					this_technique[p].m_uniform_n_lights_used = this_technique[p].m_shader->get_uniform("n_lights_used");
-					//alloc
-					this_technique[p].m_uniform_lights.resize(parser_pass.m_lights.m_n_lights);
-					//alloc
-					this_technique[p].m_uniform_shadow_lights.resize(parser_pass.m_lights.m_n_lights);
-					//add uniforms
-					for (size_t l = 0; l != parser_pass.m_lights.m_n_lights; ++l)
-					{
-						this_technique[p].m_uniform_lights[l].get_uniform(l, this_technique[p].m_shader);
-						this_technique[p].m_uniform_shadow_lights[l].get_uniform(l, this_technique[p].m_shader);
-					}
-				}
-				//get uniforms
-				for (auto it : m_map_parameters)
-				{
-					//get
-					uniform* u_shader = this_technique[p].m_shader->get_uniform(it.first.c_str());
-					//test
-					if (u_shader)
-					{
-						//push
-						this_technique[p].m_param_id.push_back(it.second);
-						this_technique[p].m_uniform.push_back(u_shader);
-					}
-				}
-
+                        }
+                    }
+                    //default uniform
+                    this_pass.m_uniform_model      = this_pass.m_shader->get_uniform("model");
+                    this_pass.m_uniform_view       = this_pass.m_shader->get_uniform("view");
+                    this_pass.m_uniform_projection = this_pass.m_shader->get_uniform("projection");
+                    this_pass.m_uniform_viewport   = this_pass.m_shader->get_uniform("viewport");
+					//default uniform (array?)
+					if (!this_pass.m_uniform_model)      this_pass.m_uniform_model = this_pass.m_shader->get_uniform("model[0]");
+					if (!this_pass.m_uniform_view)       this_pass.m_uniform_view = this_pass.m_shader->get_uniform("view[0]");
+					if (!this_pass.m_uniform_projection) this_pass.m_uniform_projection = this_pass.m_shader->get_uniform("projection[0]");
+					if (!this_pass.m_uniform_viewport)   this_pass.m_uniform_viewport = this_pass.m_shader->get_uniform("viewport[0]");
+                    //default true
+                    this_pass.m_support_light = true;
+                    //lights uniforms
+                    switch (current_shader_def)
+                    {
+                        case DEF_RENDERING_SPOT_LIGHT:
+                            this_pass.m_uniform_spot.get_uniform(0, this_pass.m_shader);
+                        break;
+                        case DEF_RENDERING_POINT_LIGHT:
+                            this_pass.m_uniform_point.get_uniform(0, this_pass.m_shader);
+                        break;
+                        case DEF_RENDERING_DIRECTION_LIGHT:
+                            this_pass.m_uniform_direction.get_uniform(0, this_pass.m_shader);
+                        break;
+                        case DEF_RENDERING_AMBIENT_LIGHT:
+                            this_pass.m_uniform_ambient_light = this_pass.m_shader->get_uniform("ambient_light");
+                            break;
+                        default:
+                            this_pass.m_support_light = false;
+                            break;
+                    }
+                    //get uniforms
+                    for (auto it : m_map_parameters)
+                    {
+                        //get
+                        uniform* u_shader = this_pass.m_shader->get_uniform(it.first.c_str());
+                        //test
+                        if (u_shader)
+                        {
+                            //push
+                            this_pass.m_param_id.push_back(it.second);
+                            this_pass.m_uniform.push_back(u_shader);
+                        }
+                    }
+                }
 			}
+            
 		}
 		
 		return true;

@@ -1,4 +1,4 @@
-effect "base_texture_normal"
+effect "base_texture_normal_specular"
 {
 	diffuse_map  texture("rocks")
 	normal_map   texture("rocks_normal")

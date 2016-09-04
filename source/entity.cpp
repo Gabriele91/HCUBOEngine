@@ -26,8 +26,8 @@ namespace hcube
 	component_ptr entity::add_component(component_ptr component_t)
 	{
 		component_t->m_entity = this;
-		component_t->on_attach(*this);
 		m_components[component_t->get_id()] = component_t;
+		component_t->on_attach(*this);
 		return component_t;
 	}
 
@@ -167,23 +167,23 @@ namespace hcube
 		}
 	}
 
-	void entity::send_message_to_components_upwards(const message& message)
+	void entity::send_message_to_components_upwards(const message& message, bool to_this_entity)
 	{
-		send_message_to_components(message);
+		if(to_this_entity) send_message_to_components(message);
 
 		if (m_parent)
 		{
-			m_parent->send_message_to_components_upwards(message);
+			m_parent->send_message_to_components_upwards(message,true);
 		}
 	}
 
-	void entity::send_message_to_components_downwards(const message& message)
+	void entity::send_message_to_components_downwards(const message& message, bool to_this_entity)
 	{
-		send_message_to_components(message);
+		if (to_this_entity) send_message_to_components(message);
 
 		for (auto it_entity : m_entities)
 		{
-			it_entity.second->send_message_to_components_downwards(message);
+			it_entity.second->send_message_to_components_downwards(message, true);
 		}
 	}
 
@@ -192,23 +192,23 @@ namespace hcube
 		if (has_component(id)) m_components[id]->on_message(message);
 	}
 
-	void entity::send_message_to_component_upwards(component_id id, const message& message)
+	void entity::send_message_to_component_upwards(component_id id, const message& message, bool to_this_entity)
 	{
-		send_message_to_component_upwards(id, message);
+		if (to_this_entity) send_message_to_component(id, message);
 
 		if (m_parent)
 		{
-			m_parent->send_message_to_component_upwards(id, message);
+			m_parent->send_message_to_component_upwards(id, message, true);
 		}
 	}
 
-	void entity::send_message_to_component_downwards(component_id id, const message& message)
+	void entity::send_message_to_component_downwards(component_id id, const message& message, bool to_this_entity)
 	{
-		send_message_to_component(id, message);
+		if (to_this_entity) send_message_to_component(id, message);
 
 		for (auto it_entity : m_entities)
 		{
-			it_entity.second->send_message_to_component_downwards(id, message);
+			it_entity.second->send_message_to_component_downwards(id, message, true);
 		}
 	}
 
