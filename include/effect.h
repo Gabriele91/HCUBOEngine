@@ -119,22 +119,33 @@ namespace hcube
 			uniform_light_point      m_uniform_point;
 			uniform_light_direction  m_uniform_direction;
 			//unsafe
-			void bind(
-				const glm::vec4& viewport,
-				const glm::mat4& projection,
-				const glm::mat4& view,
-				const glm::mat4& model, 
-				parameters* params = nullptr
-			);
-			void unbind();
-			//safe
-			render_state safe_bind(
+			void bind
+			(
 				const glm::vec4& viewport,
 				const glm::mat4& projection,
 				const glm::mat4& view,
 				const glm::mat4& model,
 				parameters* params = nullptr
-			);
+			) const;
+
+			void bind(parameters* params = nullptr) const;
+
+			void unbind();
+			//safe
+			render_state safe_bind
+			(
+				const glm::vec4& viewport,
+				const glm::mat4& projection,
+				const glm::mat4& view,
+				const glm::mat4& model,
+				parameters* params = nullptr
+			) const;
+
+			render_state safe_bind
+			(
+				parameters* params = nullptr
+			) const;
+
 			void safe_unbind(const render_state&);
 		};
 

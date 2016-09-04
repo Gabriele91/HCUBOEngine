@@ -25,12 +25,17 @@ namespace hcube
 			TMAG_NEAREST,
 			TEDGE_CLAMP,
 			TEDGE_CLAMP,
+			TEDGE_CLAMP,
 			false
 		};
 		//depth
 		if (is_cube_map)
 		{
-			texture_raw_data_information cube_raw_data[6]{ raw_data };
+			texture_raw_data_information cube_raw_data[6]
+			{
+				raw_data,raw_data,raw_data,
+				raw_data,raw_data,raw_data,
+			};
 			m_depth_texture = render::create_cube_texture(cube_raw_data, gpu_data);
 		}
 		else

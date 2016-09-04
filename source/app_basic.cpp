@@ -346,6 +346,7 @@ namespace hcube
 			l_lights[0]->set_color({ 0.0f, 1.0f, 0.0f }, { 0.0f, 1.0f, 0.0f });
 			e_lights[0]->set_name("light_green");
 
+			l_lights[1]->set_shadow({ 256,256 });
 			l_lights[1]->set_color({ 1.0f, 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f });
 			e_lights[1]->set_name("light_red");
 
@@ -357,7 +358,7 @@ namespace hcube
 			{
 				t_lights[i - 1]->position({
                     std::sin((constants::pi<float>()*0.66)*i)*15.,
-					5.0,
+					10.0,
                     std::cos((constants::pi<float>()*0.66)*i)*15.,
 				});
 			}

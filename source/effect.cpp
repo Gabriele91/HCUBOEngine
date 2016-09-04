@@ -1311,23 +1311,30 @@ namespace hcube
 
 
 	//enable pass effect
-	void effect::pass::bind(
+	void effect::pass::bind
+	(
 		const vec4& viewport,
 		const mat4& projection,
 		const mat4& view,
 		const mat4& model, 
 		parameters* params
-	)
+	) const
 	{
-		render::set_blend_state(m_blend);
-		render::set_cullface_state(m_cullface);
-		render::set_depth_buffer_state(m_depth);
-		m_shader->bind();
+		//bind
+		bind(params);
 		//default uniforms
 		if (m_uniform_projection) m_uniform_projection->set_value(projection);
 		if (m_uniform_view)       m_uniform_view->set_value(view);
 		if (m_uniform_model)      m_uniform_model->set_value(model);
 		if (m_uniform_viewport)   m_uniform_viewport->set_value(viewport);
+	}
+
+	void effect::pass::bind(parameters* params) const
+	{
+		render::set_blend_state(m_blend);
+		render::set_cullface_state(m_cullface);
+		render::set_depth_buffer_state(m_depth);
+		m_shader->bind();
 		//if null use default
 		if (!params) params = &m_effect->m_parameters;
 		//uniform
@@ -1341,8 +1348,8 @@ namespace hcube
 			case PT_TEXTURE_ARRAY:
 			case PT_NONE:
 				/* void */
-			break;
-			//uniform
+				break;
+				//uniform
 			case PT_INT: m_uniform[i]->set_value(param->get_int()); break;
 			case PT_FLOAT: m_uniform[i]->set_value(param->get_float()); break;
 			case PT_TEXTURE: m_uniform[i]->set_value(param->get_texture()); break;
@@ -1367,19 +1374,26 @@ namespace hcube
 	}
 
 	//safe enable pass effect
-	render_state effect::pass::safe_bind(
+	render_state effect::pass::safe_bind
+	(
 		const vec4& viewport,
 		const mat4& projection,
 		const mat4& view,
 		const mat4& model, 
 		parameters* params
-	)
+	) const
 	{
 		render_state state = render::get_render_state();
 		bind(viewport, projection,view,model,params);
 		return state;
 	}
 
+	render_state effect::pass::safe_bind(parameters* params) const
+	{
+		render_state state = render::get_render_state();
+		bind(params);
+		return state;
+	}
 	//safe disable pass effect
 	void effect::pass::safe_unbind(const render_state& state)
 	{
@@ -1535,6 +1549,11 @@ namespace hcube
                     this_pass.m_uniform_view       = this_pass.m_shader->get_uniform("view");
                     this_pass.m_uniform_projection = this_pass.m_shader->get_uniform("projection");
                     this_pass.m_uniform_viewport   = this_pass.m_shader->get_uniform("viewport");
+					//default uniform (array?)
+					if (!this_pass.m_uniform_model)      this_pass.m_uniform_model = this_pass.m_shader->get_uniform("model[0]");
+					if (!this_pass.m_uniform_view)       this_pass.m_uniform_view = this_pass.m_shader->get_uniform("view[0]");
+					if (!this_pass.m_uniform_projection) this_pass.m_uniform_projection = this_pass.m_shader->get_uniform("projection[0]");
+					if (!this_pass.m_uniform_viewport)   this_pass.m_uniform_viewport = this_pass.m_shader->get_uniform("viewport[0]");
                     //default true
                     this_pass.m_support_light = true;
                     //lights uniforms

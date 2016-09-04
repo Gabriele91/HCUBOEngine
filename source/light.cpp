@@ -233,7 +233,7 @@ namespace hcube
 		output.push_back(rotate(get_view(), radians(90.0f), { 0.0f, 1.0f, 0.0f })); // +x
 		output.push_back(rotate(get_view(), radians(90.0f), { 0.0f,-1.0f, 0.0f })); // -x
 		//Y
-		output.push_back(rotate(get_view(), radians(90.0f), { 1.0f, 0.0f, 0.0f })); // +y
+		output.push_back(rotate(get_view(), radians(90.0f), {  1.0f, 0.0f, 0.0f })); // +y
 		output.push_back(rotate(get_view(), radians(90.0f), { -1.0f, 0.0f, 0.0f }));// -y
 		//Z
 		output.push_back(get_view());											    // +z

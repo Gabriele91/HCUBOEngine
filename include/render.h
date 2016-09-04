@@ -505,7 +505,42 @@ namespace hcube
 		texture_mag_filter_type		 m_mag_type;
 		texture_edge_type			 m_edge_s;
 		texture_edge_type			 m_edge_t;
+		texture_edge_type			 m_edge_r;
 		bool						 m_build_mipmap;
+		//cube texture
+		texture_gpu_data_information
+		(
+			texture_min_filter_type		 min_type,
+			texture_mag_filter_type		 mag_type,
+			texture_edge_type			 edge_s,
+			texture_edge_type			 edge_t,
+			texture_edge_type			 edge_r,
+			bool						 build_mipmap
+		)
+		{
+			m_min_type = min_type;
+			m_mag_type = mag_type;
+			m_edge_s = edge_s;
+			m_edge_t = edge_t;
+			m_edge_r = edge_r;
+			m_build_mipmap = build_mipmap;
+		}
+		//2D texture
+		texture_gpu_data_information
+		(
+			texture_min_filter_type		 min_type,
+			texture_mag_filter_type		 mag_type,
+			texture_edge_type			 edge_s,
+			texture_edge_type			 edge_t,
+			bool						 build_mipmap
+		)
+		{
+			m_min_type = min_type;
+			m_mag_type = mag_type;
+			m_edge_s = edge_s;
+			m_edge_t = edge_t;
+			m_build_mipmap = build_mipmap;
+		}
 	};
 
 #define LIB_EXPORT

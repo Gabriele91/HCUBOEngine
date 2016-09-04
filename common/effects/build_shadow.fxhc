@@ -89,7 +89,7 @@ technique "shadow_point"
 			layout (triangle_strip, max_vertices=18) out;
 			//uniform
 			uniform mat4 projection;
-			uniform mat4 cube_view[6];
+			uniform mat4 view[6];
 			//input shader
 			in vec2 geom_uvcoord[3];
 			//output to frag shader
@@ -107,8 +107,8 @@ technique "shadow_point"
 					for(int i = 0; i < 3; ++i) 
 					{
 						frag_uvcoord  = geom_uvcoord[i]; 
-						frag_position = gl_in[i].gl_Position;
-						gl_Position   = projection * cube_view[face] * frag_position;
+						frag_position = view[face] * gl_in[i].gl_Position;
+						gl_Position   = projection * frag_position;
 						EmitVertex();
 					}    
 					//end primitive
@@ -122,7 +122,7 @@ technique "shadow_point"
 			in vec4 frag_position;
 			in vec2 frag_uvcoord;
 			//light
-			uniform vec3  light_pos;
+			//uniform vec3  light_position;
 			uniform float far_plane;
 			//map
             uniform sampler2D diffuse_map;
@@ -138,7 +138,7 @@ technique "shadow_point"
 					discard;
 				}
 				// get distance between fragment and light source
-				float light_distance = length(frag_position.xyz - light_pos);
+				float light_distance = length(frag_position.xyz);
 				// map to [0;1] range by dividing by far_plane
 				light_distance = light_distance / far_plane;
 				// write this as modified depth

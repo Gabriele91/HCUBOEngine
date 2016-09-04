@@ -335,6 +335,26 @@ namespace hcube
 
 	}
 
+	void render_queues::compute_opaque_queue(const vec3& position, float radius)
+	{
+		m_cull_opaque = nullptr;
+		//build queue opaque
+		for (render_queues::element& weak_element : m_opaque)
+		{
+			auto entity = weak_element.lock();
+			auto t_entity = entity->get_component<transform>();
+			auto r_entity = entity->get_component<renderable>();
+
+			if(r_entity->is_enabled())
+			if(!r_entity->has_support_culling() ||
+				r_entity->get_bounding_box().is_inside(t_entity->get_matrix(), position, radius))
+			{
+				weak_element.m_depth = distance(position, t_entity->get_global_position());
+				add_call_opaque(&weak_element);
+			}
+		}
+	}
+
 	rendering_pass_shadow::rendering_pass_shadow(resources_manager& resources)
 	{
 		m_effect					 = resources.get_effect("build_shadow");
@@ -351,7 +371,9 @@ namespace hcube
         }
         if(m_technique_shadow_point && (*m_technique_shadow_point).size())
         {
-            m_shadow_point_mask = (*m_technique_shadow_point)[0].m_shader->get_uniform("mask");
+			m_shadow_point_mask			  = (*m_technique_shadow_point)[0].m_shader->get_uniform("mask");
+			m_shadow_point_light_position = (*m_technique_shadow_point)[0].m_shader->get_uniform("light_position");
+			m_shadow_point_far_plane	  = (*m_technique_shadow_point)[0].m_shader->get_uniform("far_plane");
         }
         if(m_technique_shadow_direction && (*m_technique_shadow_direction).size())
         {
@@ -371,31 +393,58 @@ namespace hcube
 		auto l_light = e_light->get_component<light>();
 		//enable shadow?
 		if (!l_light->is_enable_shadow()) return;
-		//point to current 
+		//current technique
 		effect::technique* current_technique = nullptr;
+		//current mask uniform
+		uniform* u_shadow_mask = nullptr;
 		//type
 		switch (l_light->get_type())
 		{
-			case light::SPOT_LIGHT:  current_technique = m_technique_shadow_spot; break;
-			case light::POINT_LIGHT: current_technique = m_technique_shadow_point; break;
+			case light::SPOT_LIGHT: 
+				current_technique = m_technique_shadow_spot;
+				u_shadow_mask	  = m_shadow_spot_mask;
+			break;
+			case light::POINT_LIGHT: 
+				current_technique = m_technique_shadow_point;
+				u_shadow_mask	  = m_shadow_point_mask;
+			break;
 			default: return;
 		}
 		//pass
 		effect::pass& shadow_pass = (*current_technique)[0];
-		//update view frustum and queue
-		queues.compute_opaque_queue(l_light->update_frustum());
 		//enable shadow buffer/texture
 		l_light->get_shadow_buffer().bind();
 		//clear
 		render::clear();
 		//applay pass
-		auto state = shadow_pass.safe_bind
-		(
-			l_light->get_viewport(),
-			l_light->get_projection(),
-			l_light->get_view(),
-			mat4(1)
-		);
+		auto state = shadow_pass.safe_bind();
+		//default uniform
+		shadow_pass.m_uniform_projection->set_value(l_light->get_projection());
+		//////////////////////////////////////////////////////////////////////////////
+		//spot light vs point lights
+		switch (l_light->get_type())
+		{
+		case light::SPOT_LIGHT:
+			//update view frustum and queue
+			queues.compute_opaque_queue(l_light->update_frustum());
+			//set view
+			shadow_pass.m_uniform_view->set_value(l_light->get_view());
+		break;
+		case light::POINT_LIGHT:
+			//build queue by sphere
+			queues.compute_opaque_queue
+			(
+				e_light->get_component<transform>()->get_global_position(),
+				l_light->get_radius()
+			);
+			//uniform
+			shadow_pass.m_uniform_view->set_value(l_light->get_cube_view());
+			//radius
+			m_shadow_point_far_plane->set_value(l_light->get_radius());
+		break;
+		default: break;
+		}
+		//////////////////////////////////////////////////////////////////////////////
 		//default texture
 		texture::ptr default_texture = m_diffuse_map->get_texture();
 		//set viewport
@@ -423,7 +472,7 @@ namespace hcube
                 if (auto p_mask  = e_material->get_default_parameter(material::MAT_DEFAULT_MASK))
                 {
                     //uniform
-                    m_shadow_spot_mask->set_value(p_mask->get_float());
+					u_shadow_mask->set_value(p_mask->get_float());
                     //not bind default
                     do_default_mask = false;
                 }
@@ -431,19 +480,17 @@ namespace hcube
             //diffuse map
             if(do_default_tex)  render::bind_texture(default_texture->get_context_texture(), 0);
             //uniform
-            if(do_default_mask) m_shadow_spot_mask->set_value(m_mask->get_float());
+            if(do_default_mask) u_shadow_mask->set_value(m_mask->get_float());
 			//set transform
 			shadow_pass.m_uniform_model->set_value(t_entity->get_matrix());
 			//draw
 			r_entity->draw();
 		}
-		//disable
-		shadow_pass.safe_unbind(state);
 		//disable shadow buffer/texture
 		l_light->get_shadow_buffer().unbind();
+		//disable
+		shadow_pass.safe_unbind(state);
 	}
-    
-    
     
     rendering_pass_debug_spot_lights::rendering_pass_debug_spot_lights(resources_manager& resources)
     {

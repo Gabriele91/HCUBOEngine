@@ -759,20 +759,20 @@ R"GLSL(
 
 	void uniform::set_value(const vec2* v2, size_t n)
 	{
-		glUniform2fv(m_id, n, (const float*)v2);
+		glUniform2fv(m_id, n, value_ptr(*v2));
 	}
 
 	void uniform::set_value(const vec3* v3, size_t n)
 	{
-		glUniform3fv(m_id, n, (const float*)v3);
+		glUniform3fv(m_id, n, value_ptr(*v3));
 	}
 	void uniform::set_value(const vec4* v4, size_t n)
 	{
-		glUniform4fv(m_id, n, (const float*)v4);
+		glUniform4fv(m_id, n, value_ptr(*v4));
 	}
 	void uniform::set_value(const mat4* m4, size_t n)
 	{
-		glUniformMatrix4fv(m_id, n, GL_FALSE, (const float*)m4);
+		glUniformMatrix4fv(m_id, n, GL_FALSE, value_ptr(*m4));
 	}
 
 	void uniform::set_value(const std::vector < int >& i)

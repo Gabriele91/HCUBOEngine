@@ -935,6 +935,7 @@ namespace hcube
 			glTexParameteri(ctx_texture->m_type_texture, GL_TEXTURE_MAG_FILTER, get_texture_mag_filter(info.m_mag_type));
 			glTexParameteri(ctx_texture->m_type_texture, GL_TEXTURE_WRAP_S, get_texture_edge_type(info.m_edge_s));
 			glTexParameteri(ctx_texture->m_type_texture, GL_TEXTURE_WRAP_T, get_texture_edge_type(info.m_edge_t));
+			glTexParameteri(ctx_texture->m_type_texture, GL_TEXTURE_WRAP_R, get_texture_edge_type(info.m_edge_r));
 			// Generate mipmaps, by the way.
 			if (info.m_build_mipmap) glGenerateMipmap(ctx_texture->m_type_texture);
 			//disable texture
@@ -1017,28 +1018,31 @@ namespace hcube
 			{
 				if (t_field.m_type == RT_COLOR)
 				{
-					glFramebufferTexture2D(GL_FRAMEBUFFER,
+					glFramebufferTexture(
+						GL_FRAMEBUFFER,
 						(GLenum)(GL_COLOR_ATTACHMENT0 + (color_count++)),
-						t_field.m_texture->m_type_texture,
 						t_field.m_texture->m_tbo,
-						0);
+						0
+					);
 				}
 				else if ((!depth_attach) && t_field.m_type == RT_DEPTH)
 				{
-					glFramebufferTexture2D(GL_FRAMEBUFFER,
+					glFramebufferTexture(
+						GL_FRAMEBUFFER,
 						GL_DEPTH_ATTACHMENT,
-						t_field.m_texture->m_type_texture,
 						t_field.m_texture->m_tbo,
-						0);
+						0
+					);
 					depth_attach = true;
 				}
 				else if ((!depth_attach) && t_field.m_type == RT_DEPTH_STENCIL)
 				{
-					glFramebufferTexture2D(GL_FRAMEBUFFER,
+					glFramebufferTexture(
+						GL_FRAMEBUFFER,
 						GL_DEPTH_STENCIL_ATTACHMENT,
-						t_field.m_texture->m_type_texture,
 						t_field.m_texture->m_tbo,
-						0);
+						0
+					);
 					depth_attach = true;
 				}
 			}

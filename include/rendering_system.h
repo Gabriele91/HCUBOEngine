@@ -64,6 +64,8 @@ namespace hcube
 		void compute_light_queue(const frustum& view_frustum);
 		void compute_opaque_queue(const frustum& view_frustum);
 		void compute_translucent_queue(const frustum& view_frustum);
+		//sphere
+		void compute_opaque_queue(const vec3& position, float radius);
 	};
 
 	#define HCUBE_FOREACH_QUEUE(name,queue)\
@@ -91,9 +93,14 @@ namespace hcube
 		effect::technique* m_technique_shadow_spot;
 		effect::technique* m_technique_shadow_point;
         effect::technique* m_technique_shadow_direction;
-        uniform*           m_shadow_spot_mask     { nullptr };
-        uniform*           m_shadow_point_mask    { nullptr };
-        uniform*           m_shadow_direction_mask{ nullptr };
+		//spot light
+        uniform*           m_shadow_spot_mask		    { nullptr };
+		//point light
+		uniform*           m_shadow_point_mask			{ nullptr };
+		uniform*           m_shadow_point_light_position{ nullptr };
+		uniform*           m_shadow_point_far_plane		{ nullptr };
+		//direction light
+        uniform*           m_shadow_direction_mask		{ nullptr };
 
 	public:
 
