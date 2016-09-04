@@ -181,16 +181,16 @@ namespace hcube
 	//shadow
 	bool light::set_shadow(const ivec2& size)
 	{
-		if (m_type != light::SPOT_LIGHT) return false;
+		if (m_type == light::DIRECTION_LIGHT) return false;
 		//set to true
 		m_shadow.m_enable = true;
-		m_shadow.m_buffer.init(size);
+		m_shadow.m_buffer.init(size, m_type == light::POINT_LIGHT);
 		//viewport
 		m_shadow.m_viewport = ivec4{ 0, 0, size.x, size.y };
 		//update projection
 		update_projection_matrix();
-        //end
-        return true;
+		//end
+		return true;
 	}
   
 	void light::disable_shadow()
@@ -221,6 +221,25 @@ namespace hcube
 	{
 		update_view_matrix();
 		return m_view;
+	}
+
+	const std::vector<mat4> light::get_cube_view()
+	{
+		//cube view
+		std::vector<mat4> output;
+		//reserve
+		output.reserve(6);
+		//X
+		output.push_back(rotate(get_view(), radians(90.0f), { 0.0f, 1.0f, 0.0f })); // +x
+		output.push_back(rotate(get_view(), radians(90.0f), { 0.0f,-1.0f, 0.0f })); // -x
+		//Y
+		output.push_back(rotate(get_view(), radians(90.0f), { 1.0f, 0.0f, 0.0f })); // +y
+		output.push_back(rotate(get_view(), radians(90.0f), { -1.0f, 0.0f, 0.0f }));// -y
+		//Z
+		output.push_back(get_view());											    // +z
+		output.push_back(rotate(get_view(), radians(180.0f), { 0.0f, 1.0f, 0.0f }));// -z
+		//return
+		return output;
 	}
 
 	void light::on_attach(entity& entity)

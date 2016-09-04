@@ -194,6 +194,8 @@ namespace hcube
         
         const mat4& get_view();
 
+		const std::vector<mat4> get_cube_view();
+
 		const frustum& get_frustum() const;
 
 		const frustum& update_frustum();

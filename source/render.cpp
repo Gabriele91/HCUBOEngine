@@ -849,13 +849,11 @@ namespace hcube
 			}
 		}
 
-		context_texture* create_texture(
-			texture_raw_data_information data,
-			texture_min_filter_type min_type,
-			texture_mag_filter_type mag_type,
-			texture_edge_type       edge_s,
-			texture_edge_type       edge_t,
-			bool                    build_mipmap)
+		context_texture* create_texture
+		(
+			const texture_raw_data_information& data,
+			const texture_gpu_data_information& info
+		)
 		{
 
 			//new texture
@@ -869,7 +867,8 @@ namespace hcube
 			//enable texture
 			glBindTexture(ctx_texture->m_type_texture, ctx_texture->m_tbo);
 			//create texture buffer
-			glTexImage2D(
+			glTexImage2D
+			(
 				ctx_texture->m_type_texture,
 				0,
 				gl_format,
@@ -881,12 +880,12 @@ namespace hcube
 				data.m_bytes
 			);
 			//set filters
-			glTexParameteri(ctx_texture->m_type_texture, GL_TEXTURE_MIN_FILTER, get_texture_min_filter(min_type));
-			glTexParameteri(ctx_texture->m_type_texture, GL_TEXTURE_MAG_FILTER, get_texture_mag_filter(mag_type));
-			glTexParameteri(ctx_texture->m_type_texture, GL_TEXTURE_WRAP_S, get_texture_edge_type(edge_s));
-			glTexParameteri(ctx_texture->m_type_texture, GL_TEXTURE_WRAP_T, get_texture_edge_type(edge_t));
+			glTexParameteri(ctx_texture->m_type_texture, GL_TEXTURE_MIN_FILTER, get_texture_min_filter(info.m_min_type));
+			glTexParameteri(ctx_texture->m_type_texture, GL_TEXTURE_MAG_FILTER, get_texture_mag_filter(info.m_mag_type));
+			glTexParameteri(ctx_texture->m_type_texture, GL_TEXTURE_WRAP_S, get_texture_edge_type(info.m_edge_s));
+			glTexParameteri(ctx_texture->m_type_texture, GL_TEXTURE_WRAP_T, get_texture_edge_type(info.m_edge_t));
 			// Generate mipmaps, by the way.
-			if (build_mipmap) glGenerateMipmap(ctx_texture->m_type_texture);
+			if (info.m_build_mipmap) glGenerateMipmap(ctx_texture->m_type_texture);
 			//disable texture
 			glBindTexture(ctx_texture->m_type_texture, 0);
 			//test
@@ -897,12 +896,8 @@ namespace hcube
 
 		context_texture* create_cube_texture
 		(
-			texture_raw_data_information data[6],
-			texture_min_filter_type		 min_type,
-			texture_mag_filter_type		 mag_type,
-			texture_edge_type			 edge_s,
-			texture_edge_type			 edge_t,
-			bool						build_mipmap
+			const texture_raw_data_information data[6],
+			const texture_gpu_data_information& info
 		)
 		{
 
@@ -916,8 +911,8 @@ namespace hcube
 			for (int i = 0; i != 6; ++i)
 			{
 				//format
-				GLenum gl_format	  = get_texture_format(data[i].m_format);
-				GLenum gl_type		  = get_texture_type(data[i].m_type);
+				GLenum gl_format = get_texture_format(data[i].m_format);
+				GLenum gl_type = get_texture_type(data[i].m_type);
 				GLenum gl_type_format = get_texture_type_format(data[i].m_type_format);
 				//enable texture
 				glBindTexture(ctx_texture->m_type_texture, ctx_texture->m_tbo);
@@ -936,12 +931,12 @@ namespace hcube
 				);
 			}
 			//set filters
-			glTexParameteri(ctx_texture->m_type_texture, GL_TEXTURE_MIN_FILTER, get_texture_min_filter(min_type));
-			glTexParameteri(ctx_texture->m_type_texture, GL_TEXTURE_MAG_FILTER, get_texture_mag_filter(mag_type));
-			glTexParameteri(ctx_texture->m_type_texture, GL_TEXTURE_WRAP_S, get_texture_edge_type(edge_s));
-			glTexParameteri(ctx_texture->m_type_texture, GL_TEXTURE_WRAP_T, get_texture_edge_type(edge_t));
+			glTexParameteri(ctx_texture->m_type_texture, GL_TEXTURE_MIN_FILTER, get_texture_min_filter(info.m_min_type));
+			glTexParameteri(ctx_texture->m_type_texture, GL_TEXTURE_MAG_FILTER, get_texture_mag_filter(info.m_mag_type));
+			glTexParameteri(ctx_texture->m_type_texture, GL_TEXTURE_WRAP_S, get_texture_edge_type(info.m_edge_s));
+			glTexParameteri(ctx_texture->m_type_texture, GL_TEXTURE_WRAP_T, get_texture_edge_type(info.m_edge_t));
 			// Generate mipmaps, by the way.
-			if (build_mipmap) glGenerateMipmap(ctx_texture->m_type_texture);
+			if (info.m_build_mipmap) glGenerateMipmap(ctx_texture->m_type_texture);
 			//disable texture
 			glBindTexture(ctx_texture->m_type_texture, 0);
 			//test

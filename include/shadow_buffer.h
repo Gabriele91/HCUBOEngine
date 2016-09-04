@@ -20,7 +20,7 @@ namespace hcube
 
 		virtual ~shadow_buffer() { destoy(); }
 
-		bool init(const ivec2& shadow_size);
+		bool init(const ivec2& shadow_size,bool is_cube_map = false);
 
 		void destoy();
 

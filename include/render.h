@@ -499,6 +499,15 @@ namespace hcube
 		texture_type_format m_type_format;
 	};
 
+	struct texture_gpu_data_information
+	{
+		texture_min_filter_type		 m_min_type;
+		texture_mag_filter_type		 m_mag_type;
+		texture_edge_type			 m_edge_s;
+		texture_edge_type			 m_edge_t;
+		bool						 m_build_mipmap;
+	};
+
 #define LIB_EXPORT
 	namespace render
 	{
@@ -573,21 +582,13 @@ namespace hcube
 		//texture
 		LIB_EXPORT context_texture* create_texture
 		(
-			texture_raw_data_information data,
-			texture_min_filter_type      min_type,
-			texture_mag_filter_type		 mag_type,
-			texture_edge_type			 edge_s,
-			texture_edge_type			 edge_t,
-			bool						 build_mipmap
+			const texture_raw_data_information& data,
+			const texture_gpu_data_information& info
 		);
 		LIB_EXPORT context_texture* create_cube_texture
 		(
-			texture_raw_data_information data[6],
-			texture_min_filter_type		 min_type,
-			texture_mag_filter_type		 mag_type,
-			texture_edge_type			 edge_s,
-			texture_edge_type			 edge_t,
-			bool						build_mipmap
+			const texture_raw_data_information  data[6],
+			const texture_gpu_data_information& info
 		);
 		LIB_EXPORT void bind_texture(context_texture*, int n);
 		LIB_EXPORT void unbind_texture(context_texture*);
