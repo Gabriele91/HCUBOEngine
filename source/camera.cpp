@@ -134,4 +134,35 @@ namespace hcube
 		return ocamera;
 	}
 
+
+	void uniform_camera::get_uniform(shader::ptr shader)
+	{
+		m_uniform_viewport   = shader->get_uniform("camera.viewport");
+		m_uniform_projection = shader->get_uniform("camera.projection");
+		m_uniform_view       = shader->get_uniform("camera.view");
+		m_uniform_model      = shader->get_uniform("camera.model");
+		m_uniform_position   = shader->get_uniform("camera.position");
+		m_valid =
+			   m_uniform_viewport
+			|| m_uniform_projection
+			|| m_uniform_view
+			|| m_uniform_model
+			|| m_uniform_position;
+	}
+
+	void uniform_camera::uniform(camera::wptr ref_camera, const mat4& model) const
+	{
+		auto c_camera = ref_camera.lock();
+		if (m_uniform_viewport)     m_uniform_viewport->set_value(c_camera->get_viewport());
+		if (m_uniform_projection)   m_uniform_projection->set_value(c_camera->get_projection());
+		if (m_uniform_view)         m_uniform_view->set_value(c_camera->get_view());
+		if (m_uniform_model)        m_uniform_model->set_value(model);
+		if (m_uniform_position)     m_uniform_position->set_value(vec3(model[3]));
+	}
+
+	bool uniform_camera::is_valid() const
+	{
+		return m_valid;
+	}
+
 }

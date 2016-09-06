@@ -1313,20 +1313,23 @@ namespace hcube
 	//enable pass effect
 	void effect::pass::bind
 	(
-		const vec4& viewport,
-		const mat4& projection,
-		const mat4& view,
-		const mat4& model, 
+		camera::wptr   c_camera,
+		transform_wptr c_camera_transform,
+		transform_wptr c_model_transform,
 		parameters* params
 	) const
 	{
 		//bind
 		bind(params);
 		//default uniforms
-		if (m_uniform_projection) m_uniform_projection->set_value(projection);
-		if (m_uniform_view)       m_uniform_view->set_value(view);
-		if (m_uniform_model)      m_uniform_model->set_value(model);
-		if (m_uniform_viewport)   m_uniform_viewport->set_value(viewport);
+		if (m_uniform_camera.is_valid())
+		{
+			m_uniform_camera.uniform(c_camera, c_camera_transform.lock()->get_matrix());
+		}
+		if (m_uniform_transform.is_valid())
+		{
+			m_uniform_transform.uniform(c_model_transform);
+		}
 	}
 
 	void effect::pass::bind(parameters* params) const
@@ -1376,15 +1379,14 @@ namespace hcube
 	//safe enable pass effect
 	render_state effect::pass::safe_bind
 	(
-		const vec4& viewport,
-		const mat4& projection,
-		const mat4& view,
-		const mat4& model, 
+		camera::wptr   c_camera,
+		transform_wptr c_camera_transform,
+		transform_wptr c_model_transform,
 		parameters* params
 	) const
 	{
 		render_state state = render::get_render_state();
-		bind(viewport, projection,view,model,params);
+		bind(c_camera, c_camera_transform, c_model_transform,params);
 		return state;
 	}
 
@@ -1545,16 +1547,9 @@ namespace hcube
                         }
                     }
                     //default uniform
-                    this_pass.m_uniform_model      = this_pass.m_shader->get_uniform("model");
-                    this_pass.m_uniform_view       = this_pass.m_shader->get_uniform("view");
-                    this_pass.m_uniform_projection = this_pass.m_shader->get_uniform("projection");
-                    this_pass.m_uniform_viewport   = this_pass.m_shader->get_uniform("viewport");
-					//default uniform (array?)
-					if (!this_pass.m_uniform_model)      this_pass.m_uniform_model = this_pass.m_shader->get_uniform("model[0]");
-					if (!this_pass.m_uniform_view)       this_pass.m_uniform_view = this_pass.m_shader->get_uniform("view[0]");
-					if (!this_pass.m_uniform_projection) this_pass.m_uniform_projection = this_pass.m_shader->get_uniform("projection[0]");
-					if (!this_pass.m_uniform_viewport)   this_pass.m_uniform_viewport = this_pass.m_shader->get_uniform("viewport[0]");
-                    //default true
+					this_pass.m_uniform_camera.get_uniform(this_pass.m_shader);
+					this_pass.m_uniform_transform.get_uniform(this_pass.m_shader);
+					//default true
                     this_pass.m_support_light = true;
                     //lights uniforms
                     switch (current_shader_def)

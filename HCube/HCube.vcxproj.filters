@@ -28,20 +28,17 @@
     <Filter Include="File di risorse\common">
       <UniqueIdentifier>{ccf34896-0c2e-4591-8d04-b5f9bb247e0e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="File di risorse\common\shaders">
-      <UniqueIdentifier>{43006d9e-f495-4f2b-a466-be924f3230c8}</UniqueIdentifier>
-    </Filter>
     <Filter Include="File di risorse\common\effects">
       <UniqueIdentifier>{9b526587-ecc8-4ca4-8e67-1896bbffdbeb}</UniqueIdentifier>
     </Filter>
-    <Filter Include="File di risorse\common\effects\lib">
-      <UniqueIdentifier>{db718893-e057-40dc-84af-ce08fef9a13a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="File di risorse\common\shaders\lib">
-      <UniqueIdentifier>{23157241-6136-45f9-b9d1-584be02ec9f0}</UniqueIdentifier>
-    </Filter>
     <Filter Include="File di risorse\common\textures">
       <UniqueIdentifier>{292d62b4-3297-4660-bc1b-fcdbf1c5b6b8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="File di risorse\common\effects\shaders">
+      <UniqueIdentifier>{43006d9e-f495-4f2b-a466-be924f3230c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="File di risorse\common\effects\shaders\lib">
+      <UniqueIdentifier>{23157241-6136-45f9-b9d1-584be02ec9f0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -301,65 +298,11 @@
     <None Include="..\assets\ship\vehicle_playerShip_metal_mat.mat">
       <Filter>File di risorse\assets\ship</Filter>
     </None>
-    <None Include="..\common\effects\lib\base.glsl">
-      <Filter>File di risorse\common\effects\lib</Filter>
-    </None>
-    <None Include="..\common\effects\lib\base_texture.glsl">
-      <Filter>File di risorse\common\effects\lib</Filter>
-    </None>
-    <None Include="..\common\effects\lib\base_texture_normal.glsl">
-      <Filter>File di risorse\common\effects\lib</Filter>
-    </None>
-    <None Include="..\common\effects\lib\base_texture_normal_specular.glsl">
-      <Filter>File di risorse\common\effects\lib</Filter>
-    </None>
-    <None Include="..\common\effects\lib\base_texture_specular.glsl">
-      <Filter>File di risorse\common\effects\lib</Filter>
-    </None>
-    <None Include="..\common\effects\lib\output_fragment.glsl">
-      <Filter>File di risorse\common\effects\lib</Filter>
-    </None>
-    <None Include="..\common\shaders\lib\ssao_kernel.glsl">
-      <Filter>File di risorse\common\shaders\lib</Filter>
-    </None>
     <None Include="..\common\effects\base_texture_normal_specular.fxhc">
       <Filter>File di risorse\common\effects</Filter>
     </None>
     <None Include="..\common\effects\build_shadow.fxhc">
       <Filter>File di risorse\common\effects</Filter>
-    </None>
-    <None Include="..\common\effects\lib\direction_light.glsl">
-      <Filter>File di risorse\common\effects\lib</Filter>
-    </None>
-    <None Include="..\common\effects\lib\point_light.glsl">
-      <Filter>File di risorse\common\effects\lib</Filter>
-    </None>
-    <None Include="..\common\effects\lib\spot_light.glsl">
-      <Filter>File di risorse\common\effects\lib</Filter>
-    </None>
-    <None Include="..\common\shaders\deferred_ambient_light.glsl">
-      <Filter>File di risorse\common\shaders</Filter>
-    </None>
-    <None Include="..\common\shaders\deferred_point_light.glsl">
-      <Filter>File di risorse\common\shaders</Filter>
-    </None>
-    <None Include="..\common\shaders\deferred_spot_light.glsl">
-      <Filter>File di risorse\common\shaders</Filter>
-    </None>
-    <None Include="..\common\shaders\ssao_blur.glsl">
-      <Filter>File di risorse\common\shaders</Filter>
-    </None>
-    <None Include="..\common\shaders\ssao_pass.glsl">
-      <Filter>File di risorse\common\shaders</Filter>
-    </None>
-    <None Include="..\common\shaders\text.glsl">
-      <Filter>File di risorse\common\shaders</Filter>
-    </None>
-    <None Include="..\common\shaders\triangle_lines.glsl">
-      <Filter>File di risorse\common\shaders</Filter>
-    </None>
-    <None Include="..\common\shaders\wireframe.glsl">
-      <Filter>File di risorse\common\shaders</Filter>
     </None>
     <None Include="..\common\effects\no_cull_effect.fxhc">
       <Filter>File di risorse\common\effects</Filter>
@@ -367,8 +310,50 @@
     <None Include="..\common\effects\debug_spot_lights.fxhc">
       <Filter>File di risorse\common\effects</Filter>
     </None>
-    <None Include="..\common\effects\lib\output_fragment_forward.glsl">
-      <Filter>File di risorse\common\effects\lib</Filter>
+    <None Include="..\common\effects\shaders\deferred_ambient_light.glsl">
+      <Filter>File di risorse\common\effects\shaders</Filter>
+    </None>
+    <None Include="..\common\effects\shaders\deferred_direction_light.glsl">
+      <Filter>File di risorse\common\effects\shaders</Filter>
+    </None>
+    <None Include="..\common\effects\shaders\deferred_point_light.glsl">
+      <Filter>File di risorse\common\effects\shaders</Filter>
+    </None>
+    <None Include="..\common\effects\shaders\deferred_spot_light.glsl">
+      <Filter>File di risorse\common\effects\shaders</Filter>
+    </None>
+    <None Include="..\common\effects\shaders\ssao_blur.glsl">
+      <Filter>File di risorse\common\effects\shaders</Filter>
+    </None>
+    <None Include="..\common\effects\shaders\ssao_pass.glsl">
+      <Filter>File di risorse\common\effects\shaders</Filter>
+    </None>
+    <None Include="..\common\effects\shaders\text.glsl">
+      <Filter>File di risorse\common\effects\shaders</Filter>
+    </None>
+    <None Include="..\common\effects\shaders\lib\direction_light.glsl">
+      <Filter>File di risorse\common\effects\shaders\lib</Filter>
+    </None>
+    <None Include="..\common\effects\shaders\lib\output_fragment.glsl">
+      <Filter>File di risorse\common\effects\shaders\lib</Filter>
+    </None>
+    <None Include="..\common\effects\shaders\lib\output_fragment_forward.glsl">
+      <Filter>File di risorse\common\effects\shaders\lib</Filter>
+    </None>
+    <None Include="..\common\effects\shaders\lib\point_light.glsl">
+      <Filter>File di risorse\common\effects\shaders\lib</Filter>
+    </None>
+    <None Include="..\common\effects\shaders\lib\spot_light.glsl">
+      <Filter>File di risorse\common\effects\shaders\lib</Filter>
+    </None>
+    <None Include="..\common\effects\shaders\lib\ssao_kernel.glsl">
+      <Filter>File di risorse\common\effects\shaders\lib</Filter>
+    </None>
+    <None Include="..\common\effects\shaders\lib\uniform.glsl">
+      <Filter>File di risorse\common\effects\shaders\lib</Filter>
+    </None>
+    <None Include="..\common\effects\shaders\base_texture_normal_specular.glsl">
+      <Filter>File di risorse\common\effects\shaders</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

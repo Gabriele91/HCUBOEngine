@@ -10,17 +10,15 @@ out vec4 frag_position;
 out vec2 frag_uvcoord;
 out mat3 tbn;
 //uniform
-uniform mat4 projection;
-uniform mat4 view;
-uniform mat4 model;
+#pragma include "lib/uniform.glsl"
 
 void main()
 {
 	//vertex
-	frag_position     = model * vec4(vertex, 1.0);
-	gl_Position 	  = projection * view * frag_position;
+	frag_position     = transform.model * vec4(vertex, 1.0);
+	gl_Position 	  = camera.projection * camera.view * frag_position;
     //normal
-    mat3 normal_mat = transpose(inverse(mat3(view * model)));
+    mat3 normal_mat = transpose(inverse(mat3(transform.model)));
     //pass T/B/N
     vec3 t_pixel = normalize(normal_mat * tangent);
     vec3 n_pixel = normalize(normal_mat * normal);
@@ -39,19 +37,33 @@ in vec4 frag_position;
 in vec2 frag_uvcoord;
 in mat3 tbn;
 //out
-#pragma include "output_fragment.glsl"
+#pragma include "lib/output_fragment.glsl"
 //uniform
 uniform vec4      color;
 uniform float     mask = 0.0;
 uniform sampler2D diffuse_map;
 uniform sampler2D normal_map;
+uniform sampler2D specular_map;
 
 vec3 compute_normal()
 {
+//#define INV_X_NORMAL_MAP
     //get normal texture
-    vec3 text_normal = normalize( texture(normal_map, frag_uvcoord).rgb * 2.0f - 1.0f );
+	vec3 tex_normal = texture(normal_map, frag_uvcoord).rgb;
+	//
+#if defined (INV_X_NORMAL_MAP)
+	tex_normal.r = 1.0f-tex_normal.r;
+#endif
+#if defined (INV_Y_NORMAL_MAP)
+	tex_normal.g = 1.0f-tex_normal.g;
+#endif
+#if defined (INV_Z_NORMAL_MAP)
+	tex_normal.b = 1.0f-tex_normal.b;
+#endif
+	//normal image
+    vec3 normal = normalize( tex_normal * 2.0f - 1.0f );
     //return
-    return tbn*text_normal;
+    return tbn*normal;
 }
 
 void main()
@@ -59,6 +71,8 @@ void main()
 	//color
 	vec4 texture_color = texture(diffuse_map, frag_uvcoord);
 	if (texture_color.a <= mask) discard;
+	//specular
+	float specular = texture(specular_map, frag_uvcoord).r;
 	//outputs
-	output_fragment(frag_position, compute_normal(), (texture_color*color), 1.0);
+	output_fragment(frag_position, compute_normal(), (texture_color*color), specular);
 }

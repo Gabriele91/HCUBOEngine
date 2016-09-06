@@ -7,6 +7,7 @@
 //
 #pragma once
 #include <component.h>
+#include <shader.h>
 #include <vector_math.h>
 
 namespace hcube
@@ -89,4 +90,23 @@ namespace hcube
 	{
 		return std::make_shared< transform >(args...);
 	}
+
+	struct uniform_transform
+	{
+		uniform* m_uniform_model   { nullptr };
+		uniform* m_uniform_position{ nullptr };
+		uniform* m_uniform_rotation{ nullptr };
+		uniform* m_uniform_scale   { nullptr };
+
+		void get_uniform(shader::ptr shader);
+
+		void uniform(transform_wptr transform) const;
+
+		bool is_valid() const;
+
+	protected:
+
+		bool m_valid{ false };
+
+	};
 }

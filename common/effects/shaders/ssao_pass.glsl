@@ -38,7 +38,7 @@ void main()
 	vec3  randv    = texture(t_noise, frag_uvcoord*noise_scale).rgb;
 
 	//unpack
-	normal = normalize(normal * 2.0 - 1.0);
+	normal = normalize(vec3(view*vec4(normalize(normal * 2.0 - 1.0),0.0)));
 
 	// Create TBN change-of-basis matrix: from tangent-space to view-space
 	vec3 tangent   = normalize(randv - normal * dot(randv, normal));
@@ -62,7 +62,7 @@ void main()
 		offset.xyz  = offset.xyz * 0.5 + 0.5; // transform to range 0.0 - 1.0
 
 		// get sample depth
-		float sample_depth = (view*texture(g_position, frag_uvcoord)).z;
+		float sample_depth = (view*texture(g_position, offset.xy)).z;
 
         // range check & accumulate
 		float range_check = smoothstep(0.0, 1.0, radius / abs(position.z - sample_depth));

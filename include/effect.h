@@ -8,6 +8,8 @@
 #include <texture.h>
 #include <shader.h>
 #include <light.h>
+#include <camera.h>
+#include <transform.h>
 #include <smart_pointers.h>
 
 namespace hcube
@@ -107,10 +109,8 @@ namespace hcube
 			std::vector< int >		m_param_id;
 			std::vector< uniform* > m_uniform;
 			//default uniform
-			uniform* m_uniform_projection{ nullptr };
-			uniform* m_uniform_view{ nullptr };
-			uniform* m_uniform_model{ nullptr };
-			uniform* m_uniform_viewport{ nullptr };
+			uniform_camera    m_uniform_camera;
+			uniform_transform m_uniform_transform;
 			//all light uniform
 			bool m_support_light{ false };
 			//uniforms
@@ -121,10 +121,9 @@ namespace hcube
 			//unsafe
 			void bind
 			(
-				const glm::vec4& viewport,
-				const glm::mat4& projection,
-				const glm::mat4& view,
-				const glm::mat4& model,
+				camera::wptr   c_camera,
+				transform_wptr c_camera_transform,
+				transform_wptr c_model_transform,
 				parameters* params = nullptr
 			) const;
 
@@ -134,11 +133,10 @@ namespace hcube
 			//safe
 			render_state safe_bind
 			(
-				const glm::vec4& viewport,
-				const glm::mat4& projection,
-				const glm::mat4& view,
-				const glm::mat4& model,
-				parameters* params = nullptr
+				camera::wptr   c_camera,
+				transform_wptr c_camera_transform,
+				transform_wptr c_model_transform,
+				parameters*   params = nullptr
 			) const;
 
 			render_state safe_bind

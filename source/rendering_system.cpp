@@ -367,17 +367,26 @@ namespace hcube
         //get uniform mask
         if(m_technique_shadow_spot && (*m_technique_shadow_spot).size())
         {
-            m_shadow_spot_mask = (*m_technique_shadow_spot)[0].m_shader->get_uniform("mask");
+            m_shadow_spot_mask       = (*m_technique_shadow_spot)[0].m_shader->get_uniform("mask");
+			m_shadow_spot_projection = (*m_technique_shadow_spot)[0].m_shader->get_uniform("projection");
+			m_shadow_spot_view       = (*m_technique_shadow_spot)[0].m_shader->get_uniform("view");
+			m_shadow_spot_model		 = (*m_technique_shadow_spot)[0].m_shader->get_uniform("model");
         }
         if(m_technique_shadow_point && (*m_technique_shadow_point).size())
         {
 			m_shadow_point_mask			  = (*m_technique_shadow_point)[0].m_shader->get_uniform("mask");
 			m_shadow_point_light_position = (*m_technique_shadow_point)[0].m_shader->get_uniform("light_position");
 			m_shadow_point_far_plane	  = (*m_technique_shadow_point)[0].m_shader->get_uniform("far_plane");
+			m_shadow_point_projection     = (*m_technique_shadow_point)[0].m_shader->get_uniform("projection");
+			m_shadow_point_view			  = (*m_technique_shadow_point)[0].m_shader->get_uniform("view[0]");
+			m_shadow_point_model	      = (*m_technique_shadow_point)[0].m_shader->get_uniform("model");
         }
         if(m_technique_shadow_direction && (*m_technique_shadow_direction).size())
         {
-            m_shadow_direction_mask = (*m_technique_shadow_direction)[0].m_shader->get_uniform("mask");
+            m_shadow_direction_mask		    = (*m_technique_shadow_direction)[0].m_shader->get_uniform("mask");
+			m_shadow_direction_projection	= (*m_technique_shadow_direction)[0].m_shader->get_uniform("projection");
+			m_shadow_direction_view			= (*m_technique_shadow_direction)[0].m_shader->get_uniform("view[0]");
+			m_shadow_direction_model		= (*m_technique_shadow_direction)[0].m_shader->get_uniform("model");
         }
 	}
 
@@ -397,16 +406,26 @@ namespace hcube
 		effect::technique* current_technique = nullptr;
 		//current mask uniform
 		uniform* u_shadow_mask = nullptr;
+		//current u
+		uniform* u_shadow_projection = nullptr;
+		uniform* u_shadow_view	     = nullptr;
+		uniform* u_shadow_model		 = nullptr;
 		//type
 		switch (l_light->get_type())
 		{
 			case light::SPOT_LIGHT: 
-				current_technique = m_technique_shadow_spot;
-				u_shadow_mask	  = m_shadow_spot_mask;
+				current_technique   = m_technique_shadow_spot;
+				u_shadow_mask	    = m_shadow_spot_mask;
+				u_shadow_projection = m_shadow_spot_projection;
+				u_shadow_view	    = m_shadow_spot_view;
+				u_shadow_model		= m_shadow_spot_model;
 			break;
 			case light::POINT_LIGHT: 
 				current_technique = m_technique_shadow_point;
 				u_shadow_mask	  = m_shadow_point_mask;
+				u_shadow_projection = m_shadow_point_projection;
+				u_shadow_view       = m_shadow_point_view;
+				u_shadow_model      = m_shadow_point_model;
 			break;
 			default: return;
 		}
@@ -419,7 +438,7 @@ namespace hcube
 		//applay pass
 		auto state = shadow_pass.safe_bind();
 		//default uniform
-		shadow_pass.m_uniform_projection->set_value(l_light->get_projection());
+		u_shadow_projection->set_value(l_light->get_projection());
 		//////////////////////////////////////////////////////////////////////////////
 		//spot light vs point lights
 		switch (l_light->get_type())
@@ -428,7 +447,7 @@ namespace hcube
 			//update view frustum and queue
 			queues.compute_opaque_queue(l_light->update_frustum());
 			//set view
-			shadow_pass.m_uniform_view->set_value(l_light->get_view());
+			u_shadow_view->set_value(l_light->get_view());
 		break;
 		case light::POINT_LIGHT:
 			//build queue by sphere
@@ -438,7 +457,7 @@ namespace hcube
 				l_light->get_radius()
 			);
 			//uniform
-			shadow_pass.m_uniform_view->set_value(l_light->get_cube_view());
+			u_shadow_view->set_value(l_light->get_cube_view());
 			//position
 			if (m_shadow_point_light_position)
 				m_shadow_point_light_position->set_value(
@@ -488,7 +507,7 @@ namespace hcube
             //uniform
             if(do_default_mask) u_shadow_mask->set_value(m_mask->get_float());
 			//set transform
-			shadow_pass.m_uniform_model->set_value(t_entity->get_matrix());
+			u_shadow_model->set_value(t_entity->get_matrix());
 			//draw
 			r_entity->draw();
 		}
@@ -513,8 +532,9 @@ namespace hcube
     {
         
         effect::pass& pass = (*m_effect->get_technique("forward"))[0];
-        
-        auto c_camera = e_camera->get_component<camera>();        
+
+		auto c_camera = e_camera->get_component<camera>();
+		auto t_camera = e_camera->get_component<transform>();
         auto state = render::get_render_state();
         //viewport
         render::set_viewport_state({ c_camera->get_viewport() });
@@ -527,12 +547,17 @@ namespace hcube
             auto t_light    = e_light->get_component<transform>();
             
             l_light->update_projection_matrix();
-            pass.bind(c_camera->get_viewport(),
-                      c_camera->get_projection(),
-                      c_camera->get_view(),
-                      inverse(l_light->get_projection()*l_light->get_view())
-                      );
-            
+            pass.bind();
+			pass.m_shader
+				->get_uniform("projection")
+				->set_value(c_camera->get_projection());
+			pass.m_shader
+				->get_uniform("view")
+				->set_value(c_camera->get_view());
+			pass.m_shader
+				->get_uniform("model")
+				->set_value(inverse(l_light->get_projection()*l_light->get_view()));
+
             m_cube->get_component<renderable>()->draw();
             
             pass.unbind();

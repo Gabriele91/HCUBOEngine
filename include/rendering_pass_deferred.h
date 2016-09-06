@@ -59,12 +59,12 @@ namespace hcube
             static const int s_max_sport_lights = 12;
             
             shader::ptr        m_shader;
-            
+
+			uniform_camera	   m_camera;
             uniform*           m_position;
             uniform*           m_normal;
             uniform*           m_albedo;
             uniform*           m_occlusion;
-            uniform*           m_view;
             uniform*           m_n_spot_lights;
             
             uniform_light_spot m_spot_lights[s_max_sport_lights];
@@ -72,7 +72,7 @@ namespace hcube
             void init(const std::string& path);
             void uniform(g_buffer& gbuffer,
                          context_texture* ssao,
-                         const mat4& view,
+						 entity::ptr t_camera,
                          const vec4& ambient_light,
                          render_queues& queues);
             void unbind();
@@ -84,12 +84,12 @@ namespace hcube
             static const int s_max_point_lights = 12;
             
             shader::ptr        m_shader;
-            
+
+			uniform_camera	   m_camera;
             uniform*           m_position;
             uniform*           m_normal;
             uniform*           m_albedo;
             uniform*           m_occlusion;
-            uniform*           m_view;
             uniform*           m_n_point_lights;
             
             uniform_light_point m_point_lights[s_max_point_lights];
@@ -97,7 +97,7 @@ namespace hcube
             void init(const std::string& path);
             void uniform(g_buffer& gbuffer,
                          context_texture* ssao,
-                         const mat4& view,
+						 entity::ptr t_camera,
                          const vec4& ambient_light,
                          render_queues& queues);
             void unbind();
@@ -110,11 +110,11 @@ namespace hcube
 
 			shader::ptr        m_shader;
 
+			uniform_camera	   m_camera;
 			uniform*           m_position;
 			uniform*           m_normal;
 			uniform*           m_albedo;
 			uniform*           m_occlusion;
-			uniform*           m_view;
 			uniform*           m_n_direction_lights;
 
 			uniform_light_direction m_direction_lights[s_max_direction_lights];
@@ -122,7 +122,7 @@ namespace hcube
 			void init(const std::string& path);
 			void uniform(g_buffer& gbuffer,
 						 context_texture* ssao,
-						 const mat4& view,
+						 entity::ptr t_camera,
 						 const vec4& ambient_light,
 						 render_queues& queues);
 			void unbind();

@@ -159,8 +159,8 @@ namespace hcube
 	void app_basic::start(application& app)
 	{
 		//commond assets
+		m_resources.add_directory("common/effects/shaders");
 		m_resources.add_directory("common/effects");
-		m_resources.add_directory("common/shaders");
 		m_resources.add_directory("common/textures");
 		//get info about window
 		m_window_mode_info = window_info
@@ -341,17 +341,15 @@ namespace hcube
 					6.0,
 					30.0
 				);
+				l_lights[i]->set_shadow({ 256,256 });
 			}
 
-			l_lights[0]->set_shadow({ 256,256 });
 			l_lights[0]->set_color({ 0.0f, 1.0f, 0.0f }, { 0.0f, 1.0f, 0.0f });
 			e_lights[0]->set_name("light_green");
 
-			l_lights[1]->set_shadow({ 256,256 });
 			l_lights[1]->set_color({ 1.0f, 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f });
 			e_lights[1]->set_name("light_red");
 
-			l_lights[2]->set_shadow({ 256,256 });
 			l_lights[2]->set_color({ 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f, 1.0f });
 			e_lights[2]->set_name("light_blue");
 

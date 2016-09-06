@@ -101,6 +101,18 @@ namespace hcube
 		uniform*           m_shadow_point_far_plane		{ nullptr };
 		//direction light
         uniform*           m_shadow_direction_mask		{ nullptr };
+		//view / projection
+		uniform*           m_shadow_spot_model      { nullptr };
+		uniform*           m_shadow_spot_view		{ nullptr };
+		uniform*           m_shadow_spot_projection { nullptr };
+
+		uniform*           m_shadow_point_model     { nullptr };
+		uniform*           m_shadow_point_view      { nullptr };
+		uniform*           m_shadow_point_projection{ nullptr };
+
+		uniform*           m_shadow_direction_model	    { nullptr };
+		uniform*           m_shadow_direction_view	    { nullptr };
+		uniform*           m_shadow_direction_projection{ nullptr };
 
 	public:
 

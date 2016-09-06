@@ -18,7 +18,7 @@ technique "forward"
 		shader source 
 		{
             #define FORWARD_RENDERING
-			#pragma import "lib/base_texture_normal_specular.glsl"
+			#pragma import "shaders/base_texture_normal_specular.glsl"
 		}
 	}
 	pass 
@@ -30,7 +30,7 @@ technique "forward"
 		shader source 
         {
             #define FORWARD_RENDERING
-			#pragma import "lib/base_texture_normal_specular.glsl"
+			#pragma import "shaders/base_texture_normal_specular.glsl"
 		}
 	}
 }
@@ -46,7 +46,7 @@ technique "deferred"
         shader source
         {
             #define DEFERRED_RENDERING
-            #pragma import "lib/base_texture_normal_specular.glsl"
+            #pragma import "shaders/base_texture_normal_specular.glsl"
         }
     }
 }

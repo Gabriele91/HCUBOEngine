@@ -3,7 +3,6 @@
 struct point_light
 {
 	vec3  m_position;
-	vec3  m_model_position;
     vec3  m_direction;
     
     vec3  m_diffuse;
@@ -64,7 +63,7 @@ float point_light_pcf_shadow(in point_light light0, in vec3 frag_to_light, in fl
 float point_light_compute_shadow_light(in point_light light0, in vec4  frag_position, float bias)
 {
 	// Get vector between fragment position and light position
-	vec3 frag_to_light = frag_position.xyz - light0.m_model_position;
+	vec3 frag_to_light = frag_position.xyz - light0.m_position;
 	// Use the light to fragment vector to sample from the depth map    
 #ifdef SHOFT_SHADOW
 	float shadow = point_light_pcf_shadow(light0, frag_to_light, bias);
@@ -79,10 +78,10 @@ float point_light_compute_shadow_light(in point_light light0, in vec4  frag_posi
 #endif
 	return shadow;
 }
+
 //compute light
 void compute_point_light(in point_light light0,
-						 in vec4  frag_model_position,
-                         in vec3  frag_position,
+                         in vec4  frag_position,
                          in vec3  view_dir,
                          in vec3  normal,
                          in float shininess,
@@ -90,7 +89,7 @@ void compute_point_light(in point_light light0,
 {
 
 	// Attenuation
-	float attenuation = point_light_compute_attenuation(light0, frag_position);
+	float attenuation = point_light_compute_attenuation(light0, frag_position.xyz);
 	// Exit case
 	if (attenuation <= 0.0)
 	{
@@ -98,13 +97,13 @@ void compute_point_light(in point_light light0,
 		results.m_specular = vec3(0.0);
 		return;
 	}
-	//  Light dir
-    vec3 light_dir = normalize(light0.m_position - frag_position);
-    // Diffuse shading
-    float diff = max(dot(normal, light_dir), 0.0);
-    // Specular shading
-    vec3  reflect_dir = reflect(-light_dir, normal);
-    float spec        = pow(max(dot(view_dir, reflect_dir), 0.0), shininess);
+	// Light dir
+	vec3 light_dir = normalize(light0.m_position - frag_position.xyz);
+	// Diffuse shading
+	float diff = max(dot(normal, light_dir), 0.0);
+	// Specular shading
+	vec3  halfway_dir = normalize(light_dir + view_dir);
+	float spec = pow(max(dot(normal, halfway_dir), 0.0), shininess);
     // Combine results
     results.m_diffuse  = light0.m_diffuse  * diff * attenuation;
     results.m_specular = light0.m_specular * spec * attenuation;
@@ -114,7 +113,7 @@ void compute_point_light(in point_light light0,
 		//compute bias
 		float bias = 0.15;
 		//compute shadow
-		float shadow_factor = point_light_compute_shadow_light(light0, frag_model_position, bias);
+		float shadow_factor = point_light_compute_shadow_light(light0, frag_position, bias);
 		results.m_diffuse  *= shadow_factor;
 		results.m_specular *= shadow_factor;
 	}

@@ -38,11 +38,11 @@ namespace hcube
         m_shader    = shader::snew();
         m_shader->load(path,std::vector<std::string>{ "SPOT_LIGHTS" });
         
-        m_position  = m_shader->get_uniform("g_position");
-        m_normal    = m_shader->get_uniform("g_normal");
-        m_albedo    = m_shader->get_uniform("g_albedo_spec");
-        m_occlusion = m_shader->get_uniform("g_occlusion");
-        m_view      = m_shader->get_uniform("view");
+        m_position		  = m_shader->get_uniform("g_position");
+        m_normal		  = m_shader->get_uniform("g_normal");
+        m_albedo		  = m_shader->get_uniform("g_albedo_spec");
+        m_occlusion		  = m_shader->get_uniform("g_occlusion");
+		m_camera.get_uniform(m_shader);
         //lights
         m_n_spot_lights = m_shader->get_uniform("n_spot_lights");
         //get all spot lights
@@ -55,10 +55,10 @@ namespace hcube
 
     
     void rendering_pass_deferred::spot_light_shader::uniform(g_buffer& gbuffer,
-                                                              context_texture* ssao,
-                                                              const mat4& view,
-                                                              const vec4& ambient_light,
-                                                              render_queues& queues)
+                                                             context_texture* ssao,
+															 entity::ptr e_camera,
+                                                             const vec4& ambient_light,
+                                                             render_queues& queues)
     {
         m_shader->bind();
         //uniform g_buffer and etc...
@@ -66,7 +66,9 @@ namespace hcube
         m_normal->set_value(gbuffer.get_texture(g_buffer::G_BUFFER_TEXTURE_TYPE_NORMAL));
         m_albedo->set_value(gbuffer.get_texture(g_buffer::G_BUFFER_TEXTURE_TYPE_ALBEDO));
         m_occlusion->set_value(ssao);
-        m_view->set_value(view);
+		//uniform
+		m_camera.uniform(e_camera->get_component<camera>(),
+						 e_camera->get_component<transform>()->get_matrix());
         //counter
         int i_light_count = 0;
         //uniform all lights
@@ -81,15 +83,10 @@ namespace hcube
             m_spot_lights[i_light_count++].uniform
             (
                 l_light,
-                //camera view
-                view,
                 //light pos
                 t_light->get_matrix()
             );
-            //print
-            //printf("|%s|\t",e_light->get_name().c_str());
         }
-        //printf("\n");
         //uniform number of lights used
         m_n_spot_lights->set_value(i_light_count);
     }
@@ -109,7 +106,7 @@ namespace hcube
         m_normal    = m_shader->get_uniform("g_normal");
         m_albedo    = m_shader->get_uniform("g_albedo_spec");
         m_occlusion = m_shader->get_uniform("g_occlusion");
-        m_view      = m_shader->get_uniform("view");
+		m_camera.get_uniform(m_shader);
         //lights
         m_n_point_lights = m_shader->get_uniform("n_point_lights");
         //get all spot lights
@@ -123,7 +120,7 @@ namespace hcube
     
     void rendering_pass_deferred::point_light_shader::uniform(g_buffer& gbuffer,
                                                               context_texture* ssao,
-                                                              const mat4& view,
+															  entity::ptr e_camera,
                                                               const vec4& ambient_light,
                                                               render_queues& queues)
     {
@@ -133,7 +130,9 @@ namespace hcube
         m_normal->set_value(gbuffer.get_texture(g_buffer::G_BUFFER_TEXTURE_TYPE_NORMAL));
         m_albedo->set_value(gbuffer.get_texture(g_buffer::G_BUFFER_TEXTURE_TYPE_ALBEDO));
         m_occlusion->set_value(ssao);
-        m_view->set_value(view);
+		//uniform
+		m_camera.uniform(e_camera->get_component<camera>(),
+						 e_camera->get_component<transform>()->get_matrix());
         //counter
         int i_light_count = 0;
         //uniform all lights
@@ -148,8 +147,6 @@ namespace hcube
             m_point_lights[i_light_count++].uniform
             (
              l_light,
-             //camera view
-             view,
              //light pos
              t_light->get_matrix()
              );
@@ -173,7 +170,7 @@ namespace hcube
 		m_normal = m_shader->get_uniform("g_normal");
 		m_albedo = m_shader->get_uniform("g_albedo_spec");
 		m_occlusion = m_shader->get_uniform("g_occlusion");
-		m_view = m_shader->get_uniform("view");
+		m_camera.get_uniform(m_shader);
 		//lights
 		m_n_direction_lights = m_shader->get_uniform("n_direction_lights");
 		//get all spot lights
@@ -186,7 +183,7 @@ namespace hcube
 	
 	void rendering_pass_deferred::direction_light_shader::uniform(g_buffer& gbuffer,
 															      context_texture* ssao,
-															      const mat4& view,
+																  entity::ptr e_camera,
 															      const vec4& ambient_light,
 															      render_queues& queues)
 	{
@@ -196,7 +193,9 @@ namespace hcube
 		m_normal->set_value(gbuffer.get_texture(g_buffer::G_BUFFER_TEXTURE_TYPE_NORMAL));
 		m_albedo->set_value(gbuffer.get_texture(g_buffer::G_BUFFER_TEXTURE_TYPE_ALBEDO));
 		m_occlusion->set_value(ssao);
-		m_view->set_value(view);
+		//uniform
+		m_camera.uniform(e_camera->get_component<camera>(),
+						 e_camera->get_component<transform>()->get_matrix());
 		//counter
 		int i_light_count = 0;
 		//uniform all lights
@@ -211,8 +210,6 @@ namespace hcube
 			m_direction_lights[i_light_count++].uniform
 			(
 				l_light,
-				//camera view
-				view,
 				//light pos
 				t_light->get_matrix()
 			);
@@ -233,8 +230,8 @@ namespace hcube
         m_q_size = w_size;
         m_g_buffer.init(w_size);
         m_ssao.init(w_size, resources);
-        m_ssao.set_kernel_size(8);
-        m_ssao.set_radius(2.0);
+        m_ssao.set_kernel_size(32);
+        m_ssao.set_radius(0.75);
         
         m_square = basic_meshs::square3D({ 2.0,2.0 }, true);
         m_ambient_light.init(resources.get_shader_path("deferred_ambient_light"));
@@ -264,6 +261,7 @@ namespace hcube
 	{
 		//camera
 		camera::ptr   c_camera = e_camera->get_component<camera>();
+		transform_ptr t_camera = e_camera->get_component<transform>();
 		const vec4&   viewport = c_camera->get_viewport();
 		//buffer
 		m_g_buffer.bind();
@@ -289,10 +287,9 @@ namespace hcube
 				if(mat_technique) for (auto& pass : *mat_technique)
 				{
 					pass.bind(
-						viewport,
-						c_camera->get_projection(),
-						c_camera->get_view(),
-						t_entity->get_matrix(),
+						c_camera,
+						t_camera,
+						t_entity,
 						e_material->get_parameters()
 					);
                     //pass ambient light
@@ -330,21 +327,21 @@ namespace hcube
         //SPOT LIGHTS
 		if (queues.m_cull_light_spot)
 		{
-			m_spot_lights.uniform(m_g_buffer, m_ssao.get_texture(), c_camera->get_view(), ambient_color, queues);
+			m_spot_lights.uniform(m_g_buffer, m_ssao.get_texture(), e_camera, ambient_color, queues);
 			m_square->draw();
 			m_spot_lights.unbind();
 		}
         //POINT LIGHTS
 		if (queues.m_cull_light_point)
 		{
-			m_point_lights.uniform(m_g_buffer, m_ssao.get_texture(), c_camera->get_view(), ambient_color, queues);
+			m_point_lights.uniform(m_g_buffer, m_ssao.get_texture(), e_camera, ambient_color, queues);
 			m_square->draw();
 			m_point_lights.unbind();
 		}
 		//DIRECTION LIGHTS
 		if (queues.m_cull_light_direction)
 		{
-			m_direction_lights.uniform(m_g_buffer, m_ssao.get_texture(), c_camera->get_view(), ambient_color, queues);
+			m_direction_lights.uniform(m_g_buffer, m_ssao.get_texture(), e_camera, ambient_color, queues);
 			m_square->draw();
 			m_direction_lights.unbind();
 		}

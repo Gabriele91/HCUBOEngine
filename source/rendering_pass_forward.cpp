@@ -16,7 +16,8 @@ namespace hcube
 		//save state
 		auto render_state = render::get_render_state();
 		//get camera
-		camera::ptr c_camera = e_camera->get_component<camera>();
+		camera::ptr   c_camera = e_camera->get_component<camera>();
+		transform_ptr t_camera = e_camera->get_component<transform>();
 		const vec4& viewport = c_camera->get_viewport();
 		//set state camera
 		render::set_viewport_state({ viewport });
@@ -38,10 +39,9 @@ namespace hcube
 				if (mat_forward) for (auto& pass : *mat_forward)
 				{
 					pass.bind(
-						viewport,
-						c_camera->get_projection(),
-						c_camera->get_view(),
-						t_entity->get_matrix(),
+						c_camera,
+						t_camera,
+						t_entity,
 						e_material->get_parameters()
 					);
 					//draw
@@ -93,7 +93,6 @@ namespace hcube
 								//update shader
 								pass.m_uniform_spot.uniform(
 									l_light,
-									c_camera->get_view(),
 									t_light->get_matrix()
 								);
 								//draw
@@ -120,7 +119,6 @@ namespace hcube
 								pass.m_uniform_point.uniform
 								(
 									l_light,
-									c_camera->get_view(),
 									t_light->get_matrix()
 								);
 								//draw
@@ -138,7 +136,6 @@ namespace hcube
                             auto t_light = e_light->get_component<transform>();
                             pass.m_uniform_direction.uniform(
                                                             l_light,
-                                                            c_camera->get_view(),
                                                             t_light ->get_matrix()
                                                             );
                             //draw

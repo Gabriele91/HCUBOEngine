@@ -28,6 +28,8 @@
 
 #else
 
+	#pragma include "uniform.glsl"
+
     #if defined( RENDERING_SPOT_LIGHT )
 
         //light uniform
@@ -37,8 +39,8 @@
         //macro
         #define in_lights spot_lights
         #define output_light_computation spot_light_res
-        #define compute_light(light,position,view_pos,view_dir,normal,shininess,light_results)\
-            compute_spot_light(light, position, view_pos, view_dir, normal, shininess, light_results)
+        #define compute_light(light,position,view_dir,normal,shininess,light_results)\
+            compute_spot_light(light, position, view_dir, normal, shininess, light_results)
 
     #elif defined( RENDERING_POINT_LIGHT )
 
@@ -49,8 +51,8 @@
         //macro
         #define in_lights point_lights
         #define output_light_computation point_light_res
-        #define compute_light(light,position,view_pos,view_dir,normal,shininess,light_results)\
-            compute_point_light(light, position, view_pos, view_dir, normal, shininess, light_results)
+        #define compute_light(light,position,view_dir,normal,shininess,light_results)\
+            compute_point_light(light, position, view_dir, normal, shininess, light_results)
 
     #elif defined( RENDERING_DIRECTION_LIGHT )
 
@@ -61,7 +63,7 @@
         //macro
         #define in_lights direction_lights
         #define output_light_computation direction_light_res
-        #define compute_light(light,position,view_pos,view_dir,normal,shininess,light_results)\
+        #define compute_light(light,position,view_dir,normal,shininess,light_results)\
             compute_direction_light(light, view_dir, normal, shininess, light_results)
 
     #endif
@@ -79,12 +81,9 @@
     {
         //todo: material
         float shininess = 16.0f;
-        
-        //pos view
-        vec3 view_pos = vec3(view*position);
-        
+                
         //view dir
-        vec3 view_dir = normalize(vec3(0.0) - view_pos);
+        vec3 view_dir = normalize(camera.position - position.xyz);
         
         //result
         output_light_computation light_results;
@@ -92,7 +91,6 @@
         // Then calculate lighting as usual
         compute_light(in_lights[0],
                       position,
-                      view_pos,
                       view_dir,
                       normal,
                       shininess,

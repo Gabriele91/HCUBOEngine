@@ -10,6 +10,7 @@
 #include <component.h>
 #include <vector_math.h>
 #include <frustum.h>
+#include <shader.h>
 
 namespace hcube
 {
@@ -53,4 +54,25 @@ namespace hcube
 		mat4     m_view;
 		bool     m_view_is_dirty{ true };
 	};
+
+	struct uniform_camera
+	{
+		uniform* m_uniform_viewport{ nullptr };
+		uniform* m_uniform_projection{ nullptr };
+		uniform* m_uniform_view{ nullptr };
+		uniform* m_uniform_model{ nullptr };
+		uniform* m_uniform_position{ nullptr };
+
+		void get_uniform(shader::ptr shader);
+
+		void uniform(camera::wptr camera,const mat4& model) const;
+
+		bool is_valid() const;
+
+	protected:
+
+		bool m_valid{ false };
+
+	};
+
 }

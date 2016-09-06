@@ -47,14 +47,13 @@ namespace hcube
 	}
 
 	void uniform_light_spot::uniform(light_wptr weak_light,
-							  	     const mat4& view,
 								     const mat4& model)
 	{
         if(!is_valid()) return;
         
 		auto light = weak_light.lock();
-		m_uniform_position->set_value((vec3)(view * model * vec4(0, 0, 0, 1.0)));
-		m_uniform_direction->set_value((vec3)(view * model * vec4(0, 0, 1.0, 0.0)));
+		m_uniform_position->set_value((vec3)(model * vec4(0, 0, 0, 1.0)));
+		m_uniform_direction->set_value((vec3)(model * vec4(0, 0, 1.0, 0.0)));
 		m_uniform_diffuse->set_value(light->m_diffuse);
 		m_uniform_specular->set_value(light->m_specular);
 		m_uniform_constant->set_value(light->m_constant);
@@ -83,7 +82,6 @@ namespace hcube
 		std::string lights_i("point_lights[" + std::to_string(i) + "]");
 
 		m_uniform_position = shader->get_uniform((lights_i + ".m_position").c_str());
-		m_uniform_model_position = shader->get_uniform((lights_i + ".m_model_position").c_str());
 
 		m_uniform_diffuse = shader->get_uniform((lights_i + ".m_diffuse").c_str());
 		m_uniform_specular = shader->get_uniform((lights_i + ".m_specular").c_str());
@@ -98,7 +96,6 @@ namespace hcube
 		//test
 		m_valid =
 			   m_uniform_position
-			&& m_uniform_model_position
 			&& m_uniform_diffuse
 			&& m_uniform_specular
 			&& m_uniform_constant
@@ -109,16 +106,13 @@ namespace hcube
 	}
 
 	void uniform_light_point::uniform(light_wptr weak_light,
-									  const mat4& view,
 									  const mat4& model)
 	{
 		if (!is_valid()) return;
 
 		auto light = weak_light.lock();
-		vec4 model_position = model * vec4(0, 0, 0, 1.0);
 
-		m_uniform_position->set_value((vec3)(view * model_position));
-		m_uniform_model_position->set_value((vec3)(model_position));
+		m_uniform_position->set_value((vec3)(model * vec4(0, 0, 0, 1.0)));
 		m_uniform_diffuse->set_value(light->m_diffuse);
 		m_uniform_specular->set_value(light->m_specular);
 		m_uniform_constant->set_value(light->m_constant);
@@ -155,13 +149,12 @@ namespace hcube
 	}
 
 	void uniform_light_direction::uniform(light_wptr weak_light,
-										  const mat4& view,
 										  const mat4& model)
 	{
 		if (!is_valid()) return;
 
 		auto light = weak_light.lock();
-		m_uniform_direction->set_value((vec3)(view * model * vec4(0, 0, 1.0, 0.0)));
+		m_uniform_direction->set_value((vec3)(model * vec4(0, 0, 1.0, 0.0)));
 		m_uniform_diffuse->set_value(light->m_diffuse);
 		m_uniform_specular->set_value(light->m_specular);
 	}

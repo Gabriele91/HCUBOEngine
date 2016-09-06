@@ -22,9 +22,10 @@ uniform sampler2D g_position;
 uniform sampler2D g_normal;
 uniform sampler2D g_albedo_spec;
 uniform sampler2D g_occlusion;
-uniform mat4 view;
+//uniform model camera position
+#pragma include "lib/uniform.glsl"
 //include lights lib
-#pragma include "../effects/lib/direction_light.glsl"
+#pragma include "lib/direction_light.glsl"
 //const
 const int MAX_DIRECTION_LIGHTS = 12;
 //uniform spot lights
@@ -46,12 +47,9 @@ void main()
     
     //todo: material
     float shininess = 16.0f;
-    
-    //view pos
-    vec3 view_pos = vec3(view*position);
-    
+        
     //view dir
-    vec3 view_dir = normalize(vec3(0.0) - view_pos);
+	vec3 view_dir = normalize(camera.position - position.xyz);
     
     //result
     direction_light_res light_results;

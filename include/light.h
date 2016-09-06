@@ -278,7 +278,6 @@ namespace hcube
 		void get_uniform(int i, shader::ptr shader);
 
 		void uniform(light_wptr light,
-					 const mat4& view, 
 					 const mat4& model);
     
         bool is_valid() const;
@@ -292,7 +291,6 @@ namespace hcube
 	struct uniform_light_point
 	{
 		uniform* m_uniform_position{ nullptr };
-		uniform* m_uniform_model_position{ nullptr };
 		
 		uniform* m_uniform_diffuse{ nullptr };
 		uniform* m_uniform_specular{ nullptr };
@@ -307,7 +305,6 @@ namespace hcube
 		void get_uniform(int i, shader::ptr shader);
 
 		void uniform(light_wptr light,
-					 const mat4& view,
 					 const mat4& model);
 
 		bool is_valid() const;
@@ -328,7 +325,6 @@ namespace hcube
 		void get_uniform(int i,shader::ptr shader);
 
 		void uniform(light_wptr light,
-					 const mat4& view,
 					 const mat4& model);
 
 		bool is_valid() const;
