@@ -196,9 +196,9 @@ namespace hcube
 	{
 		auto c_transform = ptr_transform.lock();
 		if (m_uniform_model)    m_uniform_model->set_value(c_transform->get_matrix());
-		if (m_uniform_position) m_uniform_model->set_value(c_transform->get_global_position());
-		if (m_uniform_rotation) m_uniform_model->set_value(mat4_cast(c_transform->get_global_rotation()));
-		if (m_uniform_scale)    m_uniform_model->set_value(c_transform->get_global_scale());
+		if (m_uniform_position) m_uniform_position->set_value(c_transform->get_global_position());
+		if (m_uniform_rotation) m_uniform_rotation->set_value(mat4_cast(c_transform->get_global_rotation()));
+		if (m_uniform_scale)    m_uniform_scale->set_value(c_transform->get_global_scale());
 	}
 
 	bool uniform_transform::is_valid() const
