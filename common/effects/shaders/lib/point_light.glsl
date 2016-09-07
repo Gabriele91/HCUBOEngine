@@ -3,8 +3,6 @@
 struct point_light
 {
 	vec3  m_position;
-    vec3  m_direction;
-    
     vec3  m_diffuse;
     vec3  m_specular;
     
