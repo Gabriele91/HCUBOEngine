@@ -37,7 +37,7 @@
         //uniform
         uniform spot_light light;
         //macro
-        #define in_lights light
+        #define in_light light
         #define output_light_computation spot_light_res
         #define compute_light(light,position,view_dir,normal,shininess,light_results)\
             compute_spot_light(light, position, view_dir, normal, shininess, light_results)
@@ -49,7 +49,7 @@
         //uniform
         uniform point_light light;
         //macro
-        #define in_lights light
+        #define in_light light
         #define output_light_computation point_light_res
         #define compute_light(light,position,view_dir,normal,shininess,light_results)\
             compute_point_light(light, position, view_dir, normal, shininess, light_results)
@@ -61,7 +61,7 @@
         //uniform
         uniform direction_light light;
         //macro
-        #define in_lights light
+        #define in_light light
         #define output_light_computation direction_light_res
         #define compute_light(light,position,view_dir,normal,shininess,light_results)\
             compute_direction_light(light, view_dir, normal, shininess, light_results)
@@ -89,7 +89,7 @@
         output_light_computation light_results;
         
         // Then calculate lighting as usual
-        compute_light(in_lights[0],
+        compute_light(in_light,
                       position,
                       view_dir,
                       normal,
