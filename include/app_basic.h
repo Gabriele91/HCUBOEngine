@@ -92,6 +92,8 @@ namespace hcube
 		entity::ptr  m_camera;
 		entity::ptr  m_model;
 		entity::ptr  m_lights;
+		//move camera info
+		dvec2 m_camera_angle;
 		//aspect
 		float m_fov{ 45.0f };
 		float m_aspect{ 0.0f };

@@ -115,49 +115,30 @@ namespace hcube
 
 	void app_basic::camera_look_around(application& app)
 	{
-		//statics
-		static dvec2 half_wsize((dvec2)app.get_window_size()*0.5);
-		static dvec2 mouse_last_pos(half_wsize);
-		static dvec2 angles;
+		//center
+		dvec2 mouse_center = (dvec2)app.get_window_size()*0.5;
 		//mouse pos
 		dvec2 mouse_pos = app.get_mouse_position();
-		//fail case
-		if (mouse_pos == mouse_last_pos) return;
+		//direction
+		dvec2 mouse_dir = mouse_pos - mouse_center;
 		//compute speed
-		double mouse_speed = length(mouse_last_pos - mouse_pos) * 0.01;
-		//max speed
-		if (mouse_speed > 0.75) { return; }
-		//update
-		mouse_last_pos = mouse_pos;
+		double mouse_speed = length(mouse_dir / (dvec2)app.get_window_size()) * 100.0f;
+		//do not
+		if (mouse_speed <= 0.0) return;
+		//norm direction
+		dvec2 norm_mouse_dir = normalize(mouse_dir);
+		//angle
+		m_camera_angle += norm_mouse_dir * mouse_speed * app.get_last_delta_time();
+		//rote
+		m_camera->get_component<transform>()->rotation(quat{ vec3{ m_camera_angle.y, m_camera_angle.x,0.0} });
 		//reset pos
-		app.set_mouse_position((dvec2)app.get_window_size()*0.5);
-		//update 
-		angles += mouse_speed * app.get_last_delta_time() * (half_wsize - mouse_pos);
-		std::swap(angles.x, angles.y);
-		//dir cam
-		dvec3 direction
-		(
-			std::cos(angles.y) * std::sin(angles.x),
-			std::sin(angles.y),
-			std::cos(angles.y) * std::cos(angles.x)
-		);
-		dvec3 right
-		(
-            sin(angles.x - constants::pi<double>() / 2.0),
-			0,
-			cos(angles.x - constants::pi<double>() / 2.0)
-		);
-		dvec3 up = cross(right, direction);
-		//position
-		dvec3 position = m_camera->get_component<transform>()->get_position();
-		//target
-		dvec3 target = position + direction;
-		//update camera
-		m_camera->get_component<transform>()->look_at(position, target, up);
+		app.set_mouse_position(mouse_center);
 	}
 
 	void app_basic::start(application& app)
 	{
+		//set mouse at center
+		app.set_mouse_position((dvec2)app.get_window_size()*0.5);
 		//commond assets
 		m_resources.add_directory("common/effects/shaders");
 		m_resources.add_directory("common/effects");
