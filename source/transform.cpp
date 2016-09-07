@@ -180,10 +180,10 @@ namespace hcube
 
 	void uniform_transform::get_uniform(shader::ptr shader)
 	{
-		m_uniform_model    = shader->get_uniform("transform.model");
-		m_uniform_position = shader->get_uniform("transform.position");
-		m_uniform_rotation = shader->get_uniform("transform.rotation");
-		m_uniform_scale    = shader->get_uniform("transform.scale");
+		m_uniform_model    = shader->get_uniform("transform.m_model");
+		m_uniform_position = shader->get_uniform("transform.m_position");
+		m_uniform_rotation = shader->get_uniform("transform.m_rotation");
+		m_uniform_scale    = shader->get_uniform("transform.m_scale");
 
 		m_valid =
 			   m_uniform_model

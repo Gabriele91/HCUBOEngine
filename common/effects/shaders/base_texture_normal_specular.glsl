@@ -15,10 +15,10 @@ out mat3 tbn;
 void main()
 {
 	//vertex
-	frag_position     = transform.model * vec4(vertex, 1.0);
-	gl_Position 	  = camera.projection * camera.view * frag_position;
+	frag_position     = transform.m_model * vec4(vertex, 1.0);
+	gl_Position 	  = camera.m_projection * camera.m_view * frag_position;
     //normal
-    mat3 normal_mat = transpose(inverse(mat3(transform.model)));
+    mat3 normal_mat = transpose(inverse(mat3(transform.m_model)));
     //pass T/B/N
     vec3 t_pixel = normalize(normal_mat * tangent);
     vec3 n_pixel = normalize(normal_mat * normal);

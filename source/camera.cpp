@@ -137,11 +137,11 @@ namespace hcube
 
 	void uniform_camera::get_uniform(shader::ptr shader)
 	{
-		m_uniform_viewport   = shader->get_uniform("camera.viewport");
-		m_uniform_projection = shader->get_uniform("camera.projection");
-		m_uniform_view       = shader->get_uniform("camera.view");
-		m_uniform_model      = shader->get_uniform("camera.model");
-		m_uniform_position   = shader->get_uniform("camera.position");
+		m_uniform_viewport   = shader->get_uniform("camera.m_viewport");
+		m_uniform_projection = shader->get_uniform("camera.m_projection");
+		m_uniform_view       = shader->get_uniform("camera.m_view");
+		m_uniform_model      = shader->get_uniform("camera.m_model");
+		m_uniform_position   = shader->get_uniform("camera.m_position");
 		m_valid =
 			   m_uniform_viewport
 			|| m_uniform_projection

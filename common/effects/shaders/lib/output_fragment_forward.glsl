@@ -83,7 +83,7 @@
         float shininess = 16.0f;
                 
         //view dir
-        vec3 view_dir = normalize(camera.position - position.xyz);
+        vec3 view_dir = normalize(camera.m_position - position.xyz);
         
         //result
         output_light_computation light_results;
