@@ -33,6 +33,12 @@ namespace hcube
 		set_dirty();
 	}
 
+	void transform::move(const vec3& vector)
+	{
+		m_tranform.m_position += get_global_rotation() * vector;
+		set_dirty();
+	}
+
 	void transform::turn(const quat& rot)
 	{
 		m_tranform.m_rotation = rot * m_tranform.m_rotation;

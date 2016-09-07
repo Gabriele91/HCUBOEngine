@@ -31,6 +31,7 @@ namespace hcube
 
 		void look_at(const vec3& eye, const vec3& center, const vec3& up);
 		void translation(const vec3& vector);
+		void move(const vec3& vector);
 		void turn(const quat& rot);
 
 		void position(const vec3& pos);
