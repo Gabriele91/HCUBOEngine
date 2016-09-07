@@ -38,10 +38,7 @@ namespace hcube
         class ambient_light_shader
         {
         public:
-            static const int s_max_sport_lights = 12;
-            
             shader::ptr        m_shader;
-            
             uniform*           m_position;
             uniform*           m_normal;
             uniform*           m_albedo;
@@ -55,77 +52,63 @@ namespace hcube
         
         class spot_light_shader
         {
-        public:
-            static const int s_max_sport_lights = 12;
-            
+        public:            
             shader::ptr        m_shader;
-
 			uniform_camera	   m_camera;
             uniform*           m_position;
             uniform*           m_normal;
             uniform*           m_albedo;
-            uniform*           m_occlusion;
-            uniform*           m_n_spot_lights;
-            
-            uniform_light_spot m_spot_lights[s_max_sport_lights];
+            uniform*           m_occlusion;            
+            uniform_light_spot m_spot_light;
             
             void init(const std::string& path);
-            void uniform(g_buffer& gbuffer,
-                         context_texture* ssao,
-						 entity::ptr t_camera,
-                         const vec4& ambient_light,
-                         render_queues& queues);
-            void unbind();
+            void draw(g_buffer& gbuffer,
+                      context_texture* ssao,
+					  entity::ptr t_camera,
+                      const vec4& ambient_light,
+                      render_queues& queues,
+				      mesh::ptr square);
         };
         
         class point_light_shader
         {
         public:
-            static const int s_max_point_lights = 12;
-            
             shader::ptr        m_shader;
-
 			uniform_camera	   m_camera;
             uniform*           m_position;
             uniform*           m_normal;
             uniform*           m_albedo;
             uniform*           m_occlusion;
-            uniform*           m_n_point_lights;
-            
-            uniform_light_point m_point_lights[s_max_point_lights];
+            uniform_light_point m_point_light;
             
             void init(const std::string& path);
-            void uniform(g_buffer& gbuffer,
-                         context_texture* ssao,
-						 entity::ptr t_camera,
-                         const vec4& ambient_light,
-                         render_queues& queues);
-            void unbind();
+            void draw(g_buffer& gbuffer,
+                      context_texture* ssao,
+					  entity::ptr t_camera,
+                      const vec4& ambient_light,
+                      render_queues& queues,
+					  mesh::ptr square);
         };
 
 		class direction_light_shader
 		{
 		public:
-			static const int s_max_direction_lights = 12;
 
 			shader::ptr        m_shader;
-
 			uniform_camera	   m_camera;
 			uniform*           m_position;
 			uniform*           m_normal;
 			uniform*           m_albedo;
 			uniform*           m_occlusion;
-			uniform*           m_n_direction_lights;
-
-			uniform_light_direction m_direction_lights[s_max_direction_lights];
+			uniform_light_direction m_direction_light;
 
 			void init(const std::string& path);
-			void uniform(g_buffer& gbuffer,
-						 context_texture* ssao,
-						 entity::ptr t_camera,
-						 const vec4& ambient_light,
-						 render_queues& queues);
-			void unbind();
+			void draw(g_buffer& gbuffer,
+					  context_texture* ssao,
+					  entity::ptr t_camera,
+					  const vec4& ambient_light,
+					  render_queues& queues,
+					  mesh::ptr square);
 		};
         //size
         ivec2    m_q_size;
@@ -141,7 +124,6 @@ namespace hcube
         ssao_technique    m_ssao;
         
 		bool m_enable_ambient_occlusion{ true };
-
 		//uniform lights
 		std::vector < uniform_light_spot >      m_uniform_lights_spot;
 		std::vector < uniform_light_point >     m_uniform_lights_point;

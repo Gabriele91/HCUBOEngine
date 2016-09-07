@@ -16,8 +16,7 @@ namespace hcube
         m_ambient_light = m_shader->get_uniform("ambient_light");
         
     }
-    
-    
+   
     void rendering_pass_deferred::ambient_light_shader::uniform(g_buffer& gbuffer,const vec4& ambient_light)
     {
         m_shader->bind();
@@ -43,22 +42,17 @@ namespace hcube
         m_albedo		  = m_shader->get_uniform("g_albedo_spec");
         m_occlusion		  = m_shader->get_uniform("g_occlusion");
 		m_camera.get_uniform(m_shader);
-        //lights
-        m_n_spot_lights = m_shader->get_uniform("n_spot_lights");
-        //get all spot lights
-        for (unsigned i = 0; i != s_max_sport_lights; ++i)
-        {
-            m_spot_lights[i].get_uniform(i, m_shader);
-        }
-
+        //get spot light
+		m_spot_light.get_uniform(m_shader);
     }
 
-    
-    void rendering_pass_deferred::spot_light_shader::uniform(g_buffer& gbuffer,
+
+    void rendering_pass_deferred::spot_light_shader::draw(g_buffer& gbuffer,
                                                              context_texture* ssao,
 															 entity::ptr e_camera,
                                                              const vec4& ambient_light,
-                                                             render_queues& queues)
+                                                             render_queues& queues,
+															 mesh::ptr square)
     {
         m_shader->bind();
         //uniform g_buffer and etc...
@@ -69,31 +63,22 @@ namespace hcube
 		//uniform
 		m_camera.uniform(e_camera->get_component<camera>(),
 						 e_camera->get_component<transform>()->get_matrix());
-        //counter
-        int i_light_count = 0;
         //uniform all lights
         HCUBE_FOREACH_QUEUE(weak_light, queues.m_cull_light_spot)
-        {
-            if(i_light_count >= s_max_sport_lights) break;
-            
+        {            
             auto e_light = weak_light->lock();
             auto l_light = e_light->get_component<light>();
             auto t_light = e_light->get_component<transform>();
             
-            m_spot_lights[i_light_count++].uniform
+            m_spot_light.uniform
             (
                 l_light,
                 //light pos
                 t_light->get_matrix()
             );
+			square->draw();
         }
-        //uniform number of lights used
-        m_n_spot_lights->set_value(i_light_count);
-    }
-    
-    void rendering_pass_deferred::spot_light_shader::unbind()
-    {
-        m_shader->unbind();
+		m_shader->unbind();
     }
     
     void rendering_pass_deferred::point_light_shader::init(const std::string& path)
@@ -107,22 +92,17 @@ namespace hcube
         m_albedo    = m_shader->get_uniform("g_albedo_spec");
         m_occlusion = m_shader->get_uniform("g_occlusion");
 		m_camera.get_uniform(m_shader);
-        //lights
-        m_n_point_lights = m_shader->get_uniform("n_point_lights");
-        //get all spot lights
-        for (unsigned i = 0; i != s_max_point_lights; ++i)
-        {
-            m_point_lights[i].get_uniform(i, m_shader);
-        }
-        
+        //get light
+        m_point_light.get_uniform(m_shader);
     }
     
     
-    void rendering_pass_deferred::point_light_shader::uniform(g_buffer& gbuffer,
+    void rendering_pass_deferred::point_light_shader::draw(g_buffer& gbuffer,
                                                               context_texture* ssao,
 															  entity::ptr e_camera,
                                                               const vec4& ambient_light,
-                                                              render_queues& queues)
+                                                              render_queues& queues,
+															  mesh::ptr square)
     {
         m_shader->bind();
         //uniform g_buffer and etc...
@@ -133,32 +113,25 @@ namespace hcube
 		//uniform
 		m_camera.uniform(e_camera->get_component<camera>(),
 						 e_camera->get_component<transform>()->get_matrix());
-        //counter
-        int i_light_count = 0;
         //uniform all lights
         HCUBE_FOREACH_QUEUE(weak_light, queues.m_cull_light_point)
         {
-            if(i_light_count >= s_max_point_lights) break;
             
             auto e_light = weak_light->lock();
             auto l_light = e_light->get_component<light>();
             auto t_light = e_light->get_component<transform>();
             
-            m_point_lights[i_light_count++].uniform
+            m_point_light.uniform
             (
              l_light,
              //light pos
              t_light->get_matrix()
-             );
+            );
+			square->draw();
         }
-        //uniform number of lights used
-        m_n_point_lights->set_value(i_light_count);
+		m_shader->unbind();
     }
     
-    void rendering_pass_deferred::point_light_shader::unbind()
-    {
-        m_shader->unbind();
-    }
 
 	void rendering_pass_deferred::direction_light_shader::init(const std::string& path)
 	{
@@ -171,21 +144,17 @@ namespace hcube
 		m_albedo = m_shader->get_uniform("g_albedo_spec");
 		m_occlusion = m_shader->get_uniform("g_occlusion");
 		m_camera.get_uniform(m_shader);
-		//lights
-		m_n_direction_lights = m_shader->get_uniform("n_direction_lights");
-		//get all spot lights
-		for (unsigned i = 0; i != s_max_direction_lights; ++i)
-		{
-			m_direction_lights[i].get_uniform(i, m_shader);
-		}
+		//get light
+		m_direction_light.get_uniform(m_shader);
 
 	}
 	
-	void rendering_pass_deferred::direction_light_shader::uniform(g_buffer& gbuffer,
+	void rendering_pass_deferred::direction_light_shader::draw(g_buffer& gbuffer,
 															      context_texture* ssao,
 																  entity::ptr e_camera,
 															      const vec4& ambient_light,
-															      render_queues& queues)
+															      render_queues& queues,
+																  mesh::ptr square)
 	{
 		m_shader->bind();
 		//uniform g_buffer and etc...
@@ -196,35 +165,24 @@ namespace hcube
 		//uniform
 		m_camera.uniform(e_camera->get_component<camera>(),
 						 e_camera->get_component<transform>()->get_matrix());
-		//counter
-		int i_light_count = 0;
 		//uniform all lights
 		HCUBE_FOREACH_QUEUE(weak_light, queues.m_cull_light_direction)
 		{
-			if (i_light_count >= s_max_direction_lights) break;
-
 			auto e_light = weak_light->lock();
 			auto l_light = e_light->get_component<light>();
 			auto t_light = e_light->get_component<transform>();
 
-			m_direction_lights[i_light_count++].uniform
+			m_direction_light.uniform
 			(
 				l_light,
 				//light pos
 				t_light->get_matrix()
 			);
+			square->draw();
 		}
-		//uniform number of lights used
-		m_n_direction_lights->set_value(i_light_count);
-	}
-
-	void rendering_pass_deferred::direction_light_shader::unbind()
-	{
 		m_shader->unbind();
 	}
-
-
-    
+	    
     rendering_pass_deferred::rendering_pass_deferred(const ivec2& w_size, resources_manager& resources)
     {
         m_q_size = w_size;
@@ -327,23 +285,41 @@ namespace hcube
         //SPOT LIGHTS
 		if (queues.m_cull_light_spot)
 		{
-			m_spot_lights.uniform(m_g_buffer, m_ssao.get_texture(), e_camera, ambient_color, queues);
-			m_square->draw();
-			m_spot_lights.unbind();
+			m_spot_lights.draw
+			(
+				m_g_buffer, 
+				m_ssao.get_texture(), 
+				e_camera, 
+				ambient_color, 
+				queues,
+				m_square
+			);
 		}
         //POINT LIGHTS
 		if (queues.m_cull_light_point)
 		{
-			m_point_lights.uniform(m_g_buffer, m_ssao.get_texture(), e_camera, ambient_color, queues);
-			m_square->draw();
-			m_point_lights.unbind();
+			m_point_lights.draw
+			(
+				m_g_buffer, 
+				m_ssao.get_texture(), 
+				e_camera, 
+				ambient_color, 
+				queues, 
+				m_square
+			);
 		}
 		//DIRECTION LIGHTS
 		if (queues.m_cull_light_direction)
 		{
-			m_direction_lights.uniform(m_g_buffer, m_ssao.get_texture(), e_camera, ambient_color, queues);
-			m_square->draw();
-			m_direction_lights.unbind();
+			m_direction_lights.draw
+			(
+				m_g_buffer, 
+				m_ssao.get_texture(), 
+				e_camera, 
+				ambient_color, 
+				queues,
+				m_square
+			);
 		}
         ////////////////////////////////////////////////////////////////////////////////
         //reset state

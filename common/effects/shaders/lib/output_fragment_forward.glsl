@@ -35,9 +35,9 @@
         //light uniform
         #pragma include "spot_light.glsl"
         //uniform
-        uniform spot_light spot_lights[1];
+        uniform spot_light light;
         //macro
-        #define in_lights spot_lights
+        #define in_lights light
         #define output_light_computation spot_light_res
         #define compute_light(light,position,view_dir,normal,shininess,light_results)\
             compute_spot_light(light, position, view_dir, normal, shininess, light_results)
@@ -47,9 +47,9 @@
         //light uniform
         #pragma include "point_light.glsl"
         //uniform
-        uniform point_light point_lights[1];
+        uniform point_light light;
         //macro
-        #define in_lights point_lights
+        #define in_lights light
         #define output_light_computation point_light_res
         #define compute_light(light,position,view_dir,normal,shininess,light_results)\
             compute_point_light(light, position, view_dir, normal, shininess, light_results)
@@ -59,9 +59,9 @@
         //light uniform
         #pragma include "direction_light.glsl"
         //uniform
-        uniform direction_light direction_lights[1];
+        uniform direction_light light;
         //macro
-        #define in_lights direction_lights
+        #define in_lights light
         #define output_light_computation direction_light_res
         #define compute_light(light,position,view_dir,normal,shininess,light_results)\
             compute_direction_light(light, view_dir, normal, shininess, light_results)

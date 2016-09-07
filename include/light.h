@@ -275,7 +275,8 @@ namespace hcube
 		uniform* m_uniform_shadow_view{ nullptr };
 		uniform* m_uniform_shadow_map{ nullptr };
 
-		void get_uniform(int i, shader::ptr shader);
+		void get_uniform(shader::ptr shader);
+		void get_uniform(const std::string& name,shader::ptr shader);
 
 		void uniform(light_wptr light,
 					 const mat4& model);
@@ -301,8 +302,9 @@ namespace hcube
 
 		uniform* m_uniform_use_shadow{ nullptr };
 		uniform* m_uniform_shadow_map{ nullptr };
-		
-		void get_uniform(int i, shader::ptr shader);
+
+		void get_uniform(shader::ptr shader);
+		void get_uniform(const std::string& name, shader::ptr shader);
 
 		void uniform(light_wptr light,
 					 const mat4& model);
@@ -321,8 +323,9 @@ namespace hcube
 
 		uniform* m_uniform_diffuse{ nullptr };
 		uniform* m_uniform_specular{ nullptr };
-		
-		void get_uniform(int i,shader::ptr shader);
+
+		void get_uniform(shader::ptr shader);
+		void get_uniform(const std::string& name, shader::ptr shader);
 
 		void uniform(light_wptr light,
 					 const mat4& model);

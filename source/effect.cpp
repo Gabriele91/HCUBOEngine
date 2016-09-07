@@ -1555,13 +1555,13 @@ namespace hcube
                     switch (current_shader_def)
                     {
                         case DEF_RENDERING_SPOT_LIGHT:
-                            this_pass.m_uniform_spot.get_uniform(0, this_pass.m_shader);
+                            this_pass.m_uniform_spot.get_uniform(this_pass.m_shader);
                         break;
                         case DEF_RENDERING_POINT_LIGHT:
-                            this_pass.m_uniform_point.get_uniform(0, this_pass.m_shader);
+                            this_pass.m_uniform_point.get_uniform(this_pass.m_shader);
                         break;
                         case DEF_RENDERING_DIRECTION_LIGHT:
-                            this_pass.m_uniform_direction.get_uniform(0, this_pass.m_shader);
+                            this_pass.m_uniform_direction.get_uniform(this_pass.m_shader);
                         break;
                         case DEF_RENDERING_AMBIENT_LIGHT:
                             this_pass.m_uniform_ambient_light = this_pass.m_shader->get_uniform("ambient_light");

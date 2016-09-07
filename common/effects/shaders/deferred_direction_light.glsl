@@ -24,13 +24,10 @@ uniform sampler2D g_albedo_spec;
 uniform sampler2D g_occlusion;
 //uniform model camera position
 #pragma include "lib/uniform.glsl"
-//include lights lib
+//include light lib
 #pragma include "lib/direction_light.glsl"
-//const
-const int MAX_DIRECTION_LIGHTS = 12;
-//uniform spot lights
-uniform int n_direction_lights = 0;
-uniform direction_light direction_lights[MAX_DIRECTION_LIGHTS];
+//uniform light
+uniform direction_light light;
 
 
 void main()
@@ -56,21 +53,15 @@ void main()
     
     // accumulator
     vec3 diff_col = diffuse * occlusion;
-    vec3 lighting = vec3(0);
     
-    //compute all spot lights
-    for(int i=0;i!=n_direction_lights;++i)
-    {
-        // then calculate lighting as usual
-        compute_direction_light(direction_lights[i],
-								view_dir,
-								normal,
-								shininess,
-								light_results);
-        // acc color
-        lighting += diff_col * (light_results.m_diffuse + light_results.m_specular * specular);
-    }
-    
+    // then calculate lighting as usual
+    compute_direction_light(light,
+							view_dir,
+							normal,
+							shininess,
+							light_results);
+    //color
+	vec3 lighting = diff_col * (light_results.m_diffuse + light_results.m_specular * specular);
     
     //output
     frag_color = vec4(lighting,1.0);

@@ -7,27 +7,31 @@ namespace hcube
 {
 
 	//UNIFORM SPOT LIGHT
-	void uniform_light_spot::get_uniform(int i, shader::ptr shader)
+	void uniform_light_spot::get_uniform(shader::ptr shader)
 	{
-		std::string lights_i("spot_lights[" + std::to_string(i) + "]");
-		m_uniform_position = shader->get_uniform((lights_i + ".m_position").c_str());
-		m_uniform_direction = shader->get_uniform((lights_i + ".m_direction").c_str());
+		get_uniform("light", shader);
+	}
 
-		m_uniform_diffuse = shader->get_uniform((lights_i + ".m_diffuse").c_str());
-		m_uniform_specular = shader->get_uniform((lights_i + ".m_specular").c_str());
+	void uniform_light_spot::get_uniform(const std::string& name, shader::ptr shader)
+	{
+		m_uniform_position = shader->get_uniform((name + ".m_position").c_str());
+		m_uniform_direction = shader->get_uniform((name + ".m_direction").c_str());
 
-		m_uniform_constant      = shader->get_uniform((lights_i + ".m_constant").c_str());
-		m_uniform_inside_radius = shader->get_uniform((lights_i + ".m_inside_radius").c_str());
-		m_uniform_radius        = shader->get_uniform((lights_i + ".m_radius").c_str());
+		m_uniform_diffuse = shader->get_uniform((name + ".m_diffuse").c_str());
+		m_uniform_specular = shader->get_uniform((name + ".m_specular").c_str());
 
-		m_uniform_inner_cut_off = shader->get_uniform((lights_i + ".m_inner_cut_off").c_str());
-		m_uniform_outer_cut_off = shader->get_uniform((lights_i + ".m_outer_cut_off").c_str());
+		m_uniform_constant      = shader->get_uniform((name + ".m_constant").c_str());
+		m_uniform_inside_radius = shader->get_uniform((name + ".m_inside_radius").c_str());
+		m_uniform_radius        = shader->get_uniform((name + ".m_radius").c_str());
 
-		m_uniform_use_shadow = shader->get_uniform((lights_i + ".m_use_shadow").c_str());
+		m_uniform_inner_cut_off = shader->get_uniform((name + ".m_inner_cut_off").c_str());
+		m_uniform_outer_cut_off = shader->get_uniform((name + ".m_outer_cut_off").c_str());
 
-		m_uniform_shadow_projection = shader->get_uniform((lights_i + ".m_shadow_projection").c_str());
-		m_uniform_shadow_view = shader->get_uniform((lights_i + ".m_shadow_view").c_str());
-		m_uniform_shadow_map = shader->get_uniform((lights_i + ".m_shadow_map").c_str());
+		m_uniform_use_shadow = shader->get_uniform((name + ".m_use_shadow").c_str());
+
+		m_uniform_shadow_projection = shader->get_uniform((name + ".m_shadow_projection").c_str());
+		m_uniform_shadow_view = shader->get_uniform((name + ".m_shadow_view").c_str());
+		m_uniform_shadow_map = shader->get_uniform((name + ".m_shadow_map").c_str());
 
         //test
         m_valid =
@@ -77,21 +81,25 @@ namespace hcube
     }
 
 	//UNIFORM POINT LIGHT
-	void uniform_light_point::get_uniform(int i, shader::ptr shader)
+	void uniform_light_point::get_uniform(shader::ptr shader)
 	{
-		std::string lights_i("point_lights[" + std::to_string(i) + "]");
+		get_uniform("light", shader);
+	}
 
-		m_uniform_position = shader->get_uniform((lights_i + ".m_position").c_str());
+	void uniform_light_point::get_uniform(const std::string& name,shader::ptr shader)
+	{
 
-		m_uniform_diffuse = shader->get_uniform((lights_i + ".m_diffuse").c_str());
-		m_uniform_specular = shader->get_uniform((lights_i + ".m_specular").c_str());
+		m_uniform_position = shader->get_uniform((name + ".m_position").c_str());
 
-		m_uniform_constant = shader->get_uniform((lights_i + ".m_constant").c_str());
-		m_uniform_inside_radius = shader->get_uniform((lights_i + ".m_inside_radius").c_str());
-		m_uniform_radius = shader->get_uniform((lights_i + ".m_radius").c_str());
+		m_uniform_diffuse = shader->get_uniform((name + ".m_diffuse").c_str());
+		m_uniform_specular = shader->get_uniform((name + ".m_specular").c_str());
 
-		m_uniform_use_shadow = shader->get_uniform((lights_i + ".m_use_shadow").c_str());
-		m_uniform_shadow_map = shader->get_uniform((lights_i + ".m_shadow_map").c_str());
+		m_uniform_constant = shader->get_uniform((name + ".m_constant").c_str());
+		m_uniform_inside_radius = shader->get_uniform((name + ".m_inside_radius").c_str());
+		m_uniform_radius = shader->get_uniform((name + ".m_radius").c_str());
+
+		m_uniform_use_shadow = shader->get_uniform((name + ".m_use_shadow").c_str());
+		m_uniform_shadow_map = shader->get_uniform((name + ".m_shadow_map").c_str());
 
 		//test
 		m_valid =
@@ -132,14 +140,16 @@ namespace hcube
 	}
 
 	//UNIFORM POINT DIRECTION
-	void uniform_light_direction::get_uniform(int i, shader::ptr shader)
+	void uniform_light_direction::get_uniform(shader::ptr shader)
 	{
-		std::string lights_i("direction_lights[" + std::to_string(i) + "]");
+		get_uniform("light",shader);
+	}
 
-		m_uniform_direction = shader->get_uniform((lights_i + ".m_direction").c_str());
-
-		m_uniform_diffuse = shader->get_uniform((lights_i + ".m_diffuse").c_str());
-		m_uniform_specular = shader->get_uniform((lights_i + ".m_specular").c_str());
+	void uniform_light_direction::get_uniform(const std::string& name, shader::ptr shader)
+	{
+		m_uniform_direction = shader->get_uniform((name + ".m_direction").c_str());
+		m_uniform_diffuse = shader->get_uniform((name + ".m_diffuse").c_str());
+		m_uniform_specular = shader->get_uniform((name + ".m_specular").c_str());
 		
 		//test
 		m_valid =
