@@ -64,18 +64,18 @@ namespace hcube
 			rendering_system*	r_system = m_systems.get_system<rendering_system>();
 			r_system->stop_frustum_culling(true);
 		}
-		else if (key == GLFW_KEY_UP)          m_camera->get_component<transform>()->move({ 0,0,1 });
-		else if (key == GLFW_KEY_DOWN)        m_camera->get_component<transform>()->move({ 0,0,-1 });
-		else if (key == GLFW_KEY_LEFT)        m_camera->get_component<transform>()->move({-1,0,0 });
-		else if (key == GLFW_KEY_RIGHT)       m_camera->get_component<transform>()->move({ 1,0,0 });
-		else if (key == GLFW_KEY_PAGE_UP)     m_camera->get_component<transform>()->move({ 0,1,0 });
-		else if (key == GLFW_KEY_PAGE_DOWN)   m_camera->get_component<transform>()->move({ 0,-1,0 });
-		else if (key == GLFW_KEY_W)    e_model->get_component<transform>()->translation({ 0,0,1 });
-		else if (key == GLFW_KEY_S)    e_model->get_component<transform>()->translation({ 0,0,-1 });
-		else if (key == GLFW_KEY_A)    e_model->get_component<transform>()->translation({-1,0,0 });
-		else if (key == GLFW_KEY_D)    e_model->get_component<transform>()->translation({ 1,0,0 });
-		else if (key == GLFW_KEY_R)    e_model->get_component<transform>()->translation({ 0,1,0 });
-		else if (key == GLFW_KEY_F)    e_model->get_component<transform>()->translation({ 0,-1,0 });
+		else if (key == GLFW_KEY_UP)          e_model->get_component<transform>()->translation({ 0,0,1 });
+		else if (key == GLFW_KEY_DOWN)        e_model->get_component<transform>()->translation({ 0,0,-1 });
+		else if (key == GLFW_KEY_LEFT)        e_model->get_component<transform>()->translation({-1,0,0 });
+		else if (key == GLFW_KEY_RIGHT)       e_model->get_component<transform>()->translation({ 1,0,0 });
+		else if (key == GLFW_KEY_PAGE_UP)     e_model->get_component<transform>()->translation({ 0,1,0 });
+		else if (key == GLFW_KEY_PAGE_DOWN)   e_model->get_component<transform>()->translation({ 0,-1,0 });
+		else if (key == GLFW_KEY_W)    m_camera->get_component<transform>()->move({ 0,0,1 });
+		else if (key == GLFW_KEY_S)    m_camera->get_component<transform>()->move({ 0,0,-1 });
+		else if (key == GLFW_KEY_A)    m_camera->get_component<transform>()->move({-1,0,0 });
+		else if (key == GLFW_KEY_D)    m_camera->get_component<transform>()->move({ 1,0,0 });
+		else if (key == GLFW_KEY_R)    m_camera->get_component<transform>()->move({ 0,1,0 });
+		else if (key == GLFW_KEY_F)    m_camera->get_component<transform>()->move({ 0,-1,0 });
 		else if ((mods == GLFW_MOD_SUPER ||
 			mods == GLFW_MOD_CONTROL) &&
 			action == GLFW_PRESS)
