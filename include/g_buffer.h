@@ -32,30 +32,22 @@ namespace hcube
 		bool init(unsigned int width, unsigned int height);
 
 		void destoy();
-
-		void bind_for_writing();
-
+		
 		void bind();
 
 		void unbind();
-
-		void bind_for_reading();
-
-		void set_read_buffer(G_BUFFER_TEXTURE_TYPE texture_type);
 
 		void set_texture_buffer(G_BUFFER_TEXTURE_TYPE texture_type);
 
 		void disable_texture(G_BUFFER_TEXTURE_TYPE texture_type);
 
 		context_texture* get_texture(G_BUFFER_TEXTURE_TYPE texture_type) const;
-
-		void set_read_buffer_depth();
-
+		
 		void set_texture_buffer_depth(size_t n_texture = 0);
 
-		context_texture* get_texture_buffer_depth() const;
-
 		void disable_depth_texture();
+
+		context_texture* get_texture_buffer_depth() const;
 
 		unsigned int get_width() const;
 

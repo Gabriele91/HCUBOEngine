@@ -47,7 +47,7 @@ uniform sampler2D specular_map;
 
 vec3 compute_normal()
 {
-//#define INV_X_NORMAL_MAP
+	#define INV_X_NORMAL_MAP
     //get normal texture
 	vec3 tex_normal = texture(normal_map, frag_uvcoord).rgb;
 	//

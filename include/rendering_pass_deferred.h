@@ -28,8 +28,14 @@ namespace hcube
                                entity::ptr camera,
                                render_queues& queues);
 
+		struct ambient_occlusion_param
+		{
+			bool			m_enable;
+			unsigned char   m_kernel_size;
+			float			m_range;
+		};
 
-		void set_ambient_occlusion(bool enable = true);
+		void set_ambient_occlusion(ambient_occlusion_param param);
 
 		bool is_enable_ambient_occlusion() const;
 
@@ -42,10 +48,12 @@ namespace hcube
             uniform*           m_position;
             uniform*           m_normal;
             uniform*           m_albedo;
+			uniform*           m_occlusion;
             uniform*           m_ambient_light;
             
             void init(const std::string& path);
             void uniform(g_buffer& gbuffer,
+						 context_texture* ssao,
                          const vec4& ambient_light);
             void unbind();
         };

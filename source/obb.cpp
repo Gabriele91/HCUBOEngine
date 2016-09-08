@@ -373,33 +373,34 @@ namespace hcube
 		mat4
 		transform = translate(mat4(1), m_position);
 		transform*= mat4(m_rotation);
-		transform = scale(transform, m_extension);
 		//new box
 		transform = model * transform;
 #if 0
 		//decompone
-		glm::vec3 scale;
-		glm::quat rotation;
-		glm::vec3 translation;
-		glm::vec3 skew;
-		glm::vec4 perspective;
+		vec3 scale;
+		quat rotation;
+		vec3 translation;
+		vec3 skew;
+		vec4 perspective;
 		glm::decompose(transform, scale, rotation, translation, skew, perspective);
 		//to obb
 		m_position  = translation;
 		m_rotation  = mat3_cast( rotation );
-		m_extension = scale;
+		m_extension = scale * m_extension;
 #else
 		//to obb
 		m_position   = vec3(transform[3]);
-		//rotation / scale
+		//rotation
 		auto r_scale = mat3(transform);
-		m_extension  = vec3(length(r_scale[0]),
+		auto scale   = vec3(length(r_scale[0]),
 							length(r_scale[1]),
 							length(r_scale[2]));
-		r_scale[0] /= m_extension[0];
-		r_scale[1] /= m_extension[1];
-		r_scale[2] /= m_extension[2];
+		r_scale[0] /= scale[0];
+		r_scale[1] /= scale[1];
+		r_scale[2] /= scale[2];
 		m_rotation = traspose(inverse(r_scale));
+		//scale
+		m_extension = scale * m_extension;
 #endif
 	}
 

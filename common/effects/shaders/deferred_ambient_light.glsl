@@ -19,6 +19,7 @@ in vec2 frag_uvcoord;
 out vec4 frag_color;
 //uniform g_buffer
 uniform sampler2D g_albedo_spec;
+uniform sampler2D g_occlusion;
 //uniform spot lights
 uniform int n_point_lights = 0;
 uniform vec4 ambient_light;
@@ -27,7 +28,8 @@ uniform vec4 ambient_light;
 void main()
 {
     // Retrieve data from gbuffer
-    vec3 diffuse = texture(g_albedo_spec, frag_uvcoord).rgb;
+    vec3    diffuse = texture(g_albedo_spec, frag_uvcoord).rgb;
+	float occlusion = texture(g_occlusion, frag_uvcoord).r;
     //output
-    frag_color = vec4(diffuse*ambient_light.rgb,1.0);
+    frag_color = vec4(diffuse * (ambient_light.rgb * occlusion),1.0);
 }

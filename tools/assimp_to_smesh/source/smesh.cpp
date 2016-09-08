@@ -1,114 +1,35 @@
 #pragma once
 #include <string>
+#include <sstream>
 #include <smesh.h>
 #include <filesystem.h>
 #define SAVE_OBBS
 
-static const char* mat_template[]
-{
-	//NO TEXTURE TEMPLATE
-	"cullface true\n"
-	"{\n"
-	"	mode back\n"
-	"}\n"
-	"\n"
-	"blend false\n"
-	"\n"
-	"shader \"%s\"\n"
-	"{\n"
-	"	uniforms\n"
-	"	{\n"
-    "       mask float(-1.0)\n"
-	"		color vec4(%f,%f,%f,%f)\n"
-	"	}\n"
-	"}\n",
-	//TEXTURE TEMPLATE
-	"cullface true\n"
-	"{\n"
-	"	mode back\n"
-	"}\n"
-	"\n"
-	"blend false\n"
-	"\n"
-	"shader \"%s\"\n"
-	"{\n"
-	"	textures\n"
-	"	{\n"
-	"		%s\n"
-	"		%s\n"
-	"		%s\n"
-	"	}\n"
-	"	\n"
-	"	uniforms\n"
-    "	{\n"
-    "       mask float(-1.0)\n"
-	"		color vec4(%f,%f,%f,%f)\n"
-	"	}\n"
-	"}\n"
-};
 
 void material::save(const std::string& path)
 {
 	//open file
-	FILE* mat_file = fopen(path.c_str(), "wb");
+	FILE* mat_file = std::fopen(path.c_str(), "wb");
 	//test open
 	if (!mat_file) return;
-	//buffer size
-	const size_t buffer_size = 2048;
-	//write file
-	char buffer[buffer_size] = { 0 };
-
-	//shader name
-	std::string name_shader;
-	std::string diffuse_map(m_diffuse.size() ? "diffuse_map \"" + m_diffuse + "\"" : std::string());
-	std::string specular_map(m_specular.size() ? "specular_map \"" + m_specular + "\"" : std::string());
-	std::string normal_map(m_normal.size() ? "normal_map \"" + m_normal + "\"" : std::string());
-
-	//select shader
-	if (!m_diffuse.size())
-		name_shader = "base";
-	else if (!m_specular.size() && !m_normal.size())
-		name_shader = "base_texture";
-	else if (!m_specular.size())
-		name_shader = "base_texture_normal";
-	else if (!m_normal.size())
-		name_shader = "base_texture_specular";
-	else
-		name_shader = "base_texture_normal_specular";
-
-	if (name_shader == "base")
-	{
-		std::snprintf
-		(
-			buffer,
-			buffer_size,
-			mat_template[0],
-			name_shader.c_str(),
-			m_color.r,
-			m_color.g,
-			m_color.b,
-			m_color.a
-		);
-	}
-	else
-	{
-		std::snprintf
-		(
-			buffer,
-			buffer_size,
-			mat_template[1],
-			name_shader.c_str(),
-			diffuse_map.c_str(),
-			specular_map.c_str(),
-			normal_map.c_str(),
-			m_color.r,
-			m_color.g,
-			m_color.b,
-			m_color.a
-		);
-	}
-	//write
-	std::fwrite(buffer, std::strlen(buffer), 1, mat_file);
+	//output
+	std::stringstream stream_output;
+	//add header
+	stream_output << "effect \"base_texture_normal_specular\" \n";
+	//open
+	stream_output << "{\n";
+	//add attributes
+	if (m_diffuse.size())  stream_output << "\tdiffuse_map texture(\""  + m_diffuse  + "\") \n";
+	if (m_specular.size()) stream_output << "\tspecular_map texture(\"" + m_specular + "\") \n";
+	if (m_normal.size())   stream_output << "\tnormal_map texture(\"" + m_normal + "\") \n";
+	//add color
+	stream_output << "\tcolor vec4(" << m_color.r << "," << m_color.g << "," << m_color.b << "," << m_color.a << ")\n";
+	//close
+	stream_output << "}\n";
+	//to string
+	std::string str_output = stream_output.str();
+	//output
+	std::fwrite(str_output.c_str(), str_output.size(), 1, mat_file);
 	//close file
 	std::fclose(mat_file);
 }

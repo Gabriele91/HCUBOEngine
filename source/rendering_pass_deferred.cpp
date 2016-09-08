@@ -12,16 +12,20 @@ namespace hcube
         m_shader->load(path,std::vector<std::string>{ "AMBIENT_LIGHTS" });
         //color
         m_albedo    = m_shader->get_uniform("g_albedo_spec");
+		m_occlusion = m_shader->get_uniform("g_occlusion");
         //get all spot lights
         m_ambient_light = m_shader->get_uniform("ambient_light");
         
     }
    
-    void rendering_pass_deferred::ambient_light_shader::uniform(g_buffer& gbuffer,const vec4& ambient_light)
+    void rendering_pass_deferred::ambient_light_shader::uniform(g_buffer& gbuffer,
+																context_texture* ssao, 
+																const vec4& ambient_light)
     {
         m_shader->bind();
         //uniform g_buffer and etc...
         m_albedo->set_value(gbuffer.get_texture(g_buffer::G_BUFFER_TEXTURE_TYPE_ALBEDO));
+		m_occlusion->set_value(ssao);
         //ambient light
         m_ambient_light->set_value(ambient_light);
     }
@@ -48,11 +52,11 @@ namespace hcube
 
 
     void rendering_pass_deferred::spot_light_shader::draw(g_buffer& gbuffer,
-                                                             context_texture* ssao,
-															 entity::ptr e_camera,
-                                                             const vec4& ambient_light,
-                                                             render_queues& queues,
-															 mesh::ptr square)
+                                                          context_texture* ssao,
+													      entity::ptr e_camera,
+                                                          const vec4& ambient_light,
+                                                          render_queues& queues,
+													      mesh::ptr square)
     {
         m_shader->bind();
         //uniform g_buffer and etc...
@@ -188,8 +192,8 @@ namespace hcube
         m_q_size = w_size;
         m_g_buffer.init(w_size);
         m_ssao.init(w_size, resources);
-        m_ssao.set_kernel_size(32);
-        m_ssao.set_radius(0.75);
+		m_ssao.clear();
+		m_enable_ambient_occlusion = false;
         
         m_square = basic_meshs::square3D({ 2.0,2.0 }, true);
         m_ambient_light.init(resources.get_shader_path("deferred_ambient_light"));
@@ -198,13 +202,15 @@ namespace hcube
 		m_direction_lights.init(resources.get_shader_path("deferred_direction_light"));
     }
     
-	void rendering_pass_deferred::set_ambient_occlusion(bool enable)
+	void rendering_pass_deferred::set_ambient_occlusion(ambient_occlusion_param param)
 	{
-		if (m_enable_ambient_occlusion && !enable)
+		if (m_enable_ambient_occlusion && !param.m_enable)
 		{
 			m_ssao.clear();
 		}
-		m_enable_ambient_occlusion = enable;
+		m_enable_ambient_occlusion = param.m_enable;
+		m_ssao.set_kernel_size(param.m_kernel_size < m_ssao.m_max_kernel_size ? param.m_kernel_size : m_ssao.m_max_kernel_size);
+		m_ssao.set_radius(param.m_range);
 	}
 
 	bool rendering_pass_deferred::is_enable_ambient_occlusion() const
@@ -279,7 +285,12 @@ namespace hcube
         //draw
         ////////////////////////////////////////////////////////////////////////////////
         //AMBIENT LIGHTS
-        m_ambient_light.uniform(m_g_buffer, ambient_color);
+        m_ambient_light.uniform
+		(
+			m_g_buffer,
+			m_ssao.get_texture(), 
+			ambient_color
+		);
         m_square->draw();
         m_ambient_light.unbind();
         //SPOT LIGHTS

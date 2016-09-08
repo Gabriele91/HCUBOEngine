@@ -46,8 +46,8 @@ namespace hcube
 
 		//specify type
 		types[G_BUFFER_TEXTURE_TYPE_POSITION] = target_texture_type(TF_RGBA16F, TT_RGBA, TTF_FLOAT);
-		types[G_BUFFER_TEXTURE_TYPE_NORMAL] = target_texture_type(TF_RGB8, TT_RGB, TTF_FLOAT);
-		types[G_BUFFER_TEXTURE_TYPE_ALBEDO] = target_texture_type(TF_RGBA8, TT_RGBA, TTF_UNSIGNED_BYTE);
+		types[G_BUFFER_TEXTURE_TYPE_NORMAL]   = target_texture_type(TF_RGB8,    TT_RGB,  TTF_FLOAT);
+		types[G_BUFFER_TEXTURE_TYPE_ALBEDO]   = target_texture_type(TF_RGBA8,   TT_RGBA, TTF_UNSIGNED_BYTE);
 
 
 		//create texture
@@ -122,19 +122,7 @@ namespace hcube
 		m_height = 0;
 
 	}
-
-	void g_buffer::bind_for_writing()
-	{
-		render::enable_render_target(m_target);
-		assert(0);
-	}
-
-	void g_buffer::bind_for_reading()
-	{
-		render::enable_render_target(m_target);
-		assert(0);
-	}
-
+	
 	void g_buffer::bind()
 	{
 		render::enable_render_target(m_target);
@@ -143,13 +131,6 @@ namespace hcube
 	void g_buffer::unbind()
 	{
 		render::disable_render_target(m_target);
-	}
-
-
-	void g_buffer::set_read_buffer(G_BUFFER_TEXTURE_TYPE texture_type)
-	{
-		//glReadBuffer(GL_COLOR_ATTACHMENT0 + texture_type);
-		assert(0);
 	}
 
 	void g_buffer::set_texture_buffer(G_BUFFER_TEXTURE_TYPE texture_type)
@@ -210,12 +191,6 @@ namespace hcube
 		case G_BUFFER_TEXTURE_TYPE_ALBEDO: return m_textures[G_BUFFER_TEXTURE_TYPE_ALBEDO];
 		default: return nullptr;
 		}
-	}
-
-	void g_buffer::set_read_buffer_depth()
-	{
-		//glReadBuffer(GL_DEPTH_ATTACHMENT);
-		assert(0);
 	}
 
 	void g_buffer::set_texture_buffer_depth(size_t n_texture)
