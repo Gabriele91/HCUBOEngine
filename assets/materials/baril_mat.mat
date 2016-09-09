@@ -2,6 +2,6 @@ effect "base_texture_normal_specular"
 {
 	diffuse_map  texture("baril")
 	specular_map texture("baril_specular")
-	normal_map   texture("baril_normal")
+	normal_map   texture("baril_normal_x")
 	color        vec4(1.0,1.0,1.0,1.0)
 }

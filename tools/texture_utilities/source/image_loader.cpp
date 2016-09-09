@@ -155,8 +155,6 @@ std::shared_ptr<image> load_image(const std::string& path)
             case 4: o_image = image::from_rgba(data, width, height);   break;
             default:  break;
         }
-        //flip y
-        o_image->flip_horizontal();
         //
         stbi_image_free(data);
 
@@ -185,10 +183,11 @@ std::shared_ptr<image> load_image(const std::string& path)
         //types
         switch (image_format)
         {
-            case TF_R8:     o_image = image::from_r(image_data.data(), image_width, image_height);   break;
-            case TF_RGB565: o_image = image::from_rgb16(image_data.data(), image_width, image_height);   break;
-            case TF_RGB8:   o_image = image::from_rgb(image_data.data(), image_width, image_height);   break;
-            case TF_RGBA8:  o_image = image::from_rgba(image_data.data(), image_width, image_height);   break;
+            case TF_R8:     o_image = image::from_r(image_data.data(), image_width, image_height);        break;
+			case TF_RGB565: o_image = image::from_rgb565(image_data.data(), image_width, image_height);   break;
+			case TF_RGB5A1: o_image = image::from_rgb5a1(image_data.data(), image_width, image_height);   break;
+            case TF_RGB8:   o_image = image::from_rgb(image_data.data(), image_width, image_height);      break;
+            case TF_RGBA8:  o_image = image::from_rgba(image_data.data(), image_width, image_height);     break;
             default: break;
         }
         return o_image;

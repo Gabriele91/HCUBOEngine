@@ -29,11 +29,12 @@ using image_kernel = std::function< void(image& thiz, image_rgba& pixel, unsigne
 class image : public std::enable_shared_from_this<image>
 {
 public:
-    static std::shared_ptr<image> from_r    (const unsigned char* buffer,unsigned long width,unsigned long height);
-    static std::shared_ptr<image> from_rg   (const unsigned char* buffer,unsigned long width,unsigned long height);
-    static std::shared_ptr<image> from_rgb  (const unsigned char* buffer,unsigned long width,unsigned long height);
-    static std::shared_ptr<image> from_rgb16(const unsigned char* buffer,unsigned long width,unsigned long height);
-    static std::shared_ptr<image> from_rgba (const unsigned char* buffer,unsigned long width,unsigned long height);
+    static std::shared_ptr<image> from_r     (const unsigned char* buffer,unsigned long width,unsigned long height);
+    static std::shared_ptr<image> from_rg    (const unsigned char* buffer,unsigned long width,unsigned long height);
+    static std::shared_ptr<image> from_rgb   (const unsigned char* buffer,unsigned long width,unsigned long height);
+	static std::shared_ptr<image> from_rgb565(const unsigned char* buffer, unsigned long width, unsigned long height);
+	static std::shared_ptr<image> from_rgb5a1(const unsigned char* buffer, unsigned long width, unsigned long height);
+    static std::shared_ptr<image> from_rgba  (const unsigned char* buffer,unsigned long width,unsigned long height);
     
     image(){}
     

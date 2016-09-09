@@ -9,7 +9,7 @@
 #include <image.h>
 
 
-std::shared_ptr<image> image::from_rgb16(const unsigned char* buffer,unsigned long width,unsigned long height)
+std::shared_ptr<image> image::from_rgb565(const unsigned char* buffer,unsigned long width,unsigned long height)
 {
     //alloc conteiner
     auto o_image = std::make_shared<image>();
@@ -34,6 +34,33 @@ std::shared_ptr<image> image::from_rgb16(const unsigned char* buffer,unsigned lo
     });
     
     return o_image;
+}
+
+std::shared_ptr<image> image::from_rgb5a1(const unsigned char* buffer, unsigned long width, unsigned long height)
+{
+	//alloc conteiner
+	auto o_image = std::make_shared<image>();
+	//alloc buffer
+	o_image->m_buffer.resize(width*height);
+	//save size
+	o_image->m_width = width;
+	o_image->m_height = height;
+	//copy into buffer
+	o_image->apply_kernel([=](image& thiz, image_rgba& pixel, unsigned long x, unsigned long y)
+	{
+		// R R R R R G G G bytes[i*2+0]
+		// G G G B B B B B bytes[i*2+1]
+		pixel.m_r = ((buffer[x * 2 + width * 2 * y + 0] & 0xF8) >> 3);
+		pixel.m_g = ((buffer[x * 2 + width * 2 * y + 0] & 0x07) << 3) | ((buffer[x * 2 + width * 2 * y + 1] & 0xfb) >> 6);
+		pixel.m_b = ((buffer[x * 2 + width * 2 * y + 1] & 0x3e) >> 1);
+		pixel.m_a = (buffer[x * 2 + width * 2 * y + 1]  & 0x01 ) ? 255 : 0;
+		//normalize
+		pixel.m_r = (unsigned char)(float(pixel.m_r) / 32.0f * 255.0f);
+		pixel.m_g = (unsigned char)(float(pixel.m_g) / 64.0f * 255.0f);
+		pixel.m_b = (unsigned char)(float(pixel.m_b) / 32.0f * 255.0f);
+	});
+
+	return o_image;
 }
 
 std::shared_ptr<image> image::from_r (const unsigned char* buffer,unsigned long width,unsigned long height)

@@ -43,11 +43,14 @@ namespace hcube
 		unsigned char  m_descriptor;       // image descriptor bits (vh flip bits)
 	});
 
-	static void decoder_rle(unsigned long width,
+	static void decoder_rle
+	(
+		unsigned long width,
 		unsigned long height,
 		unsigned long image_bytes_pixel,
 		const unsigned char* buffer_in,
-		std::vector<unsigned char>& out_image)
+		std::vector<unsigned char>& out_image
+	)
 	{
 		//bytes
 		const unsigned char* c_ptr = buffer_in;
@@ -93,27 +96,66 @@ namespace hcube
 		}
 	}
 
-	static void rga_swap_r_and_b_16(unsigned char* bytes,
+	static void read_rgba5551
+	(
+		const unsigned char* data,
+		unsigned char& r,
+		unsigned char& g,
+		unsigned char& b,
+		unsigned char& a
+	)
+	{
+		r = (data[0] & 0xf8) >> 3;
+		g = ((data[0] & 0x07) << 2) | ((data[1] & 0xfb) >> 6);
+		b = (data[1] & 0x3e) >> 1;
+		a = data[1] & 0x01;
+	}
+
+	static void write_rgba5551
+	(
+		unsigned char* data,
+		unsigned char r,
+		unsigned char g,
+		unsigned char b,
+		unsigned char a
+	)
+	{
+		data[0] = (r << 3) | (data[0] & 0x07);
+		data[0] = ((g & 0x1c) >> 2) | (data[0] & 0xf8);
+		data[1] = ((g & 0x03) << 6) | (data[1] & 0xf8);
+		data[1] = (b << 1) | (data[1] & 0xc1);
+		data[1] = a | (data[1] & 0xfe);
+	}
+
+	static void rga_swap_r_and_b_16
+	(
+		unsigned char* bytes,
 		unsigned long width,
-		unsigned long height)
+		unsigned long height
+	)
 	{
 		size_t image_size = width * height;
-		//24/32 image
+		//16 image
 		for (unsigned int i = 0; i != image_size; ++i)
 		{
 			// R R R R R G G G bytes[i*2+0]
 			// G G G B B B B B bytes[i*2+1]
-			unsigned char tmp_r = bytes[i * 2 + 0];
-			//                          R/B                                   G
-			bytes[i * 2 + 0] = ((bytes[i * 2 + 1] << 3) & 0b11111000) | (bytes[i * 2 + 0] & 0b00000111);
-			bytes[i * 2 + 1] = ((tmp_r >> 3) & 0b00011111) | (bytes[i * 2 + 1] & 0b11100000);
+			unsigned char r, g, b, a;
+			//read
+			read_rgba5551(&bytes[i * 2 + 0], r, g, b, a);
+			//swap
+			std::swap(r, b);
+			//write
+			write_rgba5551(&bytes[i * 2 + 0], r, g, b, a);
 		}
 	}
-
-	static void rga_swap_r_and_b_24_32(unsigned char* bytes,
+	static void rga_swap_r_and_b_24_32
+	(
+		unsigned char* bytes,
 		unsigned long image_bytes_pixel,
 		unsigned long width,
-		unsigned long height)
+		unsigned long height
+	)
 	{
 		size_t image_size = width * height;
 		//24/32 image
@@ -129,10 +171,13 @@ namespace hcube
 
 
 #if 0
-	static void image_y_flip(std::vector<unsigned char>& bytes,
+	static void image_y_flip
+	(
+		std::vector<unsigned char>& bytes,
 		unsigned long image_bytes_pixel,
 		unsigned long image_width,
-		unsigned long image_height)
+		unsigned long image_height
+	)
 	{
 		//line size
 		size_t line_len = image_width * image_bytes_pixel * sizeof(unsigned char);
@@ -152,13 +197,16 @@ namespace hcube
 	}
 #endif
 
-	bool decode_tga(std::vector<unsigned char>& out_image,
+	bool decode_tga
+	(
+		std::vector<unsigned char>& out_image,
 		unsigned long& image_width,
 		unsigned long& image_height,
 		texture_format& image_format,
 		texture_type&   image_type,
 		const unsigned char* in_tga,
-		size_t in_size)
+		size_t in_size
+	)
 	{
 		//ptr to data
 		tga_header*		     header = (tga_header*)in_tga;
@@ -173,7 +221,7 @@ namespace hcube
 		switch (header->m_bits)
 		{
 		case 8:   image_format = TF_R8;      image_type = TT_R;    break;
-		case 16:  image_format = TF_RGB565;  image_type = TT_RGB;  break;
+		case 16:  image_format = TF_RGB5A1;  image_type = TT_RGBA; break;
 		case 24:  image_format = TF_RGB8;    image_type = TT_RGB;  break;
 		case 32:  image_format = TF_RGBA8;   image_type = TT_RGBA; break;
 		default: return false; break;

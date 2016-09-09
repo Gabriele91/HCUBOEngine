@@ -1,7 +1,7 @@
 effect "base_texture_normal_specular"
 {
 	diffuse_map  texture("cross")
-	normal_map   texture("cross_normal")
+	normal_map   texture("cross_normal_x")
 	specular_map texture("cross_specular")
 	color        vec4(1.0,1.0,1.0,1.0)
 }

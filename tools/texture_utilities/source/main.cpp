@@ -27,7 +27,9 @@ int main(int argc, const char * argv[])
         std::cout << "texture_tools in_image_path out_image_path [options] [--kernels [kernels]]\n\n";
         std::cout << "options:\n"
                      "\t--flip-vertical\n"
-                     "\t--flip-horizontal\n";
+					 "\t--flip-horizontal\n"
+			         "\t--rgba [default]\n"
+		             "\t--rgb\n";
         std::cout << "\n";
         std::cout << "kernels:\n";
         for(auto& i_kernel : global_map_kernels)
@@ -48,8 +50,9 @@ int main(int argc, const char * argv[])
     //test out file
     if(hcube::filesystem::is_file(out_path)) MESSATE_AND_EXIT( "Error: " << out_path  << " olready exist", -3);
     //options
-    bool do_flip_vertical = false;
-    bool do_flip_horizontal = false;
+    bool do_flip_vertical   = false;
+	bool do_flip_horizontal = false;
+	bool do_rgba		    = true;
     std::vector<image_kernel> do_kernels;
     //get args
     for(int i = 3; i < argc; ++i)
@@ -57,10 +60,12 @@ int main(int argc, const char * argv[])
         //to str
         std::string arg(argv[i]);
         //flip
-        if(arg == "--flip-vertical")    do_flip_vertical   = true;
-        if(arg == "--flip-horizontal")  do_flip_horizontal = true;
+        if (arg == "--flip-vertical")    do_flip_vertical   = true;
+        if (arg == "--flip-horizontal")  do_flip_horizontal = true;
+		if (arg == "--rgba")		     do_rgba            = true;
+		if (arg == "--rgb")		         do_rgba		    = false;
         //compile
-        if(arg == "--kernels")          do_kernels = compile_kernels(i+1,argc, argv);
+        if (arg == "--kernels")          do_kernels = compile_kernels(i+1,argc, argv);
     }
     //load image
     auto in_image = load_image(in_path);
@@ -75,8 +80,10 @@ int main(int argc, const char * argv[])
     if(!stbi_write_png(out_path.c_str(),
                        (int)in_image->get_width(),
                        (int)in_image->get_height(),
-                       4,
-                       in_image->to_rgba().data(),
+					   do_rgba ? 4 : 
+								 3,
+					   do_rgba ? in_image->to_rgba().data() :
+						         in_image->to_rgb().data(),
                        0)
     )
     MESSATE_AND_EXIT( "Error to save: " << out_path, -3 );

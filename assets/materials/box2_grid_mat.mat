@@ -2,7 +2,7 @@ effect "no_cull_effect"
 {
 	diffuse_map  texture("box2_grid")
 	specular_map texture("box2_specular")
-	normal_map   texture("box2_normal")
+	normal_map   texture("box2_normal_x")
 	color        vec4(1.0,1.0,1.0,1.0)
 	mask		 float(0.9)
 }
