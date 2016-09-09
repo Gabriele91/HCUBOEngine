@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workspace
+   version = "1.0">
+   <FileRef
+      location = "container:HCubo.xcodeproj">
+   </FileRef>
+   <Group
+      location = "container:"
+      name = "tools">
+      <FileRef
+         location = "group:tools/texture_utilities/texture_utilities.xcodeproj">
+      </FileRef>
+      <FileRef
+         location = "group:tools/assimp_to_smesh/assimp_to_smesh.xcodeproj">
+      </FileRef>
+   </Group>
+</Workspace>

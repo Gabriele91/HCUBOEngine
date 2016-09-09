@@ -16,6 +16,16 @@
 		E07D6ED81D4CE8E5005A6763 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = E07D6ED71D4CE8E5005A6763 /* libz.tbd */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		E0C227EF1D82E05E00D8D1BE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E0C227EB1D82E05E00D8D1BE /* texture_utilities.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = E0C227E11D82E04400D8D1BE;
+			remoteInfo = texture_utilities;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXCopyFilesBuildPhase section */
 		E07D6EB91D4CE3EA005A6763 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
@@ -42,6 +52,7 @@
 		E07D6ED51D4CE4B1005A6763 /* smesh.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smesh.h; sourceTree = "<group>"; };
 		E07D6ED61D4CE4B1005A6763 /* filesystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = filesystem.h; sourceTree = "<group>"; };
 		E07D6ED71D4CE8E5005A6763 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
+		E0C227EB1D82E05E00D8D1BE /* texture_utilities.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = texture_utilities.xcodeproj; path = ../texture_utilities/texture_utilities/texture_utilities.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -59,6 +70,7 @@
 		E07D6EB21D4CE3EA005A6763 = {
 			isa = PBXGroup;
 			children = (
+				E0C227EB1D82E05E00D8D1BE /* texture_utilities.xcodeproj */,
 				E07D6ED71D4CE8E5005A6763 /* libz.tbd */,
 				E07D6ED11D4CE492005A6763 /* include */,
 				E07D6EBD1D4CE3EA005A6763 /* source */,
@@ -97,6 +109,14 @@
 				E07D6ED61D4CE4B1005A6763 /* filesystem.h */,
 			);
 			path = include;
+			sourceTree = "<group>";
+		};
+		E0C227EC1D82E05E00D8D1BE /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E0C227F01D82E05E00D8D1BE /* texture_utilities */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -143,12 +163,28 @@
 			mainGroup = E07D6EB21D4CE3EA005A6763;
 			productRefGroup = E07D6EBC1D4CE3EA005A6763 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = E0C227EC1D82E05E00D8D1BE /* Products */;
+					ProjectRef = E0C227EB1D82E05E00D8D1BE /* texture_utilities.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				E07D6EBA1D4CE3EA005A6763 /* assimp_to_smesh */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		E0C227F01D82E05E00D8D1BE /* texture_utilities */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.executable";
+			path = texture_utilities;
+			remoteRef = E0C227EF1D82E05E00D8D1BE /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXSourcesBuildPhase section */
 		E07D6EB71D4CE3EA005A6763 /* Sources */ = {
