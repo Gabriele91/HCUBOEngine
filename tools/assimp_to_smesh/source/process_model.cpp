@@ -87,6 +87,11 @@ void process_mesh(aiMesh* mesh, const aiScene* scene, node& out_mesh)
 		out_mesh.m_material.m_diffuse = filesystem::get_basename(texture_by_type(material, aiTextureType_DIFFUSE));
 		out_mesh.m_material.m_specular = filesystem::get_basename(texture_by_type(material, aiTextureType_SPECULAR));
 		out_mesh.m_material.m_normal = filesystem::get_basename(texture_by_type(material, aiTextureType_NORMALS));
+		//try Ns
+		if (!out_mesh.m_material.m_specular.size())
+		{
+			out_mesh.m_material.m_specular = filesystem::get_basename(texture_by_type(material, aiTextureType_SHININESS));
+		}
         //try aiTextureType_HEIGHT
         if(!out_mesh.m_material.m_normal.size())
         {

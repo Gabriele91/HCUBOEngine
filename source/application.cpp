@@ -118,34 +118,61 @@ namespace hcube
 		};
 	}
 
-	bool application::execute(const window_size& size,
-		int resizable,
+	bool application::execute
+	(
+		const window_size& size,
+		window_mode mode,
 		int major_gl_ctx,
 		int minor_gl_ctx,
 		const std::string& app_name,
-		instance* app)
+		instance* app
+	)
 	{
 		//save
 		m_instance = app;
-		//resize ?
-		m_is_resizable = resizable ? true : false;
-		//set context version
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, major_gl_ctx);
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, minor_gl_ctx);
-		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-		glfwWindowHint(GLFW_RESIZABLE, resizable ? GL_TRUE : GL_FALSE);
 		//get screen size
 		int n_monitors = 0;
 		GLFWmonitor** monitors = glfwGetMonitors(&n_monitors);
 		//size
 		ivec2 window_size = size.get_size(monitors[0]);
-		//create window
-		m_window = glfwCreateWindow(window_size.x, window_size.y, app_name.c_str(), NULL, NULL);
 		//center
 		const GLFWvidmode* monitor_mode = glfwGetVideoMode(monitors[0]);
+		//set context version
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, major_gl_ctx);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, minor_gl_ctx);
+		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+		switch (mode)
+		{
+		case hcube::window_mode::RESIZABLE:
+			//mode
+			glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
+			m_is_resizable = true;
+			//create window
+			m_window = glfwCreateWindow(window_size.x, window_size.y, app_name.c_str(), NULL, NULL);
+			break;
+		case hcube::window_mode::NOT_RESIZABLE:
+			//mode
+			glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+			m_is_resizable = false;
+			//create window
+			m_window = glfwCreateWindow(window_size.x, window_size.y, app_name.c_str(), NULL, NULL);
+		break;
+		case hcube::window_mode::FULLSCREEN:
+			//mode
+			glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+			m_is_resizable = false;
+			//create window
+			m_window = glfwCreateWindow(window_size.x, window_size.y, app_name.c_str(), monitors[0], NULL);
+		break;
+		default:
+			break;
+		}
 		//center
-		glfwSetWindowPos(m_window, (monitor_mode->width - window_size.x) / 2, (monitor_mode->height - window_size.y) / 2);
+		glfwSetWindowPos(m_window, 
+						(monitor_mode->width - window_size.x) / 2, 
+						(monitor_mode->height - window_size.y) / 2);
 		//set window is connected to instance
 		glfwSetWindowUserPointer(m_window, this);
 		//test

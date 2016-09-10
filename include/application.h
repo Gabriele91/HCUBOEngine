@@ -53,6 +53,12 @@ namespace hcube
 		virtual ~instance() {}
 	};
 
+	enum class window_mode
+	{
+		RESIZABLE,
+		NOT_RESIZABLE,
+		FULLSCREEN
+	};
 
 	class application
 	{
@@ -82,12 +88,15 @@ namespace hcube
 		GLFWwindow* get_window();
 
 
-		bool execute(const window_size& size,
-			int resizable,
+		bool execute
+		(
+			const window_size& size,
+			window_mode mode,
 			int major_gl_ctx,
 			int minor_gl_ctx,
 			const std::string& app_name,
-			instance* app);
+			instance* app
+		);
 
 	};
 
