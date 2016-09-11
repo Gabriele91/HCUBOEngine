@@ -157,25 +157,15 @@ namespace hcube
 		m_uniform_noise_scale->set_value((vec2)c_camera->get_viewport_size() / vec2(4, 4));
 		m_uniform_kernel_size->set_value((int)m_kernel_size);
 		m_uniform_radius->set_value(m_radius);
-		//set g_buffer 
-		buffer.set_texture_buffer(g_buffer::G_BUFFER_TEXTURE_TYPE_POSITION);//0
-		buffer.set_texture_buffer(g_buffer::G_BUFFER_TEXTURE_TYPE_NORMAL);  //1
-		//set noise
-		render::bind_texture(m_noise_texture, 2);                           //2
 		//set uniform id
-		m_position->set_value(0);
-		m_normal->set_value(1);
-		m_noise->set_value(2);
+		m_position->set_value(buffer.get_texture(g_buffer::G_BUFFER_TEXTURE_TYPE_POSITION));
+		m_normal->set_value(buffer.get_texture(g_buffer::G_BUFFER_TEXTURE_TYPE_NORMAL));
+		m_noise->set_value(m_noise_texture);
 		//////////////////////////////////////////////////////////////////////////////////////////////////////	
 		square->draw();
 		//////////////////////////////////////////////////////////////////////////////////////////////////////	
 		//unbind
 		m_shader->unbind();
-		//disable g_buffer 
-		buffer.disable_texture(g_buffer::G_BUFFER_TEXTURE_TYPE_POSITION);//0
-		buffer.disable_texture(g_buffer::G_BUFFER_TEXTURE_TYPE_NORMAL);  //1
-		//disable noise
-		render::unbind_texture(m_noise_texture);
 		//disable fbo
 		render::disable_render_target(m_fbo);
 		//////////////////////////////////////
@@ -190,16 +180,12 @@ namespace hcube
 		render::enable_render_target(m_fbo_blur);
 		//bind shader
 		m_shader_blur->bind();
-		//bind ssao texture
-		render::bind_texture(m_ssao_texture, 0);
-		//uniform id texture
-		m_uniform_ssoa_input->set_value(0);
+		//uniform texture
+		m_uniform_ssoa_input->set_value(m_ssao_texture);
 		//draw
 		square->draw();
 		//unbind
 		m_shader_blur->unbind();
-		//disable ssao texture
-		render::unbind_texture(m_ssao_texture);
 		//disable fbo
 		render::disable_render_target(m_fbo_blur);
 		//reset state

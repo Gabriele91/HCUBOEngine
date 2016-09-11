@@ -270,7 +270,7 @@ namespace hcube
 		transform_ptr t_camera = e_camera->get_component<transform>();
 		const vec4&   viewport = c_camera->get_viewport();
 		//buffer
-		m_g_buffer.bind();
+		render::enable_render_target(m_g_buffer.get_geometry_render_target());
 		//set state
 		render::set_viewport_state({ viewport });
 		render::set_clear_color_state(vec4{ clear_color.r, clear_color.g, clear_color.b,1.0 });
@@ -311,10 +311,7 @@ namespace hcube
 			}
 		}
 		//unbind
-		m_g_buffer.unbind();
-		////////////////////////////////////////////////////////////////////////////////
-		//clear frame buffer
-		render::clear();
+		render::disable_render_target(m_g_buffer.get_geometry_render_target());
 		////////////////////////////////////////////////////////////////////////////////
 		//ssao pass
 		if (m_enable_ambient_occlusion)
@@ -322,18 +319,13 @@ namespace hcube
 			m_ssao.applay(e_camera, m_g_buffer, m_square);
 		}
 		////////////////////////////////////////////////////////////////////////////////
+		render::enable_render_target(m_g_buffer.get_lights_render_target());
+		///////////////////////////////////////////////////////////////////////////////
+		//clear color buffer
+		render::clear(false);
+		///////////////////////////////////////////////////////////////////////////////
 		render::set_blend_state({ BLEND_ONE,BLEND_ONE });
 		render::set_depth_buffer_state({ DM_DISABLE });
-		//copy depth buffer
-		vec4 g_area{ 0,0, (vec2)m_g_buffer.get_size() };
-		render::copy_target_to_target
-		(
-			g_area,
-			m_g_buffer.get_render_target(),
-			g_area,
-			0,
-			RT_DEPTH
-		);
         //draw
         ////////////////////////////////////////////////////////////////////////////////
         //AMBIENT LIGHTS
@@ -384,6 +376,18 @@ namespace hcube
 				m_square
 			);
 		}
+		render::disable_render_target(m_g_buffer.get_lights_render_target());
+		////////////////////////////////////////////////////////////////////////////////
+		//like shader, copy color buffer
+		vec4 g_area{ 0,0, (vec2)m_g_buffer.get_size() };
+		render::copy_target_to_target
+		(
+			g_area,
+			m_g_buffer.get_lights_render_target(),
+			g_area,
+			0,
+			RT_COLOR
+		);
         ////////////////////////////////////////////////////////////////////////////////
         //reset state
         render::set_render_state(render_state);

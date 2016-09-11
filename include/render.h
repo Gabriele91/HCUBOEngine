@@ -562,7 +562,7 @@ namespace hcube
 
 		LIB_EXPORT const clear_color_state& get_clear_color_state();
 		LIB_EXPORT void set_clear_color_state(const clear_color_state& cf);
-		LIB_EXPORT void clear();
+		LIB_EXPORT void clear(bool depth=true);
 
 		LIB_EXPORT const depth_buffer_state& get_depth_buffer_state();
 		LIB_EXPORT void set_depth_buffer_state(const depth_buffer_state& cf);

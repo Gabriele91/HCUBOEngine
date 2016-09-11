@@ -45,10 +45,12 @@ namespace hcube
 		target_texture_type types[G_BUFFER_NUM_TEXTURES];
 
 		//specify type
-		types[G_BUFFER_TEXTURE_TYPE_POSITION] = target_texture_type(TF_RGBA16F, TT_RGBA, TTF_FLOAT);
-		types[G_BUFFER_TEXTURE_TYPE_NORMAL]   = target_texture_type(TF_RGB8,    TT_RGB,  TTF_FLOAT);
-		types[G_BUFFER_TEXTURE_TYPE_ALBEDO]   = target_texture_type(TF_RGBA8,   TT_RGBA, TTF_UNSIGNED_BYTE);
-
+		types[G_BUFFER_TEXTURE_TYPE_POSITION]           = target_texture_type(TF_RGBA16F,            TT_RGBA, TTF_FLOAT);
+		types[G_BUFFER_TEXTURE_TYPE_NORMAL]		   	    = target_texture_type(TF_RGB8,               TT_RGB,  TTF_FLOAT);
+		types[G_BUFFER_TEXTURE_TYPE_ALBEDO]				= target_texture_type(TF_RGBA8,              TT_RGBA, TTF_UNSIGNED_BYTE);
+		types[G_BUFFER_TEXTURE_TYPE_LIGHTS_ACCUMULATOR] = target_texture_type(TF_RGB8,               TT_RGB,  TTF_FLOAT);
+		types[G_BUFFER_TEXTURE_TYPE_DEPTH]              = target_texture_type(TF_DEPTH_COMPONENT32, TT_DEPTH, TTF_FLOAT);
+		
 
 		//create texture
 		for (unsigned int i = 0; i != G_BUFFER_NUM_TEXTURES; i++)
@@ -73,145 +75,54 @@ namespace hcube
 				}
 			);
 		}
-		//depth
-		m_depth_texture =
-		render::create_texture
-		(
-			{
-				TF_DEPTH_COMPONENT32,
-				width,
-				height,
-				nullptr,
-				TT_DEPTH,
-				TTF_FLOAT 
-			},
-			{
-				TMIN_NEAREST,
-				TMAG_NEAREST,
-				TEDGE_CLAMP,
-				TEDGE_CLAMP,
-				false
-			}
-		);
-
 		//rander target
-		m_target =
+		m_geometry_target =
 		render::create_render_target
 		({
 				target_field{ m_textures[G_BUFFER_TEXTURE_TYPE_POSITION], RT_COLOR },
 				target_field{ m_textures[G_BUFFER_TEXTURE_TYPE_NORMAL],   RT_COLOR },
 				target_field{ m_textures[G_BUFFER_TEXTURE_TYPE_ALBEDO],   RT_COLOR },
-				target_field{ m_depth_texture,                            RT_DEPTH },
+				target_field{ m_textures[G_BUFFER_TEXTURE_TYPE_DEPTH],    RT_DEPTH },
+		});
+		m_lights_target =
+		render::create_render_target
+		({
+			target_field{ m_textures[G_BUFFER_TEXTURE_TYPE_LIGHTS_ACCUMULATOR], RT_COLOR },
+			target_field{ m_textures[G_BUFFER_TEXTURE_TYPE_DEPTH],              RT_DEPTH },
 		});
 
 		//success?
-		return m_target != nullptr;
+		return m_geometry_target != nullptr && m_lights_target != nullptr;
 	}
 
 	void g_buffer::destoy()
 	{
-		if (m_target) render::delete_render_target(m_target);
+		if (m_geometry_target) render::delete_render_target(m_geometry_target);
+		if (m_lights_target)   render::delete_render_target(m_lights_target);
 
 		for (unsigned int i = 0; i != G_BUFFER_NUM_TEXTURES; i++)
 		{
 			if (m_textures[i]) render::delete_texture(m_textures[i]);
 		}
-		if (m_depth_texture) render::delete_texture(m_depth_texture);
 		//to null
 		m_width = 0;
 		m_height = 0;
 
 	}
-	
-	void g_buffer::bind()
+
+	context_render_target* g_buffer::get_geometry_render_target() const
 	{
-		render::enable_render_target(m_target);
+		return m_geometry_target;
 	}
 
-	void g_buffer::unbind()
+	context_render_target* g_buffer::get_lights_render_target() const
 	{
-		render::disable_render_target(m_target);
-	}
-
-
-	context_render_target* g_buffer::get_render_target() const
-	{
-		return m_target;
-	}
-
-	void g_buffer::set_texture_buffer(G_BUFFER_TEXTURE_TYPE texture_type)
-	{
-		switch (texture_type)
-		{
-		case G_BUFFER_TEXTURE_TYPE_POSITION:
-			render::bind_texture(m_textures[G_BUFFER_TEXTURE_TYPE_POSITION], 0);
-			break;
-
-		case G_BUFFER_TEXTURE_TYPE_NORMAL:
-			render::bind_texture(m_textures[G_BUFFER_TEXTURE_TYPE_NORMAL], 1);
-			break;
-
-		case G_BUFFER_TEXTURE_TYPE_ALBEDO:
-			render::bind_texture(m_textures[G_BUFFER_TEXTURE_TYPE_ALBEDO], 2);
-			break;
-
-		case g_buffer::G_BUFFER_NUM_TEXTURES:
-		default:
-			assert(0);
-			break;
-		}
-
-	}
-
-	void g_buffer::disable_texture(G_BUFFER_TEXTURE_TYPE texture_type)
-	{
-
-		switch (texture_type)
-		{
-		case G_BUFFER_TEXTURE_TYPE_POSITION:
-			render::unbind_texture(m_textures[G_BUFFER_TEXTURE_TYPE_POSITION]);
-			break;
-
-		case G_BUFFER_TEXTURE_TYPE_NORMAL:
-			render::unbind_texture(m_textures[G_BUFFER_TEXTURE_TYPE_NORMAL]);
-			break;
-
-		case G_BUFFER_TEXTURE_TYPE_ALBEDO:
-			render::unbind_texture(m_textures[G_BUFFER_TEXTURE_TYPE_ALBEDO]);
-			break;
-
-		case g_buffer::G_BUFFER_NUM_TEXTURES:
-		default:
-			assert(0);
-			break;
-		}
-
+		return m_lights_target;
 	}
 
 	context_texture* g_buffer::get_texture(G_BUFFER_TEXTURE_TYPE texture_type) const
 	{
-		switch (texture_type)
-		{
-		case G_BUFFER_TEXTURE_TYPE_POSITION: return  m_textures[G_BUFFER_TEXTURE_TYPE_POSITION];
-		case G_BUFFER_TEXTURE_TYPE_NORMAL: return  m_textures[G_BUFFER_TEXTURE_TYPE_NORMAL];
-		case G_BUFFER_TEXTURE_TYPE_ALBEDO: return m_textures[G_BUFFER_TEXTURE_TYPE_ALBEDO];
-		default: return nullptr;
-		}
-	}
-
-	void g_buffer::set_texture_buffer_depth(size_t n_texture)
-	{
-		render::bind_texture(m_depth_texture, (int)n_texture);
-	}
-
-	void g_buffer::disable_depth_texture()
-	{
-		render::unbind_texture(m_depth_texture);
-	}
-
-	context_texture* g_buffer::get_texture_buffer_depth() const
-	{
-		return m_depth_texture;
+		return m_textures[texture_type];
 	}
 
 	unsigned int g_buffer::get_width() const

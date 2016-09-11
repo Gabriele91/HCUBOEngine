@@ -35,7 +35,7 @@ namespace hcube
 			rendering_system*	r_system = m_systems.get_system<rendering_system>();
 			rendering_pass_ptr	d_pass = r_system->get_rendering_pass()[0];
 			auto p_deferred = std::static_pointer_cast<rendering_pass_deferred>(d_pass);
-			p_deferred->set_ambient_occlusion({ true, 32, 0.8f });
+			p_deferred->set_ambient_occlusion({ true, 8, 0.70f });
 		}
 		else if (key == GLFW_KEY_K)
 		{
@@ -290,8 +290,8 @@ namespace hcube
 			l_model_light1->spot({ 1.0f, 0.8f, 0.1f },
 								 { 1.0f, 1.0f, 1.0f },
 									1.0,
-									20.0,
 									30.0,
+									40.0,
 									radians(10.0),
 									radians(15.0));
 			l_model_light1->set_shadow({ 512,512 });
@@ -306,8 +306,8 @@ namespace hcube
 			l_model_light2->spot({ 1.0f, 0.8f, 0.1f },
 								 { 1.0f, 1.0f, 1.0f },
 								   1.0,
-								   20.0,
 								   30.0,
+								   40.0,
 								   radians(10.0),
 								   radians(15.0));
 			l_model_light2->set_shadow({ 512,512 });
@@ -338,7 +338,7 @@ namespace hcube
 			for (short i = 0; i != 3; ++i)
 			{
 				l_lights[i]->set_radius(
-					6.0,
+					7.5,
 					30.0
 				);
 				l_lights[i]->set_shadow({ 512,512 });

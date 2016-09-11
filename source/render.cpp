@@ -234,9 +234,10 @@ namespace hcube
 			}
 		}
 
-		void clear()
+		void clear(bool depth)
 		{
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			if(depth) glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			else	  glClear(GL_COLOR_BUFFER_BIT);
 		}
 
 		const depth_buffer_state& get_depth_buffer_state()
