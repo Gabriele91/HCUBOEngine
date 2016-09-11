@@ -5,11 +5,13 @@
 
 namespace hcube
 {
-    void rendering_pass_deferred::ambient_light_shader::init(const std::string& path)
+	#pragma region "ambient light"
+
+    void rendering_pass_deferred::ambient_light_shader::init(resources_manager& rsmanager)
     {
         //compile
         m_shader    = shader::snew();
-        m_shader->load(path,std::vector<std::string>{ "AMBIENT_LIGHTS" });
+        m_shader->load(rsmanager.get_shader_path("deferred_ambient_light"),std::vector<std::string>{ "AMBIENT_LIGHTS" });
         //color
         m_albedo    = m_shader->get_uniform("g_albedo_spec");
 		m_occlusion = m_shader->get_uniform("g_occlusion");
@@ -34,18 +36,28 @@ namespace hcube
     {
         m_shader->unbind();
     }
-    
-    void rendering_pass_deferred::spot_light_shader::init(const std::string& path)
+
+	#pragma endregion
+
+	#pragma region "spot light"
+    void rendering_pass_deferred::spot_light_shader::init(resources_manager& rsmanager)
     {
         //compile
         m_shader    = shader::snew();
-        m_shader->load(path,std::vector<std::string>{ "SPOT_LIGHTS" });
+        m_shader->load(rsmanager.get_shader_path("deferred_spot_light"),std::vector<std::string>{ "SPOT_LIGHTS" });
         
         m_position		  = m_shader->get_uniform("g_position");
         m_normal		  = m_shader->get_uniform("g_normal");
         m_albedo		  = m_shader->get_uniform("g_albedo_spec");
         m_occlusion		  = m_shader->get_uniform("g_occlusion");
 		m_camera.get_uniform(m_shader);
+		m_transform_cone.get_uniform(m_shader);
+		//get mesh
+		auto root_cone = rsmanager.get_prefab("cone")->instantiate();
+		//get sphere
+		auto e_cone = root_cone->get_childs().begin()->second;
+		//get component
+		m_cone = std::static_pointer_cast<mesh>(e_cone->get_component<renderable>()->copy());
         //get spot light
 		m_spot_light.get_uniform(m_shader);
     }
@@ -67,6 +79,9 @@ namespace hcube
 		//uniform
 		m_camera.uniform(e_camera->get_component<camera>(),
 						 e_camera->get_component<transform>()->get_matrix());
+		//depth mode reverse
+		render::set_depth_buffer_state({ DT_GREATER_EQUAL, DM_ENABLE_ONLY_READ });
+		render::set_cullface_state({ CF_FRONT });
         //uniform all lights
         HCUBE_FOREACH_QUEUE(weak_light, queues.m_cull_light_spot)
         {            
@@ -80,43 +95,59 @@ namespace hcube
                 //light pos
                 t_light->get_matrix()
             );
-			square->draw();
+			//transform cone
+			m_transform_cone.uniform(t_light);
+			//draw cone
+			m_cone->draw();
         }
 		m_shader->unbind();
     }
-    
-    void rendering_pass_deferred::point_light_shader::init(const std::string& path)
+	#pragma endregion
+
+	#pragma region "point light"
+    void rendering_pass_deferred::point_light_shader::init(resources_manager& rsmanager)
     {
         //compile
         m_shader    = shader::snew();
-        m_shader->load(path,std::vector<std::string>{ "POINT_LIGHTS" });
+        m_shader->load(rsmanager.get_shader_path("deferred_point_light"),std::vector<std::string>{ "POINT_LIGHTS" });
         
         m_position  = m_shader->get_uniform("g_position");
         m_normal    = m_shader->get_uniform("g_normal");
         m_albedo    = m_shader->get_uniform("g_albedo_spec");
         m_occlusion = m_shader->get_uniform("g_occlusion");
 		m_camera.get_uniform(m_shader);
+		//get mesh
+		auto root_sphere = rsmanager.get_prefab("sphere")->instantiate();
+		//get sphere
+		auto e_sphere = root_sphere->get_childs().begin()->second;
+		//get component
+		m_sphere = std::static_pointer_cast<mesh>( e_sphere->get_component<renderable>()->copy() );
         //get light
         m_point_light.get_uniform(m_shader);
     }
     
     
-    void rendering_pass_deferred::point_light_shader::draw(g_buffer& gbuffer,
-                                                              context_texture* ssao,
-															  entity::ptr e_camera,
-                                                              const vec4& ambient_light,
-                                                              render_queues& queues,
-															  mesh::ptr square)
-    {
-        m_shader->bind();
-        //uniform g_buffer and etc...
-        m_position->set_value(gbuffer.get_texture(g_buffer::G_BUFFER_TEXTURE_TYPE_POSITION));
-        m_normal->set_value(gbuffer.get_texture(g_buffer::G_BUFFER_TEXTURE_TYPE_NORMAL));
-        m_albedo->set_value(gbuffer.get_texture(g_buffer::G_BUFFER_TEXTURE_TYPE_ALBEDO));
-        m_occlusion->set_value(ssao);
+	void rendering_pass_deferred::point_light_shader::draw(g_buffer& gbuffer,
+		context_texture* ssao,
+		entity::ptr e_camera,
+		const vec4& ambient_light,
+		render_queues& queues,
+		mesh::ptr square)
+	{
+		m_shader->bind();
+		//uniform g_buffer and etc...
+		m_position->set_value(gbuffer.get_texture(g_buffer::G_BUFFER_TEXTURE_TYPE_POSITION));
+		m_normal->set_value(gbuffer.get_texture(g_buffer::G_BUFFER_TEXTURE_TYPE_NORMAL));
+		m_albedo->set_value(gbuffer.get_texture(g_buffer::G_BUFFER_TEXTURE_TYPE_ALBEDO));
+		m_occlusion->set_value(ssao);
+		//ref
+		auto c_camera = e_camera->get_component<camera>();
+		auto t_camera = e_camera->get_component<transform>();
 		//uniform
-		m_camera.uniform(e_camera->get_component<camera>(),
-						 e_camera->get_component<transform>()->get_matrix());
+		m_camera.uniform(c_camera, t_camera->get_matrix());
+		//depth mode reverse
+		render::set_depth_buffer_state({  DT_GREATER_EQUAL, DM_ENABLE_ONLY_READ });
+		render::set_cullface_state({ CF_FRONT });
         //uniform all lights
         HCUBE_FOREACH_QUEUE(weak_light, queues.m_cull_light_point)
         {
@@ -127,38 +158,43 @@ namespace hcube
             
             m_point_light.uniform
             (
-             l_light,
-             //light pos
-             t_light->get_matrix()
+				 l_light,
+				 //light pos
+				 t_light->get_matrix()
             );
-			square->draw();
+			//cullface
+			m_sphere->draw();
+			//break;
         }
 		m_shader->unbind();
     }
-    
+	#pragma endregion
 
-	void rendering_pass_deferred::direction_light_shader::init(const std::string& path)
+	#pragma region "direction light"
+	void rendering_pass_deferred::direction_light_shader::init(resources_manager& rsmanager)
 	{
 		//compile
 		m_shader = shader::snew();
-		m_shader->load(path, std::vector<std::string>{ "DIRECTION_LIGHTS" });
+		m_shader->load(rsmanager.get_shader_path("deferred_direction_light"), std::vector<std::string>{ "DIRECTION_LIGHTS" });
 
 		m_position = m_shader->get_uniform("g_position");
 		m_normal = m_shader->get_uniform("g_normal");
 		m_albedo = m_shader->get_uniform("g_albedo_spec");
 		m_occlusion = m_shader->get_uniform("g_occlusion");
 		m_camera.get_uniform(m_shader);
+		//get geometry
+
 		//get light
 		m_direction_light.get_uniform(m_shader);
 
 	}
 	
 	void rendering_pass_deferred::direction_light_shader::draw(g_buffer& gbuffer,
-															      context_texture* ssao,
-																  entity::ptr e_camera,
-															      const vec4& ambient_light,
-															      render_queues& queues,
-																  mesh::ptr square)
+															   context_texture* ssao,
+															   entity::ptr e_camera,
+															   const vec4& ambient_light,
+															   render_queues& queues,
+															   mesh::ptr square)
 	{
 		m_shader->bind();
 		//uniform g_buffer and etc...
@@ -186,8 +222,14 @@ namespace hcube
 		}
 		m_shader->unbind();
 	}
-	    
-    rendering_pass_deferred::rendering_pass_deferred(const ivec2& w_size, resources_manager& resources)
+
+	#pragma endregion
+
+    rendering_pass_deferred::rendering_pass_deferred
+	(
+		const ivec2& w_size, 
+		resources_manager& resources
+	)
     {
         m_q_size = w_size;
         m_g_buffer.init(w_size);
@@ -196,10 +238,10 @@ namespace hcube
 		m_enable_ambient_occlusion = false;
         
         m_square = basic_meshs::square3D({ 2.0,2.0 }, true);
-        m_ambient_light.init(resources.get_shader_path("deferred_ambient_light"));
-        m_spot_lights.init(resources.get_shader_path("deferred_spot_light"));
-		m_point_lights.init(resources.get_shader_path("deferred_point_light"));
-		m_direction_lights.init(resources.get_shader_path("deferred_direction_light"));
+        m_ambient_light.init(resources);
+        m_spot_lights.init(resources);
+		m_point_lights.init(resources);
+		m_direction_lights.init(resources);
     }
     
 	void rendering_pass_deferred::set_ambient_occlusion(ambient_occlusion_param param)
@@ -219,9 +261,9 @@ namespace hcube
 	}
 
 	void rendering_pass_deferred::draw_pass(vec4&  clear_color,
-											vec4&  ambient_color,
-											entity::ptr e_camera,
-											render_queues& queues)
+		vec4&  ambient_color,
+		entity::ptr e_camera,
+		render_queues& queues)
 	{
 		//camera
 		camera::ptr   c_camera = e_camera->get_component<camera>();
@@ -248,7 +290,7 @@ namespace hcube
 				effect::ptr         mat_effect = e_material->get_effect();
 				effect::technique*  mat_technique = mat_effect->get_technique("deferred");
 				//applay all pass
-				if(mat_technique) for (auto& pass : *mat_technique)
+				if (mat_technique) for (auto& pass : *mat_technique)
 				{
 					pass.bind(
 						c_camera,
@@ -256,17 +298,17 @@ namespace hcube
 						t_entity,
 						e_material->get_parameters()
 					);
-                    //pass ambient light
-                    if(pass.m_uniform_ambient_light)
-                    {
-                        pass.m_uniform_ambient_light->set_value(ambient_color);
-                    }
+					//pass ambient light
+					if (pass.m_uniform_ambient_light)
+					{
+						pass.m_uniform_ambient_light->set_value(ambient_color);
+					}
 					//draw
 					entity->get_component<renderable>()->draw();
 					//end
 					pass.unbind();
 				}
-            }
+			}
 		}
 		//unbind
 		m_g_buffer.unbind();
@@ -278,10 +320,20 @@ namespace hcube
 		if (m_enable_ambient_occlusion)
 		{
 			m_ssao.applay(e_camera, m_g_buffer, m_square);
-        }
-        ////////////////////////////////////////////////////////////////////////////////
-        render::set_blend_state({ BLEND_ONE,BLEND_ONE });
-        render::set_depth_buffer_state({false});
+		}
+		////////////////////////////////////////////////////////////////////////////////
+		render::set_blend_state({ BLEND_ONE,BLEND_ONE });
+		render::set_depth_buffer_state({ DM_DISABLE });
+		//copy depth buffer
+		vec4 g_area{ 0,0, (vec2)m_g_buffer.get_size() };
+		render::copy_target_to_target
+		(
+			g_area,
+			m_g_buffer.get_render_target(),
+			g_area,
+			0,
+			RT_DEPTH
+		);
         //draw
         ////////////////////////////////////////////////////////////////////////////////
         //AMBIENT LIGHTS

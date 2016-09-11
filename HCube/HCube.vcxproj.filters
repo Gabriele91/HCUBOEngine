@@ -355,6 +355,9 @@
     <None Include="..\common\effects\shaders\base_texture_normal_specular.glsl">
       <Filter>File di risorse\common\effects\shaders</Filter>
     </None>
+    <None Include="..\common\effects\shaders\lib\post_processing_utilities.glsl">
+      <Filter>File di risorse\common\effects\shaders\lib</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\assets\textures\box.png">

@@ -1,2 +1,6 @@
 #ignore dip  libs
 dependencies/**
+assets/**
+output/**
+!assets/.do_not_delete
+!output/.do_not_delete

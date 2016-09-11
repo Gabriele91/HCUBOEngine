@@ -51,7 +51,7 @@ namespace hcube
 			uniform*           m_occlusion;
             uniform*           m_ambient_light;
             
-            void init(const std::string& path);
+            void init(resources_manager& resources);
             void uniform(g_buffer& gbuffer,
 						 context_texture* ssao,
                          const vec4& ambient_light);
@@ -68,8 +68,11 @@ namespace hcube
             uniform*           m_albedo;
             uniform*           m_occlusion;            
             uniform_light_spot m_spot_light;
+			//geometry
+			uniform_transform  m_transform_cone;
+			mesh::ptr		   m_cone;
             
-            void init(const std::string& path);
+            void init(resources_manager& resources);
             void draw(g_buffer& gbuffer,
                       context_texture* ssao,
 					  entity::ptr t_camera,
@@ -81,15 +84,17 @@ namespace hcube
         class point_light_shader
         {
         public:
-            shader::ptr        m_shader;
-			uniform_camera	   m_camera;
-            uniform*           m_position;
-            uniform*           m_normal;
-            uniform*           m_albedo;
-            uniform*           m_occlusion;
+            shader::ptr         m_shader;
+			uniform_camera	    m_camera;
+            uniform*            m_position;
+            uniform*            m_normal;
+            uniform*            m_albedo;
+            uniform*            m_occlusion;
             uniform_light_point m_point_light;
+			//geometry
+			mesh::ptr			m_sphere;
             
-            void init(const std::string& path);
+            void init(resources_manager& resources);
             void draw(g_buffer& gbuffer,
                       context_texture* ssao,
 					  entity::ptr t_camera,
@@ -110,7 +115,7 @@ namespace hcube
 			uniform*           m_occlusion;
 			uniform_light_direction m_direction_light;
 
-			void init(const std::string& path);
+			void init(resources_manager& resources);
 			void draw(g_buffer& gbuffer,
 					  context_texture* ssao,
 					  entity::ptr t_camera,

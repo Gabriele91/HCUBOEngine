@@ -31,6 +31,7 @@ namespace hcube
 		void set_value(const vec2& v2);
 		void set_value(const vec3& v3);
 		void set_value(const vec4& v4);
+		void set_value(const mat3& m3);
 		void set_value(const mat4& m4);
 
 		void set_value(const int* i, size_t n);
@@ -38,6 +39,7 @@ namespace hcube
 		void set_value(const vec2* v2, size_t n);
 		void set_value(const vec3* v3, size_t n);
 		void set_value(const vec4* v4, size_t n);
+		void set_value(const mat3* m3, size_t n);
 		void set_value(const mat4* m4, size_t n);
 
 		void set_value(const std::vector < int >& i);
@@ -45,6 +47,7 @@ namespace hcube
 		void set_value(const std::vector < vec2 >& v2);
 		void set_value(const std::vector < vec3 >& v3);
 		void set_value(const std::vector < vec4 >& v4);
+		void set_value(const std::vector < mat3 >& m3);
 		void set_value(const std::vector < mat4 >& m4);
 
 		uniform() {}

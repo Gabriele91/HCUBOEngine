@@ -133,6 +133,12 @@ namespace hcube
 		render::disable_render_target(m_target);
 	}
 
+
+	context_render_target* g_buffer::get_render_target() const
+	{
+		return m_target;
+	}
+
 	void g_buffer::set_texture_buffer(G_BUFFER_TEXTURE_TYPE texture_type)
 	{
 		switch (texture_type)

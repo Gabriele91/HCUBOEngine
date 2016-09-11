@@ -37,6 +37,8 @@ namespace hcube
 
 		void unbind();
 
+		context_render_target* get_render_target() const;
+
 		void set_texture_buffer(G_BUFFER_TEXTURE_TYPE texture_type);
 
 		void disable_texture(G_BUFFER_TEXTURE_TYPE texture_type);

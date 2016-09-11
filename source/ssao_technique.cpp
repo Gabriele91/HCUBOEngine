@@ -139,7 +139,7 @@ namespace hcube
 		auto temp_depth_buffer_state = render::get_depth_buffer_state();
 		//disable depth test
 		render::set_cullface_state(CF_BACK);
-		render::set_depth_buffer_state({ false });
+		render::set_depth_buffer_state({ DM_DISABLE });
 		render::set_clear_color_state(clear_color_state(vec4{ 1.,1.,1.,1. }));
         //draw
         camera::ptr   c_camera = e_camera->get_component<camera>();

@@ -186,7 +186,7 @@ namespace hcube
 			//save cullface state
 			s_render_state.m_cullface.m_cullface = CF_BACK;
 			//save depth state
-			s_render_state.m_depth.m_depth = true;
+			s_render_state.m_depth.m_mode = DM_ENABLE_AND_WRITE;
 			s_render_state.m_depth.m_type = DT_LESS;
 			//save blend state
 			s_render_state.m_blend.m_enable = false;
@@ -266,8 +266,21 @@ namespace hcube
 			if (s_render_state.m_depth != depth)
 			{
 				s_render_state.m_depth = depth;
-				if (depth.m_depth)  glEnable(GL_DEPTH_TEST);
-				else               glDisable(GL_DEPTH_TEST);
+				switch (s_render_state.m_depth.m_mode)
+				{
+				case depth_mode::DM_DISABLE:
+					glDisable(GL_DEPTH_TEST);
+				break;
+				case depth_mode::DM_ENABLE_AND_WRITE:
+					glEnable(GL_DEPTH_TEST);
+					glDepthMask(true);
+				break;
+				case depth_mode::DM_ENABLE_ONLY_READ:
+					glEnable(GL_DEPTH_TEST);
+					glDepthMask(false);
+				break;
+				default: break;
+				}
 				glDepthFunc(get_depth_func(depth.m_type));
 			}
 		}
@@ -1092,6 +1105,66 @@ namespace hcube
             //safe delete
 			delete r_target;
 			r_target = nullptr;
+		}
+
+		GLenum get_copy_render_target_type(render_target_type type)
+		{
+			switch (type)
+			{
+			case hcube::RT_COLOR:		  return GL_COLOR_BUFFER_BIT;
+			case hcube::RT_DEPTH:		  return GL_DEPTH_BUFFER_BIT;
+			case hcube::RT_STENCIL:		  return GL_STENCIL_BUFFER_BIT;
+			case hcube::RT_DEPTH_STENCIL:
+			default: assert(0); break;
+			}
+		}
+
+		void copy_target_to_target(
+			const vec4& from_area,
+			context_render_target* from,
+			const vec4& to_area,
+			context_render_target* to,
+			render_target_type	mask
+		)
+		{
+			//bind buffers
+			glBindFramebuffer(GL_READ_FRAMEBUFFER, from ? from->m_fbo : 0);
+			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, to   ? to->m_fbo   : 0);
+			//copy
+			if (mask != RT_DEPTH_STENCIL)
+			{
+				glBlitFramebuffer(
+					from_area.x, from_area.y, from_area.z, from_area.w,
+					to_area.x, to_area.y, to_area.z, to_area.w,
+					get_copy_render_target_type(mask),
+					GL_NEAREST
+				);
+			}
+			else
+			{
+				//DEPTH
+				glBlitFramebuffer(
+					from_area.x, from_area.y, from_area.z, from_area.w,
+					to_area.x, to_area.y, to_area.z, to_area.w,
+					GL_DEPTH_BUFFER_BIT,
+					GL_NEAREST
+				);
+				//STENCIL
+				glBlitFramebuffer(
+					from_area.x, from_area.y, from_area.z, from_area.w,
+					to_area.x, to_area.y, to_area.z, to_area.w,
+					GL_STENCIL_BUFFER_BIT,
+					GL_NEAREST
+				);
+
+			}
+			//reset
+			if(s_bind_context.m_render_target)
+				//set old fbo
+				s_bind_context.m_render_target->enable_FBO();
+			else 
+				//default FBO
+				glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		}
 
 		bool print_errors()

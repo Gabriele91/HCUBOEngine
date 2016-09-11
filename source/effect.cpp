@@ -637,11 +637,11 @@ namespace hcube
 			//param test
 			if (param1 == "off")
 			{
-				pass.m_depth = depth_buffer_state(false);
+				pass.m_depth = depth_buffer_state({ DM_DISABLE });
 				return true;
 			}
 			//parse
-			pass.m_depth.m_depth = true;
+			pass.m_depth.m_mode = DM_ENABLE_AND_WRITE;
 			pass.m_depth.m_type = depth_from_string(param1, DT_LESS);
 			return true;
 		}
