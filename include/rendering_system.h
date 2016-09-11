@@ -129,8 +129,9 @@ namespace hcube
     class rendering_pass_debug_spot_lights : public rendering_pass, public smart_pointers<rendering_pass_debug_spot_lights>
     {
         
-        effect::ptr m_effect;
-        entity::ptr m_cube;
+        effect::ptr     m_effect;
+        renderable_ptr  m_cone;
+        renderable_ptr  m_sphere;
         
     public:
         

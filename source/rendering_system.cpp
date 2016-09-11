@@ -519,8 +519,21 @@ namespace hcube
     
     rendering_pass_debug_spot_lights::rendering_pass_debug_spot_lights(resources_manager& resources)
     {
-        m_effect = resources.get_effect("debug_spot_lights");
-        m_cube   = gameobject::cube_new({2.0,2.0,2.0},true);
+        m_effect = resources.get_effect("debug_lights");
+        ////// SPHERE //////////////////////////////////////////////////////////////////////////////
+        //get mesh
+        auto root_sphere = resources.get_prefab("sphere")->instantiate();
+        //get sphere
+        auto e_sphere = root_sphere->get_childs().begin()->second;
+        //get component
+        m_sphere = std::static_pointer_cast<renderable>( e_sphere->get_component<renderable>()->copy() );
+        ////// CONE //////////////////////////////////////////////////////////////////////////////
+        //get mesh
+        auto root_cone = resources.get_prefab("cone")->instantiate();
+        //get sphere
+        auto e_cone = root_cone->get_childs().begin()->second;
+        //get component
+        m_cone = std::static_pointer_cast<renderable>(e_cone->get_component<renderable>()->copy());
     }
     
     void rendering_pass_debug_spot_lights::draw_pass(
@@ -538,8 +551,10 @@ namespace hcube
         auto state = render::get_render_state();
         //viewport
         render::set_viewport_state({ c_camera->get_viewport() });
+        //bind
+        pass.bind();
         
-        
+        //for all lights
         HCUBE_FOREACH_QUEUE(weak_light, queues.m_cull_light_spot)
         {
             auto e_light    = weak_light->lock();
@@ -547,21 +562,56 @@ namespace hcube
             auto t_light    = e_light->get_component<transform>();
             
             l_light->update_projection_matrix();
-            pass.bind();
-			pass.m_shader
+            
+            pass.m_shader
+                ->get_uniform("viewport")
+                ->set_value(c_camera->get_viewport());
+            pass.m_shader
 				->get_uniform("projection")
 				->set_value(c_camera->get_projection());
 			pass.m_shader
 				->get_uniform("view")
 				->set_value(c_camera->get_view());
-			pass.m_shader
-				->get_uniform("model")
-				->set_value(inverse(l_light->get_projection()*l_light->get_view()));
-
-            m_cube->get_component<renderable>()->draw();
             
-            pass.unbind();
+            mat4
+            model  = translate(mat4(1), t_light->get_global_position());
+            model *= mat4_cast(t_light->get_global_rotation());
+            model  = scale(model, { l_light->get_radius(), l_light->get_radius(),l_light->get_radius() });
+            
+			pass.m_shader->get_uniform("model")->set_value(model);
+
+            m_cone->draw();
         }
+        HCUBE_FOREACH_QUEUE(weak_light, queues.m_cull_light_point)
+        {
+            auto e_light    = weak_light->lock();
+            auto l_light    = e_light->get_component<light>();
+            auto t_light    = e_light->get_component<transform>();
+            
+            l_light->update_projection_matrix();
+            
+            pass.m_shader
+                ->get_uniform("viewport")
+                ->set_value(c_camera->get_viewport());
+            pass.m_shader
+                ->get_uniform("projection")
+                ->set_value(c_camera->get_projection());
+            pass.m_shader
+                ->get_uniform("view")
+                ->set_value(c_camera->get_view());
+            
+            mat4
+            model  = translate(mat4(1), t_light->get_global_position());
+            model  = scale(model, { l_light->get_radius(), l_light->get_radius(),l_light->get_radius() });
+            
+            pass.m_shader->get_uniform("model")->set_value(model);
+            
+            m_sphere->draw();
+        }
+        
+        
+        pass.unbind();
+        //end
         render::set_render_state(state);
     }
 

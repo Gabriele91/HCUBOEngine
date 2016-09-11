@@ -1,7 +1,7 @@
 parameters
 {
     line_size vec2(1.0,1.0)
-    color     vec4(1.0,1.0,1.0,1.0)
+    color     vec4(1.0,1.0,1.0,0.5)
 }
 
 technique "forward"
@@ -9,7 +9,7 @@ technique "forward"
     pass
     {
         zbuffer less
-        blend off
+        blend src_alpha one
         cullface off
         lights off
         shader source
@@ -21,11 +21,11 @@ technique "forward"
             uniform mat4 model;
             
             //in
-            layout(location = ATT_POSITIONT) in vec3 vertex;
+            layout(location = ATT_POSITIONT) in vec3 position;
             
             void main()
             {
-                gl_Position = projection * view * model * vec4(vertex,1.0);
+                gl_Position = projection * view * model * vec4(position,1.0);
             }
             
             
