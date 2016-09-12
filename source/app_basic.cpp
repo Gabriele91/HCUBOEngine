@@ -163,7 +163,7 @@ namespace hcube
 		m_rendering->add_rendering_pass(rendering_pass);
 #else
 		m_rendering->add_rendering_pass(rendering_pass_forward::snew());
-        //m_rendering->add_rendering_pass(rendering_pass_debug_spot_lights::snew(m_resources));
+        m_rendering->add_rendering_pass(rendering_pass_debug_spot_lights::snew(m_resources));
 #endif
 		//load assets
 		m_resources.add_directory("assets/effects");
@@ -358,7 +358,7 @@ namespace hcube
 			{
 				t_lights[i - 1]->position({
                     std::sin((constants::pi<float>()*0.66)*i)*15.,
-					5.0,
+					0.0,
                     std::cos((constants::pi<float>()*0.66)*i)*15.,
 				});
 			}
@@ -416,7 +416,7 @@ namespace hcube
 			m_systems.add_entity(shadow_lights);
 #endif
 			//ambient color
-			m_rendering->set_ambient_color(vec4{ 0.26, 0.26, 0.26, 1.0 });
+			m_rendering->set_ambient_color(vec4{ 0.16, 0.16, 0.16, 1.0 });
 
 		}
 	}
