@@ -9,9 +9,6 @@
 namespace hcube
 {
 
-#define CSTRCMP( x, y ) ( std::strncmp( x, y, sizeof(y)-1 ) == 0 )
-#define CSTRCMP_SKIP( x, y ) ( [&x] () -> bool { if ( CSTRCMP(x,y) ) { x += sizeof(y)-1; return true; } return false; } )()
-
 
 	using  map_parameters = effect::map_parameters;
 	using  map_techniques = effect::map_techniques;
@@ -20,6 +17,11 @@ namespace hcube
 	using  parameters     = effect::parameters;
 	using  parameter_type = effect::parameter_type;
 	
+    #pragma region "Parser"
+    
+    #define CSTRCMP( x, y ) ( std::strncmp( x, y, sizeof(y)-1 ) == 0 )
+    #define CSTRCMP_SKIP( x, y ) ( [&x] () -> bool { if ( CSTRCMP(x,y) ) { x += sizeof(y)-1; return true; } return false; } )()
+
 	static std::string blend_to_string(blend_type blend)
 	{
 		switch (blend)
@@ -1103,6 +1105,11 @@ namespace hcube
 
 	};
 	
+    #pragma endregion
+    
+    
+    #pragma region "Parameters"
+    
 	//struct by type
 	struct parameter_texture : public effect::parameter
 	{
@@ -1307,7 +1314,8 @@ namespace hcube
 			return new parameter_mat4(m_value);
 		}
 	};
-
+    
+    #pragma endregion
 
 
 	//enable pass effect

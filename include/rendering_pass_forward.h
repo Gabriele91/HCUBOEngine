@@ -14,7 +14,7 @@ namespace hcube
 			vec4&  clear_color,
 			vec4&  ambient_color,
 			entity::ptr e_camera,
-			render_queues& queues
+			render_scene& rscene
 		);
 	};
 }

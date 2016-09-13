@@ -26,7 +26,7 @@ namespace hcube
 		virtual void draw_pass(vec4&  clear_color,
                                vec4&  ambient_color,
                                entity::ptr camera,
-                               render_queues& queues);
+                               render_scene& scene);
 
 		struct ambient_occlusion_param
 		{
@@ -77,8 +77,7 @@ namespace hcube
                       context_texture* ssao,
 					  entity::ptr t_camera,
                       const vec4& ambient_light,
-                      render_queues& queues,
-				      mesh::ptr square);
+                      render_queue& queue);
         };
         
         class point_light_shader
@@ -99,8 +98,7 @@ namespace hcube
                       context_texture* ssao,
 					  entity::ptr t_camera,
                       const vec4& ambient_light,
-                      render_queues& queues,
-					  mesh::ptr square);
+                      render_queue& queue);
         };
 
 		class direction_light_shader
@@ -120,7 +118,7 @@ namespace hcube
 					  context_texture* ssao,
 					  entity::ptr t_camera,
 					  const vec4& ambient_light,
-					  render_queues& queues,
+					  render_queue& queue,
 					  mesh::ptr square);
 		};
         //size

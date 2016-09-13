@@ -163,7 +163,7 @@ namespace hcube
 		m_rendering->add_rendering_pass(rendering_pass);
 #else
 		m_rendering->add_rendering_pass(rendering_pass_forward::snew());
-        m_rendering->add_rendering_pass(rendering_pass_debug_spot_lights::snew(m_resources));
+        //m_rendering->add_rendering_pass(rendering_pass_debug_spot_lights::snew(m_resources));
 #endif
 		//load assets
 		m_resources.add_directory("assets/effects");

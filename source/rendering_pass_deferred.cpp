@@ -67,8 +67,7 @@ namespace hcube
                                                           context_texture* ssao,
 													      entity::ptr e_camera,
                                                           const vec4& ambient_light,
-                                                          render_queues& queues,
-													      mesh::ptr square)
+                                                          render_queue& queues)
     {
         m_shader->bind();
         //uniform g_buffer and etc...
@@ -83,7 +82,7 @@ namespace hcube
 		render::set_depth_buffer_state({ DT_GREATER_EQUAL, DM_ENABLE_ONLY_READ });
 		render::set_cullface_state({ CF_FRONT });
         //uniform all lights
-        HCUBE_FOREACH_QUEUE(weak_light, queues.m_cull_light_spot)
+        HCUBE_FOREACH_QUEUE(weak_light, queues.get_first())
         {            
             auto e_light = weak_light->lock();
             auto l_light = e_light->get_component<light>();
@@ -127,12 +126,14 @@ namespace hcube
     }
     
     
-	void rendering_pass_deferred::point_light_shader::draw(g_buffer& gbuffer,
+	void rendering_pass_deferred::point_light_shader::draw
+    (
+        g_buffer& gbuffer,
 		context_texture* ssao,
 		entity::ptr e_camera,
 		const vec4& ambient_light,
-		render_queues& queues,
-		mesh::ptr square)
+		render_queue& queue
+    )
 	{
 		m_shader->bind();
 		//uniform g_buffer and etc...
@@ -149,7 +150,7 @@ namespace hcube
 		render::set_depth_buffer_state({  DT_GREATER_EQUAL, DM_ENABLE_ONLY_READ });
 		render::set_cullface_state({ CF_FRONT });
         //uniform all lights
-        HCUBE_FOREACH_QUEUE(weak_light, queues.m_cull_light_point)
+        HCUBE_FOREACH_QUEUE(weak_light, queue.get_first())
         {
             
             auto e_light = weak_light->lock();
@@ -192,9 +193,9 @@ namespace hcube
 	void rendering_pass_deferred::direction_light_shader::draw(g_buffer& gbuffer,
 															   context_texture* ssao,
 															   entity::ptr e_camera,
-															   const vec4& ambient_light,
-															   render_queues& queues,
-															   mesh::ptr square)
+                                                               const vec4& ambient_light,
+                                                               render_queue& queue,
+                                                               mesh::ptr square)
 	{
 		m_shader->bind();
 		//uniform g_buffer and etc...
@@ -206,7 +207,7 @@ namespace hcube
 		m_camera.uniform(e_camera->get_component<camera>(),
 						 e_camera->get_component<transform>()->get_matrix());
 		//uniform all lights
-		HCUBE_FOREACH_QUEUE(weak_light, queues.m_cull_light_direction)
+		HCUBE_FOREACH_QUEUE(weak_light, queue.get_first())
 		{
 			auto e_light = weak_light->lock();
 			auto l_light = e_light->get_component<light>();
@@ -260,10 +261,13 @@ namespace hcube
 		return m_enable_ambient_occlusion;
 	}
 
-	void rendering_pass_deferred::draw_pass(vec4&  clear_color,
+	void rendering_pass_deferred::draw_pass
+    (
+        vec4&  clear_color,
 		vec4&  ambient_color,
 		entity::ptr e_camera,
-		render_queues& queues)
+		render_scene& rscene
+    )
 	{
 		//camera
 		camera::ptr   c_camera = e_camera->get_component<camera>();
@@ -278,7 +282,7 @@ namespace hcube
 		//save state
 		auto render_state = render::get_render_state();
 		//draw
-		HCUBE_FOREACH_QUEUE(weak_element, queues.m_cull_opaque)
+		HCUBE_FOREACH_QUEUE(weak_element, rscene.m_queues[RQ_OPAQUE].get_first())
 		{
 			auto entity = weak_element->lock();
 			auto t_entity = entity->get_component<transform>();
@@ -338,7 +342,7 @@ namespace hcube
         m_square->draw();
         m_ambient_light.unbind();
         //SPOT LIGHTS
-		if (queues.m_cull_light_spot)
+		if (rscene.m_queues[RQ_SPOT_LIGHT].get_size())
 		{
 			m_spot_lights.draw
 			(
@@ -346,12 +350,11 @@ namespace hcube
 				m_ssao.get_texture(), 
 				e_camera, 
 				ambient_color, 
-				queues,
-				m_square
+				rscene.m_queues[RQ_SPOT_LIGHT]
 			);
 		}
         //POINT LIGHTS
-		if (queues.m_cull_light_point)
+        if (rscene.m_queues[RQ_POINT_LIGHT].get_size())
 		{
 			m_point_lights.draw
 			(
@@ -359,12 +362,11 @@ namespace hcube
 				m_ssao.get_texture(), 
 				e_camera, 
 				ambient_color, 
-				queues, 
-				m_square
+				rscene.m_queues[RQ_POINT_LIGHT]
 			);
 		}
-		//DIRECTION LIGHTS
-		if (queues.m_cull_light_direction)
+        //DIRECTION LIGHTS
+        if (rscene.m_queues[RQ_DIRECTION_LIGHT].get_size())
 		{
 			m_direction_lights.draw
 			(
@@ -372,7 +374,7 @@ namespace hcube
 				m_ssao.get_texture(), 
 				e_camera, 
 				ambient_color, 
-				queues,
+				rscene.m_queues[RQ_DIRECTION_LIGHT],
 				m_square
 			);
 		}

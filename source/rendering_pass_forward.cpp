@@ -6,11 +6,12 @@ namespace hcube
 
 	#define ENABLE_RADIUS_TEST
 
-	void rendering_pass_forward::draw_pass(
+	void rendering_pass_forward::draw_pass
+    (
 		vec4&  clear_color,
 		vec4&  ambient_color,
 		entity::ptr e_camera,
-		render_queues& queues
+		render_scene& rscene
 	)
 	{
 		//save state
@@ -24,7 +25,7 @@ namespace hcube
 		render::set_clear_color_state({ clear_color });
 		render::clear();
 		//draw
-		HCUBE_FOREACH_QUEUE(weak_element,queues.m_cull_opaque)
+		HCUBE_FOREACH_QUEUE(weak_element,rscene.m_queues[RQ_OPAQUE].get_first())
 		{
 			auto entity = weak_element->lock();
 			auto t_entity = entity->get_component<transform>();
@@ -60,7 +61,7 @@ namespace hcube
 					//draw all spot lights
 					else if(pass.m_uniform_spot.is_valid())
 					{
-						HCUBE_FOREACH_QUEUE(weak_light, queues.m_cull_light_spot)
+						HCUBE_FOREACH_QUEUE(weak_light, rscene.m_queues[RQ_SPOT_LIGHT].get_first())
 						{
 							auto e_light = weak_light->lock();
 							auto l_light = e_light->get_component<light>();
@@ -103,7 +104,7 @@ namespace hcube
                     //draw all point lights
                     else if(pass.m_uniform_point.is_valid())
                     {
-                        HCUBE_FOREACH_QUEUE(weak_light, queues.m_cull_light_point)
+                        HCUBE_FOREACH_QUEUE(weak_light, rscene.m_queues[RQ_POINT_LIGHT].get_first())
                         {
                             auto e_light = weak_light->lock();
                             auto l_light = e_light->get_component<light>();
@@ -129,7 +130,7 @@ namespace hcube
                     //draw all direction lights
                     else if(pass.m_uniform_direction.is_valid())
                     {
-                        HCUBE_FOREACH_QUEUE(weak_light, queues.m_cull_light_direction)
+                        HCUBE_FOREACH_QUEUE(weak_light,  rscene.m_queues[RQ_DIRECTION_LIGHT].get_first())
                         {
                             auto e_light = weak_light->lock();
                             auto l_light = e_light->get_component<light>();

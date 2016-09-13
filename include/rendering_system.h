@@ -14,62 +14,10 @@
 #include <smart_pointers.h>
 #include <system_manager.h>
 #include <vector_math.h>
+#include <render_queues.h>
 
 namespace hcube
 {
-	class render_queues
-	{
-	public:
-
-		struct element
-		{
-			element(entity::wptr ref) : m_ref(ref) {};
-			//ref to object
-			entity::wptr m_ref;
-			//list
-			element* m_next{ nullptr };
-			float    m_depth{ ~0 };
-			//fake lock
-			entity::ptr lock()
-			{
-				return m_ref.lock();
-			}
-		};
-
-		using queue = std::vector < element >;
-
-		queue m_lights;
-		queue m_opaque;
-		queue m_translucent;
-
-		//culling
-		element* m_cull_light_spot     { nullptr };
-		element* m_cull_light_point    { nullptr };
-		element* m_cull_light_direction{ nullptr };
-		element* m_cull_opaque{ nullptr };
-		element* m_cull_translucent{ nullptr };
-
-		void add_call_light_spot(element* e);
-		void add_call_light_point(element* e);
-		void add_call_light_direction(element* e);
-		void add_call_opaque(element* e);
-		void add_call_translucent(element* e);
-
-		void clear();
-		void push(entity::ptr e);
-		void remove(entity::ptr e);
-		void reserve(size_t size);
-
-
-		void compute_light_queue(const frustum& view_frustum);
-		void compute_opaque_queue(const frustum& view_frustum);
-		void compute_translucent_queue(const frustum& view_frustum);
-		//sphere
-		void compute_opaque_queue(const vec3& position, float radius);
-	};
-
-	#define HCUBE_FOREACH_QUEUE(name,queue)\
-		for (render_queues::element* name = queue; name; name = name->m_next)
 
 	class rendering_pass
 	{
@@ -78,7 +26,7 @@ namespace hcube
 			vec4&  clear_color,
 			vec4&  ambient_color,
 			entity::ptr e_camera,
-			render_queues& queues
+			render_scene& rscene
 		) = 0;
 	};
 	using rendering_pass_ptr = std::shared_ptr< rendering_pass >;
@@ -121,8 +69,8 @@ namespace hcube
 		virtual void draw_pass(
 			vec4&  clear_color,
 			vec4&  ambient_color,
-			entity::ptr e_camera,
-			render_queues& queues
+            entity::ptr e_camera,
+            render_scene& rscene
 		);
 	};
     
@@ -141,7 +89,7 @@ namespace hcube
                                vec4&  clear_color,
                                vec4&  ambient_color,
                                entity::ptr e_camera,
-                               render_queues& queues
+                               render_scene& rscene
                                );
     };
 
@@ -193,7 +141,7 @@ namespace hcube
 		vec4                              m_clear_color;
 		vec4                              m_ambient_color;
 		entity::ptr						  m_camera;
-		render_queues					  m_renderables;
+		render_scene					  m_scene;
 		std::vector< rendering_pass_ptr > m_rendering_pass;
 		//light
 		rendering_pass_ptr				  m_shadow_pass;
