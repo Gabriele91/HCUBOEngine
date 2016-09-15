@@ -150,9 +150,6 @@
     <ClInclude Include="..\include\obb.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\eigenvalues_jacobi.h">
-      <Filter>File di intestazione</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\frustum.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
@@ -169,6 +166,12 @@
       <Filter>File di intestazione</Filter>
     </ClInclude>
     <ClInclude Include="..\include\shadow_buffer.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\rendering_pass_shadow.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\render_queues.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
   </ItemGroup>
@@ -272,6 +275,12 @@
     <ClCompile Include="..\source\shadow_buffer.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\rendering_pass_shadow.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\render_queues.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\source\cocoa_native_dialog.mm">
@@ -357,6 +366,9 @@
     </None>
     <None Include="..\common\effects\shaders\lib\post_processing_utilities.glsl">
       <Filter>File di risorse\common\effects\shaders\lib</Filter>
+    </None>
+    <None Include="..\common\effects\translucent_texture_normal_specular.fxhc">
+      <Filter>File di risorse\common\effects</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
