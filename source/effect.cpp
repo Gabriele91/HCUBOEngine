@@ -10,12 +10,13 @@ namespace hcube
 {
 
 
-	using  map_parameters = effect::map_parameters;
-	using  map_techniques = effect::map_techniques;
-	using  technique      = effect::technique;
-	using  parameter      = effect::parameter;
-	using  parameters     = effect::parameters;
-	using  parameter_type = effect::parameter_type;
+	using  map_parameters  = effect::map_parameters;
+	using  map_techniques  = effect::map_techniques;
+	using  technique       = effect::technique;
+	using  parameter       = effect::parameter;
+    using  parameters      = effect::parameters;
+    using  parameter_type  = effect::parameter_type;
+    using  parameter_queue = effect::parameter_queue;
 	
     #pragma region "Parser"
     
@@ -170,8 +171,9 @@ namespace hcube
 
 		struct technique_field
 		{
-			std::string m_name;
-			std::vector< pass_field > m_pass;
+            std::string m_name;
+            parameter_queue m_queue;
+            std::vector< pass_field > m_pass;
 		};
 
 		struct error_field
@@ -467,19 +469,31 @@ namespace hcube
 				//read all values
 				while (!is_end_table(*ptr) && *ptr != EOF && *ptr != '\0')
 				{
-					//search source attribute
-					if (CSTRCMP_SKIP(ptr, "pass"))
-					{
-						pass_field pass;
-						//skeep spaces
-						skeep_space_end_comment(ptr);
-						//parse textures
-						if (!parse_pass_block(ptr, pass)) return false;
-						//skeep spaces
-						skeep_space_end_comment(ptr);
-						//append
-						t_field.m_pass.push_back(pass);
-					}
+                    //search source attribute
+                    if (CSTRCMP_SKIP(ptr, "queue"))
+                    {
+                        parameter_queue p_queue;
+                        //skeep spaces
+                        skeep_space_end_comment(ptr);
+                        //parse textures
+                        if (!parse_queue_block(ptr, p_queue)) return false;
+                        //skeep spaces
+                        skeep_space_end_comment(ptr);
+                        //append
+                        t_field.m_queue = p_queue;
+                    }
+                    else if (CSTRCMP_SKIP(ptr, "pass"))
+                    {
+                        pass_field pass;
+                        //skeep spaces
+                        skeep_space_end_comment(ptr);
+                        //parse textures
+                        if (!parse_pass_block(ptr, pass)) return false;
+                        //skeep spaces
+                        skeep_space_end_comment(ptr);
+                        //append
+                        t_field.m_pass.push_back(pass);
+                    }
 					else
 					{
 						push_error("Keyword not valid");
@@ -578,7 +592,65 @@ namespace hcube
 				++ptr;
 			}
             return true;
-		}
+        }
+        bool parse_queue_block(const char*& ptr,parameter_queue& p_queue)
+        {
+            //parse table
+            if (is_start_table(*ptr))
+            {
+                //skeep '{'
+                ++ptr;
+                //skeep spaces
+                skeep_space_end_comment(ptr);
+                //read all values
+                while (!is_end_table(*ptr) && *ptr != EOF && *ptr != '\0')
+                {
+                    //all casses
+                    if (CSTRCMP_SKIP(ptr, "type"))
+                    {
+                        //skeep spaces
+                        skeep_space_end_comment(ptr);
+                        //parse textures
+                        if (!parse_queue_type(ptr, &ptr, p_queue.m_type))
+                        {
+                            push_error("Queue type not valid");
+                            return false;
+                        }
+                        //skeep spaces
+                        skeep_space_end_comment(ptr);
+                    }
+                    else if (CSTRCMP_SKIP(ptr, "order"))
+                    {
+                        //skeep spaces
+                        skeep_space_end_comment(ptr);
+                        //parse textures
+                        if (!parse_int(ptr, &ptr, p_queue.m_order))
+                        {
+                            push_error("Queue order value not valid");
+                            return false;
+                        }
+                        //skeep spaces
+                        skeep_space_end_comment(ptr);
+                    }
+                    else
+                    {
+                        push_error("Keyword not valid");
+                        return false;
+                    }
+                    //skeep spaces
+                    skeep_space_end_comment(ptr);
+                }
+                //end while
+                if (!is_end_table(*ptr))
+                {
+                    push_error("Not found }");
+                    return false;
+                }
+                //skip }
+                ++ptr;
+            }
+            return true;
+        }
 		//////////////////////////////////////////////////////
 		bool parse_blend(const char*& ptr, pass_field& pass)
 		{
@@ -1096,7 +1168,33 @@ namespace hcube
 			}
 
 			return false;
-		}
+        }
+        bool parse_queue_type(const char* in,
+                              const char** cout,
+                              render_queue_type& type)
+        {
+            if (CSTRCMP(in, "opaque"))
+            {
+                (*cout) += sizeof("opaque")-1; type = render_queue_type::RQ_OPAQUE;  return true;
+            }
+            
+            if (CSTRCMP(in, "translucent"))
+            {
+                (*cout) += sizeof("translucent")-1; type = render_queue_type::RQ_TRANSLUCENT;  return true;
+            }
+            
+            if (CSTRCMP(in, "ui"))
+            {
+                (*cout) += sizeof("ui")-1;; type = render_queue_type::RQ_UI;  return true;
+            }
+            
+            if (CSTRCMP(in, "background"))
+            {
+                (*cout) += sizeof("background")-1; type = render_queue_type::RQ_BACKGROUND;  return true;
+            }
+            
+            return false;
+        }
 		//////////////////////////////////////////////////////
 		void push_error(const std::string& error)
 		{
@@ -1477,6 +1575,8 @@ namespace hcube
             size_t n_pass_parser = e_context.m_techniques[t].m_pass.size();
 			//alloc pass
 			this_technique.reserve(n_pass_parser);
+            //set queue
+            this_technique.set_queue(e_context.m_techniques[t].m_queue);
 			//add pass
 			for (size_t p = 0; p != n_pass_parser; ++p)
             {

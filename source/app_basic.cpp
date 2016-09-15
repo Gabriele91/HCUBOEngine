@@ -11,6 +11,7 @@
 #include <regex>
 #include <rendering_pass_deferred.h>
 #include <rendering_pass_forward.h>
+#include <rendering_pass_shadow.h>
 #include <gameobject.h>
 #include <transform.h>
 #include <renderable.h>
@@ -114,7 +115,7 @@ namespace hcube
 	}
 
 	void app_basic::camera_look_around(application& app)
-	{
+    {
 		//center
 		dvec2 mouse_center = (dvec2)app.get_window_size()*0.5;
 		//mouse pos
@@ -124,7 +125,7 @@ namespace hcube
 		//compute speed
 		double mouse_speed = length(mouse_dir / (dvec2)app.get_window_size()) * 100.0f;
 		//do not
-		if (mouse_speed <= 0.0) return;
+		if (mouse_speed <= 0.49) return;
 		//norm direction
 		dvec2 norm_mouse_dir = normalize(mouse_dir);
 		//angle
@@ -153,7 +154,7 @@ namespace hcube
 		//alloc all systems
 		rendering_system::ptr m_rendering = rendering_system::snew();
 		//add shadow support
-		m_rendering->add_shadow_rendering_pass(rendering_pass_shadow::snew(m_resources));
+		m_rendering->add_rendering_pass(rendering_pass_shadow::snew(m_resources));
 		//add into system
 		m_systems.add_system(m_rendering);
 #if 1
@@ -164,6 +165,11 @@ namespace hcube
 #else
 		m_rendering->add_rendering_pass(rendering_pass_forward::snew());
         //m_rendering->add_rendering_pass(rendering_pass_debug_spot_lights::snew(m_resources));
+#endif
+        
+#if 1
+        //translucent
+        m_rendering->add_rendering_pass(rendering_pass_forward::snew(RQ_TRANSLUCENT));
 #endif
 		//load assets
 		m_resources.add_directory("assets/effects");
@@ -225,6 +231,26 @@ namespace hcube
 				m_systems.add_entity(cube_grid);
 			}
 #endif
+#if 1
+            //add cube
+            {
+                auto cube_grid = gameobject::node_new(
+                                                      basic_meshs::cube({ 5,5,5 }, true)
+                                                      );
+                cube_grid->get_component<renderable>()->set_material(
+                        m_resources.get_material("window_mat")
+                );
+                cube_grid->get_component<transform>()->translation(
+                        vec3{ -5.0,-7.5,-10.0 }
+                );
+                cube_grid->get_component<transform>()->scale(
+                        vec3{ 1.0,1.0,1.0 }
+                );
+                cube_grid->set_name("window_cube1");
+                m_systems.add_entity(cube_grid);
+            }
+#endif
+            
 #if 1
 			{
 				//sponza
@@ -294,7 +320,7 @@ namespace hcube
 									40.0,
 									radians(10.0),
 									radians(15.0));
-			l_model_light1->set_shadow({ 512,512 });
+			l_model_light1->set_shadow({ 256,256 });
             e_model_light1->set_name("ship_light1");
             m_model->add_child(e_model_light1);
 
@@ -310,7 +336,7 @@ namespace hcube
 								   40.0,
 								   radians(10.0),
 								   radians(15.0));
-			l_model_light2->set_shadow({ 512,512 });
+			l_model_light2->set_shadow({ 256,256 });
             e_model_light2->set_name("ship_light2");
 			m_model->add_child(e_model_light2);
 			//add to render
@@ -338,10 +364,10 @@ namespace hcube
 			for (short i = 0; i != 3; ++i)
 			{
 				l_lights[i]->set_radius(
-					7.5,
-					30.0
+					8.0,
+					33.0
 				);
-				l_lights[i]->set_shadow({ 512,512 });
+				l_lights[i]->set_shadow({ 256,256 });
 			}
 
 			l_lights[0]->set_color({ 0.0f, 1.0f, 0.0f }, { 0.0f, 1.0f, 0.0f });
@@ -358,7 +384,7 @@ namespace hcube
 			{
 				t_lights[i - 1]->position({
                     std::sin((constants::pi<float>()*0.66)*i)*15.,
-					0.0,
+					5.0,
                     std::cos((constants::pi<float>()*0.66)*i)*15.,
 				});
 			}
@@ -422,7 +448,7 @@ namespace hcube
 	}
 
 	bool app_basic::run(application& app, double delta_time)
-	{
+    {
 		//////////////////////////////////////////////////////////
 		//update
 		m_model->get_component<transform>()->turn(quat{ {0.0, radians(5.0*delta_time), 0.0} });

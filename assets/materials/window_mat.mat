@@ -1,0 +1,5 @@
+effect "translucent_texture_normal_specular"
+{
+	diffuse_map  texture("transparent_window")
+	color        vec4(1.0,1.0,1.0,1.0)
+}

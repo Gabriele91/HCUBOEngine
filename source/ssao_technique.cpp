@@ -120,11 +120,11 @@ namespace hcube
 			render::set_clear_color_state(clear_color_state(vec4{ 1.,1.,1.,1. }));
 
 			render::enable_render_target(m_fbo);
-			render::clear();
+			render::clear(CLEAR_COLOR|CLEAR_DEPTH);
 			render::disable_render_target(m_fbo);
 
-			render::enable_render_target(m_fbo_blur);
-			render::clear();
+            render::enable_render_target(m_fbo_blur);
+			render::clear(CLEAR_COLOR|CLEAR_DEPTH);
 			render::disable_render_target(m_fbo_blur);
 
 			render::set_clear_color_state(temp_color_clear_state);
@@ -145,8 +145,11 @@ namespace hcube
         camera::ptr   c_camera = e_camera->get_component<camera>();
 		//enable fbo
 		render::enable_render_target(m_fbo);
-		//clear buffer not necessary (?)
-		render::clear();
+#if 0
+        //clear buffer not necessary (?)
+        render::set_clear_color_state(vec4{1.,1.,1.,1.});
+		render::clear(CLEAR_COLOR);
+#endif
 		//bind shader
 		m_shader->bind();
 		//////////////////////////////////////////////////////////////////////////////////////////////////////

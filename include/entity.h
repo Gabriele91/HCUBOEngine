@@ -6,13 +6,12 @@
 //  Copyright © 2016 Gabriele. All rights reserved.
 //
 #pragma once
+#include <string>
+#include <vector>
+#include <type_traits>
 #include <unordered_map>
-#include <material.h>
-#include <light.h>
-#include <renderable.h>
 #include <smart_pointers.h>
 #include <component.h>
-#include <type_traits>
 
 namespace hcube
 {

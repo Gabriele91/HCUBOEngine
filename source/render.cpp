@@ -234,10 +234,12 @@ namespace hcube
 			}
 		}
 
-		void clear(bool depth)
+		void clear(int type)
 		{
-			if(depth) glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			else	  glClear(GL_COLOR_BUFFER_BIT);
+            int clear_type_gl = 0;
+            if(type & CLEAR_COLOR) clear_type_gl |= GL_COLOR_BUFFER_BIT;
+            if(type & CLEAR_DEPTH) clear_type_gl |= GL_DEPTH_BUFFER_BIT;
+			if(clear_type_gl) glClear(clear_type_gl);
 		}
 
 		const depth_buffer_state& get_depth_buffer_state()
@@ -352,7 +354,7 @@ namespace hcube
 			case BLEND_ONE_MINUS_DST_COLOR: return GL_ONE_MINUS_DST_COLOR;
 			case BLEND_ONE_MINUS_DST_ALPHA: return GL_ONE_MINUS_DST_ALPHA;
 			case BLEND_ONE_MINUS_SRC_COLOR: return GL_ONE_MINUS_SRC_COLOR;
-			case BLEND_ONE_MINUS_SRC_ALPHA: return GL_ONE_MINUS_SRC_COLOR;
+			case BLEND_ONE_MINUS_SRC_ALPHA: return GL_ONE_MINUS_SRC_ALPHA;
 
 			case BLEND_DST_COLOR: return GL_DST_COLOR;
 			case BLEND_DST_ALPHA: return GL_DST_ALPHA;
@@ -1158,7 +1160,10 @@ namespace hcube
 					GL_NEAREST
 				);
 
-			}
+            }
+            //reset
+            glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+            glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 			//reset
 			if(s_bind_context.m_render_target)
 				//set old fbo

@@ -1,0 +1,47 @@
+parameters
+{
+    //shadow
+    mask float(0.5)
+    //other
+    diffuse_map texture("white")
+    normal_map texture("normal_up")
+    specular_map texture("black")
+	color vec4(1.0,1.0,1.0,1.0)
+}
+
+technique "forward"
+{
+	queue 
+	{
+		type translucent
+	}
+
+	pass 
+	{
+		zbuffer less
+		blend src_alpha one_minus_src_alpha
+		cullface off
+		lights only_ambient
+		shader source 
+        {
+            #define DISABLE_MASK
+            #define FORWARD_RENDERING
+			#pragma import "shaders/base_texture_normal_specular.glsl"
+		}
+	}
+
+	pass 
+	{
+		zbuffer equal
+        blend src_alpha one_minus_src_alpha
+		cullface off
+		lights spot_point_direction
+		shader source 
+        {
+            #define DISABLE_MASK
+            #define FORWARD_RENDERING
+			#pragma import "shaders/base_texture_normal_specular.glsl"
+		}
+	}
+
+}

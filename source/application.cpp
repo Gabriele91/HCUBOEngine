@@ -189,9 +189,9 @@ namespace hcube
 		render::print_info();
 		//disable vSync
 		glfwSwapInterval(0);
-		//enable capture ctrl
-		glfwSetInputMode(m_window, GLFW_STICKY_KEYS, GLFW_TRUE);
-		glfwSetInputMode(m_window, GLFW_STICKY_MOUSE_BUTTONS, GLFW_TRUE);
+        //enable capture ctrl
+        glfwSetInputMode(m_window, GLFW_STICKY_KEYS, GLFW_TRUE);
+        glfwSetInputMode(m_window, GLFW_STICKY_MOUSE_BUTTONS, GLFW_TRUE);
 		//set events
 		glfwSetKeyCallback(m_window, []
 		(GLFWwindow* window, int key, int scancode, int action, int mods)

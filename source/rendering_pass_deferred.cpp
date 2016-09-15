@@ -231,6 +231,7 @@ namespace hcube
 		const ivec2& w_size, 
 		resources_manager& resources
 	)
+    :rendering_pass(RPT_RENDER)
     {
         m_q_size = w_size;
         m_g_buffer.init(w_size);
@@ -263,26 +264,33 @@ namespace hcube
 
 	void rendering_pass_deferred::draw_pass
     (
+        int    n_pass,
         vec4&  clear_color,
 		vec4&  ambient_color,
 		entity::ptr e_camera,
 		render_scene& rscene
     )
-	{
+    {
+        //area
+        vec4 g_area{ 0,0, (vec2)m_g_buffer.get_size() };
 		//camera
 		camera::ptr   c_camera = e_camera->get_component<camera>();
 		transform_ptr t_camera = e_camera->get_component<transform>();
-		const vec4&   viewport = c_camera->get_viewport();
+        const vec4&   viewport = c_camera->get_viewport();
 		//buffer
 		render::enable_render_target(m_g_buffer.get_geometry_render_target());
 		//set state
 		render::set_viewport_state({ viewport });
-		render::set_clear_color_state(vec4{ clear_color.r, clear_color.g, clear_color.b,1.0 });
-		render::clear();
+        //pass 0
+        if(!n_pass)
+        {
+            render::set_clear_color_state(vec4{ clear_color.r, clear_color.g, clear_color.b,1.0 });
+            render::clear(/* flag */);
+        }
 		//save state
 		auto render_state = render::get_render_state();
 		//draw
-		HCUBE_FOREACH_QUEUE(weak_element, rscene.m_queues[RQ_OPAQUE].get_first())
+		HCUBE_FOREACH_QUEUE(weak_element, rscene.get_first(RQ_OPAQUE))
 		{
 			auto entity = weak_element->lock();
 			auto t_entity = entity->get_component<transform>();
@@ -326,7 +334,7 @@ namespace hcube
 		render::enable_render_target(m_g_buffer.get_lights_render_target());
 		///////////////////////////////////////////////////////////////////////////////
 		//clear color buffer
-		render::clear(false);
+		render::clear(CLEAR_COLOR);
 		///////////////////////////////////////////////////////////////////////////////
 		render::set_blend_state({ BLEND_ONE,BLEND_ONE });
 		render::set_depth_buffer_state({ DM_DISABLE });
@@ -342,7 +350,7 @@ namespace hcube
         m_square->draw();
         m_ambient_light.unbind();
         //SPOT LIGHTS
-		if (rscene.m_queues[RQ_SPOT_LIGHT].get_size())
+		if (rscene.get_first(RQ_SPOT_LIGHT))
 		{
 			m_spot_lights.draw
 			(
@@ -354,7 +362,7 @@ namespace hcube
 			);
 		}
         //POINT LIGHTS
-        if (rscene.m_queues[RQ_POINT_LIGHT].get_size())
+        if (rscene.get_first(RQ_POINT_LIGHT))
 		{
 			m_point_lights.draw
 			(
@@ -366,7 +374,7 @@ namespace hcube
 			);
 		}
         //DIRECTION LIGHTS
-        if (rscene.m_queues[RQ_DIRECTION_LIGHT].get_size())
+        if (rscene.get_first(RQ_DIRECTION_LIGHT))
 		{
 			m_direction_lights.draw
 			(
@@ -378,10 +386,12 @@ namespace hcube
 				m_square
 			);
 		}
-		render::disable_render_target(m_g_buffer.get_lights_render_target());
-		////////////////////////////////////////////////////////////////////////////////
+        render::disable_render_target(m_g_buffer.get_lights_render_target());
+        ////////////////////////////////////////////////////////////////////////////////
+        //reset state
+        render::set_render_state(render_state);
+        ////////////////////////////////////////////////////////////////////////////////
 		//like shader, copy color buffer
-		vec4 g_area{ 0,0, (vec2)m_g_buffer.get_size() };
 		render::copy_target_to_target
 		(
 			g_area,
@@ -389,9 +399,16 @@ namespace hcube
 			g_area,
 			0,
 			RT_COLOR
-		);
-        ////////////////////////////////////////////////////////////////////////////////
-        //reset state
-        render::set_render_state(render_state);
+        );
+#if 1
+        render::copy_target_to_target
+        (
+             g_area,
+             m_g_buffer.get_lights_render_target(),
+             g_area,
+             0,
+             RT_DEPTH
+        );
+#endif
 	}
 }

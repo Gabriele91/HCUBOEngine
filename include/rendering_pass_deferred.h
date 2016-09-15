@@ -23,7 +23,8 @@ namespace hcube
                                 resources_manager& resources);
 
 		//overload draw
-		virtual void draw_pass(vec4&  clear_color,
+		virtual void draw_pass(int n_pass,
+                               vec4&  clear_color,
                                vec4&  ambient_color,
                                entity::ptr camera,
                                render_scene& scene);

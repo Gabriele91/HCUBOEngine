@@ -1,4 +1,5 @@
 #include <transform.h>
+#include <renderable.h>
 #include <rendering_pass_forward.h>
 
 namespace hcube
@@ -8,6 +9,7 @@ namespace hcube
 
 	void rendering_pass_forward::draw_pass
     (
+        int    n_pass,
 		vec4&  clear_color,
 		vec4&  ambient_color,
 		entity::ptr e_camera,
@@ -19,13 +21,17 @@ namespace hcube
 		//get camera
 		camera::ptr   c_camera = e_camera->get_component<camera>();
 		transform_ptr t_camera = e_camera->get_component<transform>();
-		const vec4& viewport = c_camera->get_viewport();
+        const vec4& viewport = c_camera->get_viewport();
 		//set state camera
 		render::set_viewport_state({ viewport });
-		render::set_clear_color_state({ clear_color });
-		render::clear();
+        //is pass 0
+        if(!n_pass)
+        {
+            render::set_clear_color_state({ clear_color });
+            render::clear(/* flag */);
+        }
 		//draw
-		HCUBE_FOREACH_QUEUE(weak_element,rscene.m_queues[RQ_OPAQUE].get_first())
+		HCUBE_FOREACH_QUEUE(weak_element,rscene.get_first(m_queue_type))
 		{
 			auto entity = weak_element->lock();
 			auto t_entity = entity->get_component<transform>();
@@ -61,7 +67,7 @@ namespace hcube
 					//draw all spot lights
 					else if(pass.m_uniform_spot.is_valid())
 					{
-						HCUBE_FOREACH_QUEUE(weak_light, rscene.m_queues[RQ_SPOT_LIGHT].get_first())
+						HCUBE_FOREACH_QUEUE(weak_light, rscene.get_first(RQ_SPOT_LIGHT))
 						{
 							auto e_light = weak_light->lock();
 							auto l_light = e_light->get_component<light>();
@@ -104,7 +110,7 @@ namespace hcube
                     //draw all point lights
                     else if(pass.m_uniform_point.is_valid())
                     {
-                        HCUBE_FOREACH_QUEUE(weak_light, rscene.m_queues[RQ_POINT_LIGHT].get_first())
+                        HCUBE_FOREACH_QUEUE(weak_light, rscene.get_first(RQ_POINT_LIGHT))
                         {
                             auto e_light = weak_light->lock();
                             auto l_light = e_light->get_component<light>();
@@ -130,7 +136,7 @@ namespace hcube
                     //draw all direction lights
                     else if(pass.m_uniform_direction.is_valid())
                     {
-                        HCUBE_FOREACH_QUEUE(weak_light,  rscene.m_queues[RQ_DIRECTION_LIGHT].get_first())
+                        HCUBE_FOREACH_QUEUE(weak_light,  rscene.get_first(RQ_DIRECTION_LIGHT))
                         {
                             auto e_light = weak_light->lock();
                             auto l_light = e_light->get_component<light>();
