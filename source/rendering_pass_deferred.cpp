@@ -285,7 +285,7 @@ namespace hcube
 		//set state
 		render::set_viewport_state({ viewport });
 		//update queue
-		rscene.compute_no_lights_queues("forward", c_camera->get_frustum());
+		rscene.compute_no_lights_queues("deferred", c_camera->get_frustum());
         //pass 0
         if(!n_pass)
         {
