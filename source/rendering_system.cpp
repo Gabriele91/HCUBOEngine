@@ -174,7 +174,7 @@ namespace hcube
         //n shadow pass
         int n_shadow_pass = 0;
         //build shadow map
-        for(auto shadow_pass : m_rendering_pass[RPT_SHADOW])
+        for(rendering_pass_ptr& shadow_pass : m_rendering_pass[RPT_SHADOW])
 		{
 			//spot lights
 			HCUBE_FOREACH_QUEUE(weak_light, m_scene.get_first(RQ_SPOT_LIGHT))

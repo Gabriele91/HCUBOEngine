@@ -78,7 +78,8 @@ namespace hcube
                       context_texture* ssao,
 					  entity::ptr t_camera,
                       const vec4& ambient_light,
-                      render_queue& queue);
+					  render_scene& rsceme,
+					  render_queue_type type);
         };
         
         class point_light_shader
@@ -99,7 +100,8 @@ namespace hcube
                       context_texture* ssao,
 					  entity::ptr t_camera,
                       const vec4& ambient_light,
-                      render_queue& queue);
+					  render_scene& rsceme,
+					  render_queue_type type);
         };
 
 		class direction_light_shader
@@ -119,7 +121,8 @@ namespace hcube
 					  context_texture* ssao,
 					  entity::ptr t_camera,
 					  const vec4& ambient_light,
-					  render_queue& queue,
+					  render_scene& rsceme,
+					  render_queue_type type,
 					  mesh::ptr square);
 		};
         //size

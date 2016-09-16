@@ -12,7 +12,7 @@
 
 namespace hcube
 {
-    
+#if 0   
     //push element
     void render_queue::push_front_to_back(entity::wptr&  entity,float depth)
     {
@@ -85,7 +85,7 @@ namespace hcube
         //inc count
         ++m_size;
     }
-    
+#endif 
     //pool
     void render_objects::remove(entity::ptr e)
     {
@@ -164,9 +164,9 @@ namespace hcube
     void render_scene::compute_lights_queues(const frustum& view_frustum)
     {
         //ref
-        render_queue& rqueue_spot        = m_queues[RQ_SPOT_LIGHT];
-        render_queue& rqueue_point       = m_queues[RQ_POINT_LIGHT];
-        render_queue& rqueue_direction   = m_queues[RQ_DIRECTION_LIGHT];
+        auto& rqueue_spot        = m_queues[RQ_SPOT_LIGHT];
+		auto& rqueue_point       = m_queues[RQ_POINT_LIGHT];
+		auto& rqueue_direction   = m_queues[RQ_DIRECTION_LIGHT];
         //clear
         rqueue_spot.clear();
         rqueue_point.clear();
@@ -205,7 +205,7 @@ namespace hcube
         m_queues[RQ_TRANSLUCENT].clear();
         m_queues[RQ_UI].clear();
         //build queue opaque
-        for (entity::wptr weak_entity : m_pool.m_renderable)
+        for (entity::wptr& weak_entity : m_pool.m_renderable)
         {
             auto entity     = weak_entity.lock();
             auto t_entity   = entity->get_component<transform>();
@@ -220,7 +220,7 @@ namespace hcube
                 //effect
                 effect::ptr	effect = r_material->get_effect();
                 //for all technique
-                for(auto it_technique : effect->get_techniques())
+                for(const auto& it_technique : effect->get_techniques())
                 {
                     //get technique
                     const effect::technique& technique = it_technique.second;
@@ -230,10 +230,10 @@ namespace hcube
                     switch (queue.m_type)
                     {
                         case RQ_TRANSLUCENT:
-                            m_queues[queue.m_type].push_back_to_front(weak_entity,compute_camera_depth(view_frustum, t_entity));
+                            m_queues[RQ_TRANSLUCENT].push_back_to_front(weak_entity,compute_camera_depth(view_frustum, t_entity));
                         break;
-                        case RQ_OPAQUE :
-                            m_queues[queue.m_type].push_front_to_back(weak_entity,compute_camera_depth(view_frustum, t_entity));
+                        case RQ_OPAQUE:
+                            m_queues[RQ_OPAQUE].push_front_to_back(weak_entity,compute_camera_depth(view_frustum, t_entity));
                         break;
                         default:
                             m_queues[queue.m_type].push_back_to_front(weak_entity,queue.m_order);
@@ -253,7 +253,7 @@ namespace hcube
         m_queues[RQ_TRANSLUCENT].clear();
         m_queues[RQ_UI].clear();
         //build queue opaque
-        for (entity::wptr weak_entity : m_pool.m_renderable)
+        for (entity::wptr& weak_entity : m_pool.m_renderable)
         {
             auto entity     = weak_entity.lock();
             auto t_entity   = entity->get_component<transform>();
@@ -269,7 +269,7 @@ namespace hcube
                 //effect
                 effect::ptr	effect = r_material->get_effect();
                 //for all technique
-                for(auto it_technique : effect->get_techniques())
+                for(const auto& it_technique : effect->get_techniques())
                 {
                     //get technique
                     const effect::technique& technique = it_technique.second;
@@ -279,10 +279,10 @@ namespace hcube
                     switch (queue.m_type)
                     {
                         case RQ_TRANSLUCENT:
-                            m_queues[queue.m_type].push_back_to_front(weak_entity,distance(t_entity->get_global_position(),position));
+                            m_queues[RQ_TRANSLUCENT].push_back_to_front(weak_entity,distance(t_entity->get_global_position(),position));
                         break;
                         case RQ_OPAQUE :
-                            m_queues[queue.m_type].push_front_to_back(weak_entity,distance(t_entity->get_global_position(),position));
+                            m_queues[RQ_OPAQUE].push_front_to_back(weak_entity,distance(t_entity->get_global_position(),position));
                         break;
                         default:
                             m_queues[queue.m_type].push_back_to_front(weak_entity,queue.m_order);

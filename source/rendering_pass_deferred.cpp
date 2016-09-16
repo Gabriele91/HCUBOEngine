@@ -67,7 +67,8 @@ namespace hcube
                                                           context_texture* ssao,
 													      entity::ptr e_camera,
                                                           const vec4& ambient_light,
-                                                          render_queue& queues)
+                                                          render_scene& rsceme,
+													      render_queue_type type)
     {
         m_shader->bind();
         //uniform g_buffer and etc...
@@ -82,7 +83,7 @@ namespace hcube
 		render::set_depth_buffer_state({ DT_GREATER_EQUAL, DM_ENABLE_ONLY_READ });
 		render::set_cullface_state({ CF_FRONT });
         //uniform all lights
-        HCUBE_FOREACH_QUEUE(weak_light, queues.get_first())
+        HCUBE_FOREACH_QUEUE(weak_light, rsceme.get_first(type))
         {            
             auto e_light = weak_light->lock();
             auto l_light = e_light->get_component<light>();
@@ -132,7 +133,8 @@ namespace hcube
 		context_texture* ssao,
 		entity::ptr e_camera,
 		const vec4& ambient_light,
-		render_queue& queue
+		render_scene& rsceme,
+		render_queue_type type
     )
 	{
 		m_shader->bind();
@@ -150,7 +152,7 @@ namespace hcube
 		render::set_depth_buffer_state({  DT_GREATER_EQUAL, DM_ENABLE_ONLY_READ });
 		render::set_cullface_state({ CF_FRONT });
         //uniform all lights
-        HCUBE_FOREACH_QUEUE(weak_light, queue.get_first())
+        HCUBE_FOREACH_QUEUE(weak_light, rsceme.get_first(type))
         {
             
             auto e_light = weak_light->lock();
@@ -194,7 +196,8 @@ namespace hcube
 															   context_texture* ssao,
 															   entity::ptr e_camera,
                                                                const vec4& ambient_light,
-                                                               render_queue& queue,
+                                                               render_scene& rsceme,
+															   render_queue_type type,
                                                                mesh::ptr square)
 	{
 		m_shader->bind();
@@ -207,7 +210,7 @@ namespace hcube
 		m_camera.uniform(e_camera->get_component<camera>(),
 						 e_camera->get_component<transform>()->get_matrix());
 		//uniform all lights
-		HCUBE_FOREACH_QUEUE(weak_light, queue.get_first())
+		HCUBE_FOREACH_QUEUE(weak_light, rsceme.get_first(type))
 		{
 			auto e_light = weak_light->lock();
 			auto l_light = e_light->get_component<light>();
@@ -358,7 +361,8 @@ namespace hcube
 				m_ssao.get_texture(), 
 				e_camera, 
 				ambient_color, 
-				rscene.m_queues[RQ_SPOT_LIGHT]
+				rscene,
+				RQ_SPOT_LIGHT
 			);
 		}
         //POINT LIGHTS
@@ -370,7 +374,8 @@ namespace hcube
 				m_ssao.get_texture(), 
 				e_camera, 
 				ambient_color, 
-				rscene.m_queues[RQ_POINT_LIGHT]
+				rscene,
+				RQ_POINT_LIGHT
 			);
 		}
         //DIRECTION LIGHTS
@@ -382,7 +387,8 @@ namespace hcube
 				m_ssao.get_texture(), 
 				e_camera, 
 				ambient_color, 
-				rscene.m_queues[RQ_DIRECTION_LIGHT],
+				rscene,
+				RQ_DIRECTION_LIGHT,
 				m_square
 			);
 		}
