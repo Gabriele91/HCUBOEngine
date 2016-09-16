@@ -134,13 +134,6 @@ namespace hcube
         m_renderable.clear();
     }
     
-    //compue queues
-    void render_scene::compute_queues(const frustum& view_frustum)
-    {
-        compute_lights_queues(view_frustum);
-        compute_no_lights_queues(view_frustum);
-    }
-    
     //get iterator
     render_element* render_scene::get_first(render_queue_type queue) const
     {
@@ -197,7 +190,7 @@ namespace hcube
         
     }
     
-    void render_scene::compute_no_lights_queues(const frustum& view_frustum)
+    void render_scene::compute_no_lights_queues(const std::string& technique_name, const frustum& view_frustum)
     {
         //clear
         m_queues[RQ_BACKGROUND].clear();
@@ -208,44 +201,37 @@ namespace hcube
         for (entity::wptr& weak_entity : m_pool.m_renderable)
         {
             auto entity     = weak_entity.lock();
-            auto t_entity   = entity->get_component<transform>();
             auto r_entity   = entity->get_component<renderable>();
-            auto r_material = r_entity->get_material();
-            
-            if (r_material &&
-                r_entity->is_enabled() &&
-                ( !r_entity->has_support_culling() ||
-                   view_frustum.test_obb(r_entity->get_bounding_box(), t_entity->get_matrix()) ))
-            {
-                //effect
-                effect::ptr	effect = r_material->get_effect();
-                //for all technique
-                for(const auto& it_technique : effect->get_techniques())
-                {
-                    //get technique
-                    const effect::technique& technique = it_technique.second;
-                    ///queue
-                    const effect::parameter_queue& queue = technique.get_queue();
-                    //distance
-                    switch (queue.m_type)
-                    {
-                        case RQ_TRANSLUCENT:
-                            m_queues[RQ_TRANSLUCENT].push_back_to_front(weak_entity,compute_camera_depth(view_frustum, t_entity));
-                        break;
-                        case RQ_OPAQUE:
-                            m_queues[RQ_OPAQUE].push_front_to_back(weak_entity,compute_camera_depth(view_frustum, t_entity));
-                        break;
-                        default:
-                            m_queues[queue.m_type].push_back_to_front(weak_entity,queue.m_order);
-                        break;
-                    }
-                }
-            }
+
+			if (r_entity->is_enabled())
+			if (material_ptr       r_material = r_entity->get_material())
+			if (effect::ptr        r_effect   = r_material->get_effect())
+			if (effect::technique* technique  = r_effect->get_technique(technique_name))
+			if (transform_ptr      t_entity   = entity->get_component<transform>())
+			if (!r_entity->has_support_culling() ||
+				 view_frustum.test_obb(r_entity->get_bounding_box(), t_entity->get_matrix()))
+			{
+				///queue
+				const effect::parameter_queue& queue = technique->get_queue();
+				//distance
+				switch (queue.m_type)
+				{
+				case RQ_TRANSLUCENT:
+					m_queues[RQ_TRANSLUCENT].push_back_to_front(weak_entity, compute_camera_depth(view_frustum, t_entity));
+					break;
+				case RQ_OPAQUE:
+					m_queues[RQ_OPAQUE].push_front_to_back(weak_entity, compute_camera_depth(view_frustum, t_entity));
+					break;
+				default:
+					m_queues[queue.m_type].push_back_to_front(weak_entity, queue.m_order);
+					break;
+				}
+			}
         }
     }
     
     //by sphere
-    void render_scene::compute_no_lights_queues(const vec3& position, float radius)
+    void render_scene::compute_no_lights_queues(const std::string& technique_name, const vec3& position, float radius)
     {
         //clear
         m_queues[RQ_BACKGROUND].clear();
@@ -256,41 +242,33 @@ namespace hcube
         for (entity::wptr& weak_entity : m_pool.m_renderable)
         {
             auto entity     = weak_entity.lock();
-            auto t_entity   = entity->get_component<transform>();
             auto r_entity   = entity->get_component<renderable>();
-            auto r_material = r_entity->get_material();
-            
-            if (r_material &&
-                r_entity->is_enabled() &&
-                (!r_entity->has_support_culling() ||
-                  r_entity->get_bounding_box().is_inside(t_entity->get_matrix(), position, radius))
-               )
-            {
-                //effect
-                effect::ptr	effect = r_material->get_effect();
-                //for all technique
-                for(const auto& it_technique : effect->get_techniques())
-                {
-                    //get technique
-                    const effect::technique& technique = it_technique.second;
-                    ///queue
-                    const effect::parameter_queue& queue = technique.get_queue();
-                    //distance
-                    switch (queue.m_type)
-                    {
-                        case RQ_TRANSLUCENT:
-                            m_queues[RQ_TRANSLUCENT].push_back_to_front(weak_entity,distance(t_entity->get_global_position(),position));
-                        break;
-                        case RQ_OPAQUE :
-                            m_queues[RQ_OPAQUE].push_front_to_back(weak_entity,distance(t_entity->get_global_position(),position));
-                        break;
-                        default:
-                            m_queues[queue.m_type].push_back_to_front(weak_entity,queue.m_order);
-                        break;
-                    }
-                }
-            }
-        }
+
+			if (r_entity->is_enabled())
+			if (material_ptr       r_material = r_entity->get_material())
+			if (effect::ptr        r_effect   = r_material->get_effect())
+			if (effect::technique* technique  = r_effect->get_technique(technique_name))
+			if (transform_ptr      t_entity   = entity->get_component<transform>())
+			if (!r_entity->has_support_culling() ||
+				 r_entity->get_bounding_box().is_inside(t_entity->get_matrix(), position,radius))
+			{
+				///queue
+				const effect::parameter_queue& queue = technique->get_queue();
+				//distance
+				switch (queue.m_type)
+				{
+				case RQ_TRANSLUCENT:
+					m_queues[RQ_TRANSLUCENT].push_back_to_front(weak_entity, distance(t_entity->get_global_position(),position));
+					break;
+				case RQ_OPAQUE:
+					m_queues[RQ_OPAQUE].push_front_to_back(weak_entity, distance(t_entity->get_global_position(), position));
+					break;
+				default:
+					m_queues[queue.m_type].push_back_to_front(weak_entity, queue.m_order);
+					break;
+				}
+			}
+		}
     }
 
 }

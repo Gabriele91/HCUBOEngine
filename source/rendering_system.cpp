@@ -11,7 +11,7 @@
 #include <rendering_system.h>
 #include <resources_manager.h>
 #include <gameobject.h>
-
+#include <iostream>
 namespace hcube
 {
 
@@ -202,8 +202,7 @@ namespace hcube
         //color
         render::set_clear_color_state(m_clear_color);
         render::clear(CLEAR_COLOR|CLEAR_DEPTH);
-        //no lights queue
-        m_scene.compute_no_lights_queues(c_camera->get_frustum());
+		//std::cout << "N element: " << m_scene.m_queues[RQ_OPAQUE].size() << std::endl;
         //int npass
         int n_pass = -1;
         //all passes

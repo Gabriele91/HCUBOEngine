@@ -284,6 +284,8 @@ namespace hcube
 		render::enable_render_target(m_g_buffer.get_geometry_render_target());
 		//set state
 		render::set_viewport_state({ viewport });
+		//update queue
+		rscene.compute_no_lights_queues("forward", c_camera->get_frustum());
         //pass 0
         if(!n_pass)
         {

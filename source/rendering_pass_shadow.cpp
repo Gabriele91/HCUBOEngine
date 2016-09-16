@@ -101,14 +101,16 @@ namespace hcube
         {
             case light::SPOT_LIGHT:
                 //update view frustum and queue
-                rscene.compute_no_lights_queues (l_light->update_frustum());
+                rscene.compute_no_lights_queues ("forward",l_light->update_frustum());
                 //set view
                 u_shadow_view->set_value(l_light->get_view());
                 break;
             case light::POINT_LIGHT:
                 //build queue by sphere
                 rscene.compute_no_lights_queues(
-                    e_light->get_component<transform>()->get_global_position(), l_light->get_radius()
+					"forward", 
+					e_light->get_component<transform>()->get_global_position(), 
+					l_light->get_radius()
                 );
                 //uniform
                 u_shadow_view->set_value(l_light->get_cube_view());
