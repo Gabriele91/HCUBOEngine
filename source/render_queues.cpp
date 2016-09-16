@@ -174,7 +174,8 @@ namespace hcube
             const auto l_pos = (vec3)(t_entity->get_matrix()*vec4(0, 0, 0, 1.));
             const auto l_radius = l_entity->get_radius();
             
-            if (l_entity->is_enabled() && view_frustum.test_sphere(l_pos, l_radius))
+            if (l_entity->is_enabled() && 
+				view_frustum.test_sphere(l_pos, l_radius) != frustum::testing_result::OUTSIDE )
             {
                 float depth = compute_camera_depth(view_frustum, t_entity);
                 switch (l_entity->get_type())
@@ -205,11 +206,13 @@ namespace hcube
 
 			if (r_entity->is_enabled())
 			if (material_ptr       r_material = r_entity->get_material())
-			if (effect::ptr        r_effect   = r_material->get_effect())
-			if (effect::technique* technique  = r_effect->get_technique(technique_name))
-			if (transform_ptr      t_entity   = entity->get_component<transform>())
+			if (effect::ptr        r_effect = r_material->get_effect())
+			if (effect::technique* technique = r_effect->get_technique(technique_name))
+			if (transform_ptr      t_entity = entity->get_component<transform>())
 			if (!r_entity->has_support_culling() ||
-				 view_frustum.test_obb(r_entity->get_bounding_box(), t_entity->get_matrix()))
+				 view_frustum.test_obb(r_entity->get_bounding_box(), 
+									   t_entity->get_matrix()) != frustum::testing_result::OUTSIDE
+			)
 			{
 				///queue
 				const effect::parameter_queue& queue = technique->get_queue();

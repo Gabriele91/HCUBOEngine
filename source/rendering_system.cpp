@@ -168,7 +168,7 @@ namespace hcube
 		camera::ptr   c_camera = m_camera->get_component<camera>();
 		frustum&      f_camera = c_camera->get_frustum();
 		//update view frustum
-        f_camera.update_frustum(c_camera->get_projection()*c_camera->get_view());
+        if(m_update_frustum) f_camera.update_frustum(c_camera->get_projection()*c_camera->get_view());
         //lights queue
         m_scene.compute_lights_queues(f_camera);
         //n shadow pass

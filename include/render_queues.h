@@ -34,7 +34,7 @@ namespace hcube
 		}
 	};
 
-	template < size_t pool_size = 128 >
+	template < const size_t pool_size = 128 >
 	class render_queue
 	{
 	public:
@@ -177,9 +177,9 @@ namespace hcube
 	{
 	public:
 		//all objects
-		render_objects m_pool;
+		render_objects  m_pool;
 		//all queue
-		render_queue<128>   m_queues[RQ_MAX];
+		render_queue<>  m_queues[RQ_MAX];
 		//get first element of a queue
 		render_element* get_first(render_queue_type queue) const;
 		//compue queues
