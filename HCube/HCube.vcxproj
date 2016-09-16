@@ -118,7 +118,7 @@
       <WarningLevel>Level3</WarningLevel>
       <PrecompiledHeader>
       </PrecompiledHeader>
-      <Optimization>MaxSpeed</Optimization>
+      <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>GLEW_STATIC;NOMINMAX;USE_FLOAT;GLM_FORCE_SSE2;WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -139,7 +139,7 @@
       <WarningLevel>Level3</WarningLevel>
       <PrecompiledHeader>
       </PrecompiledHeader>
-      <Optimization>MaxSpeed</Optimization>
+      <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>GLEW_STATIC;NOMINMAX;USE_FLOAT;GLM_FORCE_SSE2;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -266,6 +266,7 @@
     <None Include="..\common\effects\shaders\ssao_blur.glsl" />
     <None Include="..\common\effects\shaders\ssao_pass.glsl" />
     <None Include="..\common\effects\shaders\text.glsl" />
+    <None Include="..\common\effects\translucent_no_cull_effect.fxhc" />
     <None Include="..\common\effects\translucent_texture_normal_specular.fxhc" />
     <None Include="..\source\cocoa_native_dialog.mm">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>

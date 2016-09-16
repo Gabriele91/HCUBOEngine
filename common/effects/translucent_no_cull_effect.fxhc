@@ -20,6 +20,34 @@ technique "forward"
 	{
 		zbuffer less
 		blend src_alpha one_minus_src_alpha
+		cullface front
+		lights only_ambient
+		shader source 
+        {
+            #define DISABLE_MASK
+            #define FORWARD_RENDERING
+			#pragma import "shaders/base_texture_normal_specular.glsl"
+		}
+	}
+
+	pass 
+	{
+		zbuffer equal
+        blend src_alpha one_minus_src_alpha
+		cullface front
+		lights spot_point_direction
+		shader source 
+        {
+            #define DISABLE_MASK
+            #define FORWARD_RENDERING
+			#pragma import "shaders/base_texture_normal_specular.glsl"
+		}
+	}
+
+	pass 
+	{
+		zbuffer less
+		blend src_alpha one_minus_src_alpha
 		cullface back
 		lights only_ambient
 		shader source 
@@ -43,5 +71,4 @@ technique "forward"
 			#pragma import "shaders/base_texture_normal_specular.glsl"
 		}
 	}
-
 }
