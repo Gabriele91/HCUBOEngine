@@ -90,8 +90,6 @@ namespace hcube
 				//offset
 				c_ptr += image_bytes_pixel*length_chunk;
 				i += image_bytes_pixel*length_chunk;
-				//length to 0
-				length_chunk = 0;
 			}
 		}
 	}

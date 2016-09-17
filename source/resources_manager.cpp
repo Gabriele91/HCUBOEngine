@@ -10,6 +10,7 @@
 #include <static_model.h>
 #include <filesystem.h>
 
+static const std::string void_path_file;
 
 namespace hcube
 {
@@ -114,31 +115,31 @@ namespace hcube
 	{
 		auto it_path = m_resources_path_map.find("shader:" + name);
 		if (it_path != m_resources_path_map.end()) return it_path->second;
-		return "";
+		return void_path_file;
 	}
 	const std::string& resources_manager::get_effect_path(const std::string& name)
 	{
 		auto it_path = m_resources_path_map.find("effect:" + name);
 		if (it_path != m_resources_path_map.end()) return it_path->second;
-		return "";
+		return void_path_file;
 	}
 	const std::string& resources_manager::get_texture_path(const std::string& name)
 	{
 		auto it_path = m_resources_path_map.find("texture:" + name);
 		if (it_path != m_resources_path_map.end()) return it_path->second;
-		return "";
+		return void_path_file;
 	}
 	const std::string& resources_manager::get_material_path(const std::string& name)
 	{
 		auto it_path = m_resources_path_map.find("material:" + name);
 		if (it_path != m_resources_path_map.end()) return it_path->second;
-		return "";
+		return void_path_file;
 	}
 	const std::string& resources_manager::get_prefab_path(const std::string& name)
 	{
 		auto it_path = m_resources_path_map.find("prefab:" + name);
 		if (it_path != m_resources_path_map.end()) return it_path->second;
-		return "";
+		return void_path_file;
 	}
 
 	shader::ptr resources_manager::get_shader(const std::string& name)

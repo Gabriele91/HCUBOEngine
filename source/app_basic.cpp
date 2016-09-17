@@ -157,7 +157,7 @@ namespace hcube
 		m_rendering->add_rendering_pass(rendering_pass_shadow::snew(m_resources));
 		//add into system
 		m_systems.add_system(m_rendering);
-#if 1
+#if 0
 		m_rendering->add_rendering_pass(rendering_pass_deferred::snew(app.get_window_size(), m_resources));
 #else
 		m_rendering->add_rendering_pass(rendering_pass_forward::snew(RQ_OPAQUE));
@@ -248,7 +248,7 @@ namespace hcube
             }
 #endif
             
-#if 1
+#if 0
 			{
 				//sponza
 				auto m_sponza = m_resources.get_prefab("sponza_obb")->instantiate();

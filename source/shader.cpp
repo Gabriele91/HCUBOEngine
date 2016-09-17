@@ -706,81 +706,81 @@ R"GLSL(
 
 	void uniform::set_value(texture::ptr in_texture)
 	{
-		int n_texture = ++m_shader->m_uniform_ntexture;
+		long n_texture = ++m_shader->m_uniform_ntexture;
 		//bind texture
-		render::bind_texture(in_texture->get_context_texture(), n_texture);
+		render::bind_texture(in_texture->get_context_texture(), (int)n_texture);
 		//bind id
-		glUniform1i(m_id, n_texture);
+		glUniform1i((GLint)m_id, (int)n_texture);
 	}
 
 	void uniform::set_value(context_texture* in_texture)
 	{
-		int n_texture = ++m_shader->m_uniform_ntexture;
+		long n_texture = ++m_shader->m_uniform_ntexture;
 		//bind texture
-		render::bind_texture(in_texture, n_texture);
+		render::bind_texture(in_texture, (int)n_texture);
 		//bind id
-		glUniform1i(m_id, n_texture);
+		glUniform1i((GLint)m_id, (int)n_texture);
 	}
 
 	void uniform::set_value(int i)
 	{
-		glUniform1i(m_id, i);
+		glUniform1i((GLint)m_id, i);
 	}
 	void uniform::set_value(float f)
 	{
-		glUniform1f(m_id, f);
+		glUniform1f((GLint)m_id, f);
 	}
 	void uniform::set_value(const vec2& v2)
 	{
-		glUniform2fv(m_id, 1, value_ptr(v2));
+		glUniform2fv((GLint)m_id, 1, value_ptr(v2));
 	}
 	void uniform::set_value(const vec3& v3)
 	{
-		glUniform3fv(m_id, 1, value_ptr(v3));
+		glUniform3fv((GLint)m_id, 1, value_ptr(v3));
 	}
 	void uniform::set_value(const vec4& v4)
 	{
-		glUniform4fv(m_id, 1, value_ptr(v4));
+		glUniform4fv((GLint)m_id, 1, value_ptr(v4));
 	}
 	void uniform::set_value(const mat3& m3)
 	{
-		glUniformMatrix3fv(m_id, 1, GL_FALSE, value_ptr(m3));
+		glUniformMatrix3fv((GLint)m_id, 1, GL_FALSE, value_ptr(m3));
 	}
 	void uniform::set_value(const mat4& m4)
 	{
-		glUniformMatrix4fv(m_id, 1, GL_FALSE, value_ptr(m4));
+		glUniformMatrix4fv((GLint)m_id, 1, GL_FALSE, value_ptr(m4));
 	}
 
 	void uniform::set_value(const int* i, size_t n)
 	{
-		glUniform1iv(m_id, n, i);
+		glUniform1iv((GLint)m_id, (GLsizei)n, i);
 	}
 
 	void uniform::set_value(const float* f, size_t n)
 	{
-		glUniform1fv(m_id, n, f);
+		glUniform1fv((GLint)m_id, (GLsizei)n, f);
 	}
 
 	void uniform::set_value(const vec2* v2, size_t n)
 	{
-		glUniform2fv(m_id, n, value_ptr(*v2));
+		glUniform2fv((GLint)m_id, (GLsizei)n, value_ptr(*v2));
 	}
 
 	void uniform::set_value(const vec3* v3, size_t n)
 	{
-		glUniform3fv(m_id, n, value_ptr(*v3));
+		glUniform3fv((GLint)m_id, (GLsizei)n, value_ptr(*v3));
 	}
 	void uniform::set_value(const vec4* v4, size_t n)
 	{
-		glUniform4fv(m_id, n, value_ptr(*v4));
+		glUniform4fv((GLint)m_id, (GLsizei)n, value_ptr(*v4));
 	}
 	void uniform::set_value(const mat3* m3, size_t n)
 	{
-		glUniformMatrix3fv(m_id, n, GL_FALSE, value_ptr(*m3));
+		glUniformMatrix3fv((GLint)m_id, (GLsizei)n, GL_FALSE, value_ptr(*m3));
 	}
 	void uniform::set_value(const mat4* m4, size_t n)
 	{
-		glUniformMatrix4fv(m_id, n, GL_FALSE, value_ptr(*m4));
+		glUniformMatrix4fv((GLint)m_id, (GLsizei)n, GL_FALSE, value_ptr(*m4));
 	}
 
 	void uniform::set_value(const std::vector < int >& i)
