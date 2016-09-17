@@ -30,9 +30,19 @@ int main(int argc, const char * argv[])
 		, hcube::window_mode::FULLSCREEN                 //mode
 		, 4									             //OpenGL version
         , 1									             //OpenGL sub-version
-        , "HCUBE DEMO"					               //window title
+        , "HCUBE DEMO"					                 //window title
 		, new hcube::app_basic) 					     //instance
 		? 0 : 1;
+#elif 1
+    hcube::window_info a;
+    return app.execute(
+                       hcube::window_size_percentage{ { 50., 50. } }  //window size
+                       , hcube::window_mode::NOT_RESIZABLE            //mode
+                       , 4									          //OpenGL version
+                       , 1									          //OpenGL sub-version
+                       , "HCUBE DEMO"					              //window title
+                       , new hcube::app_basic) 					      //instance
+    ? 0 : 1;
 #else
     hcube::window_info a;
     return app.execute(  hcube::window_size_percentage{ { 80., 80. } }   //window size
