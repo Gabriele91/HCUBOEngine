@@ -373,6 +373,21 @@
     <None Include="..\common\effects\translucent_no_cull_effect.fxhc">
       <Filter>File di risorse\common\effects</Filter>
     </None>
+    <None Include="..\assets\materials\box2_grid_mat.mat">
+      <Filter>File di risorse\assets\materials</Filter>
+    </None>
+    <None Include="..\assets\materials\cross_mat.mat">
+      <Filter>File di risorse\assets\materials</Filter>
+    </None>
+    <None Include="..\assets\materials\rocks_mat.mat">
+      <Filter>File di risorse\assets\materials</Filter>
+    </None>
+    <None Include="..\assets\materials\w_box_mat.mat">
+      <Filter>File di risorse\assets\materials</Filter>
+    </None>
+    <None Include="..\assets\materials\window_mat.mat">
+      <Filter>File di risorse\assets\materials</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\assets\textures\box.png">

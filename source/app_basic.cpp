@@ -158,12 +158,9 @@ namespace hcube
 		//add into system
 		m_systems.add_system(m_rendering);
 #if 1
-		//gbuffer size
-		ivec2 g_size = app.get_window_size();
-		auto rendering_pass = rendering_pass_deferred::snew(g_size, m_resources);
-		m_rendering->add_rendering_pass(rendering_pass);
+		m_rendering->add_rendering_pass(rendering_pass_deferred::snew(app.get_window_size(), m_resources));
 #else
-		m_rendering->add_rendering_pass(rendering_pass_forward::snew());
+		m_rendering->add_rendering_pass(rendering_pass_forward::snew(RQ_OPAQUE));
         //m_rendering->add_rendering_pass(rendering_pass_debug_spot_lights::snew(m_resources));
 #endif
         

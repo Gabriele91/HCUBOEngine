@@ -248,7 +248,7 @@ namespace hcube
 		//get technique
 		technique* get_technique(const std::string& technique);
         //all techniques
-        const map_techniques& get_techniques()
+        const map_techniques& get_techniques() const
         {
             return m_map_techniques;
         }

@@ -240,9 +240,14 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\assets\materials\baril_mat.mat" />
+    <None Include="..\assets\materials\box2_grid_mat.mat" />
     <None Include="..\assets\materials\box2_mat.mat" />
     <None Include="..\assets\materials\box_mat.mat" />
+    <None Include="..\assets\materials\cross_mat.mat" />
+    <None Include="..\assets\materials\rocks_mat.mat" />
+    <None Include="..\assets\materials\window_mat.mat" />
     <None Include="..\assets\materials\wire_mat.mat" />
+    <None Include="..\assets\materials\w_box_mat.mat" />
     <None Include="..\assets\ship\ship.smhc" />
     <None Include="..\assets\ship\vehicle_playerShip_glass_mat.mat" />
     <None Include="..\assets\ship\vehicle_playerShip_metal_mat.mat" />

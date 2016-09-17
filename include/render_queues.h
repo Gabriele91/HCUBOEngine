@@ -34,88 +34,17 @@ namespace hcube
 		}
 	};
 
-	template < const size_t pool_size = 128 >
 	class render_queue
 	{
 	public:
 
 		//init
-		render_queue()
-		{
-		}
+		render_queue(size_t capacity = 512);
 
 		//add element
-		void push_front_to_back(entity::wptr& entity, float depth)
-		{
-			//test
-			if (size() >= m_elements.size()) return;
-			//element get
-			render_element *e = &m_elements[size()];
-			//init
-			e->m_ref = entity;
-			e->m_depth = depth;
-			//next
-			e->m_next = nullptr;
-			//loop vars
-			render_element* last = nullptr;
-			render_element* current = m_first;
-			//insert sort, front to back
-			for (; current;
-				last = current,
-				current = current->m_next)
-			{
-				if (current->m_depth > e->m_depth) break;
-			}
-			//last iteration
-			if (last)
-			{
-				e->m_next = current;
-				last->m_next = e;
-			}
-			else
-			{
-				e->m_next = m_first;
-				m_first = e;
-			}
-			//inc count
-			++m_size;
-		}
+		void push_front_to_back(entity::wptr entity, float depth);
 
-		void push_back_to_front(entity::wptr& entity, float depth)
-		{
-			//test
-			if (size() >= m_elements.size()) return;
-			//element get
-			render_element *e = &m_elements[size()];
-			//init
-			e->m_ref = entity;
-			e->m_depth = depth;
-			//link
-			e->m_next = nullptr;
-			//loop vars
-			render_element* last = nullptr;
-			render_element* current = m_first;
-			//insert sort, back to front
-			for (; current;
-				last = current,
-				current = current->m_next)
-			{
-				if (current->m_depth < e->m_depth) break;
-			}
-			//last iteration
-			if (last)
-			{
-				e->m_next = current;
-				last->m_next = e;
-			}
-			else
-			{
-				e->m_next = m_first;
-				m_first = e;
-			}
-			//inc count
-			++m_size;
-		}
+		void push_back_to_front(entity::wptr entity, float depth);
 
 		//first
 		render_element* get_first() const
@@ -136,11 +65,21 @@ namespace hcube
 		}
 
 	private:
+		//static size
+		static const size_t page_capacity = 128;
+		
+		//pool type
+		using pool_page  = std::array< render_element, page_capacity >;
+		using pool_pages = std::vector< std::unique_ptr<pool_page> >;
+
+		//pool utilities
+		void new_page();
+		render_element* get_new_element();
 
 		//fields
-		size_t									m_size{ 0 };
-		std::array< render_element, pool_size > m_elements;
-		render_element*							m_first{ nullptr };
+		size_t		    m_size{ 0 };
+		pool_pages		m_pages;
+		render_element*	m_first{ nullptr };
 	};
 
 
@@ -179,7 +118,7 @@ namespace hcube
 		//all objects
 		render_objects  m_pool;
 		//all queue
-		render_queue<>  m_queues[RQ_MAX];
+		render_queue  m_queues[RQ_MAX];
 		//get first element of a queue
 		render_element* get_first(render_queue_type queue) const;
 		//compue queues

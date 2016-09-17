@@ -236,7 +236,7 @@ namespace hcube
 
 		void clear(int type)
 		{
-            int clear_type_gl = 0;
+            GLbitfield clear_type_gl = 0;
             if(type & CLEAR_COLOR) clear_type_gl |= GL_COLOR_BUFFER_BIT;
             if(type & CLEAR_DEPTH) clear_type_gl |= GL_DEPTH_BUFFER_BIT;
 			if(clear_type_gl) glClear(clear_type_gl);

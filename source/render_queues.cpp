@@ -12,81 +12,100 @@
 
 namespace hcube
 {
-#if 0   
-    //push element
-    void render_queue::push_front_to_back(entity::wptr&  entity,float depth)
-    {
-        //test
-        if(size() >= m_elements.size()) return;
-        //element get
-        render_element *e = &m_elements[size()];
-        //init
-        e->m_ref   = entity;
-        e->m_depth = depth;
-        //next
-        e->m_next = nullptr;
-        //loop vars
-        render_element* last = nullptr;
-        render_element* current = m_first;
-        //insert sort, front to back
-        for (; current;
-             last = current,
-             current = current->m_next)
-        {
-            if (current->m_depth > e->m_depth) break;
-        }
-        //last iteration
-        if (last)
-        {
-            e->m_next = current;
-            last->m_next = e;
-        }
-        else
-        {
-            e->m_next = m_first;
-            m_first = e;
-        }
-        //inc count
-        ++m_size;
-    }
+
+	render_queue::render_queue(size_t capacity)
+	{
+		//get page size
+		size_t npage = capacity / page_capacity;
+		//upper boud
+		if (capacity % page_capacity) ++npage;
+		//alloc
+		for (size_t i = 0; i != npage; ++i) new_page();
+	}
+	//pages
+	void render_queue::new_page()
+	{
+		m_pages.push_back(std::unique_ptr<pool_page>(new pool_page));
+	}
+	
+	render_element* render_queue::get_new_element()
+	{
+		size_t page    = m_size / page_capacity;
+		size_t element = m_size % page_capacity;
+		//compute new size
+		++m_size;
+		//alloc
+		if (page == m_pages.size()) new_page();
+		//get
+		return &(*m_pages[page])[element];
+	}
+	
+	//add 
+	void render_queue::push_front_to_back(entity::wptr entity, float depth)
+	{
+		//element get
+		render_element *e = get_new_element();
+		//init
+		e->m_ref = entity;
+		e->m_depth = depth;
+		//next
+		e->m_next = nullptr;
+		//loop vars
+		render_element* last = nullptr;
+		render_element* current = m_first;
+		//insert sort, front to back
+		for (; current;
+			last = current,
+			current = current->m_next)
+		{
+			if (current->m_depth > e->m_depth) break;
+		}
+		//last iteration
+		if (last)
+		{
+			e->m_next = current;
+			last->m_next = e;
+		}
+		else
+		{
+			e->m_next = m_first;
+			m_first = e;
+		}
+	}
+	
+	void render_queue::push_back_to_front(entity::wptr entity, float depth)
+	{
+		//element get
+		render_element *e = get_new_element();
+		//init
+		e->m_ref = entity;
+		e->m_depth = depth;
+		//link
+		e->m_next = nullptr;
+		//loop vars
+		render_element* last = nullptr;
+		render_element* current = m_first;
+		//insert sort, back to front
+		for (; current;
+			last = current,
+			current = current->m_next)
+		{
+			if (current->m_depth < e->m_depth) break;
+		}
+		//last iteration
+		if (last)
+		{
+			e->m_next = current;
+			last->m_next = e;
+		}
+		else
+		{
+			e->m_next = m_first;
+			m_first = e;
+		}
+	}
     
-    void render_queue::push_back_to_front(entity::wptr&  entity,float depth)
-    {
-        //test
-        if(size() >= m_elements.size()) return;
-        //element get
-        render_element *e = &m_elements[size()];
-        //init
-        e->m_ref   = entity;
-        e->m_depth = depth;
-        //link
-        e->m_next = nullptr;
-        //loop vars
-        render_element* last = nullptr;
-        render_element* current = m_first;
-        //insert sort, back to front
-        for (;current;
-             last = current,
-             current = current->m_next)
-        {
-            if (current->m_depth < e->m_depth) break;
-        }
-        //last iteration
-        if (last)
-        {
-            e->m_next = current;
-            last->m_next = e;
-        }
-        else
-        {
-            e->m_next = m_first;
-            m_first = e;
-        }
-        //inc count
-        ++m_size;
-    }
-#endif 
-    //pool
+	//pool
     void render_objects::remove(entity::ptr e)
     {
         //search light and remove
@@ -166,7 +185,7 @@ namespace hcube
         rqueue_direction.clear();
         
         //build queue lights
-        for (entity::wptr& weak_entity: m_pool.m_lights)
+        for (entity::wptr weak_entity: m_pool.m_lights)
         {
             auto entity   = weak_entity.lock();
             auto t_entity = entity->get_component<transform>();
@@ -199,16 +218,16 @@ namespace hcube
         m_queues[RQ_TRANSLUCENT].clear();
         m_queues[RQ_UI].clear();
         //build queue opaque
-        for (entity::wptr& weak_entity : m_pool.m_renderable)
+        for (entity::wptr weak_entity : m_pool.m_renderable)
         {
             auto entity     = weak_entity.lock();
             auto r_entity   = entity->get_component<renderable>();
 
 			if (r_entity->is_enabled())
 			if (material_ptr       r_material = r_entity->get_material())
-			if (effect::ptr        r_effect = r_material->get_effect())
-			if (effect::technique* technique = r_effect->get_technique(technique_name))
-			if (transform_ptr      t_entity = entity->get_component<transform>())
+			if (effect::ptr        r_effect   = r_material->get_effect())
+			if (effect::technique* technique  = r_effect->get_technique(technique_name))
+			if (transform_ptr      t_entity   = entity->get_component<transform>())
 			if (!r_entity->has_support_culling() ||
 				 view_frustum.test_obb(r_entity->get_bounding_box(), 
 									   t_entity->get_matrix()) != frustum::testing_result::OUTSIDE
@@ -242,7 +261,7 @@ namespace hcube
         m_queues[RQ_TRANSLUCENT].clear();
         m_queues[RQ_UI].clear();
         //build queue opaque
-        for (entity::wptr& weak_entity : m_pool.m_renderable)
+        for (entity::wptr weak_entity : m_pool.m_renderable)
         {
             auto entity     = weak_entity.lock();
             auto r_entity   = entity->get_component<renderable>();

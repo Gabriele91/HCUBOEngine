@@ -166,6 +166,12 @@ namespace hcube
 			else if (distance_box <= dist) result = INTERSECT;
 		}
 		return result;
+#elif 0
+		//new obb
+		obb box_target(box);
+		box_target.applay(model);
+		//obb test
+		return test_obb(box_target);
 #else
 		/* todo: use normals */
 		frustum::testing_result result = INSIDE;

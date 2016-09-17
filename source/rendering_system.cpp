@@ -165,10 +165,10 @@ namespace hcube
 	void rendering_system::draw()
 	{
 		//culling
-		camera::ptr   c_camera = m_camera->get_component<camera>();
-		frustum&      f_camera = c_camera->get_frustum();
+		camera::ptr     c_camera = m_camera->get_component<camera>();
+		const frustum&  f_camera = c_camera->get_frustum();
 		//update view frustum
-        if(m_update_frustum) f_camera.update_frustum(c_camera->get_projection()*c_camera->get_view());
+		if (m_update_frustum) c_camera->update_frustum();
         //lights queue
         m_scene.compute_lights_queues(f_camera);
         //n shadow pass
@@ -199,30 +199,34 @@ namespace hcube
             //next
             ++n_shadow_pass;
         }
+		//viewport
+		render::set_viewport_state({ c_camera->get_viewport() });
         //color
         render::set_clear_color_state(m_clear_color);
-        render::clear(CLEAR_COLOR|CLEAR_DEPTH);
-		//std::cout << "N element: " << m_scene.m_queues[RQ_OPAQUE].size() << std::endl;
+		//clear
+        render::clear(CLEAR_COLOR_DEPTH);
         //int npass
-        int n_pass = -1;
+        int n_render_pass = -1;
         //all passes
         for (rendering_pass_ptr& pass : m_rendering_pass[RPT_RENDER])
         {
             pass->draw_pass
             (
-              ++n_pass,
+              ++n_render_pass,
               m_clear_color,
               m_ambient_color,
               m_camera,
               m_scene
             );
         }
+		//int npass
+		int n_ui_pass = -1;
         //all passes
         for (rendering_pass_ptr& pass : m_rendering_pass[RPT_UI])
         {
             pass->draw_pass
             (
-             ++n_pass,
+             ++n_ui_pass,
              m_clear_color,
              m_ambient_color,
              m_camera,

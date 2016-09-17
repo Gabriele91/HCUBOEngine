@@ -16,7 +16,7 @@ int main(int argc, const char * argv[])
 	hcube::app_basic view_points;
 #if 1
 	return app.execute(
-		  hcube::window_size_percentage{ { 80., 80. } }//window size
+		  hcube::window_size_percentage{ { 90., 90. } }//window size
 		, hcube::window_mode::NOT_RESIZABLE            //mode
 		, 4									           //OpenGL version
 		, 1									           //OpenGL sub-version
