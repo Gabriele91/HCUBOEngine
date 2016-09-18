@@ -12,6 +12,8 @@
 #include <unordered_map>
 #include <smart_pointers.h>
 #include <component.h>
+//components cache
+#include <transform.h>
 
 namespace hcube
 {
@@ -50,12 +52,22 @@ namespace hcube
 		component_ptr add_component(component_ptr component_t);
 
 		template < class T >
-		std::shared_ptr< T > get_component()
+		inline std::shared_ptr< T > get_component()
 		{
 			static_assert(std::is_base_of<component, T>::value, "Must to be a component");
+			//cache
+			if (T::type() == transform::type()) return  std::static_pointer_cast<T>(transform_cache);
+			//pool
 			return std::static_pointer_cast<T>(m_components[T::type()]);
 		}
-		component_ptr get_component(component_id id);
+
+		inline component_ptr get_component(component_id id)
+		{
+			//cache
+			if (id == transform::type()) return  transform_cache;
+			//pool
+			return m_components[id];
+		}
 
 		template < class T >
 		std::shared_ptr< T > remove_component()
@@ -121,6 +133,8 @@ namespace hcube
 		//list components
 		std::unordered_map< component_id, component_ptr > m_components;
 		std::unordered_map< entity*, entity::ptr > m_entities;
-
+		//components cache
+		component_ptr transform_cache;
 	};
+	
 }

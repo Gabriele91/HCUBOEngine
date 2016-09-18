@@ -426,7 +426,7 @@ namespace hcube
 			return m_mode != zb.m_mode || m_type != zb.m_type;
 		}
 		//cast operator
-		operator bool() const
+		operator depth_mode() const
 		{
 			return m_mode;
 		}
