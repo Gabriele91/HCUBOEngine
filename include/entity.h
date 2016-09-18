@@ -47,7 +47,8 @@ namespace hcube
 		T& add_component()
 		{
 			static_assert(std::is_base_of<component, T>::value, "Must to be a component");
-			return add_component(new T());
+			//return add_component(new T());
+			return add_component(std::make_shared<T>());
 		}
 		component_ptr add_component(component_ptr component_t);
 
