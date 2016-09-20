@@ -1,0 +1,6 @@
+effect "base_texture_normal_specular" 
+{
+	diffuse_map texture("SciFi_Fighter_AK5-diffuse") 
+	normal_map texture("SciFi_Fighter_AK5-Normal_Map") 
+	color vec4(0.588,0.588,0.588,1)
+}
