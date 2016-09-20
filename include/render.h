@@ -24,12 +24,22 @@ namespace hcube
 	using context_vertex_buffer_ptr = std::shared_ptr< context_vertex_buffer >;
 	using context_index_buffer_ptr = std::shared_ptr< context_index_buffer >;
 	using context_input_layout_ptr = std::shared_ptr< context_input_layout >;
-
-	enum render_driver
-	{
-		DR_OPENGL,
-		DR_DIRECTX
-	};
+    
+    enum render_driver
+    {
+        DR_OPENGL,
+        DR_OPENGL_ES,
+        DR_VULKAN,
+        DR_DIRECTX
+    };
+    
+    static const char* render_driver_str[]
+    {
+        "OpenGL",
+        "OpenGLES",
+        "Vulkan",
+        "DirectX"
+    };
 
 	enum cullface_type
 	{
@@ -558,11 +568,22 @@ namespace hcube
         CLEAR_COLOR_DEPTH = 0x03
     };
     
+    struct render_driver_info
+    {
+        render_driver m_render_driver;
+        std::string   m_name;
+        int           m_major_version;
+        int           m_minor_version;
+        std::string   m_shader_language;
+        int           m_shader_version;
+    };
+    
 #define LIB_EXPORT
 	namespace render
-	{
-		LIB_EXPORT render_driver get_render_driver();
-		LIB_EXPORT void print_info();
+    {
+        LIB_EXPORT render_driver get_render_driver();
+        LIB_EXPORT render_driver_info get_render_driver_info();
+        LIB_EXPORT void print_info();
 
 		LIB_EXPORT bool init();
 		LIB_EXPORT void close();

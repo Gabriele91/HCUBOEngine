@@ -55,11 +55,11 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "assets/nanosuit/nanosuit.obj"
+            argument = "/Users/Gabriele/Desktop/3D_model/Free_SciFi-Fighter/SciFi_Fighter_AK5.obj"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "output/nanosuit.smhc"
+            argument = "/Users/Gabriele/Desktop/3D_model/Free_SciFi-Fighter/output/ship_fighter.smhc"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>

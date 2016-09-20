@@ -166,16 +166,6 @@ namespace hcube
             using pass_list_it  = pass_list::iterator;
             using pass_list_cit = pass_list::const_iterator;
             
-            //set queue
-            void set_queue(const parameter_queue& queue)
-            {
-                m_queue = queue;
-            }
-            
-            const parameter_queue& get_queue() const
-            {
-                return m_queue;
-            }
             //info
             size_t size()
             {
@@ -233,7 +223,6 @@ namespace hcube
             
         protected:
             
-            parameter_queue      m_queue;
             std::vector < pass > m_passes;
         
         };
@@ -244,7 +233,18 @@ namespace hcube
 
 		//load effect
 		bool load(resources_manager& resources, const std::string& path);
-
+        
+        //set queue
+        void set_queue(const parameter_queue& queue)
+        {
+            m_queue = queue;
+        }
+        
+        const parameter_queue& get_queue() const
+        {
+            return m_queue;
+        }
+        
 		//get technique
 		technique* get_technique(const std::string& technique);
         //all techniques
@@ -261,7 +261,8 @@ namespace hcube
 		int get_parameter_id(const std::string& parameter);
 
 
-	protected:
+    protected:
+        parameter_queue m_queue;
 		parameters		m_parameters;
 		map_parameters	m_map_parameters;
 		map_techniques  m_map_techniques;

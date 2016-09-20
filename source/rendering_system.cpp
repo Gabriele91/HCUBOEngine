@@ -199,12 +199,18 @@ namespace hcube
             //next
             ++n_shadow_pass;
         }
+        //error
+        render::print_errors();
 		//viewport
 		render::set_viewport_state({ c_camera->get_viewport() });
         //color
         render::set_clear_color_state(m_clear_color);
 		//clear
         render::clear(CLEAR_COLOR_DEPTH);
+        //objects queue
+        m_scene.compute_no_lights_queues(f_camera);
+        //error
+        render::print_errors();
         //int npass
         int n_render_pass = -1;
         //all passes
@@ -217,7 +223,8 @@ namespace hcube
               m_ambient_color,
               m_camera,
               m_scene
-            );
+             );
+            //error
         }
 		//int npass
 		int n_ui_pass = -1;

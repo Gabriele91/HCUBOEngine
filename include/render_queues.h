@@ -124,8 +124,8 @@ namespace hcube
 		//compue queues
 		void compute_lights_queues(const frustum& view_frustum);
 		//compue queues
-		void compute_no_lights_queues(const std::string& technique_name, const frustum& view_frustum);
-		void compute_no_lights_queues(const std::string& technique_name, const vec3& position, float radius);
+		void compute_no_lights_queues(const frustum& view_frustum);
+		void compute_no_lights_queues(const vec3& position, float radius);
 		//clear
 		void clear();
 	};

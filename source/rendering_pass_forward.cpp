@@ -22,8 +22,6 @@ namespace hcube
 		camera::ptr   c_camera = e_camera->get_component<camera>();
 		transform_ptr t_camera = e_camera->get_component<transform>();
         const vec4&   viewport = c_camera->get_viewport();
-		//update queue
-		rscene.compute_no_lights_queues("forward", c_camera->get_frustum());
 		//set state camera
 		render::set_viewport_state({ viewport });
         //is pass 0

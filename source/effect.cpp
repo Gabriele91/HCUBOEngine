@@ -97,7 +97,7 @@ namespace hcube
 		//
 		return depth_default;
 	}
-	
+    
 	static std::string cullface_to_string(cullface_type cullface)
 	{
 		switch (cullface)
@@ -121,6 +121,32 @@ namespace hcube
 
 	public:
 
+        struct requirement_field
+        {
+            std::string m_driver_name;
+            int         m_driver_major_version;
+            int         m_driver_minor_version;
+            std::string m_shader_name;
+            int         m_shader_version;
+            
+            bool test() const
+            {
+                //get info
+                render_driver_info info = render::get_render_driver_info();
+                //test name
+                if(m_driver_name != render_driver_str[info.m_render_driver]) return false;
+                if(m_shader_name != info.m_shader_language)                  return false;
+                //test version
+                if(m_driver_major_version <= info.m_major_version &&
+                   m_driver_minor_version <= info.m_minor_version &&
+                   m_shader_version       <= info.m_shader_version)
+                {
+                    return true;
+                }
+                return false;
+            }
+        };
+        
 		struct parameter_field
 		{
 			struct values
@@ -172,10 +198,16 @@ namespace hcube
 		struct technique_field
 		{
             std::string m_name;
-            parameter_queue m_queue;
             std::vector< pass_field > m_pass;
 		};
 
+        struct sub_effect_field
+        {
+            requirement_field m_requirement;
+            parameter_queue m_queue;
+            std::vector< technique_field > m_techniques;
+        };
+        
 		struct error_field
 		{
 			size_t m_line{ 0 };
@@ -196,10 +228,10 @@ namespace hcube
 
 		struct context
 		{
-			std::vector< technique_field > m_techniques;
-			std::vector< parameter_field > m_parameters;
-			std::list < error_field >	   m_errors;
-			size_t						   m_line{ 0 };
+			std::vector< sub_effect_field > m_sub_effect;
+			std::vector< parameter_field >  m_parameters;
+			std::list < error_field >	    m_errors;
+			size_t						    m_line{ 0 };
 
 			std::string errors_to_string() const
 			{
@@ -224,7 +256,7 @@ namespace hcube
 		{
 			m_context = &default_context;
 			//restart
-			m_context->m_techniques.clear();
+			m_context->m_sub_effect.clear();
 			m_context->m_parameters.clear();
 			m_context->m_errors.clear();
 			m_context->m_line = 1;
@@ -234,8 +266,8 @@ namespace hcube
 				//skeep line and comments
 				skeep_space_end_comment(ptr);
 				//parsing a block
-					 if (CSTRCMP_SKIP(ptr,"parameters")) { if (!parse_parameters_block(ptr)) return false; }
-				else if (CSTRCMP_SKIP(ptr,"technique"))  { if (!parse_techniques_block(ptr)) return false; }
+                     if (CSTRCMP_SKIP(ptr,"parameters")) { if (!parse_parameters_block(ptr)) return false; }
+                else if (CSTRCMP_SKIP(ptr,"sub_effect")) { if (!parse_sub_effect_block(ptr)) return false; }
 				else { push_error("Not found a valid command"); return false; }
 				//skeep line and comments
 				skeep_space_end_comment(ptr);
@@ -439,9 +471,221 @@ namespace hcube
 				}
 
 			return true;
-		}
-		//////////////////////////////////////////////////////
-		bool parse_techniques_block(const char*& ptr)
+        }
+        //////////////////////////////////////////////////////
+        bool parse_driver_type(const char*& ptr, requirement_field& field)
+        {
+            if(!parse_name(ptr, &ptr, field.m_driver_name)) return false;
+            //skeep spaces
+            skeep_space_end_comment(ptr);
+            //parse '('
+            if (!is_start_arg(*ptr)) return false;
+            //jump  '('
+            ++ptr;
+            //skeep spaces
+            skeep_space_end_comment(ptr);
+            //major
+            if (!parse_int(ptr, &ptr, field.m_driver_major_version)) return false;
+            //commond
+            skeep_space_end_comment(ptr);
+            if (!is_comm_arg(*ptr)) return false; else ++ptr;
+            skeep_space_end_comment(ptr);
+            //minor
+            if (!parse_int(ptr, &ptr, field.m_driver_minor_version)) return false;
+            //skeep spaces
+            skeep_space_end_comment(ptr);
+            //parse ')'
+            if (!is_end_arg(*ptr)) return false;
+            //jump  ')'
+            ++ptr;
+            //ok
+            return true;
+        }
+        
+        bool parse_shader_type(const char*& ptr, requirement_field& field)
+        {
+            if(!parse_name(ptr, &ptr, field.m_shader_name)) return false;
+            //skeep spaces
+            skeep_space_end_comment(ptr);
+            //parse '('
+            if (!is_start_arg(*ptr)) return false;
+            //jump  '('
+            ++ptr;
+            //skeep spaces
+            skeep_space_end_comment(ptr);
+            //major
+            if (!parse_int(ptr, &ptr, field.m_shader_version)) return false;
+            //skeep spaces
+            skeep_space_end_comment(ptr);
+            //parse ')'
+            if (!is_end_arg(*ptr)) return false;
+            //jump  ')'
+            ++ptr;
+            //skeep spaces
+            skeep_space_end_comment(ptr);
+            //ok
+            return true;
+        }
+        //////////////////////////////////////////////////////
+        bool parse_sub_effect_block(const char*& ptr)
+        {
+            //shader parser state
+            enum
+            {
+                NOT_READ_REQUIREMENT,
+                READ_REQUIREMENT
+            }
+            state = NOT_READ_REQUIREMENT;
+            //skeep spaces
+            skeep_space_end_comment(ptr);
+            //skeep spaces
+            skeep_space_end_comment(ptr);
+            //add technique
+            m_context->m_sub_effect.resize(m_context->m_sub_effect.size()+1);
+            //ref
+            sub_effect_field& t_field = m_context->m_sub_effect[m_context->m_sub_effect.size() - 1];
+            //parse table
+            if (is_start_table(*ptr))
+            {
+                //skeep '{'
+                ++ptr;
+                //skeep spaces
+                skeep_space_end_comment(ptr);
+                //read all values
+                while (!is_end_table(*ptr) && *ptr != EOF && *ptr != '\0')
+                {
+                    //search source attribute
+                    if (CSTRCMP_SKIP(ptr, "requirement"))
+                    {
+                        //test
+                        if(state==READ_REQUIREMENT)
+                        {
+                            push_error("Requirement already declared");
+                            return false;
+                        }
+                        //skeep spaces
+                        skeep_space_end_comment(ptr);
+                        //parse textures
+                        if (!parse_requirement_block(ptr, t_field.m_requirement)) return false;
+                        //skeep spaces
+                        skeep_space_end_comment(ptr);
+                        //change state
+                        state = READ_REQUIREMENT;
+                    }
+                    if (CSTRCMP_SKIP(ptr, "queue"))
+                    {
+                        //test
+                        if(state==NOT_READ_REQUIREMENT)
+                        {
+                            push_error("Requirement must to be declared before");
+                            return false;
+                        }
+                        //..
+                        parameter_queue p_queue;
+                        //skeep spaces
+                        skeep_space_end_comment(ptr);
+                        //parse textures
+                        if (!parse_queue_block(ptr, t_field.m_queue)) return false;
+                        //skeep spaces
+                        skeep_space_end_comment(ptr);
+                    }
+                    else if (CSTRCMP_SKIP(ptr,"technique"))
+                    {
+                        //test
+                        if(state==NOT_READ_REQUIREMENT)
+                        {
+                            push_error("Requirement must to be declared before");
+                            return false;
+                        }
+                        //skeep spaces
+                        skeep_space_end_comment(ptr);
+                        //techniques
+                        if (!parse_techniques_block(ptr,t_field)) return false;
+                        //skeep spaces
+                        skeep_space_end_comment(ptr);
+                    }
+                    else
+                    {
+                        push_error("Keyword not valid");
+                        return false;
+                    }
+                    //skeep spaces
+                    skeep_space_end_comment(ptr);
+                    
+                }
+                //end while
+                if (!is_end_table(*ptr))
+                {
+                    push_error("Not found }");
+                    return false;
+                }
+                //skip }
+                ++ptr;
+            }
+            //end
+            return true;
+        }
+        //////////////////////////////////////////////////////
+        bool parse_requirement_block(const char*& ptr,requirement_field& r_field)
+        {
+            //parse table
+            if (is_start_table(*ptr))
+            {
+                //skeep '{'
+                ++ptr;
+                //skeep spaces
+                skeep_space_end_comment(ptr);
+                //read all values
+                while (!is_end_table(*ptr) && *ptr != EOF && *ptr != '\0')
+                {
+                    //all casses
+                    if (CSTRCMP_SKIP(ptr, "driver"))
+                    {
+                        //skeep spaces
+                        skeep_space_end_comment(ptr);
+                        //parse textures
+                        if (!parse_driver_type(ptr, r_field))
+                        {
+                            push_error("Requirement: driver value not valid");
+                            return false;
+                        }
+                        //skeep spaces
+                        skeep_space_end_comment(ptr);
+                    }
+                    else if (CSTRCMP_SKIP(ptr, "shader"))
+                    {
+                        //skeep spaces
+                        skeep_space_end_comment(ptr);
+                        //parse textures
+                        if (!parse_shader_type(ptr, r_field))
+                        {
+                            push_error("Requirement: shader value not valid");
+                            return false;
+                        }
+                        //skeep spaces
+                        skeep_space_end_comment(ptr);
+                    }
+                    else
+                    {
+                        push_error("Keyword not valid");
+                        return false;
+                    }
+                    //skeep spaces
+                    skeep_space_end_comment(ptr);
+                }
+                //end while
+                if (!is_end_table(*ptr))
+                {
+                    push_error("Not found }");
+                    return false;
+                }
+                //skip }
+                ++ptr;
+            }
+            return true;
+        }
+        //////////////////////////////////////////////////////
+		bool parse_techniques_block(const char*& ptr,sub_effect_field& subeffect)
 		{
 			//skeep spaces
 			skeep_space_end_comment(ptr);
@@ -456,9 +700,9 @@ namespace hcube
 			//skeep spaces
 			skeep_space_end_comment(ptr);
 			//add technique
-			m_context->m_techniques.push_back(new_t_field);
+			subeffect.m_techniques.push_back(new_t_field);
 			//ref
-			technique_field& t_field = m_context->m_techniques[m_context->m_techniques.size() - 1];
+			technique_field& t_field = subeffect.m_techniques[subeffect.m_techniques.size() - 1];
 			//parse table
 			if (is_start_table(*ptr))
 			{
@@ -470,19 +714,7 @@ namespace hcube
 				while (!is_end_table(*ptr) && *ptr != EOF && *ptr != '\0')
 				{
                     //search source attribute
-                    if (CSTRCMP_SKIP(ptr, "queue"))
-                    {
-                        parameter_queue p_queue;
-                        //skeep spaces
-                        skeep_space_end_comment(ptr);
-                        //parse textures
-                        if (!parse_queue_block(ptr, p_queue)) return false;
-                        //skeep spaces
-                        skeep_space_end_comment(ptr);
-                        //append
-                        t_field.m_queue = p_queue;
-                    }
-                    else if (CSTRCMP_SKIP(ptr, "pass"))
+                    if (CSTRCMP_SKIP(ptr, "pass"))
                     {
                         pass_field pass;
                         //skeep spaces
@@ -1542,9 +1774,9 @@ namespace hcube
 					  << e_context.errors_to_string()
 					  << std::endl;
 			return false;
-		}
-		//alloc params
-		m_parameters.resize(e_context.m_parameters.size());
+        }
+        //alloc params
+        m_parameters.resize(e_context.m_parameters.size());
 		//add params
 		for (size_t i = 0; i != m_parameters.size(); ++i)
 		{
@@ -1563,25 +1795,46 @@ namespace hcube
 			m_parameters[i]->m_id = (int)i;
 			//add into map
 			m_map_parameters[e_context.m_parameters[i].m_name] = (int)i;
-		}
+        }
+        //ref to sub effect
+        effect_parser::sub_effect_field* ptr_sub_effect = nullptr;
+        //test sub effect
+        for(effect_parser::sub_effect_field& sub_effect : e_context.m_sub_effect )
+        {
+            if(sub_effect.m_requirement.test())
+            {
+                ptr_sub_effect = &sub_effect;
+                break;
+            }
+        }
+        //fail
+        if(!ptr_sub_effect)
+        {
+            std::cout << "Effect: "
+            << path
+            << std::endl
+            << "All sub effects unsupported."
+            << std::endl;
+            return false;
+        }
+        //set queue
+        set_queue(ptr_sub_effect->m_queue);
         //n_pass
-        size_t n_techniques_parser = e_context.m_techniques.size();
+        size_t n_techniques_parser = ptr_sub_effect->m_techniques.size();
 		//add tech
 		for (size_t t = 0; t != n_techniques_parser; ++t)
 		{
 			//add into map
-            technique& this_technique = m_map_techniques[e_context.m_techniques[t].m_name];
+            technique& this_technique = m_map_techniques[ptr_sub_effect->m_techniques[t].m_name];
             //n pass
-            size_t n_pass_parser = e_context.m_techniques[t].m_pass.size();
+            size_t n_pass_parser = ptr_sub_effect->m_techniques[t].m_pass.size();
 			//alloc pass
 			this_technique.reserve(n_pass_parser);
-            //set queue
-            this_technique.set_queue(e_context.m_techniques[t].m_queue);
 			//add pass
 			for (size_t p = 0; p != n_pass_parser; ++p)
             {
                 //ref
-                effect_parser::pass_field& parser_pass = e_context.m_techniques[t].m_pass[p];
+                effect_parser::pass_field& parser_pass = ptr_sub_effect->m_techniques[t].m_pass[p];
                 //lights sub pass
                 int light_sub_pass = parser_pass.m_lights;
                 //Type render
@@ -1648,7 +1901,7 @@ namespace hcube
                             std::cout << "Effect: "
                                       << path
                                       << std::endl
-                                      << "Error from technique: " << e_context.m_techniques[t].m_name << ", pass["<< p << "] "
+                                      << "Error from technique: " << ptr_sub_effect->m_techniques[t].m_name << ", pass["<< p << "] "
                                       << debug_defines
                                       << std::endl;
 

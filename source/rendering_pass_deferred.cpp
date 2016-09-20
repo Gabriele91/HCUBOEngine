@@ -158,7 +158,7 @@ namespace hcube
             auto e_light = weak_light->lock();
             auto l_light = e_light->get_component<light>();
             auto t_light = e_light->get_component<transform>();
-            
+            //
             m_point_light.uniform
             (
 				 l_light,
@@ -167,7 +167,6 @@ namespace hcube
             );
 			//cullface
 			m_sphere->draw();
-			//break;
         }
 		m_shader->unbind();
     }
@@ -284,8 +283,6 @@ namespace hcube
 		render::enable_render_target(m_g_buffer.get_geometry_render_target());
 		//set state
 		render::set_viewport_state({ viewport });
-		//update queue
-		rscene.compute_no_lights_queues("deferred", c_camera->get_frustum());
         //pass 0
         if(!n_pass)
         {
@@ -326,7 +323,8 @@ namespace hcube
 					pass.unbind();
 				}
 			}
-		}
+        }
+        render::print_errors();
 		//unbind
 		render::disable_render_target(m_g_buffer.get_geometry_render_target());
 		////////////////////////////////////////////////////////////////////////////////
@@ -354,6 +352,7 @@ namespace hcube
 		);
         m_square->draw();
         m_ambient_light.unbind();
+        render::print_errors();
         //SPOT LIGHTS
 		if (rscene.get_first(RQ_SPOT_LIGHT))
 		{
@@ -366,7 +365,8 @@ namespace hcube
 				rscene,
 				RQ_SPOT_LIGHT
 			);
-		}
+        }
+        render::print_errors();
         //POINT LIGHTS
         if (rscene.get_first(RQ_POINT_LIGHT))
 		{
@@ -379,7 +379,7 @@ namespace hcube
 				rscene,
 				RQ_POINT_LIGHT
 			);
-		}
+        }
         //DIRECTION LIGHTS
         if (rscene.get_first(RQ_DIRECTION_LIGHT))
 		{
@@ -393,7 +393,7 @@ namespace hcube
 				RQ_DIRECTION_LIGHT,
 				m_square
 			);
-		}
+        }
         render::disable_render_target(m_g_buffer.get_lights_render_target());
         ////////////////////////////////////////////////////////////////////////////////
         //reset state

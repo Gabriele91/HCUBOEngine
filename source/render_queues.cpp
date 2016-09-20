@@ -210,7 +210,7 @@ namespace hcube
         
     }
     
-    void render_scene::compute_no_lights_queues(const std::string& technique_name, const frustum& view_frustum)
+    void render_scene::compute_no_lights_queues(const frustum& view_frustum)
     {
         //clear
         m_queues[RQ_BACKGROUND].clear();
@@ -226,7 +226,6 @@ namespace hcube
 			if (r_entity->is_enabled())
 			if (material_ptr       r_material = r_entity->get_material())
 			if (effect::ptr        r_effect   = r_material->get_effect())
-			if (effect::technique* technique  = r_effect->get_technique(technique_name))
 			if (transform_ptr      t_entity   = entity->get_component<transform>())
 			if (!r_entity->has_support_culling() ||
 				 view_frustum.test_obb(r_entity->get_bounding_box(), 
@@ -234,7 +233,7 @@ namespace hcube
 			)
 			{
 				///queue
-				const effect::parameter_queue& queue = technique->get_queue();
+				const effect::parameter_queue& queue = r_effect->get_queue();
 				//distance
 				switch (queue.m_type)
 				{
@@ -253,7 +252,7 @@ namespace hcube
     }
     
     //by sphere
-    void render_scene::compute_no_lights_queues(const std::string& technique_name, const vec3& position, float radius)
+    void render_scene::compute_no_lights_queues(const vec3& position, float radius)
     {
         //clear
         m_queues[RQ_BACKGROUND].clear();
@@ -269,13 +268,12 @@ namespace hcube
 			if (r_entity->is_enabled())
 			if (material_ptr       r_material = r_entity->get_material())
 			if (effect::ptr        r_effect   = r_material->get_effect())
-			if (effect::technique* technique  = r_effect->get_technique(technique_name))
 			if (transform_ptr      t_entity   = entity->get_component<transform>())
 			if (!r_entity->has_support_culling() ||
 				 r_entity->get_bounding_box().is_inside(t_entity->get_matrix(), position,radius))
 			{
 				///queue
-				const effect::parameter_queue& queue = technique->get_queue();
+				const effect::parameter_queue& queue = r_effect->get_queue();
 				//distance
 				switch (queue.m_type)
 				{

@@ -157,7 +157,7 @@ namespace hcube
 		m_rendering->add_rendering_pass(rendering_pass_shadow::snew(m_resources));
 		//add into system
 		m_systems.add_system(m_rendering);
-#if 0
+#if 1
 		m_rendering->add_rendering_pass(rendering_pass_deferred::snew(app.get_window_size(), m_resources));
 #else
 		m_rendering->add_rendering_pass(rendering_pass_forward::snew(RQ_OPAQUE));
@@ -173,8 +173,9 @@ namespace hcube
 		m_resources.add_directory("assets/shaders");
 		m_resources.add_directory("assets/textures");
 		m_resources.add_directory("assets/materials");
-		m_resources.add_directory("assets/odst");
-		m_resources.add_directory("assets/ship");
+        m_resources.add_directory("assets/odst");
+        m_resources.add_directory("assets/ship");
+        m_resources.add_directory("assets/ship_fighter");
 		m_resources.add_directory("assets/asteroid");
 		m_resources.add_directory("tools/assimp_to_smesh/output");
 		m_resources.add_directory("assets/sponza/sponza_obb");
@@ -282,6 +283,18 @@ namespace hcube
                 m_systems.add_entity(cube_floor);
             }
 #endif
+            {
+                //ship_fighter
+                auto e_ship_fighter = m_resources.get_prefab("ship_fighter")->instantiate();
+                auto t_ship_fighter = e_ship_fighter->get_component<transform>();
+                t_ship_fighter->position({ 20.0f, -5.0f, 0.0f });
+                t_ship_fighter->rotation(quat({ radians(15.0), radians(180.0), 0.0 }));
+                t_ship_fighter->scale({ 0.015f, 0.015f, 0.015f });
+                //set name
+                e_ship_fighter->set_name("ship_fighter");
+                
+                m_systems.add_entity(e_ship_fighter);
+            }
 			//ship
 			m_model = m_resources.get_prefab("ship")->instantiate();
 			auto t_model = m_model->get_component<transform>();

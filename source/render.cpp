@@ -133,6 +133,72 @@ namespace hcube
         context_render_target* m_render_target{ nullptr };
     };
     
+    static int make_test_to_get_shader_version()
+    {
+        struct shader_test
+        {
+            int m_version;
+            const char* m_shader;
+        };
+        #define shader_test(x)\
+        {\
+          x,\
+          "#version " #x "\n"\
+          "void main(){}"\
+        },
+        shader_test tests[]=
+        {
+            shader_test(100) //fake, no test
+            //OpenGL 2->3.2
+            shader_test(110)
+            shader_test(120)
+            shader_test(130)
+            shader_test(140)
+            shader_test(150)
+            //OpenGL 3.3
+            shader_test(330)
+            //OpenGL 4.x
+            shader_test(400)
+            shader_test(410)
+            shader_test(420)
+            shader_test(430)
+            shader_test(440)
+            shader_test(450)
+        };
+        //id test
+        int   i=0;
+        int   supported=0;
+        GLint is_compiled = GL_TRUE;
+        //tests
+        while(i < (sizeof(tests)/sizeof(shader_test)-1))
+        {
+            //alloc
+            const GLuint shader = glCreateShader(GL_VERTEX_SHADER);
+            //compile
+            if (shader)
+            {
+                //next
+                ++i;
+                //test
+                glShaderSource(shader, 1, &(tests[i].m_shader), NULL);
+                glCompileShader(shader);
+                glGetShaderiv(shader, GL_COMPILE_STATUS, &is_compiled);
+                glDeleteShader(shader);
+                //test
+                if(is_compiled == GL_TRUE) supported=i;
+            }
+            else
+            {
+                std::cout << "Render driver error, can't determine supported shader version" << std::endl;
+                break;
+            }
+        }
+        //undef
+        #undef shader_test
+        //output
+        return tests[supported].m_version;
+    }
+    
     ////////////////////
 	//     RENDER     //
 	////////////////////
@@ -140,11 +206,26 @@ namespace hcube
 	{
 		///////////////////////
 		//globals
-        bind_context s_bind_context;
-		render_state s_render_state;
-		GLuint       s_vao_attributes;
+        bind_context       s_bind_context;
+		render_state       s_render_state;
+		GLuint             s_vao_attributes;
+        render_driver_info s_render_driver_info;
 		///////////////////////
-
+        
+        static void compute_render_driver_info()
+        {
+            render_driver_info m_info;
+            //type
+            s_render_driver_info.m_render_driver = DR_OPENGL;
+            //get version
+            glGetIntegerv(GL_MAJOR_VERSION, &s_render_driver_info.m_major_version);
+            glGetIntegerv(GL_MINOR_VERSION, &s_render_driver_info.m_minor_version);
+            //shader type
+            s_render_driver_info.m_shader_language = "GLSL";
+            //shader version
+            s_render_driver_info.m_shader_version  = make_test_to_get_shader_version();
+        }
+        
 		bool init()
 		{
 
@@ -169,8 +250,12 @@ namespace hcube
 			//Front face
 			glFrontFace(GL_CW);
 #endif
-			//test
+			//clean
 			render::print_errors();
+            //get info
+            compute_render_driver_info();
+            //clean
+            render::print_errors();
 			//attributes vao
 			glGenVertexArrays(1, &s_vao_attributes);
 			glBindVertexArray(s_vao_attributes);
@@ -217,13 +302,19 @@ namespace hcube
 
 		render_driver get_render_driver()
 		{
-			return DR_OPENGL;
+			return s_render_driver_info.m_render_driver;
 		}
+        
+        render_driver_info get_render_driver_info()
+        {
+            return s_render_driver_info;
+        }
 
 		const clear_color_state& get_clear_color_state()
 		{
 			return s_render_state.m_clear_color;
 		}
+        
 
 		void set_clear_color_state(const clear_color_state& clear_color)
 		{
