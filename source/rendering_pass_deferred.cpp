@@ -11,7 +11,7 @@ namespace hcube
     {
         //compile
         m_shader    = shader::snew();
-        m_shader->load(rsmanager.get_shader_path("deferred_ambient_light"),std::vector<std::string>{ "AMBIENT_LIGHTS" });
+        m_shader->load(rsmanager.get_shader_path("deferred_ambient_light"),shader::preprocess_map{ {"define", "AMBIENT_LIGHTS" } });
         //color
         m_albedo    = m_shader->get_uniform("g_albedo_spec");
 		m_occlusion = m_shader->get_uniform("g_occlusion");
@@ -44,7 +44,7 @@ namespace hcube
     {
         //compile
         m_shader    = shader::snew();
-        m_shader->load(rsmanager.get_shader_path("deferred_spot_light"),std::vector<std::string>{ "SPOT_LIGHTS" });
+        m_shader->load(rsmanager.get_shader_path("deferred_spot_light"),shader::preprocess_map{ {"define","SPOT_LIGHTS" } });
         
         m_position		  = m_shader->get_uniform("g_position");
         m_normal		  = m_shader->get_uniform("g_normal");
@@ -109,7 +109,7 @@ namespace hcube
     {
         //compile
         m_shader    = shader::snew();
-        m_shader->load(rsmanager.get_shader_path("deferred_point_light"),std::vector<std::string>{ "POINT_LIGHTS" });
+        m_shader->load(rsmanager.get_shader_path("deferred_point_light"),shader::preprocess_map{ {"define", "POINT_LIGHTS" } });
         
         m_position  = m_shader->get_uniform("g_position");
         m_normal    = m_shader->get_uniform("g_normal");
@@ -177,7 +177,7 @@ namespace hcube
 	{
 		//compile
 		m_shader = shader::snew();
-		m_shader->load(rsmanager.get_shader_path("deferred_direction_light"), std::vector<std::string>{ "DIRECTION_LIGHTS" });
+		m_shader->load(rsmanager.get_shader_path("deferred_direction_light"), shader::preprocess_map{ {"define", "DIRECTION_LIGHTS" } });
 
 		m_position = m_shader->get_uniform("g_position");
 		m_normal = m_shader->get_uniform("g_normal");

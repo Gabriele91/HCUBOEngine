@@ -1884,25 +1884,33 @@ namespace hcube
                     }
                     else
                     {
-                        std::vector< std::string > shader_defines{shader_define_table[current_shader_def]};
+                        shader::preprocess_map shader_defines
+                        {
+                            { "version", std::to_string(ptr_sub_effect->m_requirement.m_shader_version) },
+                            { "define" , shader_define_table[current_shader_def]                        }
+                        };
                         //shader
                         this_pass.m_shader = shader::snew();
                         //load effect
-                        if (!this_pass.m_shader->load_effect(
-                             parser_pass.m_shader.m_text,
+                        if (!this_pass.m_shader->load_effect
+                            (parser_pass.m_shader.m_text,
                              path,
-                             parser_pass.m_shader.m_line - 1,
-                             shader_defines))
+                             shader_defines,
+                             parser_pass.m_shader.m_line - 1
+                            ))
                         {
-                            //defines
-                            std::string debug_defines;
-                            for(std::string& def : shader_defines) debug_defines += (def+" ");
-                            //
+                            //preproc, debug
+                            std::string debug_preproc;
+                            for(const shader::preprocess_element& preproc : shader_defines)
+                            {
+                                debug_preproc += "#"+std::get<0>(preproc)+" "+std::get<1>(preproc)+"\n";
+                            }
+                            //output
                             std::cout << "Effect: "
                                       << path
                                       << std::endl
                                       << "Error from technique: " << ptr_sub_effect->m_techniques[t].m_name << ", pass["<< p << "] "
-                                      << debug_defines
+                                      << debug_preproc
                                       << std::endl;
 
                         }

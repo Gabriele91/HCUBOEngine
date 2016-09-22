@@ -9,6 +9,7 @@
 #include <unordered_map>
 #include <memory>
 #include <string>
+#include <tuple>
 #include <vector>
 #include <vector_math.h>
 #include <texture.h>
@@ -68,54 +69,41 @@ namespace hcube
 
 	public:
 
-		using uniform_map  = std::unordered_map< std::string, uniform >;
-		using filepath_map = std::unordered_map< int, std::string >;
+        using preprocess_element = std::tuple<std::string,std::string>;
+        using preprocess_map     = std::vector< preprocess_element >;
+		using uniform_map        = std::unordered_map< std::string, uniform >;
+		using filepath_map       = std::unordered_map< int, std::string >;
 
 		shader() {}
 
 		virtual ~shader();
 
 		bool load(resources_manager& resources, const std::string& path)
-		{
-			return load(path);
+        {
+            return load(path,{});
 		}
-
-		bool load(const std::string& effect,size_t line = 0)
-		{
-			std::vector<std::string> defines;
-			return load(effect, defines, line);
-		}
-
-		bool load(const std::string& vs, const std::string& fs, size_t line = 0)
-		{
-			std::vector<std::string> defines;
-			return load(vs, fs, "", defines, line);
-		}
-
-		bool load(const std::string& vs, const std::string& fs, const std::string& gs, size_t line = 0)
-		{
-			std::vector<std::string> defines;
-			return load(vs, fs, gs, defines, line);
-		}
-
-		bool load(const std::string& vs, const std::string& fs, const std::vector<std::string>& defines, size_t line = 0)
-		{
-			return load(vs, fs, "", defines, line);
-		}
-
-		bool load(const std::string& effect, const std::vector<std::string>& defines, size_t line = 0);
-
-		bool load(const std::string& vs, const std::string& fs, const std::string& gs, const std::vector<std::string>& defines, size_t line = 0);
-
+        
+        bool load(const std::string& file_vs,
+                  const std::string& file_fs,
+                  const std::string& file_gs,
+                  const preprocess_map& defines);
+        
+        
+        bool load(const std::string& effect_file,
+                  const preprocess_map& defines);
+        
 		bool load_effect(const std::string& effect,
 			             const std::string& effect_file,
-						 size_t line_effect,
-						 const std::vector<std::string>& defines);
+						 const preprocess_map& defines,
+                         const size_t line);
 
-		bool load_shader(const std::string& vs, size_t line_vs,
-			             const std::string& fs, size_t line_fs,
-			             const std::string& gs, size_t line_gs,
-			             const std::vector<std::string>& defines);
+		bool load_shader(const std::string& vs,
+                         const size_t line_vs,
+			             const std::string& fs,
+                         const size_t line_fs,
+			             const std::string& gs,
+                         const size_t line_gs,
+			             const preprocess_map& defines);
 
 		//get consts
 		uniform* get_uniform(const char *name);

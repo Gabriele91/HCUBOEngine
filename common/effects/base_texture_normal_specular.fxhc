@@ -12,7 +12,7 @@ sub_effect
     requirement
     {
         driver  OpenGL(4,1)
-        shader  GLSL(400)
+        shader  GLSL(410)
     }
     
     technique "forward"
