@@ -530,6 +530,7 @@ R"GLSL(
 		std::string file_vs =
 			defines_string +
 			default_glsl_defines +
+            "#define cbuffer     layout(std140) uniform     \n"
 			"#define saturate(x) clamp( x, 0.0, 1.0 )       \n"
 			"#define lerp        mix                        \n"
 			"#line " + std::to_string(line_vs) + "\n" +
@@ -552,13 +553,14 @@ R"GLSL(
 		//fragmentx
 		std::string file_fs =
 			defines_string +
-			default_glsl_defines +
+            default_glsl_defines +
+            "#define cbuffer     layout(std140) uniform     \n"
 			"#define saturate(x) clamp( x, 0.0, 1.0 )       \n"
 			"#define lerp        mix                        \n"
-			"#define bestp\n"
-			"#define highp\n"
-			"#define mediump\n"
-			"#define lowp\n"
+			"#define bestp                                  \n"
+			"#define highp                                  \n"
+			"#define mediump                                \n"
+			"#define lowp                                   \n"
 			"#line " + std::to_string(line_fs) + "\n" +
 			fs_str;
 		//create a fragment shader
@@ -582,6 +584,7 @@ R"GLSL(
 			std::string file_gs =
 				defines_string +
 				default_glsl_defines +
+                "#define cbuffer     layout(std140) uniform     \n"
 				"#define saturate(x) clamp( x, 0.0, 1.0 )       \n"
 				"#define lerp        mix                        \n"
 				"#line " + std::to_string(line_gs) + "\n" +
