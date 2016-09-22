@@ -249,21 +249,32 @@ namespace hcube
 
 	void light::on_attach(entity& entity)
 	{
+		m_sphere_is_dirty = true;
+		m_view_is_dirty   = true;
+	}
+
+	void light::on_detach()
+	{
+		m_sphere_is_dirty = true;
 		m_view_is_dirty = true;
 	}
 
 	bool light::on_activate()
 	{
-		m_view_is_dirty = true;
+		m_sphere_is_dirty = true;
+		m_view_is_dirty   = true;
 		return true;
 	}
 
 	void light::on_message(const message& message)
 	{
-		if (message.m_id == transform::MSG_DIRTY) m_view_is_dirty = true;
+		if (message.m_id == transform::MSG_DIRTY)
+		{
+			m_sphere_is_dirty = true;
+			m_view_is_dirty = true;
+		}
 	}
-
-
+	
 	const frustum& light::get_frustum() const
 	{
 		return m_frustum;
@@ -370,5 +381,31 @@ namespace hcube
 		}
 		//to false
 		m_view_is_dirty = false;
+	}
+
+	void light::update_sphere()
+	{
+		if (!m_sphere_is_dirty) return;
+
+		entity*       e_light = get_entity();
+		transform_ptr t_light = nullptr;
+
+		switch (m_type)
+		{
+		case hcube::light::POINT_LIGHT:
+		case hcube::light::SPOT_LIGHT:
+			if (!e_light || !(t_light = e_light->get_component<transform>()))
+			{
+				m_sphere = sphere();
+			}
+			else
+			{
+				m_sphere = sphere{ t_light->get_position(), get_radius() };
+			}
+		break;
+		default: break;
+		}
+		//to false
+		m_sphere_is_dirty = false;
 	}
 }

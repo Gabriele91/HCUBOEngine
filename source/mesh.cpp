@@ -84,8 +84,11 @@ namespace hcube
 		size_t vsize)
 	{
 		if (!m_layout.has_a_position()) return false;
+		//define obb
+		obb bounding_box;
 		//compute box
-		m_bounding_box.build_from_triangles(
+		bounding_box.build_from_triangles
+		(
 			(const unsigned char*)points,
 			(size_t)m_layout.position_offset(),
 			(size_t)render::size_IL(m_layout.m_input_layout.get()),
@@ -94,7 +97,7 @@ namespace hcube
 			isize
 		);
 		//enable culling
-		m_support_culling = true;
+		set_bounding_box(bounding_box);
 		//end
 		return true;
 	}
@@ -102,10 +105,12 @@ namespace hcube
 	bool mesh::compute_bounding_box(const byte* points, size_t vsize)
 	{
 		if (!m_layout.has_a_position()) return false;
+		//define obb
+		obb bounding_box;
 		//compute box
 		if (m_layout.m_draw_mode == GL_TRIANGLES)
 		{
-			m_bounding_box.build_from_sequenzial_triangles(
+			bounding_box.build_from_sequenzial_triangles(
 				(const unsigned char*)points,
 				(size_t)m_layout.position_offset(),
 				(size_t)render::size_IL(m_layout.m_input_layout.get()),
@@ -114,7 +119,7 @@ namespace hcube
 		}
 		else
 		{
-			m_bounding_box.build_from_points(
+			bounding_box.build_from_points(
 				(const unsigned char*)points,
 				(size_t)m_layout.position_offset(),
 				(size_t)render::size_IL(m_layout.m_input_layout.get()),
@@ -122,20 +127,20 @@ namespace hcube
 			);
 		}
 		//enable culling
-		m_support_culling = true;
+		set_bounding_box(bounding_box);
 		//end
 		return true;
 	}
 
 	void mesh::set_bounding_box(const obb& box)
 	{
-		m_bounding_box = box;
-		m_support_culling = true;
+		renderable::set_bounding_box(box);
+		renderable::set_support_culling(true);
 	}
 
 	void mesh::disable_support_culling()
 	{
-		m_support_culling = false;
+		renderable::set_support_culling(false);
 	}
 
 	void mesh::draw()

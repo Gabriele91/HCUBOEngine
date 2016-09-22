@@ -1,5 +1,6 @@
 #include <transform.h>
 #include <renderable.h>
+#include <intersection.h>
 #include <rendering_pass_forward.h>
 
 namespace hcube
@@ -74,25 +75,17 @@ namespace hcube
 							auto t_light = e_light->get_component<transform>();
 #ifdef ENABLE_RADIUS_TEST 
 							#if 0
-							if (!r_entity->has_support_culling() ||
-								r_entity->get_bounding_box().is_inside(t_entity->get_matrix(),
-									t_light->get_global_position(),
-									l_light->get_radius())
-								)
+							if (!r_entity->has_support_culling() || 
+								intersection::check(r_entity->get_bounding_box(), l_light->get_sphere()))
 							#elif 0
 							if (!r_entity->has_support_culling() ||
-								 l_light->update_frustum().test_obb(r_entity->get_bounding_box(), 
-																    t_entity->get_matrix())
-								)
+								 intersection::check(l_light->update_frustum(), r_entity->get_bounding_box())))
                             #else
                             if (!r_entity->has_support_culling() ||
-                                    (
-                                    r_entity->get_bounding_box().is_inside(t_entity->get_matrix(),
-                                                                           t_light->get_global_position(),
-                                                                           l_light->get_radius()) &&
-                                    l_light->update_frustum().test_obb(r_entity->get_bounding_box(),
-                                                                       t_entity->get_matrix())
-                                    )
+                                 (intersection::check(r_entity->get_bounding_box(),
+													  l_light->get_sphere()) 
+								  && intersection::check(l_light->update_frustum(),
+														 r_entity->get_bounding_box()))
                                 )
                             #endif
 #endif
@@ -114,15 +107,14 @@ namespace hcube
                         {
                             auto e_light = weak_light->lock();
                             auto l_light = e_light->get_component<light>();
-                            auto t_light = e_light->get_component<transform>();
 #ifdef ENABLE_RADIUS_TEST
 							if (!r_entity->has_support_culling() ||
-								 r_entity->get_bounding_box().is_inside(t_entity->get_matrix(),
-																		t_light->get_global_position(),
-																		l_light->get_radius())
-								)
+								intersection::check(r_entity->get_bounding_box(),l_light->get_sphere()))
 #endif
 							{
+								//get pos
+								auto t_light = e_light->get_component<transform>();
+								//uniform
 								pass.m_uniform_point.uniform
 								(
 									l_light,

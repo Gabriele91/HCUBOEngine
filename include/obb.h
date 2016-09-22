@@ -77,17 +77,6 @@ namespace hcube
 		//test
 		vec3 closest_point(const vec3& target) const;
 
-		//test
-		bool is_inside(const mat4& model,			//obb model matrix
-					   const vec3& sphere_center, 	//sphere center
-					   float radius) const;		    //sphere radius
-
-		bool is_inside(const vec3& sphere_center, 	//sphere center
-			           float radius) const;			//sphere radius
-		/*
-		// todo
-		bool is_inside(const obb& in);
-		*/
 		//get info
 		const mat3& get_rotation_matrix() const { return m_rotation; }
 		const vec3& get_position() const { return m_position; }
