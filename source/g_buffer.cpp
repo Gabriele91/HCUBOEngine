@@ -21,8 +21,8 @@ namespace hcube
 		target_texture_type() {}
 
 		target_texture_type(texture_format      type_0,
-			texture_type        type_1,
-			texture_type_format type_2)
+                            texture_type        type_1,
+                            texture_type_format type_2)
 		{
 			m_format = type_0;
 			m_type = type_1;
@@ -45,11 +45,11 @@ namespace hcube
 		target_texture_type types[G_BUFFER_NUM_TEXTURES];
 
 		//specify type
-		types[G_BUFFER_TEXTURE_TYPE_POSITION]           = target_texture_type(TF_RGBA16F,            TT_RGBA, TTF_FLOAT);
-		types[G_BUFFER_TEXTURE_TYPE_NORMAL]		   	    = target_texture_type(TF_RGB8,               TT_RGB,  TTF_FLOAT);
-		types[G_BUFFER_TEXTURE_TYPE_ALBEDO]				= target_texture_type(TF_RGBA8,              TT_RGBA, TTF_UNSIGNED_BYTE);
-		types[G_BUFFER_TEXTURE_TYPE_LIGHTS_ACCUMULATOR] = target_texture_type(TF_RGB8,               TT_RGB,  TTF_UNSIGNED_BYTE);
-		types[G_BUFFER_TEXTURE_TYPE_DEPTH]              = target_texture_type(TF_DEPTH_COMPONENT24,  TT_DEPTH,TTF_FLOAT);
+		types[G_BUFFER_TEXTURE_TYPE_POSITION]           = target_texture_type(TF_RGBA16F,            TT_RGBA,         TTF_FLOAT);
+		types[G_BUFFER_TEXTURE_TYPE_NORMAL]		   	    = target_texture_type(TF_RGB8,               TT_RGB,          TTF_FLOAT);
+		types[G_BUFFER_TEXTURE_TYPE_ALBEDO]				= target_texture_type(TF_RGBA8,              TT_RGBA,         TTF_UNSIGNED_BYTE);
+		types[G_BUFFER_TEXTURE_TYPE_LIGHTS_ACCUMULATOR] = target_texture_type(TF_RGB8,               TT_RGB,          TTF_UNSIGNED_BYTE);
+		types[G_BUFFER_TEXTURE_TYPE_DEPTH]              = target_texture_type(TF_DEPTH24_STENCIL8,   TT_DEPTH_STENCIL,TTF_UNSIGNED_INT_24_8);
 		
 
 		//create texture
@@ -79,16 +79,16 @@ namespace hcube
 		m_geometry_target =
 		render::create_render_target
 		({
-				target_field{ m_textures[G_BUFFER_TEXTURE_TYPE_POSITION], RT_COLOR },
-				target_field{ m_textures[G_BUFFER_TEXTURE_TYPE_NORMAL],   RT_COLOR },
-				target_field{ m_textures[G_BUFFER_TEXTURE_TYPE_ALBEDO],   RT_COLOR },
-				target_field{ m_textures[G_BUFFER_TEXTURE_TYPE_DEPTH],    RT_DEPTH },
+				target_field{ m_textures[G_BUFFER_TEXTURE_TYPE_POSITION], RT_COLOR         },
+				target_field{ m_textures[G_BUFFER_TEXTURE_TYPE_NORMAL],   RT_COLOR         },
+				target_field{ m_textures[G_BUFFER_TEXTURE_TYPE_ALBEDO],   RT_COLOR         },
+				target_field{ m_textures[G_BUFFER_TEXTURE_TYPE_DEPTH],    RT_DEPTH_STENCIL },
 		});
 		m_lights_target =
 		render::create_render_target
 		({
-			target_field{ m_textures[G_BUFFER_TEXTURE_TYPE_LIGHTS_ACCUMULATOR], RT_COLOR },
-			target_field{ m_textures[G_BUFFER_TEXTURE_TYPE_DEPTH],              RT_DEPTH },
+			target_field{ m_textures[G_BUFFER_TEXTURE_TYPE_LIGHTS_ACCUMULATOR], RT_COLOR         },
+			target_field{ m_textures[G_BUFFER_TEXTURE_TYPE_DEPTH],              RT_DEPTH_STENCIL },
 		});
 
 		//success?

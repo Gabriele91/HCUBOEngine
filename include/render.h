@@ -154,7 +154,9 @@ namespace hcube
 		TTF_FLOAT,
 		TTF_UNSIGNED_BYTE,
 		TTF_UNSIGNED_SHORT,
-		TTF_UNSIGNED_INT
+		TTF_UNSIGNED_INT,
+        TTF_UNSIGNED_INT_24_8,
+        TTF_FLOAT_32_UNSIGNED_INT_24_8
 	};
 
 	enum texture_mag_filter_type
