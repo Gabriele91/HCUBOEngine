@@ -910,17 +910,19 @@ namespace hcube
 			}
 		}
 
-		inline const GLenum get_texture_type_format(texture_type_format type)
-		{
-			switch (type)
-			{
-			default:
-			case TTF_FLOAT:             return GL_FLOAT;
-			case TTF_UNSIGNED_BYTE:     return GL_UNSIGNED_BYTE;
-			case TTF_UNSIGNED_SHORT:    return GL_UNSIGNED_SHORT;
-			case TTF_UNSIGNED_INT:      return GL_UNSIGNED_INT;
-			}
-		}
+        inline const GLenum get_texture_type_format(texture_type_format type)
+        {
+            switch (type)
+            {
+                default:
+                case TTF_FLOAT:                      return GL_FLOAT;
+                case TTF_UNSIGNED_BYTE:              return GL_UNSIGNED_BYTE;
+                case TTF_UNSIGNED_SHORT:             return GL_UNSIGNED_SHORT;
+                case TTF_UNSIGNED_INT:               return GL_UNSIGNED_INT;
+                case TTF_UNSIGNED_INT_24_8:          return GL_UNSIGNED_INT_24_8;
+                case TTF_FLOAT_32_UNSIGNED_INT_24_8: return GL_FLOAT_32_UNSIGNED_INT_24_8_REV;
+            }
+        }
 
 		static GLenum get_texture_min_filter(texture_min_filter_type type)
 		{
