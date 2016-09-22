@@ -422,26 +422,6 @@ namespace hcube
 		return closest_point;
 	}
 
-	// test collision
-	bool obb::is_inside(const mat4& model,const vec3& sphere_center, float radius)  const
-	{
-		obb new_obb(*this); new_obb.applay(model);
-		return new_obb.is_inside(sphere_center, radius);
-	}
-	// The implementation of the OBB-Sphere intersection test follows Christer Ericson's Real-Time Collision Detection, p. 166. [groupSyntax]
-	bool obb::is_inside(const vec3& sphere_center, float radius)  const
-	{
-		// Find the point on this AABB closest to the sphere center.
-		vec3 pt = closest_point(sphere_center);
-
-		//squere dist
-		vec3  diff    = pt - sphere_center;
-		float sq_dist = dot(diff, diff);
-
-		//test sq distance
-		return sq_dist <= radius * radius;
-	}
-
 	void obb::build_from_covariance_matrix(const mat3& C, const std::vector< vec3 >& points)
 	{
 		build_from_covariance_matrix(C, (const unsigned char*)points.data(), 0, sizeof(vec3), points.size());

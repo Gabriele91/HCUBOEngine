@@ -12,6 +12,7 @@
 #include <shader.h>
 #include <camera.h>
 #include <shadow_buffer.h>
+#include <sphere.h>
 
 
 namespace hcube
@@ -174,8 +175,17 @@ namespace hcube
 			return m_radius;
 		}
 
+		//sphere culling
+		const sphere& get_sphere()
+		{
+			update_sphere();
+			return m_sphere;
+		}
+
 		//event
 		void on_attach(entity& entity);
+
+		void on_detach();
 
 		bool on_activate();
 
@@ -207,6 +217,8 @@ namespace hcube
 
 		void update_view_matrix();
 
+		void update_sphere();
+
 		//copy
 		virtual component_ptr copy() const;
 
@@ -227,9 +239,13 @@ namespace hcube
 		//frustum spot light
 		frustum			    m_frustum;
 		mat4			    m_projection;
+
 		mat4				m_view;
 		std::vector<mat4>   m_cube_view;
 		bool				m_view_is_dirty{ true };
+
+		sphere				m_sphere;
+		bool				m_sphere_is_dirty{ true };
 		//shadow struct
 		struct light_shadow
 		{

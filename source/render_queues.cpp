@@ -8,6 +8,7 @@
 #include <light.h>
 #include <renderable.h>
 #include <render_queues.h>
+#include <intersection.h>
 
 
 namespace hcube
@@ -169,7 +170,7 @@ namespace hcube
     //compute distance
     static inline float compute_camera_depth(const frustum& f_camera, const transform_ptr& t_entity)
     {
-        return f_camera.distance_from_near_plane((vec3)(t_entity->get_matrix()*vec4(0, 0, 0, 1)));
+        return f_camera.distance_from_near_plane(t_entity->get_global_position());
     }
     
     //by frustum
@@ -190,11 +191,9 @@ namespace hcube
             auto entity   = weak_entity.lock();
             auto t_entity = entity->get_component<transform>();
             auto l_entity = entity->get_component<light>();
-            const auto l_pos = (vec3)(t_entity->get_matrix()*vec4(0, 0, 0, 1.));
-            const auto l_radius = l_entity->get_radius();
             
             if (l_entity->is_enabled() && 
-				view_frustum.test_sphere(l_pos, l_radius) != frustum::testing_result::OUTSIDE )
+				intersection::check(view_frustum, l_entity->get_sphere()) != intersection::OUTSIDE)
             {
                 float depth = compute_camera_depth(view_frustum, t_entity);
                 switch (l_entity->get_type())
@@ -228,8 +227,7 @@ namespace hcube
 			if (effect::ptr        r_effect   = r_material->get_effect())
 			if (transform_ptr      t_entity   = entity->get_component<transform>())
 			if (!r_entity->has_support_culling() ||
-				 view_frustum.test_obb(r_entity->get_bounding_box(), 
-									   t_entity->get_matrix()) != frustum::testing_result::OUTSIDE
+				intersection::check(view_frustum, r_entity->get_bounding_box()) != intersection::OUTSIDE
 			)
 			{
 				///queue
@@ -252,7 +250,7 @@ namespace hcube
     }
     
     //by sphere
-    void render_scene::compute_no_lights_queues(const vec3& position, float radius)
+    void render_scene::compute_no_lights_queues(const sphere& in_sphere)
     {
         //clear
         m_queues[RQ_BACKGROUND].clear();
@@ -270,7 +268,7 @@ namespace hcube
 			if (effect::ptr        r_effect   = r_material->get_effect())
 			if (transform_ptr      t_entity   = entity->get_component<transform>())
 			if (!r_entity->has_support_culling() ||
-				 r_entity->get_bounding_box().is_inside(t_entity->get_matrix(), position,radius))
+				intersection::check(r_entity->get_bounding_box(), in_sphere))
 			{
 				///queue
 				const effect::parameter_queue& queue = r_effect->get_queue();
@@ -278,10 +276,10 @@ namespace hcube
 				switch (queue.m_type)
 				{
 				case RQ_TRANSLUCENT:
-					m_queues[RQ_TRANSLUCENT].push_back_to_front(weak_entity, distance(t_entity->get_global_position(),position));
+					m_queues[RQ_TRANSLUCENT].push_back_to_front(weak_entity, distance(t_entity->get_global_position(), in_sphere.get_position()));
 					break;
 				case RQ_OPAQUE:
-					m_queues[RQ_OPAQUE].push_front_to_back(weak_entity, distance(t_entity->get_global_position(), position));
+					m_queues[RQ_OPAQUE].push_front_to_back(weak_entity, distance(t_entity->get_global_position(), in_sphere.get_position()));
 					break;
 				default:
 					m_queues[queue.m_type].push_back_to_front(weak_entity, queue.m_order);

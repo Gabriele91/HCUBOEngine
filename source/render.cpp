@@ -1252,9 +1252,11 @@ namespace hcube
 				);
 
             }
+#if 0
             //reset
             glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
             glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+#endif
 			//reset
 			if(s_bind_context.m_render_target)
 				//set old fbo

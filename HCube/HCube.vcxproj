@@ -168,6 +168,7 @@
     <ClInclude Include="..\include\frustum.h" />
     <ClInclude Include="..\include\gameobject.h" />
     <ClInclude Include="..\include\g_buffer.h" />
+    <ClInclude Include="..\include\intersection.h" />
     <ClInclude Include="..\include\light.h" />
     <ClInclude Include="..\include\native_dialog.h" />
     <ClInclude Include="..\include\json11.h" />
@@ -191,6 +192,7 @@
     <ClInclude Include="..\include\shadow_buffer.h" />
     <ClInclude Include="..\include\smart_pointers.h" />
     <ClInclude Include="..\include\query_performance.h" />
+    <ClInclude Include="..\include\sphere.h" />
     <ClInclude Include="..\include\ssao_technique.h" />
     <ClInclude Include="..\include\static_model.h" />
     <ClInclude Include="..\include\struct_attribute.h" />
@@ -211,6 +213,7 @@
     <ClCompile Include="..\source\filesystem.cpp" />
     <ClCompile Include="..\source\frustum.cpp" />
     <ClCompile Include="..\source\g_buffer.cpp" />
+    <ClCompile Include="..\source\intersection.cpp" />
     <ClCompile Include="..\source\light.cpp" />
     <ClCompile Include="..\source\material.cpp" />
     <ClCompile Include="..\source\native_dialog.cpp" />

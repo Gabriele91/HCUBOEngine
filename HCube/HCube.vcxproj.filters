@@ -40,6 +40,9 @@
     <Filter Include="File di risorse\common\effects\shaders\lib">
       <UniqueIdentifier>{23157241-6136-45f9-b9d1-584be02ec9f0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="File di intestazione\geometry">
+      <UniqueIdentifier>{115ab91b-f23d-46d1-b351-e7486d9b3a08}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\application.h">
@@ -67,9 +70,6 @@
       <Filter>File di intestazione</Filter>
     </ClInclude>
     <ClInclude Include="..\include\picking_rotation.h">
-      <Filter>File di intestazione</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\shader.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
     <ClInclude Include="..\include\smart_pointers.h">
@@ -147,12 +147,6 @@
     <ClInclude Include="..\include\prefab.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\obb.h">
-      <Filter>File di intestazione</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\frustum.h">
-      <Filter>File di intestazione</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\render.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
@@ -173,6 +167,21 @@
     </ClInclude>
     <ClInclude Include="..\include\render_queues.h">
       <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\sphere.h">
+      <Filter>File di intestazione\geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\shader.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\frustum.h">
+      <Filter>File di intestazione\geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\obb.h">
+      <Filter>File di intestazione\geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\intersection.h">
+      <Filter>File di intestazione\geometry</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -279,6 +288,9 @@
       <Filter>File di origine</Filter>
     </ClCompile>
     <ClCompile Include="..\source\render_queues.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\intersection.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
   </ItemGroup>

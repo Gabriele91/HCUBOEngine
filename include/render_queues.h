@@ -9,6 +9,8 @@
 #include <array>
 #include <vector>
 #include <entity.h>
+#include <sphere.h>
+#include <frustum.h>
 #include <vector_math.h>
 
 namespace hcube
@@ -125,7 +127,7 @@ namespace hcube
 		void compute_lights_queues(const frustum& view_frustum);
 		//compue queues
 		void compute_no_lights_queues(const frustum& view_frustum);
-		void compute_no_lights_queues(const vec3& position, float radius);
+		void compute_no_lights_queues(const sphere& in_sphere);
 		//clear
 		void clear();
 	};
