@@ -83,8 +83,8 @@
 		E0D8F21F1D4E6B2D006EA26C /* obb.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E0D8F21D1D4E6B2D006EA26C /* obb.cpp */; };
 		E0E8EC461D4804CA00BE1432 /* ssao_technique.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E0E8EC451D4804CA00BE1432 /* ssao_technique.cpp */; };
 		E0E8EC481D4804D700BE1432 /* ssao_technique.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E0E8EC451D4804CA00BE1432 /* ssao_technique.cpp */; };
-		E0EB04EB1D8805B700A9C7E6 /* render_queues.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E0EB04EA1D8805B700A9C7E6 /* render_queues.cpp */; };
-		E0EB04EC1D8805B700A9C7E6 /* render_queues.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E0EB04EA1D8805B700A9C7E6 /* render_queues.cpp */; };
+		E0EB04EB1D8805B700A9C7E6 /* render_scene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E0EB04EA1D8805B700A9C7E6 /* render_scene.cpp */; };
+		E0EB04EC1D8805B700A9C7E6 /* render_scene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E0EB04EA1D8805B700A9C7E6 /* render_scene.cpp */; };
 		E0ED49411D56166A00EFE862 /* frustum.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E0D8F21C1D4E6B2D006EA26C /* frustum.cpp */; };
 		E0ED49421D56166A00EFE862 /* obb.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E0D8F21D1D4E6B2D006EA26C /* obb.cpp */; };
 		E0ED49431D56166A00EFE862 /* tga.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E015839B1D43990D0029D6F5 /* tga.cpp */; };
@@ -194,8 +194,8 @@
 		E0D8F2231D4E6B39006EA26C /* prefab.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = prefab.h; sourceTree = "<group>"; };
 		E0E8EC451D4804CA00BE1432 /* ssao_technique.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ssao_technique.cpp; sourceTree = "<group>"; };
 		E0E8EC471D4804D000BE1432 /* ssao_technique.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ssao_technique.h; sourceTree = "<group>"; };
-		E0EB04E91D88033100A9C7E6 /* render_queues.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = render_queues.h; sourceTree = "<group>"; };
-		E0EB04EA1D8805B700A9C7E6 /* render_queues.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = render_queues.cpp; sourceTree = "<group>"; };
+		E0EB04E91D88033100A9C7E6 /* render_scene.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = render_scene.h; sourceTree = "<group>"; };
+		E0EB04EA1D8805B700A9C7E6 /* render_scene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = render_scene.cpp; sourceTree = "<group>"; };
 		E0ECA17B1D60C78500588A22 /* render.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = render.h; sourceTree = "<group>"; };
 		E0ED49471D5616A100EFE862 /* common */ = {isa = PBXFileReference; lastKnownFileType = folder; path = common; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -254,7 +254,7 @@
 				E08DB6B61D44AD7300EF554F /* system_manager.cpp */,
 				E01461AA1D34D2EC008A2574 /* resources_manager.cpp */,
 				E06C1B0E1D61885000098352 /* render.cpp */,
-				E0EB04EA1D8805B700A9C7E6 /* render_queues.cpp */,
+				E0EB04EA1D8805B700A9C7E6 /* render_scene.cpp */,
 				E03EDC801D34186900C0C22A /* rendering_system.cpp */,
 				E09803E61D8AE4C9006C66F3 /* rendering_pass_shadow.cpp */,
 				E054AC7C1D72274600A3EE81 /* rendering_pass_forward.cpp */,
@@ -326,7 +326,7 @@
 				E03EDCC01D3418CF00C0C22A /* text_mesh.h */,
 				E08DB6B51D44ABF400EF554F /* system_manager.h */,
 				E0ECA17B1D60C78500588A22 /* render.h */,
-				E0EB04E91D88033100A9C7E6 /* render_queues.h */,
+				E0EB04E91D88033100A9C7E6 /* render_scene.h */,
 				E03EDCBC1D3418CF00C0C22A /* rendering_system.h */,
 				E054AC811D72275100A3EE81 /* rendering_pass_forward.h */,
 				E022AF4A1D3EB47E009F76D5 /* rendering_pass_deferred.h */,
@@ -488,7 +488,7 @@
 				E03EDC931D34186900C0C22A /* rendering_system.cpp in Sources */,
 				E03EDC921D34186900C0C22A /* query_performance.cpp in Sources */,
 				E054AC7F1D72274600A3EE81 /* shadow_buffer.cpp in Sources */,
-				E0EB04EB1D8805B700A9C7E6 /* render_queues.cpp in Sources */,
+				E0EB04EB1D8805B700A9C7E6 /* render_scene.cpp in Sources */,
 				E0D8F21E1D4E6B2D006EA26C /* frustum.cpp in Sources */,
 				E03EDC8F1D34186900C0C22A /* mesh.cpp in Sources */,
 				E03EDC861D34186900C0C22A /* app_basic.cpp in Sources */,
@@ -505,7 +505,7 @@
 				E01583A51D43FCBC0029D6F5 /* entity.cpp in Sources */,
 				E0ED49431D56166A00EFE862 /* tga.cpp in Sources */,
 				E0ED49441D56166A00EFE862 /* rendering_pass_deferred.cpp in Sources */,
-				E0EB04EC1D8805B700A9C7E6 /* render_queues.cpp in Sources */,
+				E0EB04EC1D8805B700A9C7E6 /* render_scene.cpp in Sources */,
 				E06C1B101D61885000098352 /* render.cpp in Sources */,
 				E03EDCA81D34187500C0C22A /* shader.cpp in Sources */,
 				E0ED49411D56166A00EFE862 /* frustum.cpp in Sources */,

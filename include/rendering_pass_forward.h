@@ -10,7 +10,7 @@ namespace hcube
 	{
 	public:
         
-        rendering_pass_forward(render_queue_type type = RQ_OPAQUE)
+        rendering_pass_forward(render_scene_queue_type type = RQ_OPAQUE)
         :rendering_pass(RPT_RENDER)
         ,m_queue_type(type)
         {
@@ -27,7 +27,7 @@ namespace hcube
         
     protected:
         
-        render_queue_type m_queue_type;
+        render_scene_queue_type m_queue_type;
     
     };
 }

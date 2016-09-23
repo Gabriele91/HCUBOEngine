@@ -127,9 +127,9 @@ namespace hcube
         //set viewport
         render::set_viewport_state({ l_light->get_viewport() });
         //draw objs
-        render_queue_type queue_shadow[]{ RQ_OPAQUE, RQ_TRANSLUCENT };
+        render_scene_queue_type queue_shadow[]{ RQ_OPAQUE, RQ_TRANSLUCENT };
         //for all types
-        for(render_queue_type queue_type : queue_shadow)
+        for(render_scene_queue_type queue_type : queue_shadow)
         {
             HCUBE_FOREACH_QUEUE(weak_element, rscene.get_first(queue_type))
             {

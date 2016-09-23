@@ -1,5 +1,5 @@
 //
-//  render_queues.cpp
+//  render_scene.cpp
 //  HCubo
 //
 //  Created by Gabriele on 13/09/16.
@@ -7,14 +7,14 @@
 //
 #include <light.h>
 #include <renderable.h>
-#include <render_queues.h>
+#include <render_scene.h>
 #include <intersection.h>
 
 
 namespace hcube
 {
 
-	render_queue::render_queue(size_t capacity)
+	render_scene_queue::render_scene_queue(size_t capacity)
 	{
 		//get page size
 		size_t npage = capacity / page_capacity;
@@ -24,12 +24,12 @@ namespace hcube
 		for (size_t i = 0; i != npage; ++i) new_page();
 	}
 	//pages
-	void render_queue::new_page()
+	void render_scene_queue::new_page()
 	{
 		m_pages.push_back(std::unique_ptr<pool_page>(new pool_page));
 	}
 	
-	render_element* render_queue::get_new_element()
+	render_scene_element* render_scene_queue::get_new_element()
 	{
 		size_t page    = m_size / page_capacity;
 		size_t element = m_size % page_capacity;
@@ -42,18 +42,18 @@ namespace hcube
 	}
 	
 	//add 
-	void render_queue::push_front_to_back(entity::wptr entity, float depth)
+	void render_scene_queue::push_front_to_back(entity::wptr entity, float depth)
 	{
 		//element get
-		render_element *e = get_new_element();
+		render_scene_element *e = get_new_element();
 		//init
 		e->m_ref = entity;
 		e->m_depth = depth;
 		//next
 		e->m_next = nullptr;
 		//loop vars
-		render_element* last = nullptr;
-		render_element* current = m_first;
+		render_scene_element* last = nullptr;
+		render_scene_element* current = m_first;
 		//insert sort, front to back
 		for (; current;
 			last = current,
@@ -74,18 +74,18 @@ namespace hcube
 		}
 	}
 	
-	void render_queue::push_back_to_front(entity::wptr entity, float depth)
+	void render_scene_queue::push_back_to_front(entity::wptr entity, float depth)
 	{
 		//element get
-		render_element *e = get_new_element();
+		render_scene_element *e = get_new_element();
 		//init
 		e->m_ref = entity;
 		e->m_depth = depth;
 		//link
 		e->m_next = nullptr;
 		//loop vars
-		render_element* last = nullptr;
-		render_element* current = m_first;
+		render_scene_element* last = nullptr;
+		render_scene_element* current = m_first;
 		//insert sort, back to front
 		for (; current;
 			last = current,
@@ -107,7 +107,7 @@ namespace hcube
 	}
     
 	//pool
-    void render_objects::remove(entity::ptr e)
+    void render_scene_objects::remove(entity::ptr e)
     {
         //search light and remove
         for (auto
@@ -135,27 +135,27 @@ namespace hcube
         }
     }
     
-    void render_objects::push(entity::ptr e)
+    void render_scene_objects::push(entity::ptr e)
     {
         if (e->has_component<light>())      m_lights.push_back( e );
         if (e->has_component<renderable>()) m_renderable.push_back( e );
     }
     
-    void render_objects::reserve(size_t size)
+    void render_scene_objects::reserve(size_t size)
     {
         m_lights.reserve(size);
         m_renderable.reserve(size);
     }
     
     //clear all
-    void render_objects::clear()
+    void render_scene_objects::clear()
     {
         m_lights.clear();
         m_renderable.clear();
     }
     
     //get iterator
-    render_element* render_scene::get_first(render_queue_type queue) const
+    render_scene_element* render_scene::get_first(render_scene_queue_type queue) const
     {
         return m_queues[queue].get_first();
     }

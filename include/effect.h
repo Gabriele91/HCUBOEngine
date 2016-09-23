@@ -11,7 +11,7 @@
 #include <camera.h>
 #include <transform.h>
 #include <smart_pointers.h>
-#include <render_queues.h>
+#include <render_scene.h>
 
 namespace hcube
 {
@@ -23,8 +23,8 @@ namespace hcube
         //queue param
         struct parameter_queue
         {
-            render_queue_type m_type { RQ_OPAQUE };
-            int               m_order{ 0         };
+            render_scene_queue_type m_type { RQ_OPAQUE };
+            int                     m_order{ 0         };
         };
         
 		//parameter type

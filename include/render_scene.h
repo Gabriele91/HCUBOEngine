@@ -1,5 +1,5 @@
 //
-//  render_queue.h
+//  render_scene.h
 //  HCubo
 //
 //  Created by Gabriele on 13/09/16.
@@ -17,18 +17,18 @@ namespace hcube
 {
 
 #define HCUBE_FOREACH_QUEUE(name,queue)\
-        for (::hcube::render_element* name = queue; name; name = name->m_next)
+        for (::hcube::render_scene_element* name = queue; name; name = name->m_next)
 
 
-	struct render_element
+	struct render_scene_element
 	{
-		render_element() {};
-		render_element(entity::wptr ref) : m_ref(ref) {};
+		render_scene_element() {};
+		render_scene_element(entity::wptr ref) : m_ref(ref) {};
 		//ref to object
 		entity::wptr m_ref;
 		//list
-		render_element* m_next{ nullptr };
-		float           m_depth{ ~0 };
+		render_scene_element* m_next{ nullptr };
+		float                 m_depth{ ~0 };
 		//fake lock
 		entity::ptr lock()
 		{
@@ -36,12 +36,12 @@ namespace hcube
 		}
 	};
 
-	class render_queue
+	class render_scene_queue
 	{
 	public:
 
 		//init
-		render_queue(size_t capacity = 512);
+		render_scene_queue(size_t capacity = 512);
 
 		//add element
 		void push_front_to_back(entity::wptr entity, float depth);
@@ -49,7 +49,7 @@ namespace hcube
 		void push_back_to_front(entity::wptr entity, float depth);
 
 		//first
-		render_element* get_first() const
+		render_scene_element* get_first() const
 		{
 			return m_first;
 		}
@@ -71,21 +71,20 @@ namespace hcube
 		static const size_t page_capacity = 128;
 		
 		//pool type
-		using pool_page  = std::array< render_element, page_capacity >;
+		using pool_page  = std::array< render_scene_element, page_capacity >;
 		using pool_pages = std::vector< std::unique_ptr<pool_page> >;
 
 		//pool utilities
 		void new_page();
-		render_element* get_new_element();
+		render_scene_element* get_new_element();
 
 		//fields
-		size_t		    m_size{ 0 };
-		pool_pages		m_pages;
-		render_element*	m_first{ nullptr };
+		size_t                  m_size{ 0 };
+		pool_pages              m_pages;
+		render_scene_element*	m_first{ nullptr };
 	};
 
-
-	class render_objects
+	class render_scene_objects
 	{
 
 	public:
@@ -102,7 +101,7 @@ namespace hcube
 
 	};
 
-	enum render_queue_type
+	enum render_scene_queue_type
 	{
 		RQ_SPOT_LIGHT,
 		RQ_POINT_LIGHT,
@@ -118,11 +117,11 @@ namespace hcube
 	{
 	public:
 		//all objects
-		render_objects  m_pool;
+		render_scene_objects  m_pool;
 		//all queue
-		render_queue  m_queues[RQ_MAX];
+		render_scene_queue  m_queues[RQ_MAX];
 		//get first element of a queue
-		render_element* get_first(render_queue_type queue) const;
+		render_scene_element* get_first(render_scene_queue_type queue) const;
 		//compue queues
 		void compute_lights_queues(const frustum& view_frustum);
 		//compue queues

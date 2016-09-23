@@ -1403,26 +1403,26 @@ namespace hcube
         }
         bool parse_queue_type(const char* in,
                               const char** cout,
-                              render_queue_type& type)
+                              render_scene_queue_type& type)
         {
             if (CSTRCMP(in, "opaque"))
             {
-                (*cout) += sizeof("opaque")-1; type = render_queue_type::RQ_OPAQUE;  return true;
+                (*cout) += sizeof("opaque")-1; type = render_scene_queue_type::RQ_OPAQUE;  return true;
             }
             
             if (CSTRCMP(in, "translucent"))
             {
-                (*cout) += sizeof("translucent")-1; type = render_queue_type::RQ_TRANSLUCENT;  return true;
+                (*cout) += sizeof("translucent")-1; type = render_scene_queue_type::RQ_TRANSLUCENT;  return true;
             }
             
             if (CSTRCMP(in, "ui"))
             {
-                (*cout) += sizeof("ui")-1;; type = render_queue_type::RQ_UI;  return true;
+                (*cout) += sizeof("ui")-1;; type = render_scene_queue_type::RQ_UI;  return true;
             }
             
             if (CSTRCMP(in, "background"))
             {
-                (*cout) += sizeof("background")-1; type = render_queue_type::RQ_BACKGROUND;  return true;
+                (*cout) += sizeof("background")-1; type = render_scene_queue_type::RQ_BACKGROUND;  return true;
             }
             
             return false;

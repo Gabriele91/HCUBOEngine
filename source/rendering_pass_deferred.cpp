@@ -68,7 +68,7 @@ namespace hcube
 													      entity::ptr e_camera,
                                                           const vec4& ambient_light,
                                                           render_scene& rsceme,
-													      render_queue_type type)
+													      render_scene_queue_type type)
     {
         m_shader->bind();
         //uniform g_buffer and etc...
@@ -134,7 +134,7 @@ namespace hcube
 		entity::ptr e_camera,
 		const vec4& ambient_light,
 		render_scene& rsceme,
-		render_queue_type type
+		render_scene_queue_type type
     )
 	{
 		m_shader->bind();
@@ -196,7 +196,7 @@ namespace hcube
 															   entity::ptr e_camera,
                                                                const vec4& ambient_light,
                                                                render_scene& rsceme,
-															   render_queue_type type,
+															   render_scene_queue_type type,
                                                                mesh::ptr square)
 	{
 		m_shader->bind();

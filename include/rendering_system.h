@@ -11,7 +11,7 @@
 #include <entity.h>
 #include <effect.h>
 #include <renderable.h>
-#include <render_queues.h>
+#include <render_scene.h>
 #include <smart_pointers.h>
 #include <system_manager.h>
 #include <vector_math.h>
