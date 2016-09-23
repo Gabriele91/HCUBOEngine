@@ -1,20 +1,18 @@
 #pragma vertex
 //in
 layout(location = ATT_POSITIONT) in vec3 vertex;
-layout(location = ATT_NORMAL0)   in vec3 normal;
-layout(location = ATT_TEXCOORD0) in vec2 uvcoord;
 //out
-out vec2 frag_uvcoord;
+out vec4 frag_position;
 
 void main()
 {
-    gl_Position  = vec4(vertex, 1.0f);
-    frag_uvcoord = uvcoord;
+	frag_position = vec4(vertex, 1.0f);
+    gl_Position   = frag_position;
 }
 
 #pragma fragment
 //in
-in vec2 frag_uvcoord;
+in vec4 frag_position;
 //out
 out vec4 frag_color;
 //uniform
@@ -24,20 +22,27 @@ uniform sampler2D g_albedo_spec;
 uniform sampler2D g_occlusion;
 //uniform model camera position
 #pragma include "lib/uniform.glsl"
+//include screen utilities
+#pragma include "lib/post_processing_utilities.glsl"
 //include light lib
 #pragma include "lib/direction_light.glsl"
 //uniform light
 uniform direction_light light;
+//get uv
+vec2 get_uv_screen()
+{
+	return projection_space_to_screen_space(frag_position);
+}
 
 
 void main()
 {
     // Retrieve data from gbuffer
-    vec4  position  = texture(g_position,    frag_uvcoord).rgba;
-    vec3  normal    = texture(g_normal,      frag_uvcoord).rgb;
-    vec3  diffuse   = texture(g_albedo_spec, frag_uvcoord).rgb;
-    float specular  = texture(g_albedo_spec, frag_uvcoord).a;
-    float occlusion = texture(g_occlusion,   frag_uvcoord).r;
+    vec4  position  = texture(g_position,    get_uv_screen()).rgba;
+    vec3  normal    = texture(g_normal,      get_uv_screen()).rgb;
+    vec3  diffuse   = texture(g_albedo_spec, get_uv_screen()).rgb;
+    float specular  = texture(g_albedo_spec, get_uv_screen()).a;
+    float occlusion = texture(g_occlusion,   get_uv_screen()).r;
     
     //unpack
     normal = normalize(normal * 2.0 - 1.0);

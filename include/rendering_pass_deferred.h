@@ -23,10 +23,11 @@ namespace hcube
                                 resources_manager& resources);
 
 		//overload draw
-		virtual void draw_pass(vec4&  clear_color,
+		virtual void draw_pass(int n_pass,
+                               vec4&  clear_color,
                                vec4&  ambient_color,
                                entity::ptr camera,
-                               render_queues& queues);
+                               render_scene& scene);
 
 		struct ambient_occlusion_param
 		{
@@ -51,7 +52,7 @@ namespace hcube
 			uniform*           m_occlusion;
             uniform*           m_ambient_light;
             
-            void init(const std::string& path);
+            void init(resources_manager& resources);
             void uniform(g_buffer& gbuffer,
 						 context_texture* ssao,
                          const vec4& ambient_light);
@@ -68,34 +69,39 @@ namespace hcube
             uniform*           m_albedo;
             uniform*           m_occlusion;            
             uniform_light_spot m_spot_light;
+			//geometry
+			uniform_transform  m_transform_cone;
+			mesh::ptr		   m_cone;
             
-            void init(const std::string& path);
+            void init(resources_manager& resources);
             void draw(g_buffer& gbuffer,
                       context_texture* ssao,
 					  entity::ptr t_camera,
                       const vec4& ambient_light,
-                      render_queues& queues,
-				      mesh::ptr square);
+					  render_scene& rsceme,
+					  render_queue_type type);
         };
         
         class point_light_shader
         {
         public:
-            shader::ptr        m_shader;
-			uniform_camera	   m_camera;
-            uniform*           m_position;
-            uniform*           m_normal;
-            uniform*           m_albedo;
-            uniform*           m_occlusion;
+            shader::ptr         m_shader;
+			uniform_camera	    m_camera;
+            uniform*            m_position;
+            uniform*            m_normal;
+            uniform*            m_albedo;
+            uniform*            m_occlusion;
             uniform_light_point m_point_light;
+			//geometry
+			mesh::ptr			m_sphere;
             
-            void init(const std::string& path);
+            void init(resources_manager& resources);
             void draw(g_buffer& gbuffer,
                       context_texture* ssao,
 					  entity::ptr t_camera,
                       const vec4& ambient_light,
-                      render_queues& queues,
-					  mesh::ptr square);
+					  render_scene& rsceme,
+					  render_queue_type type);
         };
 
 		class direction_light_shader
@@ -110,12 +116,13 @@ namespace hcube
 			uniform*           m_occlusion;
 			uniform_light_direction m_direction_light;
 
-			void init(const std::string& path);
+			void init(resources_manager& resources);
 			void draw(g_buffer& gbuffer,
 					  context_texture* ssao,
 					  entity::ptr t_camera,
 					  const vec4& ambient_light,
-					  render_queues& queues,
+					  render_scene& rsceme,
+					  render_queue_type type,
 					  mesh::ptr square);
 		};
         //size

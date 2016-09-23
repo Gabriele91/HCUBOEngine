@@ -75,20 +75,16 @@ namespace hcube
 	{
 		if (message.m_id == transform::MSG_DIRTY) m_view_is_dirty = true;
 	}
-
-	frustum& camera::get_frustum()
-	{
-		return m_frustum;
-	}
-
+	
 	const frustum& camera::get_frustum() const
 	{
 		return m_frustum;
 	}
 
-	void camera::update_view_frustum()
+	const frustum& camera::update_frustum()
 	{
 		m_frustum.update_frustum(m_projection*get_view());
+		return m_frustum;
 	}
 
 	void camera::update_view_matrix()

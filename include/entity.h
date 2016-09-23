@@ -6,13 +6,14 @@
 //  Copyright © 2016 Gabriele. All rights reserved.
 //
 #pragma once
+#include <string>
+#include <vector>
+#include <type_traits>
 #include <unordered_map>
-#include <material.h>
-#include <light.h>
-#include <renderable.h>
 #include <smart_pointers.h>
 #include <component.h>
-#include <type_traits>
+//components cache
+#include <transform.h>
 
 namespace hcube
 {
@@ -46,17 +47,28 @@ namespace hcube
 		T& add_component()
 		{
 			static_assert(std::is_base_of<component, T>::value, "Must to be a component");
-			return add_component(new T());
+			//return add_component(new T());
+			return add_component(std::make_shared<T>());
 		}
 		component_ptr add_component(component_ptr component_t);
 
 		template < class T >
-		std::shared_ptr< T > get_component()
+		inline std::shared_ptr< T > get_component()
 		{
 			static_assert(std::is_base_of<component, T>::value, "Must to be a component");
+			//cache
+			if (T::type() == transform::type()) return  std::static_pointer_cast<T>(transform_cache);
+			//pool
 			return std::static_pointer_cast<T>(m_components[T::type()]);
 		}
-		component_ptr get_component(component_id id);
+
+		inline component_ptr get_component(component_id id)
+		{
+			//cache
+			if (id == transform::type()) return  transform_cache;
+			//pool
+			return m_components[id];
+		}
 
 		template < class T >
 		std::shared_ptr< T > remove_component()
@@ -122,6 +134,8 @@ namespace hcube
 		//list components
 		std::unordered_map< component_id, component_ptr > m_components;
 		std::unordered_map< entity*, entity::ptr > m_entities;
-
+		//components cache
+		component_ptr transform_cache;
 	};
+	
 }

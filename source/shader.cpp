@@ -291,7 +291,6 @@ R"GLSL(
 	inline bool process_import(shader::filepath_map& filepath_map,
 							   std::stringstream& effect, 
 							   const std::string& path_effect_file,
-							   const std::vector<std::string>& defines,
 							   std::string& out_vertex,
 							   std::string& out_fragment,
 							   std::string& out_geometry,
@@ -406,7 +405,7 @@ R"GLSL(
 					//input stream
 					std::stringstream import_effect(filesystem::text_file_read_all(import_path));
 					//add include
-					if (!process_import(filepath_map, import_effect, import_path, defines, vertex, fragment, geometry, n_files, line, level + 1))
+					if (!process_import(filepath_map, import_effect, import_path, vertex, fragment, geometry, n_files, line, level + 1))
 					{
 						return false;
 					}
@@ -430,8 +429,7 @@ R"GLSL(
 	}
 
 	bool shader::load(const std::string& effect_file,
-		              const std::vector<std::string>& defines,
-		              size_t line)
+                      const preprocess_map& defines)
 	{
 		//id file
 		size_t  this_file = 0;
@@ -443,13 +441,13 @@ R"GLSL(
 		if (!process_import(m_file_path_id, 
 							stream_effect,
 						    effect_file,
-							defines, 
 							vertex, 
 							fragment, 
 							geometry, 
 							this_file, 
-							line, 
-							0)) return false;
+							0, //line 0
+							0  //file 0
+                            )) return false;
 		//load shader
 		return load_shader(vertex, 0,
 						   fragment, 0,
@@ -460,8 +458,8 @@ R"GLSL(
 
 	bool shader::load_effect(const std::string& effect,
 					         const std::string& effect_file,
-					         size_t line_effect,
-					         const std::vector<std::string>& defines)
+					         const preprocess_map& defines,
+                             const size_t line_effect)
 	{
 
 		//id file
@@ -474,7 +472,6 @@ R"GLSL(
 		if (!process_import(m_file_path_id,
 							stream_effect,
 							effect_file,
-							defines,
 							vertex,
 							fragment,
 							geometry,
@@ -490,40 +487,50 @@ R"GLSL(
 
 	bool shader::load(const std::string& vs_file,
 		              const std::string& fs_file,
-		              const std::string& gs_file,
-		              const std::vector<std::string>& defines,
-		              size_t line)
+                      const std::string& gs_file,
+                      const preprocess_map& defines)
 	{
 		return load_shader
 		(
-			filesystem::text_file_read_all(vs_file), line,
-			filesystem::text_file_read_all(fs_file), line,
-			gs_file.size() ?
-			filesystem::text_file_read_all(gs_file) : "", line,
+			filesystem::text_file_read_all(vs_file),                       0,
+			filesystem::text_file_read_all(fs_file),                       0,
+			gs_file.size() ? filesystem::text_file_read_all(gs_file) : "", 0,
 			defines
 		);
 	}
 
-	bool shader::load_shader(const std::string& vs_str, size_t line_vs,
-						     const std::string& fs_str, size_t line_fs,
-							 const std::string& gs_str, size_t line_gs,
-							 const std::vector<std::string>& defines)
+	bool shader::load_shader(const std::string& vs_str,const size_t line_vs,
+						     const std::string& fs_str,const size_t line_fs,
+							 const std::string& gs_str,const size_t line_gs,
+							 const preprocess_map& all_process)
 	{
 		bool success_to_compile = true;
 		//delete last shader
 		delete_program();
 		//int variables
 		GLint compiled = 0, linked = 0;
+        //version is defined?
+        bool version_is_defined = false;
 		//list define
 		std::string defines_string;
-		for (const std::string& define : defines) defines_string += "#define " + define + "\n";
+        //defines
+        for (auto& p : all_process)
+        {
+            //get version
+            if(std::get<0>(p)=="version"){ version_is_defined = true; }
+            //add
+            defines_string += "#" + std::get<0>(p) +" "+ std::get<1>(p) + "\n";
+        }
+        ////////////////////////////////////////////////////////////////////////////////
+        //define version
+        if(!version_is_defined) defines_string="#version 410\n"+defines_string;
 		////////////////////////////////////////////////////////////////////////////////
 		// load shaders files
 		// vertex
 		std::string file_vs =
-			"#version 410\n" +
 			defines_string +
 			default_glsl_defines +
+            "#define cbuffer     layout(std140) uniform     \n"
 			"#define saturate(x) clamp( x, 0.0, 1.0 )       \n"
 			"#define lerp        mix                        \n"
 			"#line " + std::to_string(line_vs) + "\n" +
@@ -545,15 +552,15 @@ R"GLSL(
 		////////////////////////////////////////////////////////////////////////////////
 		//fragmentx
 		std::string file_fs =
-			"#version 410\n" +
 			defines_string +
-			default_glsl_defines +
+            default_glsl_defines +
+            "#define cbuffer     layout(std140) uniform     \n"
 			"#define saturate(x) clamp( x, 0.0, 1.0 )       \n"
 			"#define lerp        mix                        \n"
-			"#define bestp\n"
-			"#define highp\n"
-			"#define mediump\n"
-			"#define lowp\n"
+			"#define bestp                                  \n"
+			"#define highp                                  \n"
+			"#define mediump                                \n"
+			"#define lowp                                   \n"
 			"#line " + std::to_string(line_fs) + "\n" +
 			fs_str;
 		//create a fragment shader
@@ -575,9 +582,9 @@ R"GLSL(
 		{
 			//geometrfs_stry
 			std::string file_gs =
-				"#version 410\n" +
 				defines_string +
 				default_glsl_defines +
+                "#define cbuffer     layout(std140) uniform     \n"
 				"#define saturate(x) clamp( x, 0.0, 1.0 )       \n"
 				"#define lerp        mix                        \n"
 				"#line " + std::to_string(line_gs) + "\n" +
@@ -706,73 +713,81 @@ R"GLSL(
 
 	void uniform::set_value(texture::ptr in_texture)
 	{
-		int n_texture = ++m_shader->m_uniform_ntexture;
+		long n_texture = ++m_shader->m_uniform_ntexture;
 		//bind texture
-		render::bind_texture(in_texture->get_context_texture(), n_texture);
+		render::bind_texture(in_texture->get_context_texture(), (int)n_texture);
 		//bind id
-		glUniform1i(m_id, n_texture);
+		glUniform1i((GLint)m_id, (int)n_texture);
 	}
 
 	void uniform::set_value(context_texture* in_texture)
 	{
-		int n_texture = ++m_shader->m_uniform_ntexture;
+		long n_texture = ++m_shader->m_uniform_ntexture;
 		//bind texture
-		render::bind_texture(in_texture, n_texture);
+		render::bind_texture(in_texture, (int)n_texture);
 		//bind id
-		glUniform1i(m_id, n_texture);
+		glUniform1i((GLint)m_id, (int)n_texture);
 	}
 
 	void uniform::set_value(int i)
 	{
-		glUniform1i(m_id, i);
+		glUniform1i((GLint)m_id, i);
 	}
 	void uniform::set_value(float f)
 	{
-		glUniform1f(m_id, f);
+		glUniform1f((GLint)m_id, f);
 	}
 	void uniform::set_value(const vec2& v2)
 	{
-		glUniform2fv(m_id, 1, value_ptr(v2));
+		glUniform2fv((GLint)m_id, 1, value_ptr(v2));
 	}
 	void uniform::set_value(const vec3& v3)
 	{
-		glUniform3fv(m_id, 1, value_ptr(v3));
+		glUniform3fv((GLint)m_id, 1, value_ptr(v3));
 	}
 	void uniform::set_value(const vec4& v4)
 	{
-		glUniform4fv(m_id, 1, value_ptr(v4));
+		glUniform4fv((GLint)m_id, 1, value_ptr(v4));
+	}
+	void uniform::set_value(const mat3& m3)
+	{
+		glUniformMatrix3fv((GLint)m_id, 1, GL_FALSE, value_ptr(m3));
 	}
 	void uniform::set_value(const mat4& m4)
 	{
-		glUniformMatrix4fv(m_id, 1, GL_FALSE, value_ptr(m4));
+		glUniformMatrix4fv((GLint)m_id, 1, GL_FALSE, value_ptr(m4));
 	}
 
 	void uniform::set_value(const int* i, size_t n)
 	{
-		glUniform1iv(m_id, n, i);
+		glUniform1iv((GLint)m_id, (GLsizei)n, i);
 	}
 
 	void uniform::set_value(const float* f, size_t n)
 	{
-		glUniform1fv(m_id, n, f);
+		glUniform1fv((GLint)m_id, (GLsizei)n, f);
 	}
 
 	void uniform::set_value(const vec2* v2, size_t n)
 	{
-		glUniform2fv(m_id, n, value_ptr(*v2));
+		glUniform2fv((GLint)m_id, (GLsizei)n, value_ptr(*v2));
 	}
 
 	void uniform::set_value(const vec3* v3, size_t n)
 	{
-		glUniform3fv(m_id, n, value_ptr(*v3));
+		glUniform3fv((GLint)m_id, (GLsizei)n, value_ptr(*v3));
 	}
 	void uniform::set_value(const vec4* v4, size_t n)
 	{
-		glUniform4fv(m_id, n, value_ptr(*v4));
+		glUniform4fv((GLint)m_id, (GLsizei)n, value_ptr(*v4));
+	}
+	void uniform::set_value(const mat3* m3, size_t n)
+	{
+		glUniformMatrix3fv((GLint)m_id, (GLsizei)n, GL_FALSE, value_ptr(*m3));
 	}
 	void uniform::set_value(const mat4* m4, size_t n)
 	{
-		glUniformMatrix4fv(m_id, n, GL_FALSE, value_ptr(*m4));
+		glUniformMatrix4fv((GLint)m_id, (GLsizei)n, GL_FALSE, value_ptr(*m4));
 	}
 
 	void uniform::set_value(const std::vector < int >& i)
@@ -794,6 +809,10 @@ R"GLSL(
 	void uniform::set_value(const std::vector < vec4 >& v4)
 	{
 		set_value(v4.data(), v4.size());
+	}
+	void uniform::set_value(const std::vector < mat3 >& m3)
+	{
+		set_value(m3.data(), m3.size());
 	}
 	void uniform::set_value(const std::vector < mat4 >& m4)
 	{

@@ -7,46 +7,55 @@ parameters
 	color vec4(1.0,1.0,1.0,1.0)
 }
 
-technique "forward"
+sub_effect
 {
-	pass 
-	{
-		zbuffer less
-		blend off
-		cullface back
-		lights only_ambient
-		shader source 
-		{
-            #define FORWARD_RENDERING
-			#pragma import "shaders/base_texture_normal_specular.glsl"
-		}
-	}
-	pass 
-	{
-		zbuffer equal
-		blend one one
-		cullface back
-		lights spot_point_direction
-		shader source 
-        {
-            #define FORWARD_RENDERING
-			#pragma import "shaders/base_texture_normal_specular.glsl"
-		}
-	}
-}
-
-technique "deferred"
-{
-    pass
+    requirement
     {
-        zbuffer less
-        blend off
-        cullface back
-        lights off
-        shader source
+        driver  OpenGL(4,1)
+        shader  GLSL(410)
+    }
+    
+    technique "forward"
+    {
+        pass 
         {
-            #define DEFERRED_RENDERING
-            #pragma import "shaders/base_texture_normal_specular.glsl"
+            zbuffer less
+            blend off
+            cullface back
+            lights only_ambient
+            shader source 
+            {
+                #define FORWARD_RENDERING
+                #pragma import "shaders/base_texture_normal_specular.glsl"
+            }
+        }
+        pass 
+        {
+            zbuffer equal
+            blend one one
+            cullface back
+            lights spot_point_direction
+            shader source 
+            {
+                #define FORWARD_RENDERING
+                #pragma import "shaders/base_texture_normal_specular.glsl"
+            }
+        }
+    }
+
+    technique "deferred"
+    {
+        pass
+        {
+            zbuffer less
+            blend off
+            cullface back
+            lights off
+            shader source
+            {
+                #define DEFERRED_RENDERING
+                #pragma import "shaders/base_texture_normal_specular.glsl"
+            }
         }
     }
 }

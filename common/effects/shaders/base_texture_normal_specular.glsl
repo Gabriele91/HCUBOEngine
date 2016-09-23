@@ -70,7 +70,9 @@ void main()
 {
 	//color
 	vec4 texture_color = texture(diffuse_map, frag_uvcoord);
+#ifndef DISABLE_MASK
 	if (texture_color.a <= mask) discard;
+#endif
 	//specular
 	float specular = texture(specular_map, frag_uvcoord).r;
 	//outputs

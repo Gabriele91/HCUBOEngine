@@ -11,6 +11,7 @@
 #include <camera.h>
 #include <transform.h>
 #include <smart_pointers.h>
+#include <render_queues.h>
 
 namespace hcube
 {
@@ -19,6 +20,13 @@ namespace hcube
 
 	public:
 
+        //queue param
+        struct parameter_queue
+        {
+            render_queue_type m_type { RQ_OPAQUE };
+            int               m_order{ 0         };
+        };
+        
 		//parameter type
 		enum parameter_type
 		{
@@ -147,9 +155,77 @@ namespace hcube
 			void safe_unbind(const render_state&);
 		};
 
-
-		//pass list
-		using technique = std::vector < pass >;
+        
+        //pass list
+        class technique
+        {
+            
+        public:
+            
+            using pass_list     = std::vector < pass >;
+            using pass_list_it  = pass_list::iterator;
+            using pass_list_cit = pass_list::const_iterator;
+            
+            //info
+            size_t size()
+            {
+                return m_passes.size();
+            }
+            
+            //alloc
+            void resize(size_t n)
+            {
+                m_passes.resize(n);
+            }
+            
+            void reserve(size_t n)
+            {
+                m_passes.reserve(n);
+            }
+            
+            //push
+            void push_back(const pass&& pass)
+            {
+                m_passes.push_back(std::move(pass));
+            }
+            
+            //operator
+            pass& operator[](size_t i)
+            {
+                return m_passes[i];
+            }
+            
+            const pass& operator[](size_t i) const
+            {
+                return m_passes[i];
+            }
+            
+            //iterators
+            pass_list_it begin()
+            {
+                return m_passes.begin();
+            }
+            
+            pass_list_it end()
+            {
+                return m_passes.end();
+            }
+            
+            pass_list_cit begin() const
+            {
+                return m_passes.begin();
+            }
+            
+            pass_list_cit end() const
+            {
+                return m_passes.end();
+            }
+            
+        protected:
+            
+            std::vector < pass > m_passes;
+        
+        };
 
 		//maps
 		using map_parameters = std::unordered_map< std::string, int >;
@@ -157,10 +233,25 @@ namespace hcube
 
 		//load effect
 		bool load(resources_manager& resources, const std::string& path);
-
+        
+        //set queue
+        void set_queue(const parameter_queue& queue)
+        {
+            m_queue = queue;
+        }
+        
+        const parameter_queue& get_queue() const
+        {
+            return m_queue;
+        }
+        
 		//get technique
 		technique* get_technique(const std::string& technique);
-
+        //all techniques
+        const map_techniques& get_techniques() const
+        {
+            return m_map_techniques;
+        }
 		//get parameter
 		parameter*  get_parameter(int parameter);
 		parameter*  get_parameter(const std::string& parameter);
@@ -170,7 +261,8 @@ namespace hcube
 		int get_parameter_id(const std::string& parameter);
 
 
-	protected:
+    protected:
+        parameter_queue m_queue;
 		parameters		m_parameters;
 		map_parameters	m_map_parameters;
 		map_techniques  m_map_techniques;

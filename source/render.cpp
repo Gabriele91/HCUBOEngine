@@ -133,6 +133,72 @@ namespace hcube
         context_render_target* m_render_target{ nullptr };
     };
     
+    static int make_test_to_get_shader_version()
+    {
+        struct shader_test
+        {
+            int m_version;
+            const char* m_shader;
+        };
+        #define shader_test(x)\
+        {\
+          x,\
+          "#version " #x "\n"\
+          "void main(){}"\
+        },
+        shader_test tests[]=
+        {
+            shader_test(100) //fake, no test
+            //OpenGL 2->3.2
+            shader_test(110)
+            shader_test(120)
+            shader_test(130)
+            shader_test(140)
+            shader_test(150)
+            //OpenGL 3.3
+            shader_test(330)
+            //OpenGL 4.x
+            shader_test(400)
+            shader_test(410)
+            shader_test(420)
+            shader_test(430)
+            shader_test(440)
+            shader_test(450)
+        };
+        //id test
+        int   i=0;
+        int   supported=0;
+        GLint is_compiled = GL_TRUE;
+        //tests
+        while(i < (sizeof(tests)/sizeof(shader_test)-1))
+        {
+            //alloc
+            const GLuint shader = glCreateShader(GL_VERTEX_SHADER);
+            //compile
+            if (shader)
+            {
+                //next
+                ++i;
+                //test
+                glShaderSource(shader, 1, &(tests[i].m_shader), NULL);
+                glCompileShader(shader);
+                glGetShaderiv(shader, GL_COMPILE_STATUS, &is_compiled);
+                glDeleteShader(shader);
+                //test
+                if(is_compiled == GL_TRUE) supported=i;
+            }
+            else
+            {
+                std::cout << "Render driver error, can't determine supported shader version" << std::endl;
+                break;
+            }
+        }
+        //undef
+        #undef shader_test
+        //output
+        return tests[supported].m_version;
+    }
+    
     ////////////////////
 	//     RENDER     //
 	////////////////////
@@ -140,11 +206,26 @@ namespace hcube
 	{
 		///////////////////////
 		//globals
-        bind_context s_bind_context;
-		render_state s_render_state;
-		GLuint       s_vao_attributes;
+        bind_context       s_bind_context;
+		render_state       s_render_state;
+		GLuint             s_vao_attributes;
+        render_driver_info s_render_driver_info;
 		///////////////////////
-
+        
+        static void compute_render_driver_info()
+        {
+            render_driver_info m_info;
+            //type
+            s_render_driver_info.m_render_driver = DR_OPENGL;
+            //get version
+            glGetIntegerv(GL_MAJOR_VERSION, &s_render_driver_info.m_major_version);
+            glGetIntegerv(GL_MINOR_VERSION, &s_render_driver_info.m_minor_version);
+            //shader type
+            s_render_driver_info.m_shader_language = "GLSL";
+            //shader version
+            s_render_driver_info.m_shader_version  = make_test_to_get_shader_version();
+        }
+        
 		bool init()
 		{
 
@@ -169,8 +250,12 @@ namespace hcube
 			//Front face
 			glFrontFace(GL_CW);
 #endif
-			//test
+			//clean
 			render::print_errors();
+            //get info
+            compute_render_driver_info();
+            //clean
+            render::print_errors();
 			//attributes vao
 			glGenVertexArrays(1, &s_vao_attributes);
 			glBindVertexArray(s_vao_attributes);
@@ -186,7 +271,7 @@ namespace hcube
 			//save cullface state
 			s_render_state.m_cullface.m_cullface = CF_BACK;
 			//save depth state
-			s_render_state.m_depth.m_depth = true;
+			s_render_state.m_depth.m_mode = DM_ENABLE_AND_WRITE;
 			s_render_state.m_depth.m_type = DT_LESS;
 			//save blend state
 			s_render_state.m_blend.m_enable = false;
@@ -217,13 +302,19 @@ namespace hcube
 
 		render_driver get_render_driver()
 		{
-			return DR_OPENGL;
+			return s_render_driver_info.m_render_driver;
 		}
+        
+        render_driver_info get_render_driver_info()
+        {
+            return s_render_driver_info;
+        }
 
 		const clear_color_state& get_clear_color_state()
 		{
 			return s_render_state.m_clear_color;
 		}
+        
 
 		void set_clear_color_state(const clear_color_state& clear_color)
 		{
@@ -234,9 +325,12 @@ namespace hcube
 			}
 		}
 
-		void clear()
+		void clear(int type)
 		{
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            GLbitfield clear_type_gl = 0;
+            if(type & CLEAR_COLOR) clear_type_gl |= GL_COLOR_BUFFER_BIT;
+            if(type & CLEAR_DEPTH) clear_type_gl |= GL_DEPTH_BUFFER_BIT;
+			if(clear_type_gl) glClear(clear_type_gl);
 		}
 
 		const depth_buffer_state& get_depth_buffer_state()
@@ -266,8 +360,21 @@ namespace hcube
 			if (s_render_state.m_depth != depth)
 			{
 				s_render_state.m_depth = depth;
-				if (depth.m_depth)  glEnable(GL_DEPTH_TEST);
-				else               glDisable(GL_DEPTH_TEST);
+				switch (s_render_state.m_depth.m_mode)
+				{
+				case depth_mode::DM_DISABLE:
+					glDisable(GL_DEPTH_TEST);
+				break;
+				case depth_mode::DM_ENABLE_AND_WRITE:
+					glEnable(GL_DEPTH_TEST);
+					glDepthMask(true);
+				break;
+				case depth_mode::DM_ENABLE_ONLY_READ:
+					glEnable(GL_DEPTH_TEST);
+					glDepthMask(false);
+				break;
+				default: break;
+				}
 				glDepthFunc(get_depth_func(depth.m_type));
 			}
 		}
@@ -338,7 +445,7 @@ namespace hcube
 			case BLEND_ONE_MINUS_DST_COLOR: return GL_ONE_MINUS_DST_COLOR;
 			case BLEND_ONE_MINUS_DST_ALPHA: return GL_ONE_MINUS_DST_ALPHA;
 			case BLEND_ONE_MINUS_SRC_COLOR: return GL_ONE_MINUS_SRC_COLOR;
-			case BLEND_ONE_MINUS_SRC_ALPHA: return GL_ONE_MINUS_SRC_COLOR;
+			case BLEND_ONE_MINUS_SRC_ALPHA: return GL_ONE_MINUS_SRC_ALPHA;
 
 			case BLEND_DST_COLOR: return GL_DST_COLOR;
 			case BLEND_DST_ALPHA: return GL_DST_ALPHA;
@@ -803,17 +910,19 @@ namespace hcube
 			}
 		}
 
-		inline const GLenum get_texture_type_format(texture_type_format type)
-		{
-			switch (type)
-			{
-			default:
-			case TTF_FLOAT:             return GL_FLOAT;
-			case TTF_UNSIGNED_BYTE:     return GL_UNSIGNED_BYTE;
-			case TTF_UNSIGNED_SHORT:    return GL_UNSIGNED_SHORT;
-			case TTF_UNSIGNED_INT:      return GL_UNSIGNED_INT;
-			}
-		}
+        inline const GLenum get_texture_type_format(texture_type_format type)
+        {
+            switch (type)
+            {
+                default:
+                case TTF_FLOAT:                      return GL_FLOAT;
+                case TTF_UNSIGNED_BYTE:              return GL_UNSIGNED_BYTE;
+                case TTF_UNSIGNED_SHORT:             return GL_UNSIGNED_SHORT;
+                case TTF_UNSIGNED_INT:               return GL_UNSIGNED_INT;
+                case TTF_UNSIGNED_INT_24_8:          return GL_UNSIGNED_INT_24_8;
+                case TTF_FLOAT_32_UNSIGNED_INT_24_8: return GL_FLOAT_32_UNSIGNED_INT_24_8_REV;
+            }
+        }
 
 		static GLenum get_texture_min_filter(texture_min_filter_type type)
 		{
@@ -1092,6 +1201,71 @@ namespace hcube
             //safe delete
 			delete r_target;
 			r_target = nullptr;
+		}
+
+		GLenum get_copy_render_target_type(render_target_type type)
+		{
+			switch (type)
+			{
+			case hcube::RT_COLOR:		  return GL_COLOR_BUFFER_BIT;
+			case hcube::RT_DEPTH:		  return GL_DEPTH_BUFFER_BIT;
+			case hcube::RT_STENCIL:		  return GL_STENCIL_BUFFER_BIT;
+			case hcube::RT_DEPTH_STENCIL:
+			default: assert(0); break;
+			}
+		}
+
+		void copy_target_to_target(
+			const vec4& from_area,
+			context_render_target* from,
+			const vec4& to_area,
+			context_render_target* to,
+			render_target_type	mask
+		)
+		{
+			//bind buffers
+			glBindFramebuffer(GL_READ_FRAMEBUFFER, from ? from->m_fbo : 0);
+			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, to   ? to->m_fbo   : 0);
+			//copy
+			if (mask != RT_DEPTH_STENCIL)
+			{
+				glBlitFramebuffer(
+					from_area.x, from_area.y, from_area.z, from_area.w,
+					to_area.x, to_area.y, to_area.z, to_area.w,
+					get_copy_render_target_type(mask),
+					GL_NEAREST
+				);
+			}
+			else
+			{
+				//DEPTH
+				glBlitFramebuffer(
+					from_area.x, from_area.y, from_area.z, from_area.w,
+					to_area.x, to_area.y, to_area.z, to_area.w,
+					GL_DEPTH_BUFFER_BIT,
+					GL_NEAREST
+				);
+				//STENCIL
+				glBlitFramebuffer(
+					from_area.x, from_area.y, from_area.z, from_area.w,
+					to_area.x, to_area.y, to_area.z, to_area.w,
+					GL_STENCIL_BUFFER_BIT,
+					GL_NEAREST
+				);
+
+            }
+#if 0
+            //reset
+            glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+            glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+#endif
+			//reset
+			if(s_bind_context.m_render_target)
+				//set old fbo
+				s_bind_context.m_render_target->enable_FBO();
+			else 
+				//default FBO
+				glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		}
 
 		bool print_errors()

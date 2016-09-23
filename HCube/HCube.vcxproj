@@ -118,7 +118,7 @@
       <WarningLevel>Level3</WarningLevel>
       <PrecompiledHeader>
       </PrecompiledHeader>
-      <Optimization>MaxSpeed</Optimization>
+      <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>GLEW_STATIC;NOMINMAX;USE_FLOAT;GLM_FORCE_SSE2;WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -139,7 +139,7 @@
       <WarningLevel>Level3</WarningLevel>
       <PrecompiledHeader>
       </PrecompiledHeader>
-      <Optimization>MaxSpeed</Optimization>
+      <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>GLEW_STATIC;NOMINMAX;USE_FLOAT;GLM_FORCE_SSE2;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -163,12 +163,12 @@
     <ClInclude Include="..\include\camera.h" />
     <ClInclude Include="..\include\component.h" />
     <ClInclude Include="..\include\effect.h" />
-    <ClInclude Include="..\include\eigenvalues_jacobi.h" />
     <ClInclude Include="..\include\entity.h" />
     <ClInclude Include="..\include\filesystem.h" />
     <ClInclude Include="..\include\frustum.h" />
     <ClInclude Include="..\include\gameobject.h" />
     <ClInclude Include="..\include\g_buffer.h" />
+    <ClInclude Include="..\include\intersection.h" />
     <ClInclude Include="..\include\light.h" />
     <ClInclude Include="..\include\native_dialog.h" />
     <ClInclude Include="..\include\json11.h" />
@@ -183,13 +183,16 @@
     <ClInclude Include="..\include\renderable.h" />
     <ClInclude Include="..\include\rendering_pass_deferred.h" />
     <ClInclude Include="..\include\rendering_pass_forward.h" />
+    <ClInclude Include="..\include\rendering_pass_shadow.h" />
     <ClInclude Include="..\include\rendering_system.h" />
+    <ClInclude Include="..\include\render_queues.h" />
     <ClInclude Include="..\include\resource.h" />
     <ClInclude Include="..\include\resources_manager.h" />
     <ClInclude Include="..\include\shader.h" />
     <ClInclude Include="..\include\shadow_buffer.h" />
     <ClInclude Include="..\include\smart_pointers.h" />
     <ClInclude Include="..\include\query_performance.h" />
+    <ClInclude Include="..\include\sphere.h" />
     <ClInclude Include="..\include\ssao_technique.h" />
     <ClInclude Include="..\include\static_model.h" />
     <ClInclude Include="..\include\struct_attribute.h" />
@@ -210,6 +213,7 @@
     <ClCompile Include="..\source\filesystem.cpp" />
     <ClCompile Include="..\source\frustum.cpp" />
     <ClCompile Include="..\source\g_buffer.cpp" />
+    <ClCompile Include="..\source\intersection.cpp" />
     <ClCompile Include="..\source\light.cpp" />
     <ClCompile Include="..\source\material.cpp" />
     <ClCompile Include="..\source\native_dialog.cpp" />
@@ -221,7 +225,9 @@
     <ClCompile Include="..\source\render.cpp" />
     <ClCompile Include="..\source\rendering_pass_deferred.cpp" />
     <ClCompile Include="..\source\rendering_pass_forward.cpp" />
+    <ClCompile Include="..\source\rendering_pass_shadow.cpp" />
     <ClCompile Include="..\source\rendering_system.cpp" />
+    <ClCompile Include="..\source\render_queues.cpp" />
     <ClCompile Include="..\source\resources_manager.cpp" />
     <ClCompile Include="..\source\shader.cpp" />
     <ClCompile Include="..\source\shadow_buffer.cpp" />
@@ -237,9 +243,14 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\assets\materials\baril_mat.mat" />
+    <None Include="..\assets\materials\box2_grid_mat.mat" />
     <None Include="..\assets\materials\box2_mat.mat" />
     <None Include="..\assets\materials\box_mat.mat" />
+    <None Include="..\assets\materials\cross_mat.mat" />
+    <None Include="..\assets\materials\rocks_mat.mat" />
+    <None Include="..\assets\materials\window_mat.mat" />
     <None Include="..\assets\materials\wire_mat.mat" />
+    <None Include="..\assets\materials\w_box_mat.mat" />
     <None Include="..\assets\ship\ship.smhc" />
     <None Include="..\assets\ship\vehicle_playerShip_glass_mat.mat" />
     <None Include="..\assets\ship\vehicle_playerShip_metal_mat.mat" />
@@ -256,12 +267,15 @@
     <None Include="..\common\effects\shaders\lib\output_fragment.glsl" />
     <None Include="..\common\effects\shaders\lib\output_fragment_forward.glsl" />
     <None Include="..\common\effects\shaders\lib\point_light.glsl" />
+    <None Include="..\common\effects\shaders\lib\post_processing_utilities.glsl" />
     <None Include="..\common\effects\shaders\lib\spot_light.glsl" />
     <None Include="..\common\effects\shaders\lib\ssao_kernel.glsl" />
     <None Include="..\common\effects\shaders\lib\uniform.glsl" />
     <None Include="..\common\effects\shaders\ssao_blur.glsl" />
     <None Include="..\common\effects\shaders\ssao_pass.glsl" />
     <None Include="..\common\effects\shaders\text.glsl" />
+    <None Include="..\common\effects\translucent_no_cull_effect.fxhc" />
+    <None Include="..\common\effects\translucent_texture_normal_specular.fxhc" />
     <None Include="..\source\cocoa_native_dialog.mm">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <FileType>CppCode</FileType>

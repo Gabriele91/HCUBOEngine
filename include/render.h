@@ -24,12 +24,22 @@ namespace hcube
 	using context_vertex_buffer_ptr = std::shared_ptr< context_vertex_buffer >;
 	using context_index_buffer_ptr = std::shared_ptr< context_index_buffer >;
 	using context_input_layout_ptr = std::shared_ptr< context_input_layout >;
-
-	enum render_driver
-	{
-		DR_OPENGL,
-		DR_DIRECTX
-	};
+    
+    enum render_driver
+    {
+        DR_OPENGL,
+        DR_OPENGL_ES,
+        DR_VULKAN,
+        DR_DIRECTX
+    };
+    
+    static const char* render_driver_str[]
+    {
+        "OpenGL",
+        "OpenGLES",
+        "Vulkan",
+        "DirectX"
+    };
 
 	enum cullface_type
 	{
@@ -144,7 +154,9 @@ namespace hcube
 		TTF_FLOAT,
 		TTF_UNSIGNED_BYTE,
 		TTF_UNSIGNED_SHORT,
-		TTF_UNSIGNED_INT
+		TTF_UNSIGNED_INT,
+        TTF_UNSIGNED_INT_24_8,
+        TTF_FLOAT_32_UNSIGNED_INT_24_8
 	};
 
 	enum texture_mag_filter_type
@@ -174,7 +186,8 @@ namespace hcube
 	{
 		RT_COLOR,
 		RT_DEPTH,
-		RT_DEPTH_STENCIL
+		RT_DEPTH_STENCIL,
+		RT_STENCIL
 	};
 
 
@@ -242,6 +255,13 @@ namespace hcube
 		DT_GREATER_EQUAL, // >=
 		DT_NOT_EQUAL,     // !=
 		DT_ALWAYS
+	};
+
+	enum depth_mode
+	{
+		DM_DISABLE,
+		DM_ENABLE_AND_WRITE,
+		DM_ENABLE_ONLY_READ
 	};
 
 	struct target_field
@@ -403,24 +423,24 @@ namespace hcube
 	struct depth_buffer_state
 	{
 		//value
-		bool            m_depth;
+		depth_mode      m_mode;
 		depth_func_type m_type;
 		//zbuffer
-		depth_buffer_state(depth_func_type type, bool depth = true) : m_depth(depth), m_type(type) {}
-		depth_buffer_state(bool depth = true) : m_depth(depth), m_type(DT_LESS) {}
+		depth_buffer_state(depth_func_type type, depth_mode mode = DM_ENABLE_AND_WRITE) : m_mode(mode), m_type(type) {}
+		depth_buffer_state(depth_mode mode = DM_ENABLE_AND_WRITE) : m_mode(mode), m_type(DT_LESS) {}
 		//operators
 		bool operator==(const depth_buffer_state& zb)const
 		{
-			return m_depth == zb.m_depth && m_type == zb.m_type;
+			return m_mode == zb.m_mode && m_type == zb.m_type;
 		}
 		bool operator!=(const depth_buffer_state& zb)const
 		{
-			return m_depth != zb.m_depth || m_type != zb.m_type;
+			return m_mode != zb.m_mode || m_type != zb.m_type;
 		}
 		//cast operator
-		operator bool() const
+		operator depth_mode() const
 		{
-			return m_depth;
+			return m_mode;
 		}
 
 	};
@@ -543,18 +563,36 @@ namespace hcube
 		}
 	};
 
+    enum clear_type
+    {
+        CLEAR_COLOR       = 0x01,
+        CLEAR_DEPTH       = 0x02,
+        CLEAR_COLOR_DEPTH = 0x03
+    };
+    
+    struct render_driver_info
+    {
+        render_driver m_render_driver;
+        std::string   m_name;
+        int           m_major_version;
+        int           m_minor_version;
+        std::string   m_shader_language;
+        int           m_shader_version;
+    };
+    
 #define LIB_EXPORT
 	namespace render
-	{
-		LIB_EXPORT render_driver get_render_driver();
-		LIB_EXPORT void print_info();
+    {
+        LIB_EXPORT render_driver get_render_driver();
+        LIB_EXPORT render_driver_info get_render_driver_info();
+        LIB_EXPORT void print_info();
 
 		LIB_EXPORT bool init();
 		LIB_EXPORT void close();
 
 		LIB_EXPORT const clear_color_state& get_clear_color_state();
-		LIB_EXPORT void set_clear_color_state(const clear_color_state& cf);
-		LIB_EXPORT void clear();
+        LIB_EXPORT void set_clear_color_state(const clear_color_state& cf);
+        LIB_EXPORT void clear(int type = CLEAR_COLOR_DEPTH);
 
 		LIB_EXPORT const depth_buffer_state& get_depth_buffer_state();
 		LIB_EXPORT void set_depth_buffer_state(const depth_buffer_state& cf);
@@ -636,6 +674,14 @@ namespace hcube
 		LIB_EXPORT void enable_render_target(context_render_target*);
 		LIB_EXPORT void disable_render_target(context_render_target*);
 		LIB_EXPORT void delete_render_target(context_render_target*&);
+		//copy target
+		LIB_EXPORT void copy_target_to_target(
+			const vec4& from_area,
+			context_render_target* from,
+			const vec4& to_area,
+			context_render_target* to,
+			render_target_type	mask
+		);
 
 		//debug
 		LIB_EXPORT bool print_errors();

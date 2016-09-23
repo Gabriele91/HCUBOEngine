@@ -36,11 +36,10 @@ namespace hcube
 		void on_attach(entity& entity);
 		bool on_activate();
 		void on_message(const message& message);
-
-		frustum& get_frustum();
+		
 		const frustum& get_frustum() const;
+		const frustum& update_frustum();
 
-		void update_view_frustum();
 		void update_view_matrix();
 
 		virtual component_ptr copy() const;

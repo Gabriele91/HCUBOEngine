@@ -20,6 +20,8 @@ namespace hcube
 			G_BUFFER_TEXTURE_TYPE_POSITION,
 			G_BUFFER_TEXTURE_TYPE_NORMAL,
 			G_BUFFER_TEXTURE_TYPE_ALBEDO,
+			G_BUFFER_TEXTURE_TYPE_LIGHTS_ACCUMULATOR,
+			G_BUFFER_TEXTURE_TYPE_DEPTH,
 			G_BUFFER_NUM_TEXTURES
 		};
 
@@ -33,21 +35,11 @@ namespace hcube
 
 		void destoy();
 		
-		void bind();
+		context_render_target* get_geometry_render_target() const;
 
-		void unbind();
-
-		void set_texture_buffer(G_BUFFER_TEXTURE_TYPE texture_type);
-
-		void disable_texture(G_BUFFER_TEXTURE_TYPE texture_type);
-
-		context_texture* get_texture(G_BUFFER_TEXTURE_TYPE texture_type) const;
+		context_render_target* get_lights_render_target() const;
 		
-		void set_texture_buffer_depth(size_t n_texture = 0);
-
-		void disable_depth_texture();
-
-		context_texture* get_texture_buffer_depth() const;
+		context_texture* get_texture(G_BUFFER_TEXTURE_TYPE texture_type) const;
 
 		unsigned int get_width() const;
 
@@ -60,8 +52,8 @@ namespace hcube
 		unsigned int m_width{ 0 };
 		unsigned int m_height{ 0 };
 
-		context_render_target* m_target{ nullptr };
+		context_render_target* m_geometry_target{ nullptr };
+		context_render_target* m_lights_target{ nullptr };
 		context_texture*       m_textures[G_BUFFER_NUM_TEXTURES]{ nullptr };
-		context_texture*       m_depth_texture{ nullptr };
 	};
 }

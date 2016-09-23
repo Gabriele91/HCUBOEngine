@@ -11,65 +11,9 @@
 #include <rendering_system.h>
 #include <resources_manager.h>
 #include <gameobject.h>
-
+#include <iostream>
 namespace hcube
 {
-	void render_queues::clear()
-	{
-		m_lights.clear();
-		m_opaque.clear();
-	}
-
-	void render_queues::remove(entity::ptr e)
-	{
-		//search light and remove
-		for (auto it_light = m_lights.begin();
-			it_light != m_lights.end();
-			++it_light)
-		{
-			if (it_light->lock() == e)
-			{
-				m_lights.erase(it_light);
-				break;
-			}
-		}
-		//search opaque renderable object and remove
-		for (auto it_renderable = m_opaque.begin();
-			it_renderable != m_opaque.end();
-			++it_renderable)
-		{
-			if (it_renderable->lock() == e)
-			{
-				m_opaque.erase(it_renderable);
-				break;
-			}
-		}
-		//search translucent renderable object and remove
-		for (auto it_renderable = m_translucent.begin();
-			it_renderable != m_translucent.end();
-			++it_renderable)
-		{
-			if (it_renderable->lock() == e)
-			{
-				m_translucent.erase(it_renderable);
-				break;
-			}
-		}
-	}
-
-	void render_queues::push(entity::ptr e)
-	{
-		if (e->has_component<light>())      m_lights.push_back({ e });
-		if (e->has_component<renderable>()) m_opaque.push_back({ e });
-		//else in m_translucent
-	}
-
-	void render_queues::reserve(size_t size)
-	{
-		m_lights.reserve(size);
-		m_opaque.reserve(size);
-		m_translucent.reserve(size);
-	}
 
 	void rendering_system::on_attach(system_manager& sm)
 	{
@@ -79,14 +23,14 @@ namespace hcube
 	void rendering_system::on_detach()
 	{
 		m_camera = nullptr;
-		m_renderables.clear();
+		m_scene.clear();
 	}
 
 	void rendering_system::on_add_entity(entity::ptr e)
 	{
 		//copy ref
 		if (e->has_component<camera>())     m_camera = e;
-		else							   m_renderables.push(e);
+		else							    m_scene.m_pool.push(e);
 	}
 
 	void rendering_system::on_remove_entity(entity::ptr e)
@@ -94,7 +38,7 @@ namespace hcube
 		//remove camera
 		if (m_camera == e) m_camera = nullptr;
 		//remove obj
-		else              m_renderables.remove(e);
+		else               m_scene.m_pool.remove(e);
 	}
 
 	void rendering_system::on_update(double deltatime)
@@ -114,421 +58,37 @@ namespace hcube
 
 	void rendering_system::add_rendering_pass(rendering_pass_ptr pass)
 	{
-		m_rendering_pass.push_back(pass);
-	}
-
-	void rendering_system::add_shadow_rendering_pass(rendering_pass_ptr pass)
-	{
-		m_shadow_pass = pass;
-	}
-
-	static inline float compute_camera_depth(const frustum& f_camera, const transform_ptr& t_entity)
-	{
-		return f_camera.distance_from_near_plane((vec3)(t_entity->get_matrix()*vec4(0, 0, 0, 1)));
-	}
-
-	void render_queues::add_call_light_spot(element* e)
-	{
-		// next to void
-		e->m_next = nullptr;
-		// loop vars
-		element* last = nullptr;
-		element* current = m_cull_light_spot;
-		// insert sort, front to back
-		for (; current;
-			   last = current,
-			   current = current->m_next)
-		{
-			if (current->m_depth > e->m_depth) break;
-		}
-		// last iteration
-		if (last)
-		{
-			e->m_next = current;
-			last->m_next = e;
-		}
-		else
-		{
-			e->m_next = m_cull_light_spot;
-			m_cull_light_spot = e;
-		}
-	}
-
-	void render_queues::add_call_light_point(element* e)
-	{
-		// next to void
-		e->m_next = nullptr;
-		// loop vars
-		element* last = nullptr;
-		element* current = m_cull_light_point;
-		// insert sort, front to back
-		for (; current;
-			last = current,
-			current = current->m_next)
-		{
-			if (current->m_depth > e->m_depth) break;
-		}
-		// last iteration
-		if (last)
-		{
-			e->m_next = current;
-			last->m_next = e;
-		}
-		else
-		{
-			e->m_next = m_cull_light_point;
-			m_cull_light_point = e;
-		}
-	}
-
-	void render_queues::add_call_light_direction(element* e)
-	{
-		// next to void
-		e->m_next = nullptr;
-		// loop vars
-		element* last = nullptr;
-		element* current = m_cull_light_direction;
-		// insert sort, front to back
-		for (; current;
-			last = current,
-			current = current->m_next)
-		{
-			if (current->m_depth > e->m_depth) break;
-		}
-		// last iteration
-		if (last)
-		{
-			e->m_next = current;
-			last->m_next = e;
-		}
-		else
-		{
-			e->m_next = m_cull_light_direction;
-			m_cull_light_direction = e;
-		}
-	}
-	
-	void render_queues::add_call_opaque(element* e)
-	{
-		e->m_next = nullptr;
-		//loop vars
-		element* last = nullptr;
-		element* current = m_cull_opaque;
-		//insert sort, front to back
-		for (; current;
-			   last = current,
-			   current = current->m_next)
-		{
-			if (current->m_depth > e->m_depth) break;
-		}
-		//last iteration
-		if (last)
-		{
-			e->m_next = current;
-			last->m_next = e;
-		}
-		else
-		{
-			e->m_next = m_cull_opaque;
-			m_cull_opaque = e;
-		}
-	}
-
-	void render_queues::add_call_translucent(element* e)
-	{
-		e->m_next = nullptr;
-		//loop vars
-		element* last = nullptr;
-		element* current = m_cull_translucent;
-		//insert sort, back to front
-		for (; current;
-			last = current,
-			current = current->m_next)
-		{
-			if (current->m_depth < e->m_depth) break;
-		}
-		//last iteration
-		if (last)
-		{
-			e->m_next = current;
-			last->m_next = e;
-		}
-		else
-		{
-			e->m_next = m_cull_translucent;
-			m_cull_translucent = e;
-		}
-	}
-
-	void render_queues::compute_light_queue(const frustum& view_frustum)
-	{
-		m_cull_light_spot	   = nullptr;
-		m_cull_light_point	   = nullptr;
-		m_cull_light_direction = nullptr;
-
-		//build queue lights
-		for (render_queues::element& weak_element : m_lights)
-		{
-			auto entity = weak_element.lock();
-			auto t_entity = entity->get_component<transform>();
-			auto l_entity = entity->get_component<light>();
-			const auto l_pos = (vec3)(t_entity->get_matrix()*vec4(0, 0, 0, 1.));
-			const auto l_radius = l_entity->get_radius();
-			
-			if (l_entity->is_enabled() && view_frustum.test_sphere(l_pos, l_radius))
-			{
-				weak_element.m_depth = compute_camera_depth(view_frustum, t_entity);
-				switch (l_entity->get_type())
-				{
-					case light::SPOT_LIGHT:      add_call_light_spot(&weak_element);     break;
-					case light::POINT_LIGHT:     add_call_light_point(&weak_element);     break;
-					case light::DIRECTION_LIGHT: add_call_light_direction(&weak_element); break;
-					default: break;
-				};
-
-			}
-		}
-
-	}
-
-	void render_queues::compute_opaque_queue(const frustum& view_frustum)
-	{
-		m_cull_opaque = nullptr;
-		//build queue opaque
-		for (render_queues::element& weak_element : m_opaque)
-		{
-			auto entity = weak_element.lock();
-			auto t_entity = entity->get_component<transform>();
-			auto r_entity = entity->get_component<renderable>();
-
-			if (r_entity->is_enabled() &&
-				( !r_entity->has_support_culling() ||
-				   view_frustum.test_obb(r_entity->get_bounding_box(), t_entity->get_matrix())) )
-			{
-				weak_element.m_depth = compute_camera_depth(view_frustum, t_entity);
-				add_call_opaque(&weak_element);
-			}
-		}
-
-	}
-
-	void render_queues::compute_translucent_queue(const frustum& view_frustum)
-	{
-		//init
-		m_cull_translucent = nullptr;
-		//build queue translucent
-		for (render_queues::element& weak_element : m_translucent)
-		{
-			auto entity = weak_element.lock();
-			auto t_entity = entity->get_component<transform>();
-			auto r_entity = entity->get_component<renderable>();
-
-			if (r_entity->is_enabled() &&
-				(!r_entity->has_support_culling() ||
-					view_frustum.test_obb(r_entity->get_bounding_box(), t_entity->get_matrix()))
-				)
-			{
-				weak_element.m_depth = compute_camera_depth(view_frustum, t_entity);
-				add_call_translucent(&weak_element);
-			}
-		}
-
-	}
-
-	void render_queues::compute_opaque_queue(const vec3& position, float radius)
-	{
-		m_cull_opaque = nullptr;
-		//build queue opaque
-		for (render_queues::element& weak_element : m_opaque)
-		{
-			auto entity = weak_element.lock();
-			auto t_entity = entity->get_component<transform>();
-			auto r_entity = entity->get_component<renderable>();
-
-			if(r_entity->is_enabled())
-			if(!r_entity->has_support_culling() ||
-				r_entity->get_bounding_box().is_inside(t_entity->get_matrix(), position, radius))
-			{
-				weak_element.m_depth = distance(position, t_entity->get_global_position());
-				add_call_opaque(&weak_element);
-			}
-		}
-	}
-
-	rendering_pass_shadow::rendering_pass_shadow(resources_manager& resources)
-	{
-		m_effect					 = resources.get_effect("build_shadow");
-		m_technique_shadow_spot      = m_effect->get_technique("shadow_spot");
-		m_technique_shadow_point     = m_effect->get_technique("shadow_point");
-		m_technique_shadow_direction = m_effect->get_technique("shadow_direction");
-        //params
-        m_mask        = m_effect->get_parameter("mask");
-        m_diffuse_map = m_effect->get_parameter("diffuse_map");
-        //get uniform mask
-        if(m_technique_shadow_spot && (*m_technique_shadow_spot).size())
-        {
-            m_shadow_spot_mask       = (*m_technique_shadow_spot)[0].m_shader->get_uniform("mask");
-			m_shadow_spot_projection = (*m_technique_shadow_spot)[0].m_shader->get_uniform("projection");
-			m_shadow_spot_view       = (*m_technique_shadow_spot)[0].m_shader->get_uniform("view");
-			m_shadow_spot_model		 = (*m_technique_shadow_spot)[0].m_shader->get_uniform("model");
-        }
-        if(m_technique_shadow_point && (*m_technique_shadow_point).size())
-        {
-			m_shadow_point_mask			  = (*m_technique_shadow_point)[0].m_shader->get_uniform("mask");
-			m_shadow_point_light_position = (*m_technique_shadow_point)[0].m_shader->get_uniform("light_position");
-			m_shadow_point_far_plane	  = (*m_technique_shadow_point)[0].m_shader->get_uniform("far_plane");
-			m_shadow_point_projection     = (*m_technique_shadow_point)[0].m_shader->get_uniform("projection");
-			m_shadow_point_view			  = (*m_technique_shadow_point)[0].m_shader->get_uniform("view[0]");
-			m_shadow_point_model	      = (*m_technique_shadow_point)[0].m_shader->get_uniform("model");
-        }
-        if(m_technique_shadow_direction && (*m_technique_shadow_direction).size())
-        {
-            m_shadow_direction_mask		    = (*m_technique_shadow_direction)[0].m_shader->get_uniform("mask");
-			m_shadow_direction_projection	= (*m_technique_shadow_direction)[0].m_shader->get_uniform("projection");
-			m_shadow_direction_view			= (*m_technique_shadow_direction)[0].m_shader->get_uniform("view[0]");
-			m_shadow_direction_model		= (*m_technique_shadow_direction)[0].m_shader->get_uniform("model");
-        }
-	}
-
-	void rendering_pass_shadow::draw_pass
-	(
-		vec4&  clear_color,
-		vec4&  ambient_color,
-		entity::ptr e_light,
-		render_queues& queues
-	)
-	{
-		//shadow map
-		auto l_light = e_light->get_component<light>();
-		//enable shadow?
-		if (!l_light->is_enable_shadow()) return;
-		//current technique
-		effect::technique* current_technique = nullptr;
-		//current mask uniform
-		uniform* u_shadow_mask = nullptr;
-		//current u
-		uniform* u_shadow_projection = nullptr;
-		uniform* u_shadow_view	     = nullptr;
-		uniform* u_shadow_model		 = nullptr;
-		//type
-		switch (l_light->get_type())
-		{
-			case light::SPOT_LIGHT: 
-				current_technique   = m_technique_shadow_spot;
-				u_shadow_mask	    = m_shadow_spot_mask;
-				u_shadow_projection = m_shadow_spot_projection;
-				u_shadow_view	    = m_shadow_spot_view;
-				u_shadow_model		= m_shadow_spot_model;
-			break;
-			case light::POINT_LIGHT: 
-				current_technique = m_technique_shadow_point;
-				u_shadow_mask	  = m_shadow_point_mask;
-				u_shadow_projection = m_shadow_point_projection;
-				u_shadow_view       = m_shadow_point_view;
-				u_shadow_model      = m_shadow_point_model;
-			break;
-			default: return;
-		}
-		//pass
-		effect::pass& shadow_pass = (*current_technique)[0];
-		//enable shadow buffer/texture
-		l_light->get_shadow_buffer().bind();
-		//clear
-		render::clear();
-		//applay pass
-		auto state = shadow_pass.safe_bind();
-		//default uniform
-		u_shadow_projection->set_value(l_light->get_projection());
-		//////////////////////////////////////////////////////////////////////////////
-		//spot light vs point lights
-		switch (l_light->get_type())
-		{
-		case light::SPOT_LIGHT:
-			//update view frustum and queue
-			queues.compute_opaque_queue(l_light->update_frustum());
-			//set view
-			u_shadow_view->set_value(l_light->get_view());
-		break;
-		case light::POINT_LIGHT:
-			//build queue by sphere
-			queues.compute_opaque_queue
-			(
-				e_light->get_component<transform>()->get_global_position(),
-				l_light->get_radius()
-			);
-			//uniform
-			u_shadow_view->set_value(l_light->get_cube_view());
-			//position
-			if (m_shadow_point_light_position)
-				m_shadow_point_light_position->set_value(
-					e_light->get_component<transform>()->get_global_position()
-			    );
-			//radius
-			if (m_shadow_point_far_plane)
-				m_shadow_point_far_plane->set_value(l_light->get_radius());
-		break;
-		default: break;
-		}
-		//////////////////////////////////////////////////////////////////////////////
-		//default texture
-		texture::ptr default_texture = m_diffuse_map->get_texture();
-		//set viewport
-		render::set_viewport_state({ l_light->get_viewport() });
-		//draw objs
-		HCUBE_FOREACH_QUEUE(weak_element, queues.m_cull_opaque)
-		{
-			auto entity     = weak_element->lock();
-			auto t_entity   = entity->get_component<transform>();
-			auto r_entity   = entity->get_component<renderable>();
-            //events
-            bool do_default_tex = true;
-            bool do_default_mask= true;
-			//test
-			if (auto e_material = r_entity->get_material())
-            {
-                if (auto p_texture  = e_material->get_default_parameter(material::MAT_DEFAULT_DIFFUSE_MAP))
-                if (auto t_texture  = p_texture->get_texture())
-                {
-                    //diffuse map
-                    render::bind_texture(t_texture->get_context_texture(), 0);
-                    //not bind default
-                    do_default_tex = false;
-                }
-                if (auto p_mask  = e_material->get_default_parameter(material::MAT_DEFAULT_MASK))
-                {
-                    //uniform
-					u_shadow_mask->set_value(p_mask->get_float());
-                    //not bind default
-                    do_default_mask = false;
-                }
-            }
-            //diffuse map
-            if(do_default_tex)  render::bind_texture(default_texture->get_context_texture(), 0);
-            //uniform
-            if(do_default_mask) u_shadow_mask->set_value(m_mask->get_float());
-			//set transform
-			u_shadow_model->set_value(t_entity->get_matrix());
-			//draw
-			r_entity->draw();
-		}
-		//disable shadow buffer/texture
-		l_light->get_shadow_buffer().unbind();
-		//disable
-		shadow_pass.safe_unbind(state);
+		m_rendering_pass[pass->get_type()].push_back(pass);
 	}
     
     rendering_pass_debug_spot_lights::rendering_pass_debug_spot_lights(resources_manager& resources)
+    :rendering_pass(RPT_UI)
     {
-        m_effect = resources.get_effect("debug_spot_lights");
-        m_cube   = gameobject::cube_new({2.0,2.0,2.0},true);
+        m_effect = resources.get_effect("debug_lights");
+        ////// SPHERE //////////////////////////////////////////////////////////////////////////////
+        //get mesh
+        auto root_sphere = resources.get_prefab("sphere")->instantiate();
+        //get sphere
+        auto e_sphere = root_sphere->get_childs().begin()->second;
+        //get component
+        m_sphere = std::static_pointer_cast<renderable>( e_sphere->get_component<renderable>()->copy() );
+        ////// CONE //////////////////////////////////////////////////////////////////////////////
+        //get mesh
+        auto root_cone = resources.get_prefab("cone")->instantiate();
+        //get sphere
+        auto e_cone = root_cone->get_childs().begin()->second;
+        //get component
+        m_cone = std::static_pointer_cast<renderable>(e_cone->get_component<renderable>()->copy());
     }
     
-    void rendering_pass_debug_spot_lights::draw_pass(
-                           vec4&  clear_color,
-                           vec4&  ambient_color,
-                           entity::ptr e_camera,
-                           render_queues& queues
-                           )
+    void rendering_pass_debug_spot_lights::draw_pass
+    (
+        int    n_pass,
+        vec4&  clear_color,
+        vec4&  ambient_color,
+        entity::ptr e_camera,
+        render_scene& rscene
+    )
     {
         
         effect::pass& pass = (*m_effect->get_technique("forward"))[0];
@@ -538,78 +98,148 @@ namespace hcube
         auto state = render::get_render_state();
         //viewport
         render::set_viewport_state({ c_camera->get_viewport() });
+        //bind
+        pass.bind();
         
-        
-        HCUBE_FOREACH_QUEUE(weak_light, queues.m_cull_light_spot)
+        //for all lights
+        HCUBE_FOREACH_QUEUE(weak_light, rscene.get_first(RQ_SPOT_LIGHT))
         {
             auto e_light    = weak_light->lock();
             auto l_light    = e_light->get_component<light>();
             auto t_light    = e_light->get_component<transform>();
             
             l_light->update_projection_matrix();
-            pass.bind();
-			pass.m_shader
+            
+            pass.m_shader
+                ->get_uniform("viewport")
+                ->set_value(c_camera->get_viewport());
+            pass.m_shader
 				->get_uniform("projection")
 				->set_value(c_camera->get_projection());
 			pass.m_shader
 				->get_uniform("view")
 				->set_value(c_camera->get_view());
-			pass.m_shader
-				->get_uniform("model")
-				->set_value(inverse(l_light->get_projection()*l_light->get_view()));
-
-            m_cube->get_component<renderable>()->draw();
             
-            pass.unbind();
+            mat4
+            model  = translate(mat4(1), t_light->get_global_position());
+            model *= mat4_cast(t_light->get_global_rotation());
+            model  = scale(model, { l_light->get_radius(), l_light->get_radius(),l_light->get_radius() });
+            
+			pass.m_shader->get_uniform("model")->set_value(model);
+
+            m_cone->draw();
         }
+        HCUBE_FOREACH_QUEUE(weak_light, rscene.get_first(RQ_POINT_LIGHT))
+        {
+            auto e_light    = weak_light->lock();
+            auto l_light    = e_light->get_component<light>();
+            auto t_light    = e_light->get_component<transform>();
+            
+            l_light->update_projection_matrix();
+            
+            pass.m_shader
+                ->get_uniform("viewport")
+                ->set_value(c_camera->get_viewport());
+            pass.m_shader
+                ->get_uniform("projection")
+                ->set_value(c_camera->get_projection());
+            pass.m_shader
+                ->get_uniform("view")
+                ->set_value(c_camera->get_view());
+            
+            mat4
+            model  = translate(mat4(1), t_light->get_global_position());
+            model  = scale(model, { l_light->get_radius(), l_light->get_radius(),l_light->get_radius() });
+            
+            pass.m_shader->get_uniform("model")->set_value(model);
+            
+            m_sphere->draw();
+        }
+        
+        
+        pass.unbind();
+        //end
         render::set_render_state(state);
     }
 
 	void rendering_system::draw()
 	{
 		//culling
-		camera::ptr   c_camera = m_camera->get_component<camera>();
-		frustum&      f_camera = c_camera->get_frustum();
+		camera::ptr     c_camera = m_camera->get_component<camera>();
+		const frustum&  f_camera = c_camera->get_frustum();
 		//update view frustum
-		f_camera.update_frustum(c_camera->get_projection()*c_camera->get_view());
-		//update queue
-		m_renderables.compute_light_queue(f_camera);
-		//build shadow map
-		if (m_shadow_pass)
+		if (m_update_frustum) c_camera->update_frustum();
+        //lights queue
+        m_scene.compute_lights_queues(f_camera);
+        //n shadow pass
+        int n_shadow_pass = 0;
+        //build shadow map
+        for(rendering_pass_ptr& shadow_pass : m_rendering_pass[RPT_SHADOW])
 		{
 			//spot lights
-			HCUBE_FOREACH_QUEUE(weak_light, m_renderables.m_cull_light_spot)
-			m_shadow_pass->draw_pass
+			HCUBE_FOREACH_QUEUE(weak_light, m_scene.get_first(RQ_SPOT_LIGHT))
+			shadow_pass->draw_pass
 			(
+                n_shadow_pass,
 				m_clear_color,
 				m_ambient_color,
-				weak_light->lock(),
-				m_renderables
+                weak_light->lock(),
+                m_scene
 			);
 			//point lights
-			HCUBE_FOREACH_QUEUE(weak_light, m_renderables.m_cull_light_point)
-			m_shadow_pass->draw_pass
+			HCUBE_FOREACH_QUEUE(weak_light, m_scene.get_first(RQ_POINT_LIGHT))
+			shadow_pass->draw_pass
 			(
+                n_shadow_pass,
 				m_clear_color,
 				m_ambient_color,
-				weak_light->lock(),
-				m_renderables
+                weak_light->lock(),
+                m_scene
 			);
-		}
-		//update queue
-		m_renderables.compute_opaque_queue(f_camera);
-		m_renderables.compute_translucent_queue(f_camera);
-		//all passes
-		for (rendering_pass_ptr& pass : m_rendering_pass)
-		{
-			pass->draw_pass
-			(
-				m_clear_color,
-				m_ambient_color,
-				m_camera,
-				m_renderables
-			);
-		}
+            //next
+            ++n_shadow_pass;
+        }
+        //error
+        render::print_errors();
+		//viewport
+		render::set_viewport_state({ c_camera->get_viewport() });
+        //color
+        render::set_clear_color_state(m_clear_color);
+		//clear
+        render::clear(CLEAR_COLOR_DEPTH);
+        //objects queue
+        m_scene.compute_no_lights_queues(f_camera);
+        //error
+        render::print_errors();
+        //int npass
+        int n_render_pass = -1;
+        //all passes
+        for (rendering_pass_ptr& pass : m_rendering_pass[RPT_RENDER])
+        {
+            pass->draw_pass
+            (
+              ++n_render_pass,
+              m_clear_color,
+              m_ambient_color,
+              m_camera,
+              m_scene
+             );
+            //error
+        }
+		//int npass
+		int n_ui_pass = -1;
+        //all passes
+        for (rendering_pass_ptr& pass : m_rendering_pass[RPT_UI])
+        {
+            pass->draw_pass
+            (
+             ++n_ui_pass,
+             m_clear_color,
+             m_ambient_color,
+             m_camera,
+             m_scene
+            );
+        }
 	}
 
 	const vec4& rendering_system::get_clear_color() const
@@ -627,9 +257,9 @@ namespace hcube
 		return m_camera;
 	}
 
-	const std::vector< rendering_pass_ptr >& rendering_system::get_rendering_pass() const
+	const std::vector< rendering_pass_ptr >& rendering_system::get_rendering_pass(rendering_pass_type type) const
 	{
-		return m_rendering_pass;
+		return m_rendering_pass[type];
 	}
 	
 	void rendering_system::stop_update_frustum(bool stop_update)

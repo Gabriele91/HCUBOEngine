@@ -11,6 +11,7 @@
 #include <regex>
 #include <rendering_pass_deferred.h>
 #include <rendering_pass_forward.h>
+#include <rendering_pass_shadow.h>
 #include <gameobject.h>
 #include <transform.h>
 #include <renderable.h>
@@ -35,14 +36,14 @@ namespace hcube
 			rendering_system*	r_system = m_systems.get_system<rendering_system>();
 			rendering_pass_ptr	d_pass = r_system->get_rendering_pass()[0];
 			auto p_deferred = std::static_pointer_cast<rendering_pass_deferred>(d_pass);
-			p_deferred->set_ambient_occlusion(true);
+			p_deferred->set_ambient_occlusion({ true, 8, 0.70f });
 		}
 		else if (key == GLFW_KEY_K)
 		{
 			rendering_system*	r_system = m_systems.get_system<rendering_system>();
 			rendering_pass_ptr	d_pass = r_system->get_rendering_pass()[0];
 			auto p_deferred = std::static_pointer_cast<rendering_pass_deferred>(d_pass);
-			p_deferred->set_ambient_occlusion(false);
+			p_deferred->set_ambient_occlusion({false,0,0});
 		}
 		else if (key == GLFW_KEY_U)
 		{
@@ -114,7 +115,7 @@ namespace hcube
 	}
 
 	void app_basic::camera_look_around(application& app)
-	{
+    {
 		//center
 		dvec2 mouse_center = (dvec2)app.get_window_size()*0.5;
 		//mouse pos
@@ -124,7 +125,7 @@ namespace hcube
 		//compute speed
 		double mouse_speed = length(mouse_dir / (dvec2)app.get_window_size()) * 100.0f;
 		//do not
-		if (mouse_speed <= 0.0) return;
+		if (mouse_speed <= 0.49) return;
 		//norm direction
 		dvec2 norm_mouse_dir = normalize(mouse_dir);
 		//angle
@@ -143,6 +144,7 @@ namespace hcube
 		m_resources.add_directory("common/effects/shaders");
 		m_resources.add_directory("common/effects");
 		m_resources.add_directory("common/textures");
+		m_resources.add_directory("common/meshs"); 
 		//get info about window
 		m_window_mode_info = window_info
 		{
@@ -152,26 +154,28 @@ namespace hcube
 		//alloc all systems
 		rendering_system::ptr m_rendering = rendering_system::snew();
 		//add shadow support
-		m_rendering->add_shadow_rendering_pass(rendering_pass_shadow::snew(m_resources));
+		m_rendering->add_rendering_pass(rendering_pass_shadow::snew(m_resources));
 		//add into system
 		m_systems.add_system(m_rendering);
 #if 1
-		//gbuffer size
-		ivec2 g_size = app.get_window_size();
-		auto rendering_pass = rendering_pass_deferred::snew(g_size, m_resources);
-		rendering_pass->set_ambient_occlusion(false);
-		m_rendering->add_rendering_pass(rendering_pass);
+		m_rendering->add_rendering_pass(rendering_pass_deferred::snew(app.get_window_size(), m_resources));
 #else
-		m_rendering->add_rendering_pass(rendering_pass_forward::snew());
+		m_rendering->add_rendering_pass(rendering_pass_forward::snew(RQ_OPAQUE));
         //m_rendering->add_rendering_pass(rendering_pass_debug_spot_lights::snew(m_resources));
+#endif
+        
+#if 1
+        //translucent
+        m_rendering->add_rendering_pass(rendering_pass_forward::snew(RQ_TRANSLUCENT));
 #endif
 		//load assets
 		m_resources.add_directory("assets/effects");
 		m_resources.add_directory("assets/shaders");
 		m_resources.add_directory("assets/textures");
 		m_resources.add_directory("assets/materials");
-		m_resources.add_directory("assets/odst");
-		m_resources.add_directory("assets/ship");
+        m_resources.add_directory("assets/odst");
+        m_resources.add_directory("assets/ship");
+        m_resources.add_directory("assets/ship_fighter");
 		m_resources.add_directory("assets/asteroid");
 		m_resources.add_directory("tools/assimp_to_smesh/output");
 		m_resources.add_directory("assets/sponza/sponza_obb");
@@ -192,6 +196,7 @@ namespace hcube
 							  vec3{ 0.0f, 1.0f, 0.0f });
 			//set camera
 			m_systems.add_entity(m_camera);
+#if 0
 			//add cube
 			{
 				auto cube_grid = gameobject::node_new(
@@ -223,6 +228,41 @@ namespace hcube
 				cube_grid->set_name("cube2");
 				m_systems.add_entity(cube_grid);
 			}
+#endif
+#if 1
+            //add cube
+            {
+                auto cube_grid = gameobject::node_new(
+                                                      basic_meshs::cube({ 5,5,5 }, true)
+                                                      );
+                cube_grid->get_component<renderable>()->set_material(
+                        m_resources.get_material("window_mat")
+                );
+                cube_grid->get_component<transform>()->translation(
+                        vec3{ -5.0,-7.5,-10.0 }
+                );
+                cube_grid->get_component<transform>()->scale(
+                        vec3{ 1.0,1.0,1.0 }
+                );
+                cube_grid->set_name("window_cube1");
+                m_systems.add_entity(cube_grid);
+            }
+#endif
+            
+#if 0
+			{
+				//sponza
+				auto m_sponza = m_resources.get_prefab("sponza_obb")->instantiate();
+				auto t_sponza = m_sponza->get_component<transform>();
+				t_sponza->position({ 0.0f, -10.0f, -100.0f });
+				t_sponza->rotation(quat({ radians(0.0), radians(90.0), 0.0 }));
+				t_sponza->scale({ 0.1f, 0.1f, 0.1f });
+				//set name
+				m_sponza->set_name("sponza");
+				//add to render
+				m_systems.add_entity(m_sponza);
+			}
+#else
 			//cube floor
             for(int x=-2;x!=2;++x)
             for(int y=-2;y!=2;++y)
@@ -241,6 +281,19 @@ namespace hcube
                 );
                 cube_floor->set_name("cube_floor");
                 m_systems.add_entity(cube_floor);
+            }
+#endif
+            {
+                //ship_fighter
+                auto e_ship_fighter = m_resources.get_prefab("ship_fighter")->instantiate();
+                auto t_ship_fighter = e_ship_fighter->get_component<transform>();
+                t_ship_fighter->position({ 20.0f, -5.0f, 0.0f });
+                t_ship_fighter->rotation(quat({ radians(15.0), radians(180.0), 0.0 }));
+                t_ship_fighter->scale({ 0.015f, 0.015f, 0.015f });
+                //set name
+                e_ship_fighter->set_name("ship_fighter");
+                
+                m_systems.add_entity(e_ship_fighter);
             }
 			//ship
 			m_model = m_resources.get_prefab("ship")->instantiate();
@@ -268,30 +321,32 @@ namespace hcube
 			auto e_model_light1 = gameobject::light_new();
 			auto l_model_light1 = e_model_light1->get_component<light>();
 			auto t_model_light1 = e_model_light1->get_component<transform>();
-			t_model_light1->position(vec3{ -16.4,10.0f,18.0 });
+			t_model_light1->position(vec3{ -16.4,10.5f,18.0 });
 			t_model_light1->rotation(quat({ radians(0.0), radians(0.0), 0.0 }));
 			l_model_light1->spot({ 1.0f, 0.8f, 0.1f },
-			{ 1.0f, 1.0f, 1.0f },
-				1.0,
-				20.0,
-				30.0,
-				radians(10.0),
-				radians(15.0));
+								 { 1.0f, 1.0f, 1.0f },
+									1.0,
+									30.0,
+									40.0,
+									radians(10.0),
+									radians(15.0));
+			l_model_light1->set_shadow({ 256,256 });
             e_model_light1->set_name("ship_light1");
             m_model->add_child(e_model_light1);
 
 			auto e_model_light2 = gameobject::light_new();
 			auto l_model_light2 = e_model_light2->get_component<light>();
 			auto t_model_light2 = e_model_light2->get_component<transform>();
-			t_model_light2->position(vec3{ 16.4,9.5f,19 });
+			t_model_light2->position(vec3{ 16.4,10.0f,19 });
 			t_model_light2->rotation(quat({ radians(0.0), radians(0.0), 0.0 }));
 			l_model_light2->spot({ 1.0f, 0.8f, 0.1f },
 								 { 1.0f, 1.0f, 1.0f },
 								   1.0,
-								   20.0,
 								   30.0,
+								   40.0,
 								   radians(10.0),
 								   radians(15.0));
+			l_model_light2->set_shadow({ 256,256 });
             e_model_light2->set_name("ship_light2");
 			m_model->add_child(e_model_light2);
 			//add to render
@@ -319,8 +374,8 @@ namespace hcube
 			for (short i = 0; i != 3; ++i)
 			{
 				l_lights[i]->set_radius(
-					6.0,
-					30.0
+					8.0,
+					33.0
 				);
 				l_lights[i]->set_shadow({ 256,256 });
 			}
@@ -370,10 +425,11 @@ namespace hcube
                 m_systems.add_entity(e_shadow_point);
             }
 #endif
+
+#if 0
 			//shadow lights
 			auto shadow_lights = gameobject::node_new();
 			shadow_lights->set_name("shadow_lights");
-
 			for (int i = 0; i != 2; ++i)
 			{
 				//add shadow light
@@ -394,26 +450,27 @@ namespace hcube
 				shadow_lights->add_child(e_model_light_shadow);
 			}
 			m_systems.add_entity(shadow_lights);
+#endif
 			//ambient color
-			m_rendering->set_ambient_color(vec4{ 0.26, 0.26, 0.26, 1.0 });
+			m_rendering->set_ambient_color(vec4{ 0.16, 0.16, 0.16, 1.0 });
 
 		}
 	}
 
 	bool app_basic::run(application& app, double delta_time)
-	{
+    {
 		//////////////////////////////////////////////////////////
 		//update
-		//m_model->get_component<transform>()->turn(quat{ {0.0, radians(5.0*delta_time), 0.0} });
+		m_model->get_component<transform>()->turn(quat{ {0.0, radians(5.0*delta_time), 0.0} });
 		/*m_camera
 			->get_component<transform>()
 			->turn(quat{ { radians(delta_time*4.0), 0.0, 0.0 } });
 			*/
 
+#if 0
 		auto e_cube1 = m_systems.get_entities_by_name("cube1")[0];
 		auto t_cube1 = e_cube1->get_component<transform>();
 		auto r_cube1 = e_cube1->get_component<renderable>();
-#if 0
 		auto e_cube2 = m_systems.get_entities_by_name("cube2")[0];
 		auto t_cube2 = e_cube2->get_component<transform>();
 		auto r_cube2 = e_cube2->get_component<renderable>();

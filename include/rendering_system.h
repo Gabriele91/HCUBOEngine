@@ -7,140 +7,75 @@
 //
 #pragma once
 #include <vector>
-#include <queue>
 #include <camera.h>
 #include <entity.h>
 #include <effect.h>
+#include <renderable.h>
+#include <render_queues.h>
 #include <smart_pointers.h>
 #include <system_manager.h>
 #include <vector_math.h>
 
 namespace hcube
 {
-	class render_queues
-	{
-	public:
 
-		struct element
-		{
-			element(entity::wptr ref) : m_ref(ref) {};
-			//ref to object
-			entity::wptr m_ref;
-			//list
-			element* m_next{ nullptr };
-			float    m_depth{ ~0 };
-			//fake lock
-			entity::ptr lock()
-			{
-				return m_ref.lock();
-			}
-		};
-
-		using queue = std::vector < element >;
-
-		queue m_lights;
-		queue m_opaque;
-		queue m_translucent;
-
-		//culling
-		element* m_cull_light_spot     { nullptr };
-		element* m_cull_light_point    { nullptr };
-		element* m_cull_light_direction{ nullptr };
-		element* m_cull_opaque{ nullptr };
-		element* m_cull_translucent{ nullptr };
-
-		void add_call_light_spot(element* e);
-		void add_call_light_point(element* e);
-		void add_call_light_direction(element* e);
-		void add_call_opaque(element* e);
-		void add_call_translucent(element* e);
-
-		void clear();
-		void push(entity::ptr e);
-		void remove(entity::ptr e);
-		void reserve(size_t size);
-
-
-		void compute_light_queue(const frustum& view_frustum);
-		void compute_opaque_queue(const frustum& view_frustum);
-		void compute_translucent_queue(const frustum& view_frustum);
-		//sphere
-		void compute_opaque_queue(const vec3& position, float radius);
-	};
-
-	#define HCUBE_FOREACH_QUEUE(name,queue)\
-		for (render_queues::element* name = queue; name; name = name->m_next)
-
+    enum rendering_pass_type
+    {
+        RPT_SHADOW,
+        RPT_RENDER,
+        RPT_UI,
+        RPT_MAX
+    };
+    
 	class rendering_pass
 	{
+        
 	public:
+        
+        rendering_pass(rendering_pass_type type)
+        {
+            m_type = type;
+        }
+        
 		virtual void draw_pass(
+            int    n_pass,
 			vec4&  clear_color,
 			vec4&  ambient_color,
 			entity::ptr e_camera,
-			render_queues& queues
+			render_scene& rscene
 		) = 0;
+        
+        rendering_pass_type get_type()
+        {
+            return m_type;
+        }
+        
+    private:
+        
+        rendering_pass_type m_type;
+        
 	};
 	using rendering_pass_ptr = std::shared_ptr< rendering_pass >;
 	using rendering_pass_uptr = std::unique_ptr< rendering_pass >;
 
-	class rendering_pass_shadow : public rendering_pass, public smart_pointers<rendering_pass_shadow>
-	{
-		
-        effect::ptr		   m_effect;
-        effect::parameter* m_mask;
-        effect::parameter* m_diffuse_map;
-		effect::technique* m_technique_shadow_spot;
-		effect::technique* m_technique_shadow_point;
-        effect::technique* m_technique_shadow_direction;
-		//spot light
-        uniform*           m_shadow_spot_mask		    { nullptr };
-		//point light
-		uniform*           m_shadow_point_mask			{ nullptr };
-		uniform*           m_shadow_point_light_position{ nullptr };
-		uniform*           m_shadow_point_far_plane		{ nullptr };
-		//direction light
-        uniform*           m_shadow_direction_mask		{ nullptr };
-		//view / projection
-		uniform*           m_shadow_spot_model      { nullptr };
-		uniform*           m_shadow_spot_view		{ nullptr };
-		uniform*           m_shadow_spot_projection { nullptr };
-
-		uniform*           m_shadow_point_model     { nullptr };
-		uniform*           m_shadow_point_view      { nullptr };
-		uniform*           m_shadow_point_projection{ nullptr };
-
-		uniform*           m_shadow_direction_model	    { nullptr };
-		uniform*           m_shadow_direction_view	    { nullptr };
-		uniform*           m_shadow_direction_projection{ nullptr };
-
-	public:
-
-		rendering_pass_shadow(resources_manager& resources);
-
-		virtual void draw_pass(
-			vec4&  clear_color,
-			vec4&  ambient_color,
-			entity::ptr e_camera,
-			render_queues& queues
-		);
-	};
     
     class rendering_pass_debug_spot_lights : public rendering_pass, public smart_pointers<rendering_pass_debug_spot_lights>
     {
         
-        effect::ptr m_effect;
-        entity::ptr m_cube;
+        effect::ptr     m_effect;
+        renderable_ptr  m_cone;
+        renderable_ptr  m_sphere;
         
     public:
         
         rendering_pass_debug_spot_lights(resources_manager& resources);
         
         virtual void draw_pass(
+                               int    n_pass,
                                vec4&  clear_color,
                                vec4&  ambient_color,
                                entity::ptr e_camera,
-                               render_queues& queues
+                               render_scene& rscene
                                );
     };
 
@@ -168,8 +103,6 @@ namespace hcube
 
 		void add_rendering_pass(rendering_pass_ptr pass);
 
-		void add_shadow_rendering_pass(rendering_pass_ptr pass);
-
 		void draw();
 
 		const vec4& get_clear_color() const;
@@ -178,7 +111,7 @@ namespace hcube
 
 		entity::ptr get_camera() const;
 
-		const std::vector< rendering_pass_ptr >& get_rendering_pass() const;
+		const std::vector< rendering_pass_ptr >& get_rendering_pass(rendering_pass_type type = RPT_RENDER) const;
 
 		void stop_update_frustum(bool stop_update);
 
@@ -188,13 +121,12 @@ namespace hcube
 		
 		bool m_update_frustum{ true };
 		bool m_stop_frustum_culling{ false };
-
+        //global into
 		vec4                              m_clear_color;
 		vec4                              m_ambient_color;
 		entity::ptr						  m_camera;
-		render_queues					  m_renderables;
-		std::vector< rendering_pass_ptr > m_rendering_pass;
-		//light
-		rendering_pass_ptr				  m_shadow_pass;
+		render_scene					  m_scene;
+        //all paths
+		std::vector< rendering_pass_ptr > m_rendering_pass[RPT_MAX];
 	};
 }
