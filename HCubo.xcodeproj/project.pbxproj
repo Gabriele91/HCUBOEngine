@@ -187,6 +187,7 @@
 		E09803E51D8AE475006C66F3 /* rendering_pass_shadow.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = rendering_pass_shadow.h; sourceTree = "<group>"; };
 		E09803E61D8AE4C9006C66F3 /* rendering_pass_shadow.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = rendering_pass_shadow.cpp; sourceTree = "<group>"; };
 		E0B02EDD1D34BDCE0058D09B /* resources_manager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = resources_manager.h; sourceTree = "<group>"; };
+		E0C84CA01D957B8D00C0F154 /* align16_data.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = align16_data.h; sourceTree = "<group>"; };
 		E0D8F21C1D4E6B2D006EA26C /* frustum.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = frustum.cpp; sourceTree = "<group>"; };
 		E0D8F21D1D4E6B2D006EA26C /* obb.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = obb.cpp; sourceTree = "<group>"; };
 		E0D8F2211D4E6B39006EA26C /* frustum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = frustum.h; sourceTree = "<group>"; };
@@ -325,6 +326,7 @@
 				E03EDCAE1D3418CF00C0C22A /* basic_meshs.h */,
 				E03EDCC01D3418CF00C0C22A /* text_mesh.h */,
 				E08DB6B51D44ABF400EF554F /* system_manager.h */,
+				E0C84CA01D957B8D00C0F154 /* align16_data.h */,
 				E0ECA17B1D60C78500588A22 /* render.h */,
 				E0EB04E91D88033100A9C7E6 /* render_scene.h */,
 				E03EDCBC1D3418CF00C0C22A /* rendering_system.h */,
