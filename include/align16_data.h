@@ -63,22 +63,4 @@ namespace hcube
     using align16_vec4     = align16<vec4>;
     using align16_mat4     = align16<mat4>;
     
-    
-    class const_buffer
-    {
-    public:
-        
-        void alloc(size_t size);
-        void destoy();
-        void set_data(size_t offset,size_t size,void* data);
-        bool valid() const;
-        void flush() const;
-        
-    protected:
-        
-        std::vector<unsigned char> m_local_data;
-        GLint                      m_buffer_id  { 0     };
-        bool                       m_dirty      { false };
-        
-    };
 }

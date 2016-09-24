@@ -1967,11 +1967,11 @@ namespace hcube
 		if (it_tech != m_map_techniques.end()) return &it_tech->second;
 		return nullptr;
 	}
-
+	 
 	//get parameter
 	effect::parameter* effect::get_parameter(int parameter_id)
 	{
-		if(m_parameters.size() > parameter_id)
+		if(m_parameters.size() > (size_t)parameter_id)
 			return m_parameters[parameter_id].get();
 		return nullptr;
 	}

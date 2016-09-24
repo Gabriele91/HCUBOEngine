@@ -76,6 +76,12 @@ namespace hcube
 		}
 	};
 
+	class context_const_buffer : public context_buffer
+	{
+	public:
+		context_const_buffer(GLuint id = 0) :context_buffer(id) {}
+	};
+
 	class context_vertex_buffer : public context_buffer
 	{
 	public:
@@ -127,6 +133,7 @@ namespace hcube
     struct bind_context
     {
         context_texture*       m_textures[32] { nullptr };
+		context_const_buffer*  m_const_buffer { nullptr };
         context_vertex_buffer* m_vertex_buffer{ nullptr };
         context_index_buffer*  m_index_buffer { nullptr };
         context_input_layout*  m_input_layout { nullptr };
@@ -315,7 +322,6 @@ namespace hcube
 			return s_render_state.m_clear_color;
 		}
         
-
 		void set_clear_color_state(const clear_color_state& clear_color)
 		{
 			if (s_render_state.m_clear_color != clear_color)
@@ -498,6 +504,15 @@ namespace hcube
 		/*
 		VBO & IBO
 		*/
+		context_const_buffer* create_stream_CB(const unsigned char* data, size_t size)
+		{
+			auto ptr = new context_const_buffer();
+			ptr->gen_buffer();
+			glBindBuffer(GL_UNIFORM_BUFFER, *ptr);
+			glBufferData(GL_UNIFORM_BUFFER, size, data, GL_STREAM_DRAW);
+			return ptr;
+		}
+
 		context_vertex_buffer* create_stream_VBO(const unsigned char* vbo, size_t stride, size_t n)
 		{
 			auto ptr = new context_vertex_buffer();
@@ -515,7 +530,15 @@ namespace hcube
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int)*size, ibo, GL_STREAM_DRAW);
 			return ptr;
 		}
-
+		
+		context_const_buffer* create_CB(const unsigned char* data, size_t size)
+		{
+			auto ptr = new context_const_buffer();
+			ptr->gen_buffer();
+			glBindBuffer(GL_UNIFORM_BUFFER, *ptr);
+			glBufferData(GL_UNIFORM_BUFFER, size, data, GL_STATIC_DRAW);
+			return ptr;
+		}
 
 		context_vertex_buffer* create_VBO(const unsigned char* vbo, size_t stride, size_t n)
 		{
@@ -533,6 +556,33 @@ namespace hcube
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, *ptr);
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int)*size, ibo, GL_STATIC_DRAW);
 			return ptr;
+		}
+
+		variant get_native_CB(const context_const_buffer* cb)
+		{
+			return{ cb->m_id_buffer };
+		}
+
+		variant get_native_VBO(const context_vertex_buffer* vb)
+		{
+			return{ vb->m_id_buffer };
+		}
+
+		variant get_native_IBO(const context_index_buffer* ib)
+		{
+			return{ ib->m_id_buffer };
+		}
+
+		void update_steam_CB(context_const_buffer* cb, const unsigned char* data, size_t size)
+		{
+			//get state
+			GLint lastbind = 0;
+			glGetIntegerv(GL_UNIFORM_BUFFER, &lastbind);
+			//change
+			glBindBuffer(GL_UNIFORM_BUFFER, *cb);
+			glBufferSubData(GL_UNIFORM_BUFFER, 0, size, data);
+			//restore
+			glBindBuffer(GL_UNIFORM_BUFFER, lastbind);
 		}
 
 		void update_steam_VBO(context_vertex_buffer* vbo, const unsigned char* data, size_t size)
@@ -556,6 +606,22 @@ namespace hcube
 			glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, size * sizeof(unsigned int), data);
 			//restore
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, lastbind);
+		}
+		 
+		void bind_CB(context_const_buffer* cb)
+		{
+			if (cb && s_bind_context.m_const_buffer != cb)
+			{
+				//unbind
+				if (s_bind_context.m_const_buffer)
+				{
+					unbind_CB(s_bind_context.m_const_buffer);
+				}
+				//bind
+				glBindBuffer(GL_UNIFORM_BUFFER, *cb);
+				//update
+				s_bind_context.m_const_buffer = cb;
+			}
 		}
 
 		void bind_VBO(context_vertex_buffer* vbo)
@@ -590,6 +656,16 @@ namespace hcube
             }
 		}
 
+		void unbind_CB(context_const_buffer* cb)
+		{
+			if (cb)
+			{
+				assert(s_bind_context.m_const_buffer == cb);
+				glBindBuffer(GL_UNIFORM_BUFFER, 0);
+				s_bind_context.m_const_buffer = nullptr;
+			}
+		}
+
 		void unbind_VBO(context_vertex_buffer* vbo)
 		{
             if(vbo)
@@ -621,6 +697,18 @@ namespace hcube
 			}
 		}
 
+		unsigned char* map_CB(context_const_buffer* cb, size_t start, size_t n, mapping_type type)
+		{
+			bind_CB(cb);
+			return (unsigned char*)glMapBufferRange(GL_UNIFORM_BUFFER, start, n, get_mapping_type(type));
+		}
+
+		void unmap_CB(context_const_buffer* cb)
+		{
+			glUnmapBuffer(GL_UNIFORM_BUFFER);
+			unbind_CB(cb);
+		}
+		
 		unsigned char* map_VBO(context_vertex_buffer* vbo, size_t start, size_t n, mapping_type type)
 		{
 			bind_VBO(vbo);
@@ -645,6 +733,19 @@ namespace hcube
 			unbind_IBO(ibo);
 		}
 
+
+		void delete_CB(context_const_buffer*& cb)
+		{
+			//test
+			if (s_bind_context.m_const_buffer == cb)
+			{
+				unbind_CB(s_bind_context.m_const_buffer);
+			}
+			//safe delete
+			glDeleteBuffers(1, *cb);
+			delete cb;
+			cb = nullptr;
+		}
 
 		void delete_VBO(context_vertex_buffer*& vbo)
 		{

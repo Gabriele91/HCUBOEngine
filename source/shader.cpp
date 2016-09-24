@@ -689,6 +689,10 @@ R"GLSL(
 	{
 		return glGetUniformLocation(m_shader_id, name);
 	}
+	unsigned int shader::get_uniform_buffer_id(const char *name)
+	{
+		return glGetUniformBlockIndex(m_shader_id, name);
+	}
 
 	//disabilita shader
 	void shader::unbind()
@@ -762,17 +766,14 @@ R"GLSL(
 	{
 		glUniform1iv((GLint)m_id, (GLsizei)n, i);
 	}
-
 	void uniform::set_value(const float* f, size_t n)
 	{
 		glUniform1fv((GLint)m_id, (GLsizei)n, f);
 	}
-
 	void uniform::set_value(const vec2* v2, size_t n)
 	{
 		glUniform2fv((GLint)m_id, (GLsizei)n, value_ptr(*v2));
 	}
-
 	void uniform::set_value(const vec3* v3, size_t n)
 	{
 		glUniform3fv((GLint)m_id, (GLsizei)n, value_ptr(*v3));
@@ -819,6 +820,11 @@ R"GLSL(
 		set_value(m4.data(), m4.size());
 	}
 
+	void uniform::set_value(const context_const_buffer* buffer)
+	{
+		glUniformBlockBinding(GL_UNIFORM_BUFFER,(GLuint)m_id, (GLuint)render::get_native_CB( buffer ));
+	}
+	
 	uniform* shader::get_uniform(const char *name)
 	{
 		auto uit = m_uniform_map.find(name);
@@ -831,4 +837,15 @@ R"GLSL(
 		return &(m_uniform_map[name] = uniform(this, (long)uid));
 	}
 
+	uniform* shader::get_uniform_buffer(const char *name)
+	{
+		auto uit = m_uniform_map.find(name);
+		//if find
+		if (uit != m_uniform_map.end()) return &uit->second;
+		//else
+		unsigned int uid = get_uniform_buffer_id(name);
+		if (uid == GL_INVALID_INDEX) return nullptr;
+		//add and return
+		return &(m_uniform_map[name] = uniform(this, (long)uid));
+	}
 }

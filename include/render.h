@@ -9,11 +9,13 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <variant.h>
 #include <vector_math.h>
 
 namespace hcube
 {
 	class context_texture;
+	class context_const_buffer;
 	class context_render_target;
 	class context_vertex_buffer;
 	class context_index_buffer;
@@ -175,13 +177,12 @@ namespace hcube
 		TMIN_LINEAR_MIPMAP_LINEAR,
 	};
 
-
 	enum texture_edge_type
 	{
 		TEDGE_CLAMP,
 		TEDGE_REPEAT
 	};
-
+	 
 	enum render_target_type
 	{
 		RT_COLOR,
@@ -189,8 +190,6 @@ namespace hcube
 		RT_DEPTH_STENCIL,
 		RT_STENCIL
 	};
-
-
 
 	enum attribute_type
 	{
@@ -353,8 +352,7 @@ namespace hcube
 		size_t             m_size;
 
 	};
-
-
+	
 	struct viewport_state
 	{
 
@@ -418,8 +416,7 @@ namespace hcube
 		}
 
 	};
-
-
+	
 	struct depth_buffer_state
 	{
 		//value
@@ -472,8 +469,7 @@ namespace hcube
 		}
 
 	};
-
-
+	
 	struct render_state
 	{
 		clear_color_state  m_clear_color;
@@ -610,19 +606,32 @@ namespace hcube
 		LIB_EXPORT void set_render_state(const render_state& rs);
 
 		//BO
+		LIB_EXPORT context_const_buffer* create_stream_CB(const unsigned char* data, size_t size);
 		LIB_EXPORT context_vertex_buffer* create_stream_VBO(const unsigned char* vbo, size_t stride, size_t n);
 		LIB_EXPORT context_index_buffer* create_stream_IBO(const unsigned int* ibo, size_t size);
+
+		LIB_EXPORT context_const_buffer* create_CB(const unsigned char* data, size_t size);
 		LIB_EXPORT context_vertex_buffer* create_VBO(const unsigned char* vbo, size_t stride, size_t n);
 		LIB_EXPORT context_index_buffer* create_IBO(const unsigned int* ibo, size_t size);
 
+		LIB_EXPORT variant get_native_CB(const context_const_buffer*);
+		LIB_EXPORT variant get_native_VBO(const context_vertex_buffer*);
+		LIB_EXPORT variant get_native_IBO(const context_index_buffer*);
+
+		LIB_EXPORT void update_steam_CB(context_const_buffer* cb, const unsigned char* vb, size_t n);
 		LIB_EXPORT void update_steam_VBO(context_vertex_buffer* vbo, const unsigned char* vb, size_t n);
 		LIB_EXPORT void update_steam_IBO(context_index_buffer* vbo, const unsigned int* ib, size_t n);
 
+		LIB_EXPORT void bind_CB(context_const_buffer*);
 		LIB_EXPORT void bind_VBO(context_vertex_buffer*);
 		LIB_EXPORT void bind_IBO(context_index_buffer*);
 
+		LIB_EXPORT void unbind_CB(context_const_buffer*);
 		LIB_EXPORT void unbind_VBO(context_vertex_buffer*);
 		LIB_EXPORT void unbind_IBO(context_index_buffer*);
+
+		LIB_EXPORT unsigned char* map_CB(context_const_buffer*, size_t start, size_t n, mapping_type type);
+		LIB_EXPORT void unmap_CB(context_const_buffer*);
 
 		LIB_EXPORT unsigned char* map_VBO(context_vertex_buffer*, size_t start, size_t n, mapping_type type);
 		LIB_EXPORT void unmap_VBO(context_vertex_buffer*);
@@ -630,9 +639,9 @@ namespace hcube
 		LIB_EXPORT unsigned int*  map_IBO(context_index_buffer*, size_t start, size_t n, mapping_type type);
 		LIB_EXPORT void unmap_IBO(context_index_buffer*);
 
+		LIB_EXPORT void delete_CB(context_const_buffer*&);
 		LIB_EXPORT void delete_VBO(context_vertex_buffer*&);
 		LIB_EXPORT void delete_IBO(context_index_buffer*&);
-
 		//draw
 		LIB_EXPORT void draw_arrays(draw_type type, unsigned int n);
 		LIB_EXPORT void draw_arrays(draw_type type, unsigned int start, unsigned int size);

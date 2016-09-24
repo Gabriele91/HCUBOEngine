@@ -185,7 +185,7 @@
     <ClInclude Include="..\include\rendering_pass_forward.h" />
     <ClInclude Include="..\include\rendering_pass_shadow.h" />
     <ClInclude Include="..\include\rendering_system.h" />
-    <ClInclude Include="..\include\render_queues.h" />
+    <ClInclude Include="..\include\render_scene.h" />
     <ClInclude Include="..\include\resource.h" />
     <ClInclude Include="..\include\resources_manager.h" />
     <ClInclude Include="..\include\shader.h" />
@@ -201,6 +201,7 @@
     <ClInclude Include="..\include\text_mesh.h" />
     <ClInclude Include="..\include\tangent_space_calculation.h" />
     <ClInclude Include="..\include\transform.h" />
+    <ClInclude Include="..\include\variant.h" />
     <ClInclude Include="..\include\vector_math.h" />
   </ItemGroup>
   <ItemGroup>
@@ -227,7 +228,7 @@
     <ClCompile Include="..\source\rendering_pass_forward.cpp" />
     <ClCompile Include="..\source\rendering_pass_shadow.cpp" />
     <ClCompile Include="..\source\rendering_system.cpp" />
-    <ClCompile Include="..\source\render_queues.cpp" />
+    <ClCompile Include="..\source\render_scene.cpp" />
     <ClCompile Include="..\source\resources_manager.cpp" />
     <ClCompile Include="..\source\shader.cpp" />
     <ClCompile Include="..\source\shadow_buffer.cpp" />

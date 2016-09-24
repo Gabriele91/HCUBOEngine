@@ -51,6 +51,8 @@ namespace hcube
 		void set_value(const std::vector < mat3 >& m3);
 		void set_value(const std::vector < mat4 >& m4);
 
+		void set_value(const context_const_buffer*);
+
 		uniform() {}
 
 		bool is_valid() { return m_shader && m_id >= -1; }
@@ -107,18 +109,20 @@ namespace hcube
 
 		//get consts
 		uniform* get_uniform(const char *name);
+		uniform* get_uniform_buffer(const char *name);
 
 		//imposta shader
 		virtual void bind();
 		virtual void unbind();
 
-		//get uniform id
-		int get_uniform_id(const char *name);
-
 		//id programma
 		unsigned int program_id() const;
 
 	protected:
+
+		//get uniform id 
+		int get_uniform_id(const char *name);
+		unsigned int get_uniform_buffer_id(const char *name);
 
 		//friend class
 		friend class uniform;

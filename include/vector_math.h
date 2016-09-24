@@ -31,7 +31,7 @@ namespace hcube
     
     using  vec3 = glm::vec3;
     using dvec3 = glm::dvec3;
-    using ivec3 = glm::vec3;
+    using ivec3 = glm::ivec3;
     
     using  vec4 = glm::vec4;
     using dvec4 = glm::dvec4;
@@ -44,7 +44,7 @@ namespace hcube
     using dmat4 = glm::dmat4;
     
     using quat  = glm::quat;
-    using dquad = glm::dquat;
+    using dquat = glm::dquat;
     
     namespace constants
     {
