@@ -199,6 +199,7 @@
 		E0EB04EA1D8805B700A9C7E6 /* render_scene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = render_scene.cpp; sourceTree = "<group>"; };
 		E0ECA17B1D60C78500588A22 /* render.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = render.h; sourceTree = "<group>"; };
 		E0ED49471D5616A100EFE862 /* common */ = {isa = PBXFileReference; lastKnownFileType = folder; path = common; sourceTree = "<group>"; };
+		E0FE41D61D96BC2A004D572F /* variant.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = variant.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -296,6 +297,7 @@
 		E01A2EE41D22C2A900A8BA77 /* include */ = {
 			isa = PBXGroup;
 			children = (
+				E0FE41D61D96BC2A004D572F /* variant.h */,
 				E07B2EC81D93D02D00AF8BB7 /* intersection.h */,
 				E07B2EC91D93D02D00AF8BB7 /* sphere.h */,
 				E054AC801D72275100A3EE81 /* effect.h */,
