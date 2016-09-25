@@ -38,8 +38,10 @@ namespace hcube
 	};
 
 #define HCUBE_COMPONENT_DEC(T)\
-    public: static component_id type(){ static component_id type=typeid(T); return type; }\
-    public: component_id get_id() const { return type(); }\
+    public: static const char* get_class_name(){ return #T ; }\
+    public: static component_id get_class_id(){ static component_id type=typeid(T); return type; }\
+    public: component_id get_component_id()   const { return get_class_id(); }\
+    public: const char*  get_component_name() const { return get_class_name(); }\
     private:
 
 	using component_ptr = std::shared_ptr< component >;
@@ -67,7 +69,8 @@ namespace hcube
 		virtual bool on_activate() { return false; }
 		virtual bool on_deactivate() { return false; }
 
-		virtual component_id get_id() const = 0;
+		virtual component_id get_component_id() const = 0;
+		virtual const char*  get_component_name() const = 0;
 
 		bool is_active() const { return m_is_active; }
 		bool is_enabled() const { return m_is_enabled; }

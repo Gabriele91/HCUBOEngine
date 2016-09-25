@@ -57,15 +57,15 @@ namespace hcube
 		{
 			static_assert(std::is_base_of<component, T>::value, "Must to be a component");
 			//cache
-			if (T::type() == transform::type()) return  std::static_pointer_cast<T>(transform_cache);
+			if (T::get_class_id() == transform::get_class_id()) return  std::static_pointer_cast<T>(transform_cache);
 			//pool
-			return std::static_pointer_cast<T>(m_components[T::type()]);
+			return std::static_pointer_cast<T>(m_components[T::get_class_id()]);
 		}
 
 		inline component_ptr get_component(component_id id)
 		{
 			//cache
-			if (id == transform::type()) return  transform_cache;
+			if (id == transform::get_class_id()) return  transform_cache;
 			//pool
 			return m_components[id];
 		}
@@ -74,7 +74,7 @@ namespace hcube
 		std::shared_ptr< T > remove_component()
 		{
 			static_assert(std::is_base_of<component, T>::value, "Must to be a component");
-			return std::static_pointer_cast<T>(remove_component(T::type()));
+			return std::static_pointer_cast<T>(remove_component(T::get_class_id()));
 		}
 		component_ptr remove_component(component_id id);
 
@@ -82,7 +82,7 @@ namespace hcube
 		bool has_component() const
 		{
 			static_assert(std::is_base_of<component, T>::value, "Must to be a component");
-			return has_component(T::type());
+			return has_component(T::get_class_id());
 		}
 		bool has_component(component_id id);
 

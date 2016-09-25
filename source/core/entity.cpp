@@ -26,10 +26,10 @@ namespace hcube
 	component_ptr entity::add_component(component_ptr component_t)
 	{
 		//cache
-		if (component_t->get_id() == transform::type())	transform_cache = component_t;
+		if (component_t->get_component_id() == transform::get_class_id())	transform_cache = component_t;
 		//add
 		component_t->m_entity = this;
-		m_components[component_t->get_id()] = component_t;
+		m_components[component_t->get_component_id()] = component_t;
 		component_t->on_attach(*this);
 		return component_t;
 	}
@@ -39,7 +39,7 @@ namespace hcube
 		if (has_component(id))
 		{
 			//cache
-			if (id == transform::type()) transform_cache = nullptr;
+			if (id == transform::get_class_id()) transform_cache = nullptr;
 			//find
 			auto it = m_components.find(id);
 			it->second->on_detach();
