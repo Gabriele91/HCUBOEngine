@@ -40,267 +40,288 @@
     <Filter Include="File di risorse\common\effects\shaders\lib">
       <UniqueIdentifier>{23157241-6136-45f9-b9d1-584be02ec9f0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="File di intestazione\geometry">
+    <Filter Include="File di origine\geometries">
+      <UniqueIdentifier>{74e990e1-f390-426a-affc-717f19cd26e4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="File di origine\data">
+      <UniqueIdentifier>{0e3b9dd6-cfe8-4c19-99ea-ce12794298c6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="File di origine\components">
+      <UniqueIdentifier>{2a6f6f8a-4bb6-4acf-bbf4-9b4d7d5310c6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="File di origine\core">
+      <UniqueIdentifier>{c8ea9d61-affb-4108-9a77-f5b9a3ccf1de}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="File di origine\resources">
+      <UniqueIdentifier>{36cd74c6-5e86-4a43-9ffe-ac3a0cac8a15}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="File di origine\render">
+      <UniqueIdentifier>{88512309-4e3c-4651-ad8b-785c50a9b80e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="File di intestazione\hcube">
+      <UniqueIdentifier>{78785dae-fc9c-49a5-95da-3f1fe76759de}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="File di intestazione\hcube\resources">
+      <UniqueIdentifier>{afc93bf7-84e6-4c9d-9582-e73f3e51ca23}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="File di intestazione\hcube\render">
+      <UniqueIdentifier>{d5b12137-8c20-4b5b-bbf4-c494d065b9e1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="File di intestazione\hcube\core">
+      <UniqueIdentifier>{e159bc58-c614-4840-bf1a-c31d2da3b1f5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="File di intestazione\hcube\geometries">
       <UniqueIdentifier>{115ab91b-f23d-46d1-b351-e7486d9b3a08}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="File di intestazione\hcube\data">
+      <UniqueIdentifier>{6ca4062b-fd97-49e2-a413-3c90f921eec7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="File di intestazione\hcube\components">
+      <UniqueIdentifier>{87deebf0-a8f8-42ee-abef-e5a486b05634}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\include\application.h">
-      <Filter>File di intestazione</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\arc_ball.h">
-      <Filter>File di intestazione</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\camera.h">
-      <Filter>File di intestazione</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\entity.h">
-      <Filter>File di intestazione</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\material.h">
-      <Filter>File di intestazione</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\mesh.h">
-      <Filter>File di intestazione</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\OpenGL4.h">
-      <Filter>File di intestazione</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\picking.h">
-      <Filter>File di intestazione</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\picking_rotation.h">
-      <Filter>File di intestazione</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\smart_pointers.h">
-      <Filter>File di intestazione</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\query_performance.h">
-      <Filter>File di intestazione</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\json11.h">
-      <Filter>File di intestazione</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\renderable.h">
-      <Filter>File di intestazione</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\text_mesh.h">
-      <Filter>File di intestazione</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\texture.h">
-      <Filter>File di intestazione</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\native_dialog.h">
-      <Filter>File di intestazione</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\filesystem.h">
-      <Filter>File di intestazione</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\basic_meshs.h">
-      <Filter>File di intestazione</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\app_basic.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\rendering_system.h">
-      <Filter>File di intestazione</Filter>
+    <ClInclude Include="..\include\hcube\geometries\frustum.h">
+      <Filter>File di intestazione\hcube\geometries</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\g_buffer.h">
-      <Filter>File di intestazione</Filter>
+    <ClInclude Include="..\include\hcube\geometries\intersection.h">
+      <Filter>File di intestazione\hcube\geometries</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\resource.h">
-      <Filter>File di intestazione</Filter>
+    <ClInclude Include="..\include\hcube\geometries\obb.h">
+      <Filter>File di intestazione\hcube\geometries</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\resources_manager.h">
-      <Filter>File di intestazione</Filter>
+    <ClInclude Include="..\include\hcube\geometries\sphere.h">
+      <Filter>File di intestazione\hcube\geometries</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\rendering_pass_deferred.h">
-      <Filter>File di intestazione</Filter>
+    <ClInclude Include="..\include\hcube\data\align16_data.h">
+      <Filter>File di intestazione\hcube\data</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\light.h">
-      <Filter>File di intestazione</Filter>
+    <ClInclude Include="..\include\hcube\data\json11.h">
+      <Filter>File di intestazione\hcube\data</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\static_model.h">
-      <Filter>File di intestazione</Filter>
+    <ClInclude Include="..\include\hcube\data\struct_attribute.h">
+      <Filter>File di intestazione\hcube\data</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\tangent_space_calculation.h">
-      <Filter>File di intestazione</Filter>
+    <ClInclude Include="..\include\hcube\data\variant.h">
+      <Filter>File di intestazione\hcube\data</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\struct_attribute.h">
-      <Filter>File di intestazione</Filter>
+    <ClInclude Include="..\include\hcube\core\application.h">
+      <Filter>File di intestazione\hcube\core</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\component.h">
-      <Filter>File di intestazione</Filter>
+    <ClInclude Include="..\include\hcube\core\component.h">
+      <Filter>File di intestazione\hcube\core</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\gameobject.h">
-      <Filter>File di intestazione</Filter>
+    <ClInclude Include="..\include\hcube\core\entity.h">
+      <Filter>File di intestazione\hcube\core</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\system_manager.h">
-      <Filter>File di intestazione</Filter>
+    <ClInclude Include="..\include\hcube\core\filesystem.h">
+      <Filter>File di intestazione\hcube\core</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\transform.h">
-      <Filter>File di intestazione</Filter>
+    <ClInclude Include="..\include\hcube\core\native_dialog.h">
+      <Filter>File di intestazione\hcube\core</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\ssao_technique.h">
-      <Filter>File di intestazione</Filter>
+    <ClInclude Include="..\include\hcube\core\query_performance.h">
+      <Filter>File di intestazione\hcube\core</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\prefab.h">
-      <Filter>File di intestazione</Filter>
+    <ClInclude Include="..\include\hcube\core\resource.h">
+      <Filter>File di intestazione\hcube\core</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\render.h">
-      <Filter>File di intestazione</Filter>
+    <ClInclude Include="..\include\hcube\core\resources_manager.h">
+      <Filter>File di intestazione\hcube\core</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\effect.h">
-      <Filter>File di intestazione</Filter>
+    <ClInclude Include="..\include\hcube\core\smart_pointers.h">
+      <Filter>File di intestazione\hcube\core</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\vector_math.h">
-      <Filter>File di intestazione</Filter>
+    <ClInclude Include="..\include\hcube\core\system_manager.h">
+      <Filter>File di intestazione\hcube\core</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\rendering_pass_forward.h">
-      <Filter>File di intestazione</Filter>
+    <ClInclude Include="..\include\hcube\components\basic_meshs.h">
+      <Filter>File di intestazione\hcube\components</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\shadow_buffer.h">
-      <Filter>File di intestazione</Filter>
+    <ClInclude Include="..\include\hcube\components\camera.h">
+      <Filter>File di intestazione\hcube\components</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\rendering_pass_shadow.h">
-      <Filter>File di intestazione</Filter>
+    <ClInclude Include="..\include\hcube\components\gameobject.h">
+      <Filter>File di intestazione\hcube\components</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\sphere.h">
-      <Filter>File di intestazione\geometry</Filter>
+    <ClInclude Include="..\include\hcube\components\light.h">
+      <Filter>File di intestazione\hcube\components</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\shader.h">
-      <Filter>File di intestazione</Filter>
+    <ClInclude Include="..\include\hcube\components\mesh.h">
+      <Filter>File di intestazione\hcube\components</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\frustum.h">
-      <Filter>File di intestazione\geometry</Filter>
+    <ClInclude Include="..\include\hcube\components\renderable.h">
+      <Filter>File di intestazione\hcube\components</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\obb.h">
-      <Filter>File di intestazione\geometry</Filter>
+    <ClInclude Include="..\include\hcube\components\text_mesh.h">
+      <Filter>File di intestazione\hcube\components</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\intersection.h">
-      <Filter>File di intestazione\geometry</Filter>
+    <ClInclude Include="..\include\hcube\components\transform.h">
+      <Filter>File di intestazione\hcube\components</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\variant.h">
-      <Filter>File di intestazione</Filter>
+    <ClInclude Include="..\include\hcube\render\effect.h">
+      <Filter>File di intestazione\hcube\render</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\render_scene.h">
-      <Filter>File di intestazione</Filter>
+    <ClInclude Include="..\include\hcube\render\g_buffer.h">
+      <Filter>File di intestazione\hcube\render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\hcube\render\OpenGL4.h">
+      <Filter>File di intestazione\hcube\render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\hcube\render\render.h">
+      <Filter>File di intestazione\hcube\render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\hcube\render\render_scene.h">
+      <Filter>File di intestazione\hcube\render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\hcube\render\rendering_pass_deferred.h">
+      <Filter>File di intestazione\hcube\render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\hcube\render\rendering_pass_forward.h">
+      <Filter>File di intestazione\hcube\render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\hcube\render\rendering_pass_shadow.h">
+      <Filter>File di intestazione\hcube\render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\hcube\render\rendering_system.h">
+      <Filter>File di intestazione\hcube\render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\hcube\render\shader.h">
+      <Filter>File di intestazione\hcube\render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\hcube\render\shadow_buffer.h">
+      <Filter>File di intestazione\hcube\render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\hcube\render\ssao_technique.h">
+      <Filter>File di intestazione\hcube\render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\hcube\resources\material.h">
+      <Filter>File di intestazione\hcube\resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\hcube\resources\prefab.h">
+      <Filter>File di intestazione\hcube\resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\hcube\resources\static_model.h">
+      <Filter>File di intestazione\hcube\resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\hcube\resources\texture.h">
+      <Filter>File di intestazione\hcube\resources</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\source\application.cpp">
+    <ClCompile Include="..\source\app_basic.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\camera.cpp">
-      <Filter>File di origine</Filter>
+    <ClCompile Include="..\source\render\effect.cpp">
+      <Filter>File di origine\render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\render\g_buffer.cpp">
+      <Filter>File di origine\render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\render\render.cpp">
+      <Filter>File di origine\render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\render\render_scene.cpp">
+      <Filter>File di origine\render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\render\rendering_pass_deferred.cpp">
+      <Filter>File di origine\render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\render\rendering_pass_forward.cpp">
+      <Filter>File di origine\render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\render\rendering_pass_shadow.cpp">
+      <Filter>File di origine\render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\render\rendering_system.cpp">
+      <Filter>File di origine\render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\render\shader.cpp">
+      <Filter>File di origine\render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\render\shadow_buffer.cpp">
+      <Filter>File di origine\render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\render\ssao_technique.cpp">
+      <Filter>File di origine\render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\core\application.cpp">
+      <Filter>File di origine\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\core\entity.cpp">
+      <Filter>File di origine\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\core\filesystem.cpp">
+      <Filter>File di origine\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\core\native_dialog.cpp">
+      <Filter>File di origine\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\core\query_performance.cpp">
+      <Filter>File di origine\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\core\resources_manager.cpp">
+      <Filter>File di origine\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\core\system_manager.cpp">
+      <Filter>File di origine\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\core\window_native_dialog.cpp">
+      <Filter>File di origine\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\resources\material.cpp">
+      <Filter>File di origine\resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\resources\static_model.cpp">
+      <Filter>File di origine\resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\resources\texture.cpp">
+      <Filter>File di origine\resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\components\basic_meshs.cpp">
+      <Filter>File di origine\components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\components\camera.cpp">
+      <Filter>File di origine\components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\components\light.cpp">
+      <Filter>File di origine\components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\components\mesh.cpp">
+      <Filter>File di origine\components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\components\text_mesh.cpp">
+      <Filter>File di origine\components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\components\transform.cpp">
+      <Filter>File di origine\components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\data\json11.cpp">
+      <Filter>File di origine\data</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\data\stb_image.cpp">
+      <Filter>File di origine\data</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\data\tga.cpp">
+      <Filter>File di origine\data</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\geometries\frustum.cpp">
+      <Filter>File di origine\geometries</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\geometries\intersection.cpp">
+      <Filter>File di origine\geometries</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\geometries\obb.cpp">
+      <Filter>File di origine\geometries</Filter>
     </ClCompile>
     <ClCompile Include="..\source\main.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\mesh.cpp">
-      <Filter>File di origine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\shader.cpp">
-      <Filter>File di origine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\json11.cpp">
-      <Filter>File di origine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\query_performance.cpp">
-      <Filter>File di origine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\text_mesh.cpp">
-      <Filter>File di origine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\texture.cpp">
-      <Filter>File di origine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\native_dialog.cpp">
-      <Filter>File di origine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\window_native_dialog.cpp">
-      <Filter>File di origine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\filesystem.cpp">
-      <Filter>File di origine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\basic_meshs.cpp">
-      <Filter>File di origine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\app_basic.cpp">
-      <Filter>File di origine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\rendering_system.cpp">
-      <Filter>File di origine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\g_buffer.cpp">
-      <Filter>File di origine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\resources_manager.cpp">
-      <Filter>File di origine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\rendering_pass_deferred.cpp">
-      <Filter>File di origine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\material.cpp">
-      <Filter>File di origine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\static_model.cpp">
-      <Filter>File di origine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\tga.cpp">
-      <Filter>File di origine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\entity.cpp">
-      <Filter>File di origine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\system_manager.cpp">
-      <Filter>File di origine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\transform.cpp">
-      <Filter>File di origine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\ssao_technique.cpp">
-      <Filter>File di origine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\stb_image.cpp">
-      <Filter>File di origine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\obb.cpp">
-      <Filter>File di origine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\frustum.cpp">
-      <Filter>File di origine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\render.cpp">
-      <Filter>File di origine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\effect.cpp">
-      <Filter>File di origine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\light.cpp">
-      <Filter>File di origine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\rendering_pass_forward.cpp">
-      <Filter>File di origine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\shadow_buffer.cpp">
-      <Filter>File di origine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\rendering_pass_shadow.cpp">
-      <Filter>File di origine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\intersection.cpp">
-      <Filter>File di origine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\render_scene.cpp">
-      <Filter>File di origine</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\source\cocoa_native_dialog.mm">
-      <Filter>File di origine</Filter>
-    </None>
     <None Include="..\assets\materials\baril_mat.mat">
       <Filter>File di risorse\assets\materials</Filter>
     </None>
@@ -402,6 +423,9 @@
     </None>
     <None Include="..\assets\materials\window_mat.mat">
       <Filter>File di risorse\assets\materials</Filter>
+    </None>
+    <None Include="..\source\core\cocoa_native_dialog.mm">
+      <Filter>File di origine\core</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

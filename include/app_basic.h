@@ -6,21 +6,21 @@
 //  Copyright © 2016 Gabriele. All rights reserved.
 //
 #pragma once
-//include application instance
-#include <application.h>
 //include vectorial math
-#include <vector_math.h>
-//material
-#include <material.h>
-//camera
-#include <camera.h>
-//mesh types
-#include <mesh.h>
-#include <text_mesh.h>
+#include <hcube/math/vector_math.h>
+//include application instance
+#include <hcube/core/application.h>
 //manager resources
-#include <resources_manager.h>
+#include <hcube/core/resources_manager.h>
 //rendering system
-#include <system_manager.h>
+#include <hcube/core/system_manager.h>
+//material
+#include <hcube/resources/material.h>
+//camera
+#include <hcube/components/camera.h>
+//mesh types
+#include <hcube/components/mesh.h>
+#include <hcube/components/text_mesh.h>
 
 namespace hcube
 {

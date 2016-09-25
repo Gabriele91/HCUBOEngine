@@ -7,7 +7,7 @@
 //
 
 #include <iostream>
-#include <application.h>
+#include <hcube/core/application.h>
 #include <app_basic.h>
 
 int main(int argc, const char * argv[])

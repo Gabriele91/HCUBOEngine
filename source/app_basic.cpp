@@ -5,18 +5,19 @@
 //  Created by Gabriele on 07/07/16.
 //  Copyright © 2016 Gabriele. All rights reserved.
 //
-#include <app_basic.h>
-#include <vector_math.h>
-#include <basic_meshs.h>
 #include <regex>
-#include <rendering_pass_deferred.h>
-#include <rendering_pass_forward.h>
-#include <rendering_pass_shadow.h>
-#include <gameobject.h>
-#include <transform.h>
-#include <renderable.h>
 #include <iostream>
-#include <frustum.h>
+#include <hcube/math/vector_math.h>
+#include <hcube/geometries/frustum.h>
+#include <hcube/render/rendering_pass_deferred.h>
+#include <hcube/render/rendering_pass_forward.h>
+#include <hcube/render/rendering_pass_shadow.h>
+#include <hcube/components/transform.h>
+#include <hcube/components/renderable.h>
+#include <hcube/components/gameobject.h>
+#include <hcube/components/basic_meshs.h>
+
+#include <app_basic.h>
 
 namespace hcube
 {
