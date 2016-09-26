@@ -535,6 +535,7 @@ namespace hcube
 
 	void app_basic::go_to_fullscreen(application& app)
 	{
+#if 0
 		int m_count = 0;
 		GLFWmonitor** monitors = glfwGetMonitors(&m_count);
 		if (m_count)
@@ -557,10 +558,12 @@ namespace hcube
 				, 60
 			);
 		}
+#endif
 	}
 
 	void app_basic::go_to_window_mode(application& app)
 	{
+#if 0
 		//go to window mode
 		glfwSetWindowMonitor(
 			app.get_window()
@@ -571,11 +574,16 @@ namespace hcube
 			, m_window_mode_info.m_size.y
 			, 60
 		);
+#endif
 	}
 
 	bool app_basic::is_fullscreen(application& app) const
 	{
+#if 0
 		return glfwGetWindowMonitor(app.get_window()) != nullptr;
+#else 
+		return true;
+#endif
 	}
 
 }

@@ -7,6 +7,7 @@
 //
 #pragma once
 #include <unordered_map>
+#include <hcube/config.h>
 #include <hcube/core/resource.h>
 #include <hcube/render/shader.h>
 #include <hcube/render/effect.h>
@@ -16,7 +17,7 @@
 
 namespace hcube
 {
-	class resources_manager
+	class HCUBE_API resources_manager
 	{
 	public:
 

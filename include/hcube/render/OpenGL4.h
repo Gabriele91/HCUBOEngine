@@ -17,6 +17,7 @@
     #include <GL/gl.h>
 #endif
 
+#include <hcube/config.h>
 #include <string>
 #include <sstream>
 namespace hcube

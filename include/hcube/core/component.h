@@ -7,6 +7,7 @@
 //
 #pragma once
 #include <typeindex>
+#include <hcube/config.h>
 #include <hcube/core/smart_pointers.h>
 
 namespace hcube
@@ -17,11 +18,11 @@ namespace hcube
 	class  component;
 	struct message;
 	//type
-	using message_id = unsigned;
+	using message_id   = unsigned;
 	using component_id = std::type_index;
-	using entity_id = unsigned;
+	using entity_id	   = unsigned;
 
-	struct message
+	struct HCUBE_API message
 	{
 		message_id m_id{ 0 };
 		void*      m_data{ nullptr };
@@ -48,7 +49,7 @@ namespace hcube
 	using component_uptr = std::unique_ptr< component >;
 	using component_wptr = std::weak_ptr  < component >;
 
-	class component
+	class HCUBE_API component
 	{
 
 		friend class entity;

@@ -6,6 +6,7 @@
 //  Copyright © 2016 Gabriele. All rights reserved.
 //
 #pragma once
+#include <hcube/config.h>
 #include <hcube/math/vector_math.h>
 #include <hcube/core/smart_pointers.h>
 #include <hcube/core/resources_manager.h>
@@ -14,7 +15,7 @@
 
 namespace hcube
 {
-    class rendering_pass_shadow : public rendering_pass, public smart_pointers<rendering_pass_shadow>
+    class HCUBE_API rendering_pass_shadow : public rendering_pass, public smart_pointers<rendering_pass_shadow>
     {
         
         effect::ptr		   m_effect;

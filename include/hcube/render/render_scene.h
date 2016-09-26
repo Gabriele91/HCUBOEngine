@@ -8,6 +8,7 @@
 #pragma once
 #include <array>
 #include <vector>
+#include <hcube/config.h>
 #include <hcube/math/vector_math.h>
 #include <hcube/core/entity.h>
 #include <hcube/geometries/sphere.h>
@@ -20,7 +21,7 @@ namespace hcube
         for (::hcube::render_scene_element* name = queue; name; name = name->m_next)
 
 
-	struct render_scene_element
+	struct HCUBE_API render_scene_element
 	{
 		render_scene_element() {};
 		render_scene_element(entity::wptr ref) : m_ref(ref) {};
@@ -36,12 +37,14 @@ namespace hcube
 		}
 	};
 
-	class render_scene_queue
+	class HCUBE_API render_scene_queue
 	{
 	public:
 
 		//init
 		render_scene_queue(size_t capacity = 512);
+		render_scene_queue(const render_scene_queue&) = delete;
+		render_scene_queue& operator=(const render_scene_queue&) = delete;
 
 		//add element
 		void push_front_to_back(entity::wptr entity, float depth);
@@ -84,7 +87,7 @@ namespace hcube
 		render_scene_element*	m_first{ nullptr };
 	};
 
-	class render_scene_objects
+	class HCUBE_API render_scene_objects
 	{
 
 	public:
@@ -113,7 +116,7 @@ namespace hcube
 		RQ_MAX
 	};
 
-	class render_scene
+	class HCUBE_API render_scene
 	{
 	public:
 		//all objects

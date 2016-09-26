@@ -1439,7 +1439,6 @@ namespace hcube
     
     
     #pragma region "Parameters"
-    
 	//struct by type
 	struct parameter_texture : public effect::parameter
 	{

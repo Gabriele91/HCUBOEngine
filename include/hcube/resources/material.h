@@ -7,6 +7,7 @@
 //
 #pragma once
 #include <vector>
+#include <hcube/config.h>
 #include <hcube/math/vector_math.h>
 #include <hcube/core/smart_pointers.h>
 #include <hcube/core/resource.h>
@@ -26,7 +27,7 @@ namespace hcube
 		return std::make_shared< material >(args...);
 	}
 	//class definition
-	class material : public resource
+	class HCUBE_API material : public resource
 	{
 	public:
 

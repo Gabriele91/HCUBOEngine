@@ -6,12 +6,13 @@
 //  Copyright © 2016 Gabriele. All rights reserved.
 //
 #pragma once
+#include <hcube/config.h>
 #include <hcube/math/vector_math.h>
 #include <hcube/render/render.h>
 
 namespace hcube
 {
-	class g_buffer
+	class HCUBE_API g_buffer
 	{
 	public:
 

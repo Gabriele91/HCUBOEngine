@@ -6,6 +6,7 @@
 //  Copyright © 2016 Gabriele. All rights reserved.
 //
 #pragma once
+#include <hcube/config.h>
 #include <hcube/math/vector_math.h>
 
 namespace hcube
@@ -48,7 +49,7 @@ namespace hcube
 
 		VR_PTR
 	};
-	class variant
+	class HCUBE_API variant
 	{
 	public:
 

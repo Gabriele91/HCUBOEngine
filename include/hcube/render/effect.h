@@ -4,6 +4,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <hcube/config.h>
 #include <hcube/math/vector_math.h>
 #include <hcube/core/smart_pointers.h>
 #include <hcube/render/render_scene.h>
@@ -15,13 +16,13 @@
 
 namespace hcube
 {
-	class effect : public smart_pointers<effect>, public resource
+	class HCUBE_API effect : public smart_pointers<effect>, public resource
 	{
 
 	public:
 
         //queue param
-        struct parameter_queue
+        struct HCUBE_API parameter_queue
         {
             render_scene_queue_type m_type { RQ_OPAQUE };
             int                     m_order{ 0         };
@@ -48,7 +49,7 @@ namespace hcube
 		};
 
 		//parameter class
-		struct parameter
+		struct HCUBE_API parameter
 		{
 			virtual void set_value(texture::ptr in_texture) {}
 			virtual void set_value(int i) {}
@@ -107,7 +108,7 @@ namespace hcube
 		using parameters = std::vector < std::unique_ptr< parameter > >;
 
 		//pass type
-		struct pass
+		struct HCUBE_API pass
 		{
 			effect*				    m_effect{ nullptr };
 			cullface_state		    m_cullface;
@@ -154,10 +155,9 @@ namespace hcube
 
 			void safe_unbind(const render_state&);
 		};
-
-        
+		        
         //pass list
-        class technique
+        class HCUBE_API technique
         {
             
         public:
@@ -231,6 +231,11 @@ namespace hcube
 		using map_parameters = std::unordered_map< std::string, int >;
 		using map_techniques = std::unordered_map< std::string, technique >;
 
+		//constructor
+		effect(){}
+		effect(const effect&) = delete;
+		effect& operator=(const effect&) = delete;
+
 		//load effect
 		bool load(resources_manager& resources, const std::string& path);
         
@@ -247,11 +252,13 @@ namespace hcube
         
 		//get technique
 		technique* get_technique(const std::string& technique);
+
         //all techniques
         const map_techniques& get_techniques() const
         {
             return m_map_techniques;
         }
+
 		//get parameter
 		parameter*  get_parameter(int parameter);
 		parameter*  get_parameter(const std::string& parameter);

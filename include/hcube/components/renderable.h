@@ -6,6 +6,7 @@
 //  Copyright © 2016 Gabriele. All rights reserved.
 //
 #pragma once
+#include <hcube/config.h>
 #include <hcube/core/entity.h>
 #include <hcube/core/component.h>
 #include <hcube/geometries/obb.h>
@@ -14,7 +15,7 @@
 
 namespace hcube
 {
-	class renderable : public component
+	class HCUBE_API renderable : public component
 	{
 
 		HCUBE_COMPONENT_DEC(renderable)

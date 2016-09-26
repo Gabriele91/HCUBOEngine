@@ -6,6 +6,7 @@
 //  Copyright © 2016 Gabriele. All rights reserved.
 //
 #pragma once
+#include <hcube/config.h>
 #include <hcube/math/vector_math.h>
 #include <hcube/core/component.h>
 #include <hcube/core/smart_pointers.h>
@@ -15,7 +16,7 @@
 namespace hcube
 {
 
-	class camera : public component, public smart_pointers< camera >
+	class HCUBE_API camera : public component, public smart_pointers< camera >
 	{
 
 		HCUBE_COMPONENT_DEC(camera)

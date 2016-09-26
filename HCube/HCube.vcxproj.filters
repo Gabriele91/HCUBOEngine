@@ -81,9 +81,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\include\app_basic.h">
-      <Filter>File di intestazione</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\hcube\geometries\frustum.h">
       <Filter>File di intestazione\hcube\geometries</Filter>
     </ClInclude>
@@ -210,11 +207,11 @@
     <ClInclude Include="..\include\hcube\resources\texture.h">
       <Filter>File di intestazione\hcube\resources</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\hcube\config.h">
+      <Filter>File di intestazione\hcube</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\source\app_basic.cpp">
-      <Filter>File di origine</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\render\effect.cpp">
       <Filter>File di origine\render</Filter>
     </ClCompile>
@@ -316,9 +313,6 @@
     </ClCompile>
     <ClCompile Include="..\source\geometries\obb.cpp">
       <Filter>File di origine\geometries</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\main.cpp">
-      <Filter>File di origine</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

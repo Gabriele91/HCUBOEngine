@@ -1,4 +1,5 @@
 #pragma once
+#include <hcube/config.h>
 #include <hcube/math/vector_math.h>
 #include <hcube/core/resources_manager.h>
 #include <hcube/render/shader.h>
@@ -10,9 +11,9 @@
 namespace hcube
 {
 
-	class rendering_pass_deferred :
-		public rendering_pass,
-		public smart_pointers< rendering_pass_deferred >
+	class HCUBE_API rendering_pass_deferred :
+					public rendering_pass,
+					public smart_pointers< rendering_pass_deferred >
 	{
 	public:
 		//limits
@@ -42,7 +43,7 @@ namespace hcube
 
 	protected:
         
-        class ambient_light_shader
+        class HCUBE_API ambient_light_shader
         {
         public:
             shader::ptr        m_shader;
@@ -59,7 +60,7 @@ namespace hcube
             void unbind();
         };
         
-        class spot_light_shader
+        class HCUBE_API spot_light_shader
         {
         public:            
             shader::ptr        m_shader;
@@ -82,7 +83,7 @@ namespace hcube
 					  render_scene_queue_type type);
         };
         
-        class point_light_shader
+        class HCUBE_API point_light_shader
         {
         public:
             shader::ptr         m_shader;
@@ -104,7 +105,7 @@ namespace hcube
 					  render_scene_queue_type type);
         };
 
-		class direction_light_shader
+		class HCUBE_API direction_light_shader
 		{
 		public:
 

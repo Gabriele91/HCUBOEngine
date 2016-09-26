@@ -7,6 +7,7 @@
 //
 #pragma once
 #include <vector>
+#include <hcube/config.h>
 #include <hcube/math/vector_math.h>
 #include <hcube/core/entity.h>
 #include <hcube/core/smart_pointers.h>
@@ -27,7 +28,7 @@ namespace hcube
         RPT_MAX
     };
     
-	class rendering_pass
+	class HCUBE_API rendering_pass
 	{
         
 	public:
@@ -59,7 +60,7 @@ namespace hcube
 	using rendering_pass_uptr = std::unique_ptr< rendering_pass >;
 
     
-    class rendering_pass_debug_spot_lights : public rendering_pass, public smart_pointers<rendering_pass_debug_spot_lights>
+    class HCUBE_API rendering_pass_debug_spot_lights : public rendering_pass, public smart_pointers<rendering_pass_debug_spot_lights>
     {
         
         effect::ptr     m_effect;
@@ -79,7 +80,7 @@ namespace hcube
                                );
     };
 
-	class rendering_system : public system_component, public smart_pointers< rendering_system >
+	class HCUBE_API rendering_system : public system_component, public smart_pointers< rendering_system >
 	{
 
 		HCUBE_SYSTEM_COMPONENT_DEC(rendering_system);

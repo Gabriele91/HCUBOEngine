@@ -6,13 +6,14 @@
 //  Copyright © 2016 Gabriele. All rights reserved.
 //
 #pragma once
+#include <hcube/config.h>
 #include <hcube/math/vector_math.h>
 #include <hcube/core/component.h>
 #include <hcube/render/shader.h>
 
 namespace hcube
 {
-	class transform : public component
+	class HCUBE_API transform : public component
 	{
 
 		HCUBE_COMPONENT_DEC(transform)

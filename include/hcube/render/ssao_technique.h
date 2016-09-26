@@ -1,4 +1,5 @@
 #pragma once
+#include <hcube/config.h>
 #include <hcube/core/entity.h>
 #include <hcube/core/resources_manager.h>
 #include <hcube/render/shader.h>
@@ -8,7 +9,7 @@
 
 namespace hcube
 {
-	class ssao_technique
+	class HCUBE_API ssao_technique
 	{
 	public:
 

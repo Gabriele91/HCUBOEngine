@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <hcube/config.h>
 #include <hcube/math/vector_math.h>
 #include <hcube/data/variant.h>
 
@@ -576,115 +577,114 @@ namespace hcube
         int           m_shader_version;
     };
     
-#define LIB_EXPORT
 	namespace render
     {
-        LIB_EXPORT render_driver get_render_driver();
-        LIB_EXPORT render_driver_info get_render_driver_info();
-        LIB_EXPORT void print_info();
+        HCUBE_RENDER_API render_driver get_render_driver();
+        HCUBE_RENDER_API render_driver_info get_render_driver_info();
+        HCUBE_RENDER_API void print_info();
 
-		LIB_EXPORT bool init();
-		LIB_EXPORT void close();
+		HCUBE_RENDER_API bool init();
+		HCUBE_RENDER_API void close();
 
-		LIB_EXPORT const clear_color_state& get_clear_color_state();
-        LIB_EXPORT void set_clear_color_state(const clear_color_state& cf);
-        LIB_EXPORT void clear(int type = CLEAR_COLOR_DEPTH);
+		HCUBE_RENDER_API const clear_color_state& get_clear_color_state();
+        HCUBE_RENDER_API void set_clear_color_state(const clear_color_state& cf);
+        HCUBE_RENDER_API void clear(int type = CLEAR_COLOR_DEPTH);
 
-		LIB_EXPORT const depth_buffer_state& get_depth_buffer_state();
-		LIB_EXPORT void set_depth_buffer_state(const depth_buffer_state& cf);
+		HCUBE_RENDER_API const depth_buffer_state& get_depth_buffer_state();
+		HCUBE_RENDER_API void set_depth_buffer_state(const depth_buffer_state& cf);
 
-		LIB_EXPORT const cullface_state& get_cullface_state();
-		LIB_EXPORT void set_cullface_state(const cullface_state& cf);
+		HCUBE_RENDER_API const cullface_state& get_cullface_state();
+		HCUBE_RENDER_API void set_cullface_state(const cullface_state& cf);
 
-		LIB_EXPORT const viewport_state& get_viewport_state();
-		LIB_EXPORT void set_viewport_state(const viewport_state& vs);
+		HCUBE_RENDER_API const viewport_state& get_viewport_state();
+		HCUBE_RENDER_API void set_viewport_state(const viewport_state& vs);
 
-		LIB_EXPORT const blend_state& get_blend_state();
-		LIB_EXPORT void set_blend_state(const blend_state& bs);
+		HCUBE_RENDER_API const blend_state& get_blend_state();
+		HCUBE_RENDER_API void set_blend_state(const blend_state& bs);
 
-		LIB_EXPORT const render_state& get_render_state();
-		LIB_EXPORT void set_render_state(const render_state& rs);
+		HCUBE_RENDER_API const render_state& get_render_state();
+		HCUBE_RENDER_API void set_render_state(const render_state& rs);
 
 		//BO
-		LIB_EXPORT context_const_buffer* create_stream_CB(const unsigned char* data, size_t size);
-		LIB_EXPORT context_vertex_buffer* create_stream_VBO(const unsigned char* vbo, size_t stride, size_t n);
-		LIB_EXPORT context_index_buffer* create_stream_IBO(const unsigned int* ibo, size_t size);
+		HCUBE_RENDER_API context_const_buffer* create_stream_CB(const unsigned char* data, size_t size);
+		HCUBE_RENDER_API context_vertex_buffer* create_stream_VBO(const unsigned char* vbo, size_t stride, size_t n);
+		HCUBE_RENDER_API context_index_buffer* create_stream_IBO(const unsigned int* ibo, size_t size);
 
-		LIB_EXPORT context_const_buffer* create_CB(const unsigned char* data, size_t size);
-		LIB_EXPORT context_vertex_buffer* create_VBO(const unsigned char* vbo, size_t stride, size_t n);
-		LIB_EXPORT context_index_buffer* create_IBO(const unsigned int* ibo, size_t size);
+		HCUBE_RENDER_API context_const_buffer* create_CB(const unsigned char* data, size_t size);
+		HCUBE_RENDER_API context_vertex_buffer* create_VBO(const unsigned char* vbo, size_t stride, size_t n);
+		HCUBE_RENDER_API context_index_buffer* create_IBO(const unsigned int* ibo, size_t size);
 
-		LIB_EXPORT variant get_native_CB(const context_const_buffer*);
-		LIB_EXPORT variant get_native_VBO(const context_vertex_buffer*);
-		LIB_EXPORT variant get_native_IBO(const context_index_buffer*);
+		HCUBE_RENDER_API variant get_native_CB(const context_const_buffer*);
+		HCUBE_RENDER_API variant get_native_VBO(const context_vertex_buffer*);
+		HCUBE_RENDER_API variant get_native_IBO(const context_index_buffer*);
 
-		LIB_EXPORT void update_steam_CB(context_const_buffer* cb, const unsigned char* vb, size_t n);
-		LIB_EXPORT void update_steam_VBO(context_vertex_buffer* vbo, const unsigned char* vb, size_t n);
-		LIB_EXPORT void update_steam_IBO(context_index_buffer* vbo, const unsigned int* ib, size_t n);
+		HCUBE_RENDER_API void update_steam_CB(context_const_buffer* cb, const unsigned char* vb, size_t n);
+		HCUBE_RENDER_API void update_steam_VBO(context_vertex_buffer* vbo, const unsigned char* vb, size_t n);
+		HCUBE_RENDER_API void update_steam_IBO(context_index_buffer* vbo, const unsigned int* ib, size_t n);
 
-		LIB_EXPORT void bind_CB(context_const_buffer*);
-		LIB_EXPORT void bind_VBO(context_vertex_buffer*);
-		LIB_EXPORT void bind_IBO(context_index_buffer*);
+		HCUBE_RENDER_API void bind_CB(context_const_buffer*);
+		HCUBE_RENDER_API void bind_VBO(context_vertex_buffer*);
+		HCUBE_RENDER_API void bind_IBO(context_index_buffer*);
 
-		LIB_EXPORT void unbind_CB(context_const_buffer*);
-		LIB_EXPORT void unbind_VBO(context_vertex_buffer*);
-		LIB_EXPORT void unbind_IBO(context_index_buffer*);
+		HCUBE_RENDER_API void unbind_CB(context_const_buffer*);
+		HCUBE_RENDER_API void unbind_VBO(context_vertex_buffer*);
+		HCUBE_RENDER_API void unbind_IBO(context_index_buffer*);
 
-		LIB_EXPORT unsigned char* map_CB(context_const_buffer*, size_t start, size_t n, mapping_type type);
-		LIB_EXPORT void unmap_CB(context_const_buffer*);
+		HCUBE_RENDER_API unsigned char* map_CB(context_const_buffer*, size_t start, size_t n, mapping_type type);
+		HCUBE_RENDER_API void unmap_CB(context_const_buffer*);
 
-		LIB_EXPORT unsigned char* map_VBO(context_vertex_buffer*, size_t start, size_t n, mapping_type type);
-		LIB_EXPORT void unmap_VBO(context_vertex_buffer*);
+		HCUBE_RENDER_API unsigned char* map_VBO(context_vertex_buffer*, size_t start, size_t n, mapping_type type);
+		HCUBE_RENDER_API void unmap_VBO(context_vertex_buffer*);
 
-		LIB_EXPORT unsigned int*  map_IBO(context_index_buffer*, size_t start, size_t n, mapping_type type);
-		LIB_EXPORT void unmap_IBO(context_index_buffer*);
+		HCUBE_RENDER_API unsigned int*  map_IBO(context_index_buffer*, size_t start, size_t n, mapping_type type);
+		HCUBE_RENDER_API void unmap_IBO(context_index_buffer*);
 
-		LIB_EXPORT void delete_CB(context_const_buffer*&);
-		LIB_EXPORT void delete_VBO(context_vertex_buffer*&);
-		LIB_EXPORT void delete_IBO(context_index_buffer*&);
+		HCUBE_RENDER_API void delete_CB(context_const_buffer*&);
+		HCUBE_RENDER_API void delete_VBO(context_vertex_buffer*&);
+		HCUBE_RENDER_API void delete_IBO(context_index_buffer*&);
 		//draw
-		LIB_EXPORT void draw_arrays(draw_type type, unsigned int n);
-		LIB_EXPORT void draw_arrays(draw_type type, unsigned int start, unsigned int size);
-		LIB_EXPORT void draw_elements(draw_type type, unsigned int n);
+		HCUBE_RENDER_API void draw_arrays(draw_type type, unsigned int n);
+		HCUBE_RENDER_API void draw_arrays(draw_type type, unsigned int start, unsigned int size);
+		HCUBE_RENDER_API void draw_elements(draw_type type, unsigned int n);
 
 		//IL=Input Layaut
-		LIB_EXPORT context_input_layout* create_IL(const attribute_list& atl);
-		LIB_EXPORT size_t size_IL(const context_input_layout* layout);
-		LIB_EXPORT bool   has_a_position_IL(const context_input_layout* layout);
-		LIB_EXPORT size_t position_offset_IL(const context_input_layout* layout);
-		LIB_EXPORT void delete_IL(context_input_layout*&);
-		LIB_EXPORT void bind_IL(context_input_layout*);
-		LIB_EXPORT void unbind_IL(context_input_layout* il);
+		HCUBE_RENDER_API context_input_layout* create_IL(const attribute_list& atl);
+		HCUBE_RENDER_API size_t size_IL(const context_input_layout* layout);
+		HCUBE_RENDER_API bool   has_a_position_IL(const context_input_layout* layout);
+		HCUBE_RENDER_API size_t position_offset_IL(const context_input_layout* layout);
+		HCUBE_RENDER_API void delete_IL(context_input_layout*&);
+		HCUBE_RENDER_API void bind_IL(context_input_layout*);
+		HCUBE_RENDER_API void unbind_IL(context_input_layout* il);
 
 		//depth
-		LIB_EXPORT float get_depth(const vec2& pixel);
+		HCUBE_RENDER_API float get_depth(const vec2& pixel);
 		//color
-		LIB_EXPORT vec4 get_color(const vec2& pixel);
+		HCUBE_RENDER_API vec4 get_color(const vec2& pixel);
 
 		//texture
-		LIB_EXPORT context_texture* create_texture
+		HCUBE_RENDER_API context_texture* create_texture
 		(
 			const texture_raw_data_information& data,
 			const texture_gpu_data_information& info
 		);
-		LIB_EXPORT context_texture* create_cube_texture
+		HCUBE_RENDER_API context_texture* create_cube_texture
 		(
 			const texture_raw_data_information  data[6],
 			const texture_gpu_data_information& info
 		);
-		LIB_EXPORT void bind_texture(context_texture*, int n);
-		LIB_EXPORT void unbind_texture(context_texture*);
-        LIB_EXPORT void unbind_texture(int n);
-		LIB_EXPORT void delete_texture(context_texture*&);
+		HCUBE_RENDER_API void bind_texture(context_texture*, int n);
+		HCUBE_RENDER_API void unbind_texture(context_texture*);
+        HCUBE_RENDER_API void unbind_texture(int n);
+		HCUBE_RENDER_API void delete_texture(context_texture*&);
 
 
 		//target
-		LIB_EXPORT context_render_target* create_render_target(const std::vector< target_field >& textures);
-		LIB_EXPORT void enable_render_target(context_render_target*);
-		LIB_EXPORT void disable_render_target(context_render_target*);
-		LIB_EXPORT void delete_render_target(context_render_target*&);
+		HCUBE_RENDER_API context_render_target* create_render_target(const std::vector< target_field >& textures);
+		HCUBE_RENDER_API void enable_render_target(context_render_target*);
+		HCUBE_RENDER_API void disable_render_target(context_render_target*);
+		HCUBE_RENDER_API void delete_render_target(context_render_target*&);
 		//copy target
-		LIB_EXPORT void copy_target_to_target(
+		HCUBE_RENDER_API void copy_target_to_target(
 			const vec4& from_area,
 			context_render_target* from,
 			const vec4& to_area,
@@ -693,7 +693,7 @@ namespace hcube
 		);
 
 		//debug
-		LIB_EXPORT bool print_errors();
+		HCUBE_RENDER_API bool print_errors();
 
 	};
 }

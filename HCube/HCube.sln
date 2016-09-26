@@ -11,6 +11,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "assimp_to_smesh", "..\tools
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "texture_utilities", "..\tools\texture_utilities\texture_utilities\texture_utilities.vcxproj", "{49114287-B721-494C-AA37-6B7E6CBFB688}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{E81C2EE6-8BF7-4F8A-BED5-127894609B40}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "base", "..\examples\base\base.vcxproj", "{A717719D-F3CC-4EA0-BAA0-2F3B9E92E37D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -43,6 +47,14 @@ Global
 		{49114287-B721-494C-AA37-6B7E6CBFB688}.Release|x64.Build.0 = Release|x64
 		{49114287-B721-494C-AA37-6B7E6CBFB688}.Release|x86.ActiveCfg = Release|Win32
 		{49114287-B721-494C-AA37-6B7E6CBFB688}.Release|x86.Build.0 = Release|Win32
+		{A717719D-F3CC-4EA0-BAA0-2F3B9E92E37D}.Debug|x64.ActiveCfg = Debug|x64
+		{A717719D-F3CC-4EA0-BAA0-2F3B9E92E37D}.Debug|x64.Build.0 = Debug|x64
+		{A717719D-F3CC-4EA0-BAA0-2F3B9E92E37D}.Debug|x86.ActiveCfg = Debug|Win32
+		{A717719D-F3CC-4EA0-BAA0-2F3B9E92E37D}.Debug|x86.Build.0 = Debug|Win32
+		{A717719D-F3CC-4EA0-BAA0-2F3B9E92E37D}.Release|x64.ActiveCfg = Release|x64
+		{A717719D-F3CC-4EA0-BAA0-2F3B9E92E37D}.Release|x64.Build.0 = Release|x64
+		{A717719D-F3CC-4EA0-BAA0-2F3B9E92E37D}.Release|x86.ActiveCfg = Release|Win32
+		{A717719D-F3CC-4EA0-BAA0-2F3B9E92E37D}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -50,5 +62,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{635171DB-D82D-4F9A-8E2A-C251601580DC} = {52923959-692E-4510-BFC0-3495AD39F6D1}
 		{49114287-B721-494C-AA37-6B7E6CBFB688} = {52923959-692E-4510-BFC0-3495AD39F6D1}
+		{A717719D-F3CC-4EA0-BAA0-2F3B9E92E37D} = {E81C2EE6-8BF7-4F8A-BED5-127894609B40}
 	EndGlobalSection
 EndGlobal

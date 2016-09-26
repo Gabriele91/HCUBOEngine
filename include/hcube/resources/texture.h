@@ -8,13 +8,14 @@
 #pragma once
 #include <vector>
 #include <string>
+#include <hcube/config.h>
 #include <hcube/core/resource.h>
 #include <hcube/core/smart_pointers.h>
 #include <hcube/render/render.h>
 
 namespace hcube
 {
-	class texture : public smart_pointers<texture>, public resource
+	class HCUBE_API texture : public smart_pointers<texture>, public resource
 	{
 
 		context_texture* m_ctx_texture{ nullptr };

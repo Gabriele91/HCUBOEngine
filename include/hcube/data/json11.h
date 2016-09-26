@@ -25,6 +25,7 @@
 #include <map>
 #include <memory>
 #include <initializer_list>
+#include <hcube/config.h>
 
 #ifdef _MSC_VER
     #if _MSC_VER <= 1800 // VS 2013
@@ -48,7 +49,7 @@ namespace json_parse11
     
     class json_value;
     
-    class json final
+    class HCUBE_API json final
     {
     public:
         // Types
@@ -188,7 +189,7 @@ namespace json_parse11
     };
     
     // Internal class hierarchy - json_value objects are not exposed to users of this API.
-    class json_value
+    class HCUBE_API json_value
     {
     protected:
         friend class json;

@@ -1,10 +1,11 @@
 #pragma once
 #include <vector>
+#include <hcube/config.h>
 #include <hcube/math/vector_math.h>
 
 namespace hcube
 {
-	class obb
+	class HCUBE_API obb
 	{
 	public:
 

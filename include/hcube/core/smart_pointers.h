@@ -7,10 +7,11 @@
 //
 #pragma once
 #include <memory>
+#include <hcube/config.h>
 namespace hcube
 {
 	template < class T >
-	class smart_pointers : public std::enable_shared_from_this< T >
+	class HCUBE_API smart_pointers : public std::enable_shared_from_this< T >
 	{
 	public:
 

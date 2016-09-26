@@ -9,6 +9,7 @@
 #include <string>
 #include <tuple>
 #include <GLFW/glfw3.h>
+#include <hcube/config.h>
 #include <hcube/math/vector_math.h>
 
 namespace hcube
@@ -18,12 +19,12 @@ namespace hcube
 	class instance;
 
 
-	struct window_size
+	struct HCUBE_API window_size
 	{
 		virtual ivec2 get_size(GLFWmonitor* monitor) const = 0;
 	};
 
-	struct window_size_pixel : window_size
+	struct HCUBE_API window_size_pixel : window_size
 	{
 		ivec2 m_size;
 
@@ -31,7 +32,7 @@ namespace hcube
 		virtual ivec2 get_size(GLFWmonitor* monitor) const;
 	};
 
-	struct window_size_percentage : window_size
+	struct HCUBE_API window_size_percentage : window_size
 	{
 		dvec2 m_size;
 
@@ -39,7 +40,7 @@ namespace hcube
 		virtual ivec2 get_size(GLFWmonitor* monitor) const;
 	};
 
-	class instance
+	class HCUBE_API instance
 	{
 	public:
 		virtual void key_event(application& application, int key, int scancode, int action, int mods) { }
@@ -60,7 +61,7 @@ namespace hcube
 		FULLSCREEN
 	};
 
-	class application
+	class HCUBE_API application
 	{
 		GLFWwindow* m_window{ nullptr };
 		instance*   m_instance{ nullptr };

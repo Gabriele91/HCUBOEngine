@@ -6,13 +6,14 @@
 //  Copyright © 2016 Gabriele. All rights reserved.
 //
 #include <string>
+#include <hcube/config.h>
 #include <hcube/core/smart_pointers.h>
 #include <hcube/render/render.h>
 #include <hcube/components/renderable.h>
 
 namespace hcube
 {
-	class text_mesh : public smart_pointers< text_mesh >, public renderable
+	class HCUBE_API text_mesh : public smart_pointers< text_mesh >, public renderable
 	{
 		//string info
 		std::u32string m_text;

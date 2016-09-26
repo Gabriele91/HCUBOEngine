@@ -10,6 +10,7 @@
 #include <vector>
 #include <type_traits>
 #include <unordered_map>
+#include <hcube/config.h>
 #include <hcube/core/smart_pointers.h>
 #include <hcube/core/component.h>
 //components cache
@@ -20,7 +21,7 @@ namespace hcube
 	//owanner
 	class system_manager;
 	//entity
-	class entity : public smart_pointers< entity >
+	class HCUBE_API entity : public smart_pointers< entity >
 	{
 
 		friend class system_manager;

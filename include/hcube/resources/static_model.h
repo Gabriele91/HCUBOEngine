@@ -7,13 +7,14 @@
 //
 #pragma once
 #include <vector>
+#include <hcube/config.h>
 #include <hcube/core/smart_pointers.h>
 #include <hcube/resources/prefab.h>
 #include <hcube/components/mesh.h>
 
 namespace hcube
 {
-	class static_model : public prefab, public smart_pointers< static_model >
+	class HCUBE_API static_model : public prefab, public smart_pointers< static_model >
 	{
 	public:
 

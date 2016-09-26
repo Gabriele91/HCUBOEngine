@@ -11,6 +11,7 @@
 #include <string>
 #include <tuple>
 #include <vector>
+#include <hcube/config.h>
 #include <hcube/math/vector_math.h>
 #include <hcube/core/smart_pointers.h>
 #include <hcube/resources/texture.h>
@@ -20,7 +21,7 @@ namespace hcube
 	class uniform;
 	class shader;
 
-	class uniform
+	class HCUBE_RENDER_API uniform
 	{
 
 	public:
@@ -66,7 +67,7 @@ namespace hcube
 		uniform(shader* arg_shader, long arg_id) : m_shader(arg_shader), m_id(arg_id) {}
 	};
 
-	class shader : public smart_pointers<shader>, public resource
+	class HCUBE_RENDER_API shader : public smart_pointers<shader>, public resource
 	{
 
 	public:

@@ -6,6 +6,7 @@
 //  Copyright © 2016 Gabriele. All rights reserved.
 //
 #pragma once
+#include <hcube/config.h>
 #include <hcube/core/component.h>
 #include <hcube/core/smart_pointers.h>
 #include <hcube/math/vector_math.h>
@@ -23,7 +24,7 @@ namespace hcube
 	struct uniform_light_point;
 	struct uniform_light_direction;
 
-	class light : public component
+	class HCUBE_API light : public component
 	{
 
 		HCUBE_COMPONENT_DEC(light)
