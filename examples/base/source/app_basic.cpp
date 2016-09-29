@@ -8,6 +8,7 @@
 #include <regex>
 #include <iostream>
 #include <hcube/math/vector_math.h>
+#include <hcube/core/filesystem.h>
 #include <hcube/geometries/frustum.h>
 #include <hcube/render/rendering_pass_deferred.h>
 #include <hcube/render/rendering_pass_forward.h>
@@ -142,10 +143,7 @@ namespace hcube
 		//set mouse at center
 		app.set_mouse_position((dvec2)app.get_window_size()*0.5);
 		//commond assets
-		m_resources.add_directory("common/effects/shaders");
-		m_resources.add_directory("common/effects");
-		m_resources.add_directory("common/textures");
-		m_resources.add_directory("common/meshs"); 
+		m_resources.add_resources_file("common.rs");
 		//get info about window
 		m_window_mode_info = window_info
 		{

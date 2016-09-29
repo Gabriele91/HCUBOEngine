@@ -87,7 +87,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>HCUBE_LIBRARY_IMPORT;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>HCUBE_LIBRARY_IMPORT;GLEW_STATIC;NOMINMAX;USE_FLOAT;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>../../dependencies/$(Platform)/include;../../include;include;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
@@ -103,7 +103,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>HCUBE_LIBRARY_IMPORT;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>HCUBE_LIBRARY_IMPORT;GLEW_STATIC;NOMINMAX;USE_FLOAT;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>../../dependencies/$(Platform)/include;../../include;include;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
@@ -121,7 +121,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>HCUBE_LIBRARY_IMPORT;WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>HCUBE_LIBRARY_IMPORT;GLEW_STATIC;NOMINMAX;USE_FLOAT;GLM_FORCE_SSE2;WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>../../dependencies/$(Platform)/include;../../include;include;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
@@ -141,7 +141,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>HCUBE_LIBRARY_IMPORT;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>HCUBE_LIBRARY_IMPORT;GLEW_STATIC;NOMINMAX;USE_FLOAT;GLM_FORCE_SSE2;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>../../dependencies/$(Platform)/include;../../include;include;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
