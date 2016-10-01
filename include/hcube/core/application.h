@@ -76,17 +76,23 @@ namespace hcube
 		void clear() const;
 		void swap() const;
 		//info
+		bool   is_fullscreen() const;
 		bool   is_resizable() const;
 		ivec2  get_screen_size() const;
 		ivec2  get_window_size() const;
 		ivec2  get_window_position() const;
 		dvec2  get_mouse_position() const;
 		double get_last_delta_time() const;
+		//change size
+		void set_window_size(const dvec2& pos, const dvec2& size);
+		void set_fullscreen_size(const dvec2& size);
 		//set
 		void set_mouse_position(const dvec2& pos) const;
 		//get attr
 		instance* get_instance();
 		GLFWwindow* get_window();
+		const instance* get_instance() const;
+		const GLFWwindow* get_window() const;
 
 
 		bool execute

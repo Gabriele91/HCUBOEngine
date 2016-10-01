@@ -10,6 +10,7 @@
 #include <hcube/render/render.h>
 #include <memory>
 #include <cstring>
+#include <assert.h>
 
 namespace hcube
 {
@@ -40,8 +41,10 @@ namespace hcube
 		short m_width;				       // image width in pixels
 		short m_height;					   // image height in pixels
 		unsigned char  m_bits;             // image bits per pixel 8,16,24,32
-		unsigned char  m_descriptor;       // image descriptor bits (vh flip bits)
+		unsigned char  m_descriptor;       // image descriptor bits (vh flip bits) | 00vhaaaa
 	});
+	#define VERTICAL_FLIP(tga_h)   ( tga_h->m_descriptor & 0b00100000)
+	#define HORIZONTAL_FLIP(tga_h) ( tga_h->m_descriptor & 0b00010000)
 
 	static void decoder_rle
 	(
@@ -168,7 +171,7 @@ namespace hcube
 
 
 
-#if 0
+#if 1
 	static void image_y_flip
 	(
 		std::vector<unsigned char>& bytes,
@@ -192,6 +195,33 @@ namespace hcube
 		}
 		//dealloc
 		delete[] line;
+	}
+	static void image_x_flip
+	(
+		std::vector<unsigned char>& bytes,
+		unsigned long image_bytes_pixel,
+		unsigned long image_width,
+		unsigned long image_height
+	)
+	{
+		assert(image_bytes_pixel <= 4);
+		//line size
+		size_t line_width = image_width * image_bytes_pixel;
+		//half size
+		size_t half_width = image_width / 2;
+		//buffer
+		unsigned char temp_pixel[4];
+		//..
+		for (int y = 0; y != image_height; ++y)
+			for (int x = 0; x != half_width; ++x)
+			{
+				unsigned char* left_pixel = &bytes[x + line_width*y];
+				unsigned char* right_pixel = &bytes[(line_width - x - 1) + line_width*y];
+				//swap
+				std::memcpy(temp_pixel, left_pixel, image_bytes_pixel);
+				std::memcpy(left_pixel, right_pixel, image_bytes_pixel);
+				std::memcpy(right_pixel, temp_pixel, image_bytes_pixel);
+			}
 	}
 #endif
 
@@ -251,10 +281,15 @@ namespace hcube
 		default:
 			break;
 		}
-		/*
-		// Bit 5 from byte 17
-		bool origin_not_btlf = ((header->m_descriptor & 0x20) == 0x20 ? true : false);
-		*/
+		//flip
+		if VERTICAL_FLIP(header)
+		{
+			image_y_flip(out_image, header->m_bits / 8, image_width, image_height);
+		}
+		if HORIZONTAL_FLIP(header)
+		{
+			image_x_flip(out_image, header->m_bits / 8, image_width, image_height);
+		}
 		//success
 		return true;
 	}

@@ -93,6 +93,16 @@ namespace hcube
 		return m_window;
 	}
 
+	const instance* application::get_instance() const
+	{
+		return m_instance;
+	}
+
+	const GLFWwindow* application::get_window() const
+	{
+		return m_window;
+	}
+
 	window_size_pixel::window_size_pixel(const ivec2& size)
 	{
 		m_size = size;
@@ -268,5 +278,43 @@ namespace hcube
 		m_instance = nullptr;
 		//return status
 		return end_state;
+	}
+
+
+	bool application::is_fullscreen() const
+	{
+		return glfwGetWindowMonitor((GLFWwindow*)get_window()) != nullptr;
+	}
+
+	void application::set_window_size(const dvec2& pos, const dvec2& size)
+	{
+		glfwSetWindowMonitor(
+			  get_window()
+			, nullptr
+			, pos.x
+			, pos.y
+			, size.x
+			, size.y
+			, 60
+		);
+	}
+
+	void application::set_fullscreen_size(const dvec2& size)
+	{
+		int m_count = 0;
+		GLFWmonitor** monitors = glfwGetMonitors(&m_count);
+		if (m_count)
+		{
+			const GLFWvidmode* monitor_mode = glfwGetVideoMode(monitors[0]);
+			glfwSetWindowMonitor(
+				get_window()
+				, monitors[0]
+				, 0
+				, 0
+				, size.x
+				, size.y
+				, 60
+			);
+		}
 	}
 }
