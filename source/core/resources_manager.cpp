@@ -20,7 +20,7 @@ static const std::string void_path_file;
 namespace hcube
 {
 
-	#pragma region "Parser"
+	#pragma region "Parser Resources"
 
 	#define CSTRCMP( x, y ) ( std::strncmp( x, y, sizeof(y)-1 ) == 0 )
 	#define CSTRCMP_SKIP( x, y ) ( [&x] () -> bool { if ( CSTRCMP(x,y) ) { x += sizeof(y)-1; return true; } return false; } )()
@@ -487,17 +487,21 @@ namespace hcube
 				<< std::endl;
 			return false;
 		}
+		//Base path
+		std::string directory = filesystem::get_directory(path);
+		//add join path
+		if (directory.size()) directory += "/";
 		//add all paths
 		for (const resources_parser::path_field& path : r_context.m_paths)
 		{
-			if (path.m_filtered) add_directory(path.m_path, path.m_reg_exp, path.m_recursive);
-			else				 add_directory(path.m_path, path.m_recursive);
+			if (path.m_filtered) add_directory(directory + path.m_path, path.m_reg_exp, path.m_recursive);
+			else				 add_directory(directory + path.m_path, path.m_recursive);
 		}
 		//add all files
 		for (const resources_parser::file_field& files : r_context.m_files)
 		{
-			if (files.m_use_asset_name) add_file(files.m_asset_name, files.m_path);
-			else				        add_file(files.m_path);
+			if (files.m_use_asset_name) add_file(directory + files.m_asset_name, files.m_path);
+			else				        add_file(directory + files.m_path);
 		}
 		//end
 		return true;

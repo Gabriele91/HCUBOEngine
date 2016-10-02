@@ -67,6 +67,9 @@ namespace hcube
 			if (is_directory(filepath)) return filepath;
 			//get separetor
 			auto separetor = filepath.find_last_of("\\/");
+			//test
+			if (separetor == std::string::npos)
+				return "";
 			//return sub path
 			return filepath.substr(0, separetor);
 		}
