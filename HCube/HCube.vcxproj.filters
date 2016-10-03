@@ -210,6 +210,9 @@
     <ClInclude Include="..\include\hcube\config.h">
       <Filter>File di intestazione\hcube</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\hcube\core\component_register.h">
+      <Filter>File di intestazione\hcube\core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\render\effect.cpp">
@@ -313,6 +316,9 @@
     </ClCompile>
     <ClCompile Include="..\source\geometries\obb.cpp">
       <Filter>File di origine\geometries</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\core\component_register.cpp">
+      <Filter>File di origine\core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

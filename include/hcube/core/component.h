@@ -6,6 +6,7 @@
 //  Copyright © 2016 Gabriele. All rights reserved.
 //
 #pragma once
+#include <string>
 #include <typeindex>
 #include <hcube/config.h>
 #include <hcube/core/smart_pointers.h>
@@ -16,6 +17,7 @@ namespace hcube
 	//class
 	class  entity;
 	class  component;
+	class  factory;
 	struct message;
 	//type
 	using message_id   = unsigned;
@@ -58,7 +60,7 @@ namespace hcube
 
 		component() {}
 		virtual ~component() {}
-
+		
 		/* interface */
 		virtual bool on_update(double deltaTime) { return true; }
 		virtual void on_attach(entity&) { }
@@ -80,7 +82,6 @@ namespace hcube
 
 		entity* get_entity() const { return m_entity; }
 
-
 	private:
 
 		entity* m_entity{ nullptr };
@@ -88,5 +89,4 @@ namespace hcube
 		bool m_is_enabled{ true };  //is enabled, more for debug purpose or if we need to disable just one component
 
 	};
-
 }

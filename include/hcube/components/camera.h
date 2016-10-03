@@ -9,6 +9,7 @@
 #include <hcube/config.h>
 #include <hcube/math/vector_math.h>
 #include <hcube/core/component.h>
+#include <hcube/core/component_register.h>
 #include <hcube/core/smart_pointers.h>
 #include <hcube/geometries/frustum.h>
 #include <hcube/render/shader.h>
@@ -54,6 +55,7 @@ namespace hcube
 		mat4     m_view;
 		bool     m_view_is_dirty{ true };
 	};
+	HCUBE_COMPONENT_REGISTER(camera)
 
 	struct uniform_camera
 	{

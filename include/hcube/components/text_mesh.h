@@ -10,6 +10,7 @@
 #include <hcube/core/smart_pointers.h>
 #include <hcube/render/render.h>
 #include <hcube/components/renderable.h>
+#include <hcube/core/component_register.h>
 
 namespace hcube
 {
@@ -32,5 +33,8 @@ namespace hcube
 		void set_text(const std::string& text);
 		void set_text(const std::u32string& text);
 		void draw();
+
+		virtual component_ptr copy() const;
 	};
+	HCUBE_COMPONENT_REGISTER(text_mesh)
 }

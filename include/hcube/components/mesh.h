@@ -12,6 +12,7 @@
 #include <hcube/core/smart_pointers.h>
 #include <hcube/render/render.h>
 #include <hcube/components/renderable.h>
+#include <hcube/core/component_register.h>
 
 namespace hcube
 {
@@ -152,4 +153,5 @@ namespace hcube
 		context_vertex_buffer* m_bvertex{ nullptr };
 
 	};
+	HCUBE_COMPONENT_REGISTER(mesh)
 }

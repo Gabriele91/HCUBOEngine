@@ -67,4 +67,9 @@ namespace hcube
 		render::draw_arrays(DRAW_POINTS, (unsigned int)std::min(m_text.size(), m_text_max_size));
 		render::unmap_VBO(m_bpoints);
 	}
+	
+	component_ptr text_mesh::copy() const
+	{
+		return text_mesh::snew(m_text_max_size);
+	}
 }

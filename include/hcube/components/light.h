@@ -8,6 +8,7 @@
 #pragma once
 #include <hcube/config.h>
 #include <hcube/core/component.h>
+#include <hcube/core/component_register.h>
 #include <hcube/core/smart_pointers.h>
 #include <hcube/math/vector_math.h>
 #include <hcube/render/shader.h>
@@ -262,6 +263,8 @@ namespace hcube
 		friend struct uniform_light_direction;
 
 	};
+	HCUBE_COMPONENT_REGISTER(light)
+
 	using light_ptr = std::shared_ptr< light >;
 	using light_uptr = std::unique_ptr< light >;
 	using light_wptr = std::weak_ptr< light >;

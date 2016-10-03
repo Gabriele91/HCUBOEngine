@@ -171,6 +171,7 @@
     <ClInclude Include="..\include\hcube\config.h" />
     <ClInclude Include="..\include\hcube\core\application.h" />
     <ClInclude Include="..\include\hcube\core\component.h" />
+    <ClInclude Include="..\include\hcube\core\component_register.h" />
     <ClInclude Include="..\include\hcube\core\entity.h" />
     <ClInclude Include="..\include\hcube\core\filesystem.h" />
     <ClInclude Include="..\include\hcube\core\native_dialog.h" />
@@ -212,6 +213,7 @@
     <ClCompile Include="..\source\components\text_mesh.cpp" />
     <ClCompile Include="..\source\components\transform.cpp" />
     <ClCompile Include="..\source\core\application.cpp" />
+    <ClCompile Include="..\source\core\component_register.cpp" />
     <ClCompile Include="..\source\core\entity.cpp" />
     <ClCompile Include="..\source\core\filesystem.cpp" />
     <ClCompile Include="..\source\core\native_dialog.cpp" />
