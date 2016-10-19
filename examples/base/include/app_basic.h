@@ -31,15 +31,6 @@ namespace hcube
 		D_ON
 	};
 
-	enum id_cube_entities
-	{
-		CUBE_BACK = 0,
-		CUBE_PROTONS = 1,
-		CUBE_ELECTRONS = 2,
-		CUBE_FRONT = 3,
-		MAX_ENTITIES
-	};
-
 	struct window_info
 	{
 		ivec2 m_size;
@@ -75,8 +66,6 @@ namespace hcube
 		void go_to_fullscreen(application& app);
 
 		void go_to_window_mode(application& app);
-
-		bool is_fullscreen(application& app) const;
 
 		void camera_look_around(application& app);
 

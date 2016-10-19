@@ -20,8 +20,24 @@
 
 #include <app_basic.h>
 
+
 namespace hcube
 {
+	enum 
+	{
+		SW_LOW,
+		SW_MID,
+		SW_HIG,
+		SW_VERY_HIG,
+	};
+	const vec2 shadow_quality[] =
+	{
+		{ 256,256 },
+		{ 512,512 },
+		{ 1024,1024 },
+		{ 2048,2048 },
+	};
+
 	void app_basic::key_event(application& app, int key, int scancode, int action, int mods)
 	{
 
@@ -38,7 +54,7 @@ namespace hcube
 			rendering_system*	r_system = m_systems.get_system<rendering_system>();
 			rendering_pass_ptr	d_pass = r_system->get_rendering_pass()[0];
 			auto p_deferred = std::static_pointer_cast<rendering_pass_deferred>(d_pass);
-			p_deferred->set_ambient_occlusion({ true, 8, 0.70f });
+			p_deferred->set_ambient_occlusion({ true, 16, 0.3f });
 		}
 		else if (key == GLFW_KEY_K)
 		{
@@ -80,14 +96,14 @@ namespace hcube
 		else if (key == GLFW_KEY_R)    m_camera->get_component<transform>()->move({ 0,1,0 });
 		else if (key == GLFW_KEY_F)    m_camera->get_component<transform>()->move({ 0,-1,0 });
 		else if ((mods == GLFW_MOD_SUPER ||
-			mods == GLFW_MOD_CONTROL) &&
-			action == GLFW_PRESS)
+				  mods == GLFW_MOD_CONTROL) &&
+				  action == GLFW_PRESS)
 		{
-			if (key == GLFW_KEY_F)
+			if (key == GLFW_KEY_M)
 			{
 #if !defined(__APPLE__)
-				if (is_fullscreen(app)) go_to_window_mode(app);
-				else                    go_to_fullscreen(app);
+				if (app.is_fullscreen()) go_to_window_mode(app);
+				else                     go_to_fullscreen(app);
 #endif
 			}
 		}
@@ -169,6 +185,8 @@ namespace hcube
 #endif
 		//load assets
 		m_resources.add_directory("assets/effects");
+		m_resources.add_directory("assets/woman");
+		m_resources.add_directory("assets/dante");
 		m_resources.add_directory("assets/shaders");
 		m_resources.add_directory("assets/textures");
 		m_resources.add_directory("assets/materials");
@@ -247,8 +265,35 @@ namespace hcube
                 m_systems.add_entity(cube_grid);
             }
 #endif
-            
-#if 0
+#if 1
+			{
+				//woman
+				auto m_woman = m_resources.get_prefab("woman")->instantiate();
+				auto t_woman = m_woman->get_component<transform>();
+				t_woman->position({ 0.0f, -11.0f, 10.0 });
+				t_woman->rotation(quat({ radians(0.0), radians(90.0), 0.0 }));
+				t_woman->scale({ 14.1f, 14.1f, 14.1f });
+				//set name
+				m_woman->set_name("woman");
+				//add to render
+				m_systems.add_entity(m_woman);
+			}
+#endif
+#if 1
+			{
+				//dante
+				auto m_dante = m_resources.get_prefab("dante_naked")->instantiate();
+				auto t_dante = m_dante->get_component<transform>();
+				t_dante->position({ -10.0f, -10.5f, 2.0 });
+				t_dante->rotation(quat({ radians(0.0), radians(180.0), 0.0 }));
+				t_dante->scale({ 3.1f, 3.1f, 3.1f });
+				//set name
+				m_dante->set_name("dante");
+				//add to render
+				m_systems.add_entity(m_dante);
+			} 
+#endif
+#if 1
 			{
 				//sponza
 				auto m_sponza = m_resources.get_prefab("sponza_obb")->instantiate();
@@ -286,9 +331,9 @@ namespace hcube
                 //ship_fighter
                 auto e_ship_fighter = m_resources.get_prefab("ship_fighter")->instantiate();
                 auto t_ship_fighter = e_ship_fighter->get_component<transform>();
-                t_ship_fighter->position({ 20.0f, -5.0f, 0.0f });
+                t_ship_fighter->position({ 0.0f, 0.0f, 30.0f });
                 t_ship_fighter->rotation(quat({ radians(15.0), radians(180.0), 0.0 }));
-                t_ship_fighter->scale({ 0.015f, 0.015f, 0.015f });
+                t_ship_fighter->scale({ 0.013f, 0.013f, 0.013f });
                 //set name
                 e_ship_fighter->set_name("ship_fighter");
                 
@@ -329,7 +374,7 @@ namespace hcube
 									40.0,
 									radians(10.0),
 									radians(15.0));
-			l_model_light1->set_shadow({ 256,256 });
+			l_model_light1->set_shadow(shadow_quality[SW_VERY_HIG]);
             e_model_light1->set_name("ship_light1");
             m_model->add_child(e_model_light1);
 
@@ -345,7 +390,7 @@ namespace hcube
 								   40.0,
 								   radians(10.0),
 								   radians(15.0));
-			l_model_light2->set_shadow({ 256,256 });
+			l_model_light2->set_shadow(shadow_quality[SW_VERY_HIG]);
             e_model_light2->set_name("ship_light2");
 			m_model->add_child(e_model_light2);
 			//add to render
@@ -376,7 +421,7 @@ namespace hcube
 					8.0,
 					33.0
 				);
-				l_lights[i]->set_shadow({ 256,256 });
+				l_lights[i]->set_shadow(shadow_quality[SW_VERY_HIG]);
 			}
 
 			l_lights[0]->set_color({ 0.0f, 1.0f, 0.0f }, { 0.0f, 1.0f, 0.0f });
@@ -533,55 +578,19 @@ namespace hcube
 
 	void app_basic::go_to_fullscreen(application& app)
 	{
-#if 0
-		int m_count = 0;
-		GLFWmonitor** monitors = glfwGetMonitors(&m_count);
-		if (m_count)
+		//get info
+		m_window_mode_info = window_info
 		{
-			//get info
-			m_window_mode_info = window_info
-			{
-				app.get_window_size(),
-				app.get_window_position()
-			};
-			//go to fullscreen mode
-			const GLFWvidmode* monitor_mode = glfwGetVideoMode(monitors[0]);
-			glfwSetWindowMonitor(
-				app.get_window()
-				, monitors[0]
-				, 0
-				, 0
-				, monitor_mode->width
-				, monitor_mode->height
-				, 60
-			);
-		}
-#endif
+			app.get_window_size(),
+			app.get_window_position()
+		};
+		//go to fullscreen mode
+		app.set_fullscreen_size(app.get_screen_size());
 	}
 
 	void app_basic::go_to_window_mode(application& app)
 	{
-#if 0
-		//go to window mode
-		glfwSetWindowMonitor(
-			app.get_window()
-			, nullptr
-			, m_window_mode_info.m_position.x
-			, m_window_mode_info.m_position.y
-			, m_window_mode_info.m_size.x
-			, m_window_mode_info.m_size.y
-			, 60
-		);
-#endif
+		app.set_window_size(m_window_mode_info.m_position, m_window_mode_info.m_size);
 	}
-
-	bool app_basic::is_fullscreen(application& app) const
-	{
-#if 0
-		return glfwGetWindowMonitor(app.get_window()) != nullptr;
-#else 
-		return true;
-#endif
-	}
-
+	
 }
