@@ -55,7 +55,6 @@ namespace hcube
 		mat4     m_view;
 		bool     m_view_is_dirty{ true };
 	};
-	HCUBE_COMPONENT_REGISTER(camera)
 
 	struct uniform_camera
 	{

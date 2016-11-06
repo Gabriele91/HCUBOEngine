@@ -15,8 +15,8 @@
 #include <hcube/render/rendering_pass_shadow.h>
 #include <hcube/components/transform.h>
 #include <hcube/components/renderable.h>
-#include <hcube/components/gameobject.h>
-#include <hcube/components/basic_meshs.h>
+#include <hcube/utilities/gameobject.h>
+#include <hcube/utilities/basic_meshs.h>
 
 #include <app_basic.h>
 

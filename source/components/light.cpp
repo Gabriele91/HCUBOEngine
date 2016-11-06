@@ -5,6 +5,7 @@
 
 namespace hcube
 {
+	HCUBE_COMPONENT_REGISTER(light)
 
 	//UNIFORM SPOT LIGHT
 	void uniform_light_spot::get_uniform(shader::ptr shader)

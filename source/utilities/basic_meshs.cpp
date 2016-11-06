@@ -1,6 +1,6 @@
 #include <hcube/math/vector_math.h>
 #include <hcube/math/tangent_space_calculation.h>
-#include <hcube/components/basic_meshs.h>
+#include <hcube/utilities/basic_meshs.h>
 
 namespace hcube
 {

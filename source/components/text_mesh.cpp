@@ -12,6 +12,7 @@
 
 namespace hcube
 {
+	HCUBE_COMPONENT_REGISTER(text_mesh)
 
 	text_mesh::text_mesh(size_t text_max_size)
 	{

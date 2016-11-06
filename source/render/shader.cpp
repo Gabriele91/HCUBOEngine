@@ -60,7 +60,8 @@ R"GLSL(
 		}
 		return "other";
 	}
-
+	
+	#pragma region "Shader parser"
 
 	static void skeep_error_line_space(const char*& inout)
 	{
@@ -126,7 +127,7 @@ R"GLSL(
 		return true;
 	}
 
-
+	
 	inline void jmp_spaces(const char*& str)
 	{
 		//jump space chars
@@ -294,6 +295,8 @@ R"GLSL(
 							   std::string& out_vertex,
 							   std::string& out_fragment,
 							   std::string& out_geometry,
+							   std::string& out_tass_control,
+							   std::string& out_tass_eval,
 							   size_t& n_files,
 							   size_t line  /* = 0*/,
 							   size_t level /* = 0*/)
@@ -312,6 +315,8 @@ R"GLSL(
 			P_VERTEX,
 			P_FRAGMENT,
 			P_GEOMETRY,
+			P_TASS_CONTROL,
+			P_TASS_EVAL,
 			P_SIZE
 		};
 		//strings
@@ -323,6 +328,8 @@ R"GLSL(
 		std::string& vertex = buffers[P_VERTEX];
 		std::string& fragment = buffers[P_FRAGMENT];
 		std::string& geometry = buffers[P_GEOMETRY];
+		std::string& tass_control = buffers[P_TASS_CONTROL];
+		std::string& tass_eval = buffers[P_TASS_EVAL];
 		//start state
 		parsing_state state = P_ALL;
 		//line buffer
@@ -366,6 +373,23 @@ R"GLSL(
 					geometry += "#line " + std::to_string(line + 1) + " " + std::to_string(this_file) + "\n";
 					continue;
 				}
+				else if (compare_and_jmp_keyword(c_effect_line, "tass") || compare_and_jmp_keyword(c_effect_line, "tessellation"))
+				{
+					//jmp space
+					jmp_spaces(c_effect_line);
+					//test type of tessellation
+					if (compare_and_jmp_keyword(c_effect_line, "control"))
+					{
+						state = P_TASS_CONTROL;
+						tass_control += "#line " + std::to_string(line + 1) + " " + std::to_string(this_file) + "\n";
+					}
+					else if (compare_and_jmp_keyword(c_effect_line, "eval"))
+					{
+						state = P_TASS_EVAL;
+						tass_eval += "#line " + std::to_string(line + 1) + " " + std::to_string(this_file) + "\n";
+					}
+					continue;
+				}
 				else if (compare_and_jmp_keyword(c_effect_line, "include"))
 				{
 					//jmp space
@@ -405,15 +429,23 @@ R"GLSL(
 					//input stream
 					std::stringstream import_effect(filesystem::text_file_read_all(import_path));
 					//add include
-					if (!process_import(filepath_map, import_effect, import_path, vertex, fragment, geometry, n_files, line, level + 1))
+					if (!process_import(filepath_map, import_effect, import_path, 
+										vertex, 
+										fragment, 
+										geometry,
+										tass_control,
+										tass_eval,
+									    n_files, line, level + 1))
 					{
 						return false;
 					}
 					//lines
 					std::string current_line = "#line " + std::to_string(line + 1) + " " + std::to_string(this_file) + "\n";
-					buffers[P_VERTEX] += current_line;
-					buffers[P_FRAGMENT] += current_line;
-					buffers[P_GEOMETRY] += geometry.size() ? current_line : "";
+					buffers[P_VERTEX]		+= current_line;
+					buffers[P_FRAGMENT]		+= current_line;
+					buffers[P_GEOMETRY]		+= geometry.size() ? current_line : "";
+					buffers[P_TASS_CONTROL] += tass_control.size() ? current_line : "";
+					buffers[P_TASS_EVAL]	+= tass_eval.size() ? current_line : "";
 					continue;
 				}
 			}
@@ -421,12 +453,16 @@ R"GLSL(
 			buffers[state] += effect_line; buffers[state] += "\n";
 		}
 		//copy output
-		out_vertex = all + vertex;
-		out_fragment = all + fragment;
-		out_geometry = geometry.size() ? all + geometry : "";
+		out_vertex		 = all + vertex;
+		out_fragment	 = all + fragment;
+		out_geometry	 = geometry.size()     ? all + geometry     : "";
+		out_tass_control = tass_control.size() ? all + tass_control : "";
+		out_tass_eval    = tass_eval.size()    ? all + tass_eval    : "";
 
 		return true;
 	}
+
+	#pragma endregion 
 
 	bool shader::load(const std::string& effect_file,
                       const preprocess_map& defines)
@@ -434,7 +470,7 @@ R"GLSL(
 		//id file
 		size_t  this_file = 0;
 		//buffers
-		std::string vertex, fragment, geometry;
+		std::string vertex, fragment, geometry, tcontrol, teval;
 		//input stream
 		std::stringstream stream_effect(filesystem::text_file_read_all(effect_file));
 		//process
@@ -444,7 +480,9 @@ R"GLSL(
 							vertex, 
 							fragment, 
 							geometry, 
-							this_file, 
+							tcontrol,
+							teval,			
+							this_file,
 							0, //line 0
 							0  //file 0
                             )) return false;
@@ -452,6 +490,8 @@ R"GLSL(
 		return load_shader(vertex, 0,
 						   fragment, 0,
 						   geometry, 0,
+						   tcontrol, 0,
+			               teval, 0,
 						   defines);
 	}
 
@@ -465,7 +505,7 @@ R"GLSL(
 		//id file
 		size_t  this_file = 0;
 		//buffers
-		std::string vertex, fragment, geometry;
+		std::string vertex, fragment, geometry, tcontrol, teval;
 		//input stream
 		std::stringstream stream_effect(effect);
 		//process
@@ -475,6 +515,8 @@ R"GLSL(
 							vertex,
 							fragment,
 							geometry,
+							tcontrol,
+							teval,
 							this_file,
 						    line_effect,
 							0)) return false;
@@ -482,19 +524,25 @@ R"GLSL(
 		return load_shader(vertex, 0,
 						  fragment, 0,
 						  geometry, 0,
+						  tcontrol, 0,
+						  teval, 0,
 						  defines);
 	}
 
 	bool shader::load(const std::string& vs_file,
 		              const std::string& fs_file,
                       const std::string& gs_file,
+					  const std::string& tcs_file,
+					  const std::string& tes_file,
                       const preprocess_map& defines)
 	{
 		return load_shader
 		(
-			filesystem::text_file_read_all(vs_file),                       0,
-			filesystem::text_file_read_all(fs_file),                       0,
-			gs_file.size() ? filesystem::text_file_read_all(gs_file) : "", 0,
+			filesystem::text_file_read_all(vs_file),                         0,
+			filesystem::text_file_read_all(fs_file),                         0,
+			gs_file.size()  ? filesystem::text_file_read_all(gs_file)  : "", 0,
+			tcs_file.size() ? filesystem::text_file_read_all(tcs_file) : "", 0,
+			tes_file.size() ? filesystem::text_file_read_all(tes_file) : "", 0,
 			defines
 		);
 	}
@@ -502,6 +550,8 @@ R"GLSL(
 	bool shader::load_shader(const std::string& vs_str,const size_t line_vs,
 						     const std::string& fs_str,const size_t line_fs,
 							 const std::string& gs_str,const size_t line_gs,
+							 const std::string& tcs_str,const size_t line_tcs,
+							 const std::string& tes_str,const size_t line_tes,
 							 const preprocess_map& all_process)
 	{
 		bool success_to_compile = true;
@@ -578,9 +628,10 @@ R"GLSL(
 			success_to_compile = false;
         }
 		////////////////////////////////////////////////////////////////////////////////
+		//geometry
 		if (gs_str.size())
 		{
-			//geometrfs_stry
+			//geometry header
 			std::string file_gs =
 				defines_string +
 				default_glsl_defines +
@@ -605,11 +656,69 @@ R"GLSL(
             }
 		}
 		////////////////////////////////////////////////////////////////////////////////
+		//tessellation control
+		if (tcs_str.size())
+		{
+			//geometrfs_stry
+			std::string file_tcs =
+				defines_string +
+				default_glsl_defines +
+				"#define cbuffer     layout(std140) uniform     \n"
+				"#define saturate(x) clamp( x, 0.0, 1.0 )       \n"
+				"#define lerp        mix                        \n"
+				"#line " + std::to_string(line_tcs) + "\n" +
+				tcs_str;
+			//geometry
+			m_shader_tcs = glCreateShader(GL_TESS_CONTROL_SHADER);
+			const char* c_tcs_source = file_tcs.c_str();
+			glShaderSource(m_shader_tcs, 1, &(c_tcs_source), 0);
+			//compiling
+			compiled = 0;
+			glCompileShader(m_shader_tcs);
+			glGetShaderiv(m_shader_tcs, GL_COMPILE_STATUS, &compiled);
+			if (!log_error(m_file_path_id, m_shader_tcs, compiled, "Tessellation control"))
+			{
+				glDeleteShader(m_shader_tcs);
+				m_shader_tcs = 0;
+				success_to_compile = false;
+			}
+		}
+		////////////////////////////////////////////////////////////////////////////////
+		//tessellation evaluation
+		if (tes_str.size())
+		{
+			//geometrfs_stry
+			std::string file_tes =
+				defines_string +
+				default_glsl_defines +
+				"#define cbuffer     layout(std140) uniform     \n"
+				"#define saturate(x) clamp( x, 0.0, 1.0 )       \n"
+				"#define lerp        mix                        \n"
+				"#line " + std::to_string(line_tes) + "\n" +
+				tes_str;
+			//geometry
+			m_shader_tes = glCreateShader(GL_TESS_EVALUATION_SHADER);
+			const char* c_tes_source = file_tes.c_str();
+			glShaderSource(m_shader_tes, 1, &(c_tes_source), 0);
+			//compiling
+			compiled = 0;
+			glCompileShader(m_shader_tes);
+			glGetShaderiv(m_shader_tes, GL_COMPILE_STATUS, &compiled);
+			if (!log_error(m_file_path_id, m_shader_tes, compiled, "Tessellation evaluation"))
+			{
+				glDeleteShader(m_shader_tes);
+				m_shader_tes = 0;
+				success_to_compile = false;
+			}
+		}
+		////////////////////////////////////////////////////////////////////////////////
 		//made a shader program
         m_shader_id = glCreateProgram();
-        if (m_shader_fs) glAttachShader(m_shader_id, m_shader_fs);
-		if (m_shader_vs) glAttachShader(m_shader_id, m_shader_vs);
-		if (m_shader_gs) glAttachShader(m_shader_id, m_shader_gs);
+        if (m_shader_fs)  glAttachShader(m_shader_id, m_shader_fs);
+		if (m_shader_vs)  glAttachShader(m_shader_id, m_shader_vs);
+		if (m_shader_gs)  glAttachShader(m_shader_id, m_shader_gs);
+		if (m_shader_tcs) glAttachShader(m_shader_id, m_shader_tcs);
+		if (m_shader_tes) glAttachShader(m_shader_id, m_shader_tes);
 		glLinkProgram(m_shader_id);
 		//get link status
 		glGetProgramiv(m_shader_id, GL_LINK_STATUS, &linked);
@@ -631,17 +740,23 @@ R"GLSL(
 			if (m_shader_fs)  glDetachShader(m_shader_id, m_shader_fs);
 			if (m_shader_vs)  glDetachShader(m_shader_id, m_shader_vs);
 			if (m_shader_gs)  glDetachShader(m_shader_id, m_shader_gs);
+			if (m_shader_tcs) glDetachShader(m_shader_id, m_shader_tcs);
+			if (m_shader_tes) glDetachShader(m_shader_id, m_shader_tes);
 			//destoy all shaders
-			if (m_shader_fs) glDeleteShader(m_shader_fs);
-			if (m_shader_vs) glDeleteShader(m_shader_vs);
-			if (m_shader_gs) glDeleteShader(m_shader_gs);
+			if (m_shader_fs)  glDeleteShader(m_shader_fs);
+			if (m_shader_vs)  glDeleteShader(m_shader_vs);
+			if (m_shader_gs)  glDeleteShader(m_shader_gs);
+			if (m_shader_tcs) glDeleteShader(m_shader_tcs);
+			if (m_shader_tes) glDeleteShader(m_shader_tes);
 			//destoy program
 			if(m_shader_id) glDeleteProgram(m_shader_id);
 			//all to 0
-			m_shader_vs = 0;
-			m_shader_fs = 0;
-			m_shader_gs = 0;
-			m_shader_id = 0;
+			m_shader_vs  = 0;
+			m_shader_fs  = 0;
+			m_shader_gs  = 0;
+			m_shader_tcs = 0;
+			m_shader_tes = 0;
+			m_shader_id  = 0;
 			//fail
 			success_to_compile = false;
 		}
@@ -653,20 +768,26 @@ R"GLSL(
 		if (m_shader_id)
 		{
 			glUseProgram(0);
-			//"stacca" gli schader dal shader program
+			//detach shader
 			glDetachShader(m_shader_id, m_shader_fs);
 			glDetachShader(m_shader_id, m_shader_vs);
-			if (m_shader_gs) glDetachShader(m_shader_id, m_shader_gs);
-			//cancella gli shader
+			if (m_shader_gs)  glDetachShader(m_shader_id, m_shader_gs);
+			if (m_shader_tcs) glDetachShader(m_shader_id, m_shader_tcs);
+			if (m_shader_tes) glDetachShader(m_shader_id, m_shader_tes);
+			//delete all shaders
 			glDeleteShader(m_shader_fs);
 			glDeleteShader(m_shader_vs);
-			if (m_shader_gs) glDeleteShader(m_shader_gs);
-			//cancella lo shader program
+			if (m_shader_gs)  glDeleteShader(m_shader_gs);
+			if (m_shader_tcs) glDeleteShader(m_shader_tcs);
+			if (m_shader_tes) glDeleteShader(m_shader_tes);
+			//delete shader program
 			glDeleteProgram(m_shader_id);
-			//to null
-			m_shader_gs = 0;
-			m_shader_fs = 0;
+			//all to null
 			m_shader_vs = 0;
+			m_shader_fs = 0;
+			m_shader_gs = 0;
+			m_shader_tcs = 0;
+			m_shader_tes = 0;
 			m_shader_id = 0;
 		}
 	}

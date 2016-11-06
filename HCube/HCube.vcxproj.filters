@@ -79,6 +79,12 @@
     <Filter Include="File di intestazione\hcube\components">
       <UniqueIdentifier>{87deebf0-a8f8-42ee-abef-e5a486b05634}</UniqueIdentifier>
     </Filter>
+    <Filter Include="File di origine\utilities">
+      <UniqueIdentifier>{25bd480b-56bd-42cc-8e9c-b5c76f870837}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="File di intestazione\hcube\utilities">
+      <UniqueIdentifier>{4b48dab1-d459-4f5b-8cf7-1f2577f61cef}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\hcube\geometries\frustum.h">
@@ -135,13 +141,7 @@
     <ClInclude Include="..\include\hcube\core\system_manager.h">
       <Filter>File di intestazione\hcube\core</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\hcube\components\basic_meshs.h">
-      <Filter>File di intestazione\hcube\components</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\hcube\components\camera.h">
-      <Filter>File di intestazione\hcube\components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\hcube\components\gameobject.h">
       <Filter>File di intestazione\hcube\components</Filter>
     </ClInclude>
     <ClInclude Include="..\include\hcube\components\light.h">
@@ -213,6 +213,12 @@
     <ClInclude Include="..\include\hcube\core\component_register.h">
       <Filter>File di intestazione\hcube\core</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\hcube\utilities\basic_meshs.h">
+      <Filter>File di intestazione\hcube\utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\hcube\utilities\gameobject.h">
+      <Filter>File di intestazione\hcube\utilities</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\render\effect.cpp">
@@ -281,9 +287,6 @@
     <ClCompile Include="..\source\resources\texture.cpp">
       <Filter>File di origine\resources</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\components\basic_meshs.cpp">
-      <Filter>File di origine\components</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\components\camera.cpp">
       <Filter>File di origine\components</Filter>
     </ClCompile>
@@ -319,6 +322,9 @@
     </ClCompile>
     <ClCompile Include="..\source\core\component_register.cpp">
       <Filter>File di origine\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\utilities\basic_meshs.cpp">
+      <Filter>File di origine\utilities</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -12,6 +12,8 @@
 
 namespace hcube
 {
+	HCUBE_COMPONENT_REGISTER(camera)
+
 	void camera::set_viewport(const ivec4& viewport)
 	{
 		m_viewport = viewport;

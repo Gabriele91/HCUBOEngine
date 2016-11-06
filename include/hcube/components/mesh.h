@@ -153,5 +153,4 @@ namespace hcube
 		context_vertex_buffer* m_bvertex{ nullptr };
 
 	};
-	HCUBE_COMPONENT_REGISTER(mesh)
 }

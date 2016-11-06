@@ -10,7 +10,7 @@
 #include <hcube/components/transform.h>
 #include <hcube/components/camera.h>
 #include <hcube/components/light.h>
-#include <hcube/components/basic_meshs.h>
+#include <hcube/utilities/basic_meshs.h>
 
 namespace hcube
 {

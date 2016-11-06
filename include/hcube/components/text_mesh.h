@@ -36,5 +36,4 @@ namespace hcube
 
 		virtual component_ptr copy() const;
 	};
-	HCUBE_COMPONENT_REGISTER(text_mesh)
 }

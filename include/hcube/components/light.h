@@ -263,7 +263,6 @@ namespace hcube
 		friend struct uniform_light_direction;
 
 	};
-	HCUBE_COMPONENT_REGISTER(light)
 
 	using light_ptr = std::shared_ptr< light >;
 	using light_uptr = std::unique_ptr< light >;

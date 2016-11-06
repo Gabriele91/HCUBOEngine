@@ -160,9 +160,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\include\hcube\components\basic_meshs.h" />
     <ClInclude Include="..\include\hcube\components\camera.h" />
-    <ClInclude Include="..\include\hcube\components\gameobject.h" />
     <ClInclude Include="..\include\hcube\components\light.h" />
     <ClInclude Include="..\include\hcube\components\mesh.h" />
     <ClInclude Include="..\include\hcube\components\renderable.h" />
@@ -204,9 +202,10 @@
     <ClInclude Include="..\include\hcube\resources\prefab.h" />
     <ClInclude Include="..\include\hcube\resources\static_model.h" />
     <ClInclude Include="..\include\hcube\resources\texture.h" />
+    <ClInclude Include="..\include\hcube\utilities\basic_meshs.h" />
+    <ClInclude Include="..\include\hcube\utilities\gameobject.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\source\components\basic_meshs.cpp" />
     <ClCompile Include="..\source\components\camera.cpp" />
     <ClCompile Include="..\source\components\light.cpp" />
     <ClCompile Include="..\source\components\mesh.cpp" />
@@ -241,6 +240,7 @@
     <ClCompile Include="..\source\resources\material.cpp" />
     <ClCompile Include="..\source\resources\static_model.cpp" />
     <ClCompile Include="..\source\resources\texture.cpp" />
+    <ClCompile Include="..\source\utilities\basic_meshs.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\assets\materials\baril_mat.mat" />

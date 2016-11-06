@@ -9,7 +9,6 @@
 #include <hcube/core/entity.h>
 #include <hcube/core/resources_manager.h>
 #include <hcube/render/rendering_system.h>
-#include <hcube/components/gameobject.h>
 #include <hcube/components/transform.h>
 #include <hcube/components/camera.h>
 

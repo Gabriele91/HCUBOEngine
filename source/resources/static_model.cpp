@@ -8,9 +8,10 @@
 #include <hcube/math/tangent_space_calculation.h>
 #include <hcube/core/resources_manager.h>
 #include <hcube/render/render.h>
-#include <hcube/components/gameobject.h>
 #include <hcube/components/mesh.h>
 #include <hcube/resources/static_model.h>
+#include <hcube/utilities/gameobject.h>
+
 
 namespace hcube
 {

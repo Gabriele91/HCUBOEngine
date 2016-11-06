@@ -83,7 +83,6 @@ namespace hcube
 		void compute_matrix();
 
 	};
-	HCUBE_COMPONENT_REGISTER(transform)
 
 	using transform_ptr = std::shared_ptr< transform >;
 	using transform_uptr = std::unique_ptr< transform >;

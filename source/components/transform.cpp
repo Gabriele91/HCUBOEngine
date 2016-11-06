@@ -12,6 +12,8 @@
 
 namespace hcube
 {
+	HCUBE_COMPONENT_REGISTER(transform)
+
 	void transform::look_at(const vec3& eye, const vec3& center, const vec3& up)
 	{
 #if 0

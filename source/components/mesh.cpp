@@ -11,6 +11,7 @@
 
 namespace hcube
 {
+	HCUBE_COMPONENT_REGISTER(mesh)
 
 	bool mesh::mesh_layout::has_a_position() const
 	{

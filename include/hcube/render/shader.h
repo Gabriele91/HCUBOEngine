@@ -88,7 +88,9 @@ namespace hcube
         
         bool load(const std::string& file_vs,
                   const std::string& file_fs,
-                  const std::string& file_gs,
+				  const std::string& file_gs,
+				  const std::string& file_tcs,
+				  const std::string& file_tes,
                   const preprocess_map& defines);
         
         
@@ -106,6 +108,10 @@ namespace hcube
                          const size_t line_fs,
 			             const std::string& gs,
                          const size_t line_gs,
+						 const std::string& tc,
+						 const size_t line_tc,
+						 const std::string& te,
+						 const size_t line_te,
 			             const preprocess_map& defines);
 
 		//get consts
@@ -139,11 +145,13 @@ namespace hcube
 
 	private:
 
-		unsigned int m_shader_id{ 0 };
-		unsigned int m_shader_vs{ 0 };
-		unsigned int m_shader_fs{ 0 };
-		unsigned int m_shader_gs{ 0 };
-		void delete_program();
+		unsigned int m_shader_id { 0 }; //< shader program
+		unsigned int m_shader_vs { 0 }; //< vertex shader
+		unsigned int m_shader_fs { 0 }; //< fragment shader
+		unsigned int m_shader_gs { 0 }; //< geometry shader
+		unsigned int m_shader_tcs{ 0 }; //< tessellation control shader
+		unsigned int m_shader_tes{ 0 }; //< tessellation evaluation  shader
+		void delete_program(); 
 
 	};
 }
