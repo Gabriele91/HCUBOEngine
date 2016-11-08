@@ -21,7 +21,16 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
-		E063AD8A1D9D61E800784D40 /* libHCube.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E063AD891D9D61E800784D40 /* libHCube.dylib */; };
+		E0B0F3391C35FB2600E96215 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E0B0F3381C35FB2600E96215 /* IOKit.framework */; };
+		E0B0F33B1C35FB3500E96215 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E0B0F33A1C35FB3500E96215 /* Cocoa.framework */; };
+		E0B0F33D1C35FB3C00E96215 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E0B0F33C1C35FB3C00E96215 /* OpenGL.framework */; };
+		E0B0F33F1C35FB4700E96215 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E0B0F33E1C35FB4700E96215 /* CoreVideo.framework */; };
+		E0B0F3401C35FB4D00E96215 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E0B0F33E1C35FB4700E96215 /* CoreVideo.framework */; };
+		E0B0F3411C35FB4D00E96215 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E0B0F33C1C35FB3C00E96215 /* OpenGL.framework */; };
+		E0B0F3421C35FB4D00E96215 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E0B0F33A1C35FB3500E96215 /* Cocoa.framework */; };
+		E0B0F3431C35FB4D00E96215 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E0B0F3381C35FB2600E96215 /* IOKit.framework */; };
+		E0B0F3481DD0FEE200E96215 /* libHCube.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E0B0F3321C35FAE400E96215 /* libHCube.dylib */; };
+		E0B0F3491DD0FEE500E96215 /* libHCube.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E063AD891D9D61E800784D40 /* libHCube.dylib */; };
 		E0B8CA321D9D482800754DEA /* app_basic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E0B8CA301D9D482800754DEA /* app_basic.cpp */; };
 		E0B8CA331D9D482800754DEA /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E0B8CA311D9D482800754DEA /* main.cpp */; };
 		E0B8CA581D9D4B7600754DEA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E0B8CA571D9D4B7600754DEA /* Assets.xcassets */; };
@@ -46,6 +55,11 @@
 
 /* Begin PBXFileReference section */
 		E063AD891D9D61E800784D40 /* libHCube.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libHCube.dylib; path = ../../build/Debug/libHCube.dylib; sourceTree = "<group>"; };
+		E0B0F3321C35FAE400E96215 /* libHCube.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libHCube.dylib; path = ../../build/Release/libHCube.dylib; sourceTree = "<group>"; };
+		E0B0F3381C35FB2600E96215 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
+		E0B0F33A1C35FB3500E96215 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		E0B0F33C1C35FB3C00E96215 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
+		E0B0F33E1C35FB4700E96215 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
 		E0B8CA1A1D9D469500754DEA /* base */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = base; sourceTree = BUILT_PRODUCTS_DIR; };
 		E0B8CA2E1D9D482800754DEA /* app_basic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = app_basic.h; sourceTree = "<group>"; };
 		E0B8CA301D9D482800754DEA /* app_basic.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = app_basic.cpp; sourceTree = "<group>"; };
@@ -63,6 +77,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E0B0F3401C35FB4D00E96215 /* CoreVideo.framework in Frameworks */,
+				E0B0F3411C35FB4D00E96215 /* OpenGL.framework in Frameworks */,
+				E0B0F3421C35FB4D00E96215 /* Cocoa.framework in Frameworks */,
+				E0B0F3431C35FB4D00E96215 /* IOKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -70,7 +88,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E063AD8A1D9D61E800784D40 /* libHCube.dylib in Frameworks */,
+				E0B0F33F1C35FB4700E96215 /* CoreVideo.framework in Frameworks */,
+				E0B0F33D1C35FB3C00E96215 /* OpenGL.framework in Frameworks */,
+				E0B0F3481DD0FEE200E96215 /* libHCube.dylib in Frameworks */,
+				E0B0F33B1C35FB3500E96215 /* Cocoa.framework in Frameworks */,
+				E0B0F3491DD0FEE500E96215 /* libHCube.dylib in Frameworks */,
+				E0B0F3391C35FB2600E96215 /* IOKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -80,9 +103,21 @@
 		E063AD8E1D9D648D00784D40 /* osxapp_libs */ = {
 			isa = PBXGroup;
 			children = (
+				E0B0F3321C35FAE400E96215 /* libHCube.dylib */,
 				E063AD891D9D61E800784D40 /* libHCube.dylib */,
 			);
 			name = osxapp_libs;
+			sourceTree = "<group>";
+		};
+		E0B0F3371C35FB2500E96215 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				E0B0F33E1C35FB4700E96215 /* CoreVideo.framework */,
+				E0B0F33C1C35FB3C00E96215 /* OpenGL.framework */,
+				E0B0F33A1C35FB3500E96215 /* Cocoa.framework */,
+				E0B0F3381C35FB2600E96215 /* IOKit.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		E0B8CA111D9D469500754DEA = {
@@ -96,6 +131,7 @@
 				E0B8CA2F1D9D482800754DEA /* source */,
 				E0B8CA501D9D4B7600754DEA /* base-app */,
 				E0B8CA1B1D9D469500754DEA /* Products */,
+				E0B0F3371C35FB2500E96215 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -245,7 +281,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "mkdir ${SRCROOT}/build/${CONFIGURATION}/base-app.app/Contents/Frameworks\ncp ${SRCROOT}/../../build/${CONFIGURATION}/libHCube.dylib ${SRCROOT}/build/${CONFIGURATION}/base-app.app/Contents/Frameworks/libHCube.dylib";
+			shellScript = "mkdir -p ${SRCROOT}/build/${CONFIGURATION}/base-app.app/Contents/Frameworks\ncp ${SRCROOT}/../../build/${CONFIGURATION}/libHCube.dylib ${SRCROOT}/build/${CONFIGURATION}/base-app.app/Contents/Frameworks/libHCube.dylib";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -293,7 +329,6 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
@@ -319,7 +354,6 @@
 				);
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
@@ -328,11 +362,18 @@
 					"$(SRCROOT)/../../include",
 					"$(SRCROOT)/include",
 				);
-				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/../../build/$(CONFIGURATION)";
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/../../build/$(CONFIGURATION)/**";
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_LDFLAGS = "-lHCube";
+				OTHER_CFLAGS = (
+					"-DUSE_FLOAT",
+					"-D_DEBUG",
+				);
+				OTHER_LDFLAGS = (
+					"-lz",
+					"-lbz2",
+					"-lHCube",
+				);
 				SDKROOT = macosx;
 			};
 			name = Debug;
@@ -345,7 +386,6 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
@@ -356,7 +396,6 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "-";
-				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -365,7 +404,6 @@
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
@@ -374,10 +412,14 @@
 					"$(SRCROOT)/../../include",
 					"$(SRCROOT)/include",
 				);
-				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/../../build/$(CONFIGURATION)";
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/../../build/$(CONFIGURATION)/**";
 				MTL_ENABLE_DEBUG_INFO = NO;
-				OTHER_LDFLAGS = "-lHCube";
+				OTHER_CFLAGS = "-DUSE_FLOAT";
+				OTHER_LDFLAGS = (
+					"-lz",
+					"-lbz2",
+					"-lHCube",
+				);
 				SDKROOT = macosx;
 			};
 			name = Release;
@@ -430,6 +472,7 @@
 				E063AD881D9D60C000784D40 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		E0B8CA151D9D469500754DEA /* Build configuration list for PBXProject "base" */ = {
 			isa = XCConfigurationList;
