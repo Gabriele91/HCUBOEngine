@@ -13,18 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="File di risorse\assets">
-      <UniqueIdentifier>{62dd8327-b5a5-4d9a-956b-ed41580b8863}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="File di risorse\assets\textures">
-      <UniqueIdentifier>{4f6d4cf0-c98a-4131-a2a2-51d3ac46dba7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="File di risorse\assets\materials">
-      <UniqueIdentifier>{1df61f29-f59b-446c-840b-52378961f0c4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="File di risorse\assets\ship">
-      <UniqueIdentifier>{024b4634-fa25-4758-8a3e-810ee384c9bd}</UniqueIdentifier>
-    </Filter>
     <Filter Include="File di risorse\common">
       <UniqueIdentifier>{ccf34896-0c2e-4591-8d04-b5f9bb247e0e}</UniqueIdentifier>
     </Filter>
@@ -84,6 +72,9 @@
     </Filter>
     <Filter Include="File di intestazione\hcube\utilities">
       <UniqueIdentifier>{4b48dab1-d459-4f5b-8cf7-1f2577f61cef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="File di risorse\common\meshs">
+      <UniqueIdentifier>{ccde4fc2-251f-419c-bdae-69c1313446d2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -328,39 +319,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\assets\materials\baril_mat.mat">
-      <Filter>File di risorse\assets\materials</Filter>
-    </None>
-    <None Include="..\assets\materials\box_mat.mat">
-      <Filter>File di risorse\assets\materials</Filter>
-    </None>
-    <None Include="..\assets\materials\box2_mat.mat">
-      <Filter>File di risorse\assets\materials</Filter>
-    </None>
-    <None Include="..\assets\materials\wire_mat.mat">
-      <Filter>File di risorse\assets\materials</Filter>
-    </None>
-    <None Include="..\assets\ship\ship.smhc">
-      <Filter>File di risorse\assets\ship</Filter>
-    </None>
-    <None Include="..\assets\ship\vehicle_playerShip_glass_mat.mat">
-      <Filter>File di risorse\assets\ship</Filter>
-    </None>
-    <None Include="..\assets\ship\vehicle_playerShip_metal_mat.mat">
-      <Filter>File di risorse\assets\ship</Filter>
-    </None>
-    <None Include="..\common\effects\base_texture_normal_specular.fxhc">
-      <Filter>File di risorse\common\effects</Filter>
-    </None>
-    <None Include="..\common\effects\build_shadow.fxhc">
-      <Filter>File di risorse\common\effects</Filter>
-    </None>
-    <None Include="..\common\effects\no_cull_effect.fxhc">
-      <Filter>File di risorse\common\effects</Filter>
-    </None>
-    <None Include="..\common\effects\debug_spot_lights.fxhc">
-      <Filter>File di risorse\common\effects</Filter>
-    </None>
     <None Include="..\common\effects\shaders\deferred_ambient_light.glsl">
       <Filter>File di risorse\common\effects\shaders</Filter>
     </None>
@@ -409,80 +367,41 @@
     <None Include="..\common\effects\shaders\lib\post_processing_utilities.glsl">
       <Filter>File di risorse\common\effects\shaders\lib</Filter>
     </None>
-    <None Include="..\common\effects\translucent_texture_normal_specular.fxhc">
+    <None Include="..\source\core\cocoa_native_dialog.mm">
+      <Filter>File di origine\core</Filter>
+    </None>
+    <None Include="..\common\effects\base_texture_normal_specular.fxhc">
+      <Filter>File di risorse\common\effects</Filter>
+    </None>
+    <None Include="..\common\effects\build_shadow.fxhc">
+      <Filter>File di risorse\common\effects</Filter>
+    </None>
+    <None Include="..\common\effects\debug_lights.fxhc">
+      <Filter>File di risorse\common\effects</Filter>
+    </None>
+    <None Include="..\common\effects\no_cull_effect.fxhc">
       <Filter>File di risorse\common\effects</Filter>
     </None>
     <None Include="..\common\effects\translucent_no_cull_effect.fxhc">
       <Filter>File di risorse\common\effects</Filter>
     </None>
-    <None Include="..\assets\materials\box2_grid_mat.mat">
-      <Filter>File di risorse\assets\materials</Filter>
+    <None Include="..\common\effects\translucent_texture_normal_specular.fxhc">
+      <Filter>File di risorse\common\effects</Filter>
     </None>
-    <None Include="..\assets\materials\cross_mat.mat">
-      <Filter>File di risorse\assets\materials</Filter>
+    <None Include="..\common\meshs\cone.smhc">
+      <Filter>File di risorse\common\meshs</Filter>
     </None>
-    <None Include="..\assets\materials\rocks_mat.mat">
-      <Filter>File di risorse\assets\materials</Filter>
+    <None Include="..\common\meshs\cone_DefaultMaterial.mat">
+      <Filter>File di risorse\common\meshs</Filter>
     </None>
-    <None Include="..\assets\materials\w_box_mat.mat">
-      <Filter>File di risorse\assets\materials</Filter>
+    <None Include="..\common\meshs\sphere.smhc">
+      <Filter>File di risorse\common\meshs</Filter>
     </None>
-    <None Include="..\assets\materials\window_mat.mat">
-      <Filter>File di risorse\assets\materials</Filter>
-    </None>
-    <None Include="..\source\core\cocoa_native_dialog.mm">
-      <Filter>File di origine\core</Filter>
+    <None Include="..\common\meshs\sphere_DefaultMaterial.mat">
+      <Filter>File di risorse\common\meshs</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="..\assets\textures\box.png">
-      <Filter>File di risorse\assets\textures</Filter>
-    </Image>
-    <Image Include="..\assets\textures\font.png">
-      <Filter>File di risorse\assets\textures</Filter>
-    </Image>
-    <Image Include="..\assets\textures\baril.png">
-      <Filter>File di risorse\assets\textures</Filter>
-    </Image>
-    <Image Include="..\assets\textures\baril_normal.png">
-      <Filter>File di risorse\assets\textures</Filter>
-    </Image>
-    <Image Include="..\assets\textures\baril_specular.jpg">
-      <Filter>File di risorse\assets\textures</Filter>
-    </Image>
-    <Image Include="..\assets\textures\baril_specular.png">
-      <Filter>File di risorse\assets\textures</Filter>
-    </Image>
-    <Image Include="..\assets\textures\box_normal.png">
-      <Filter>File di risorse\assets\textures</Filter>
-    </Image>
-    <Image Include="..\assets\textures\box_specular.png">
-      <Filter>File di risorse\assets\textures</Filter>
-    </Image>
-    <Image Include="..\assets\textures\box2.png">
-      <Filter>File di risorse\assets\textures</Filter>
-    </Image>
-    <Image Include="..\assets\textures\box2_normal.png">
-      <Filter>File di risorse\assets\textures</Filter>
-    </Image>
-    <Image Include="..\assets\textures\box2_specular.png">
-      <Filter>File di risorse\assets\textures</Filter>
-    </Image>
-    <Image Include="..\assets\textures\box2_specular_2.png">
-      <Filter>File di risorse\assets\textures</Filter>
-    </Image>
-    <Image Include="..\assets\textures\NormalMap.png">
-      <Filter>File di risorse\assets\textures</Filter>
-    </Image>
-    <Image Include="..\assets\ship\vehicle_playerShip_dff.png">
-      <Filter>File di risorse\assets\ship</Filter>
-    </Image>
-    <Image Include="..\assets\ship\vehicle_playerShip_nrm.png">
-      <Filter>File di risorse\assets\ship</Filter>
-    </Image>
-    <Image Include="..\assets\ship\vehicle_playerShip_spc.png">
-      <Filter>File di risorse\assets\ship</Filter>
-    </Image>
     <Image Include="..\common\textures\black.tga">
       <Filter>File di risorse\common\textures</Filter>
     </Image>

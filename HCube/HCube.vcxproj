@@ -243,21 +243,9 @@
     <ClCompile Include="..\source\utilities\basic_meshs.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\assets\materials\baril_mat.mat" />
-    <None Include="..\assets\materials\box2_grid_mat.mat" />
-    <None Include="..\assets\materials\box2_mat.mat" />
-    <None Include="..\assets\materials\box_mat.mat" />
-    <None Include="..\assets\materials\cross_mat.mat" />
-    <None Include="..\assets\materials\rocks_mat.mat" />
-    <None Include="..\assets\materials\window_mat.mat" />
-    <None Include="..\assets\materials\wire_mat.mat" />
-    <None Include="..\assets\materials\w_box_mat.mat" />
-    <None Include="..\assets\ship\ship.smhc" />
-    <None Include="..\assets\ship\vehicle_playerShip_glass_mat.mat" />
-    <None Include="..\assets\ship\vehicle_playerShip_metal_mat.mat" />
     <None Include="..\common\effects\base_texture_normal_specular.fxhc" />
     <None Include="..\common\effects\build_shadow.fxhc" />
-    <None Include="..\common\effects\debug_spot_lights.fxhc" />
+    <None Include="..\common\effects\debug_lights.fxhc" />
     <None Include="..\common\effects\no_cull_effect.fxhc" />
     <None Include="..\common\effects\shaders\base_texture_normal_specular.glsl" />
     <None Include="..\common\effects\shaders\deferred_ambient_light.glsl" />
@@ -277,25 +265,13 @@
     <None Include="..\common\effects\shaders\text.glsl" />
     <None Include="..\common\effects\translucent_no_cull_effect.fxhc" />
     <None Include="..\common\effects\translucent_texture_normal_specular.fxhc" />
+    <None Include="..\common\meshs\cone.smhc" />
+    <None Include="..\common\meshs\cone_DefaultMaterial.mat" />
+    <None Include="..\common\meshs\sphere.smhc" />
+    <None Include="..\common\meshs\sphere_DefaultMaterial.mat" />
     <None Include="..\source\core\cocoa_native_dialog.mm" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="..\assets\ship\vehicle_playerShip_dff.png" />
-    <Image Include="..\assets\ship\vehicle_playerShip_nrm.png" />
-    <Image Include="..\assets\ship\vehicle_playerShip_spc.png" />
-    <Image Include="..\assets\textures\baril.png" />
-    <Image Include="..\assets\textures\baril_normal.png" />
-    <Image Include="..\assets\textures\baril_specular.jpg" />
-    <Image Include="..\assets\textures\baril_specular.png" />
-    <Image Include="..\assets\textures\box.png" />
-    <Image Include="..\assets\textures\box2.png" />
-    <Image Include="..\assets\textures\box2_normal.png" />
-    <Image Include="..\assets\textures\box2_specular.png" />
-    <Image Include="..\assets\textures\box2_specular_2.png" />
-    <Image Include="..\assets\textures\box_normal.png" />
-    <Image Include="..\assets\textures\box_specular.png" />
-    <Image Include="..\assets\textures\font.png" />
-    <Image Include="..\assets\textures\NormalMap.png" />
     <Image Include="..\common\textures\black.tga" />
     <Image Include="..\common\textures\normal_up.tga" />
     <Image Include="..\common\textures\white.tga" />
