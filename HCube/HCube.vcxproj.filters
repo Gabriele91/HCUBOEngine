@@ -76,6 +76,9 @@
     <Filter Include="File di risorse\common\meshs">
       <UniqueIdentifier>{ccde4fc2-251f-419c-bdae-69c1313446d2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="File di intestazione\hcube\data\parser">
+      <UniqueIdentifier>{b11331ba-aab2-417f-9dc2-c77ddc5feba0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\hcube\geometries\frustum.h">
@@ -91,9 +94,6 @@
       <Filter>File di intestazione\hcube\geometries</Filter>
     </ClInclude>
     <ClInclude Include="..\include\hcube\data\align16_data.h">
-      <Filter>File di intestazione\hcube\data</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\hcube\data\json11.h">
       <Filter>File di intestazione\hcube\data</Filter>
     </ClInclude>
     <ClInclude Include="..\include\hcube\data\struct_attribute.h">
@@ -210,6 +210,21 @@
     <ClInclude Include="..\include\hcube\utilities\gameobject.h">
       <Filter>File di intestazione\hcube\utilities</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\hcube\data\json.h">
+      <Filter>File di intestazione\hcube\data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\hcube\data\property.h">
+      <Filter>File di intestazione\hcube\data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\hcube\data\parser\effect_parser.h">
+      <Filter>File di intestazione\hcube\data\parser</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\hcube\data\parser\utils_parser.h">
+      <Filter>File di intestazione\hcube\data\parser</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\hcube\data\parser\material_parser.h">
+      <Filter>File di intestazione\hcube\data\parser</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\render\effect.cpp">
@@ -292,9 +307,6 @@
     </ClCompile>
     <ClCompile Include="..\source\components\transform.cpp">
       <Filter>File di origine\components</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\data\json11.cpp">
-      <Filter>File di origine\data</Filter>
     </ClCompile>
     <ClCompile Include="..\source\data\stb_image.cpp">
       <Filter>File di origine\data</Filter>

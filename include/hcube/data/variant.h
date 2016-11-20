@@ -32,8 +32,6 @@ namespace hcube
 		VR_VEC2,
 		VR_VEC3,
 		VR_VEC4,
-		VR_MAT3,
-		VR_MAT4,
 		VR_QUAT,
 
 		VR_IVEC2,
@@ -43,208 +41,351 @@ namespace hcube
 		VR_DVEC2,
 		VR_DVEC3,
 		VR_DVEC4,
-		VR_DMAT3,
-		VR_DMAT4,
 		VR_DQUAT,
 
+		//HEAP
+		VR_MAT3,
+		VR_MAT4,
+
+		VR_DMAT3,
+		VR_DMAT4,
+
+		VR_STD_VECTOR_INT,
+		VR_STD_VECTOR_FLOAT,
+		VR_STD_VECTOR_VEC2,
+		VR_STD_VECTOR_VEC3,
+		VR_STD_VECTOR_VEC4,
+
+		VR_C_STRING,
+		VR_STD_STRING,
+		VR_STD_VECTOR_STRING,
+
+		//PTR
 		VR_PTR
 	};
+	
 	class HCUBE_API variant
 	{
 	public:
+		
+		variant(variant_type type)
+		{
+			set_type(type);
+		}
 
 		variant()
 		{
-			m_type = VR_NONE;
+			set_type(VR_NONE);
 		}
 
+		variant(const variant& in)
+		{
+			copy_from(in);
+		}
+
+		~variant()
+		{
+			set_type(VR_NONE);
+		}
+		
 		variant(char c)
 		{
+			set_type(VR_CHAR);
 			m_c = c;
-			m_type = VR_CHAR;
 		}
 
 		variant(short s)
 		{
+			set_type(VR_SHORT);
 			m_s = s;
-			m_type = VR_SHORT;
 		}
 
 		variant(int i)
 		{
+			set_type(VR_INT);
 			m_i = i;
-			m_type = VR_INT;
 		}
 
 		variant(long l)
 		{
+			set_type(VR_LONG);
 			m_l = l;
-			m_type = VR_LONG;
 		}
 
 		variant(long long l)
 		{
+			set_type(VR_LONGLONG);
 			m_ll = l;
-			m_type = VR_LONGLONG;
 		}
 
 		variant(unsigned char uc)
 		{
+			set_type(VR_UCHAR);
 			m_uc = uc;
-			m_type = VR_UCHAR;
 		}
 
 		variant(unsigned short us)
 		{
+			set_type(VR_USHORT);
 			m_us = us;
-			m_type = VR_USHORT;
 		}
 
 		variant(unsigned int ui)
 		{
+			set_type(VR_UINT);
 			m_ui = ui;
-			m_type = VR_UINT;
 		}
 
 		variant(unsigned long ul)
 		{
+			set_type(VR_ULONG);
 			m_ul = ul;
-			m_type = VR_ULONG;
 		}
 
 		variant(unsigned long long ull)
 		{
-			m_ull  = ull;
-			m_type = VR_ULONGLONG;
+			set_type(VR_ULONGLONG);
+			m_ull = ull;
 		}
 
 		variant(float f)
 		{
+			set_type(VR_FLOAT);
 			m_f = f;
-			m_type = VR_FLOAT;
 		}
 
 		variant(double d)
 		{
+			set_type(VR_DOUBLE);
 			m_d    = d;
-			m_type = VR_DOUBLE;
 		}
 
 		variant(const ivec2& iv2)
 		{
+			set_type(VR_IVEC2);
 			m_iv2 = iv2;
-			m_type = VR_IVEC2;
 		}
 
 		variant(const ivec3& v3)
 		{
+			set_type(VR_IVEC3);
 			m_v3 = v3;
-			m_type = VR_IVEC3;
 		}
 
 		variant(const ivec4& iv4)
 		{
+			set_type(VR_IVEC4);
 			m_iv4 = iv4;
-			m_type = VR_IVEC4;
 		}
 
 		variant(const vec2& v2)
 		{
+			set_type(VR_VEC2);
 			m_v2 = v2;
-			m_type = VR_VEC2;
 		}
 
 		variant(const vec3& v3)
 		{
+			set_type(VR_VEC3);
 			m_v3 = v3;
-			m_type = VR_VEC3;
 		}
 
 		variant(const vec4& v4)
 		{
+			set_type(VR_VEC4);
 			m_v4 = v4;
-			m_type = VR_VEC4;
 		}
 
 		variant(const mat3& m3)
 		{
-			m_m3 = m3;
-			m_type = VR_MAT3;
+			set_type(VR_MAT3);
+			*((mat3*)(m_ptr)) = m3;
 		}
 
 		variant(const mat4& m4)
 		{
-			m_m4 = m4;
-			m_type = VR_MAT4;
+			set_type(VR_MAT4);
+			*((mat4*)(m_ptr)) = m4;
 		}
 
 		variant(const quat& quat)
 		{
+			set_type(VR_QUAT);
 			m_dq = quat;
-			m_type = VR_QUAT;
 		}
 		
 		variant(const dvec2& dv2)
 		{
+			set_type(VR_DVEC2);
 			m_dv2 = dv2;
-			m_type = VR_DVEC2;
 		}
 
 		variant(const dvec3& dv3)
 		{
+			set_type(VR_DVEC3);
 			m_dv3 = dv3;
-			m_type = VR_DVEC3;
 		}
 
 		variant(const dvec4& dv4)
 		{
+			set_type(VR_DVEC4);
 			m_dv4 = dv4;
-			m_type = VR_DVEC4;
 		}
 
 		variant(const dmat3& dm3)
 		{
-			m_dm3 = dm3;
-			m_type = VR_DMAT3;
+			set_type(VR_DMAT3);
+			*((dmat3*)(m_ptr)) = dm3;
 		}
 
 		variant(const dmat4& dm4)
 		{
-			m_dm4 = dm4;
-			m_type = VR_DMAT4;
+			set_type(VR_DMAT4);
+			*((dmat4*)(m_ptr)) = dm4;
 		}
 
 		variant(const dquat& dquat)
 		{
+			set_type(VR_DQUAT);
 			m_dq = dquat;
-			m_type = VR_DQUAT;
+		}
+
+		variant(const std::vector< int > & v_i)
+		{
+			set_type(VR_STD_VECTOR_INT);
+			*((std::vector< int >*)(m_ptr)) = v_i;
+		}
+
+		variant(const std::vector< float > & v_f)
+		{
+			set_type(VR_STD_VECTOR_FLOAT);
+			*((std::vector< float >*)(m_ptr)) = v_f;
+		}
+
+		variant(const std::vector< vec2 > & v_v2)
+		{
+			set_type(VR_STD_VECTOR_VEC2);
+			*((std::vector< vec2 >*)(m_ptr)) = v_v2;
+		}
+
+		variant(const std::vector< vec3 > & v_v3)
+		{
+			set_type(VR_STD_VECTOR_VEC3);
+			*((std::vector< vec3 >*)(m_ptr)) = v_v3;
+		}
+
+		variant(const std::vector< vec4 > & v_v4)
+		{
+			set_type(VR_STD_VECTOR_VEC4);
+			*((std::vector< vec4 >*)(m_ptr)) = v_v4;
+		}
+
+		variant(const std::string& str)
+		{
+			set_type(VR_STD_STRING);
+			*((std::string*)(m_ptr)) = str;
+		}
+
+		variant(const char* c_str)
+		{
+			set_type(VR_C_STRING);
+			*((std::string*)(m_ptr)) = c_str;
+		}
+
+		variant(const std::vector< std::string > & v_str)
+		{
+			set_type(VR_STD_STRING);
+			*((std::vector< std::string >*)(m_ptr)) = v_str;
 		}
 
 		variant(void* ptr)
 		{
+			set_type(VR_PTR);
 			m_ptr = ptr;
-			m_type = VR_PTR;
 		}
 
+		//cast objects
 		template < class T >
-		T& get()
-		{
-			return *((T*)&m_ptr);
-		}
-
+		T& get() { return *((T*)&m_ptr); }
 		template < class T >
-		explicit  operator const T& () const
-		{
-			return *((T*)&m_ptr);
-		}
+		explicit  operator const T& () const { return *((T*)&m_ptr); }
 
+		//type
 		variant_type get_type() const
 		{
 			return m_type;
 		}
 
+		//bool
+		bool is_heap_value() const
+		{
+			switch (m_type)
+			{
+				case VR_MAT3:			  
+				case VR_MAT4:			   
+				case VR_DMAT3:			   
+				case VR_DMAT4:			   
+				case VR_C_STRING:          
+				case VR_STD_STRING:        
+				case VR_STD_VECTOR_STRING: return true; break;
+				default: return false; break;
+			}
+		}
+
+		//get reference pointer
+		void* get_ref() const
+		{
+			if(is_heap_value()) return m_ptr;
+			else				return (void*)&m_c;
+		}
+
+		//copy from other variant
+		void copy_from(const variant& in)
+		{
+			//alloc
+			set_type(in.get_type());
+			//copy
+			switch (m_type)
+			{
+			//copy from heap
+			case VR_MAT3:			   get<mat3>() = (const mat3&)in; break;
+			case VR_MAT4:			   get<mat4>() = (const mat4&)in; break;
+			case VR_DMAT3:			   get<dmat3>() = (const dmat3&)in; break;
+			case VR_DMAT4:			   get<dmat4>() = (const dmat4&)in; break;
+
+			case VR_STD_VECTOR_INT:
+				get< std::vector<int> >() = (const std::vector<int>&)in;
+			break;
+			case VR_STD_VECTOR_FLOAT:
+				get< std::vector<float> >() = (const std::vector<float>&)in;
+			break;
+			case VR_STD_VECTOR_VEC2:
+				get< std::vector<vec2> >() = (const std::vector<vec2>&)in;
+			break;
+			case VR_STD_VECTOR_VEC3:
+				get< std::vector<vec3> >() = (const std::vector<vec3>&)in;
+			break;
+			case VR_STD_VECTOR_VEC4:
+				get< std::vector<vec4> >() = (const std::vector<vec4>&)in;
+			break;
+
+			case VR_C_STRING:
+			case VR_STD_STRING:
+				get<std::string>() = (const std::string&)in;
+			break;
+			case VR_STD_VECTOR_STRING:
+				get< std::vector<std::string> >() = (const std::vector<std::string>&)in;
+			break;
+			//copy stack
+			default:
+				std::memcpy(this, &in, sizeof(variant));
+			break;
+			}
+		}
+
 	private: 
 
+		//native type
 		union alignas(16)
 		{
 			char       m_c;
@@ -269,20 +410,322 @@ namespace hcube
 			vec2 m_v2;
 			vec3 m_v3;
 			vec4 m_v4;
-			mat3 m_m3;
-			mat4 m_m4;
 			quat m_q;
 
 			dvec2 m_dv2;
 			dvec3 m_dv3;
 			dvec4 m_dv4;
-			dmat3 m_dm3;
-			dmat4 m_dm4;
 			dquat m_dq;
 
 			void* m_ptr;
 		};
-
+		//save type
 		variant_type m_type;
+		//set type
+		void set_type(variant_type type)
+		{
+			//alloc
+			switch (m_type)
+			{
+			case VR_MAT3:			   delete (mat3*)(m_ptr);  break;
+			case VR_MAT4:			   delete (mat4*)(m_ptr);  break;
+			case VR_DMAT3:			   delete (dmat4*)(m_ptr); break;
+			case VR_DMAT4:			   delete (dmat4*)(m_ptr); break;
+
+			case VR_STD_VECTOR_INT:    delete (std::vector<int>*)m_ptr;    break;
+			case VR_STD_VECTOR_FLOAT:  delete (std::vector<float>*)m_ptr;  break;
+			case VR_STD_VECTOR_VEC2:   delete (std::vector<vec2>*)m_ptr;   break;
+			case VR_STD_VECTOR_VEC3:   delete (std::vector<vec3>*)m_ptr;   break;
+			case VR_STD_VECTOR_VEC4:   delete (std::vector<vec4>*)m_ptr;   break;
+
+			case VR_C_STRING:          delete (std::string*)m_ptr;			     break;
+			case VR_STD_STRING:        delete (std::string*)m_ptr;			     break;
+			case VR_STD_VECTOR_STRING: delete (std::vector<std::string>*)m_ptr;  break;
+			default: break;
+			}
+			//change type
+			m_type = type;
+			//dealloc
+			switch (m_type)
+			{
+			case VR_MAT3:			   m_ptr = new mat3; break;
+			case VR_MAT4:			   m_ptr = new mat4; break;
+			case VR_DMAT3:			   m_ptr = new dmat3; break;
+			case VR_DMAT4:			   m_ptr = new dmat4; break;
+
+			case VR_STD_VECTOR_INT:    m_ptr = new std::vector<int>;	break;
+			case VR_STD_VECTOR_FLOAT:  m_ptr = new std::vector<float>;	break;
+			case VR_STD_VECTOR_VEC2:   m_ptr = new std::vector<vec2>;   break;
+			case VR_STD_VECTOR_VEC3:   m_ptr = new std::vector<vec3>;	break;
+			case VR_STD_VECTOR_VEC4:   m_ptr = new std::vector<vec4>;	break;
+
+			case VR_C_STRING:          m_ptr = new std::string;				 break;
+			case VR_STD_STRING:        m_ptr = new std::string;				 break;
+			case VR_STD_VECTOR_STRING: m_ptr = new std::vector<std::string>; break;
+			default: break;
+			}
+		}
 	};
+
+	class HCUBE_API variant_ref
+	{
+	public:
+
+		variant_ref()
+		{
+			m_type = VR_NONE;
+		}
+
+		variant_ref(variant& var)
+		{
+			m_ptr = (void*)var.get_ref();
+			m_type = var.get_type();
+		}
+
+		variant_ref(char& c)
+		{
+			m_ptr  = (void*)&c;
+			m_type = VR_CHAR;
+		}
+
+		variant_ref(short& s)
+		{
+			m_ptr  = (void*)&s;
+			m_type = VR_SHORT;
+		}
+
+		variant_ref(int& i)
+		{
+			m_ptr = (void*)&i;
+			m_type = VR_INT;
+		}
+
+		variant_ref(long& l)
+		{
+			m_ptr = (void*)&l;
+			m_type = VR_LONG;
+		}
+
+		variant_ref(long long& l)
+		{
+			m_ptr = (void*)&l;
+			m_type = VR_LONGLONG;
+		}
+
+		variant_ref(unsigned char& uc)
+		{
+			m_ptr = (void*)&uc;
+			m_type = VR_UCHAR;
+		}
+
+		variant_ref(unsigned short& us)
+		{
+			m_ptr = (void*)&us;
+			m_type = VR_USHORT;
+		}
+
+		variant_ref(unsigned int& ui)
+		{
+			m_ptr = (void*)&ui;
+			m_type = VR_UINT;
+		}
+
+		variant_ref(unsigned long& ul)
+		{
+			m_ptr = (void*)&ul;
+			m_type = VR_ULONG;
+		}
+
+		variant_ref(unsigned long long& ull)
+		{
+			m_ptr = (void*)&ull;
+			m_type = VR_ULONGLONG;
+		}
+
+		variant_ref(float& f)
+		{
+			m_ptr = (void*)&f;
+			m_type = VR_FLOAT;
+		}
+
+		variant_ref(double& d)
+		{
+			m_ptr = (void*)&d;
+			m_type = VR_DOUBLE;
+		}
+
+		variant_ref(ivec2& iv2)
+		{
+			m_ptr = (void*)&iv2;
+			m_type = VR_IVEC2;
+		}
+
+		variant_ref(ivec3& v3)
+		{
+			m_ptr = (void*)&v3;
+			m_type = VR_IVEC3;
+		}
+
+		variant_ref(ivec4& iv4)
+		{
+			m_ptr = (void*)&iv4;
+			m_type = VR_IVEC4;
+		}
+
+		variant_ref(vec2& v2)
+		{
+			m_ptr = (void*)&v2;
+			m_type = VR_VEC2;
+		}
+
+		variant_ref(vec3& v3)
+		{
+			m_ptr = (void*)&v3;
+			m_type = VR_VEC3;
+		}
+
+		variant_ref(vec4& v4)
+		{
+			m_ptr = (void*)&v4;
+			m_type = VR_VEC4;
+		}
+
+		variant_ref(mat3& m3)
+		{
+			m_ptr = (void*)&m3;
+			m_type = VR_MAT3;
+		}
+
+		variant_ref(mat4& m4)
+		{
+			m_ptr = (void*)&m4;
+			m_type = VR_MAT4;
+		}
+
+		variant_ref(quat& quat)
+		{
+			m_ptr = (void*)&quat;
+			m_type = VR_QUAT;
+		}
+
+		variant_ref(dvec2& dv2)
+		{
+			m_ptr = (void*)&dv2;
+			m_type = VR_DVEC2;
+		}
+
+		variant_ref(dvec3& dv3)
+		{
+			m_ptr = (void*)&dv3;
+			m_type = VR_DVEC3;
+		}
+
+		variant_ref(dvec4& dv4)
+		{
+			m_ptr = (void*)&dv4;
+			m_type = VR_DVEC4;
+		}
+
+		variant_ref(dmat3& dm3)
+		{
+			m_ptr = (void*)&dm3;
+			m_type = VR_DMAT3;
+		}
+
+		variant_ref(dmat4& dm4)
+		{
+			m_ptr = (void*)&dm4;
+			m_type = VR_DMAT4;
+		}
+
+		variant_ref(dquat& dquat)
+		{
+			m_ptr = (void*)&dquat;
+			m_type = VR_DQUAT;
+		}
+
+		variant_ref(std::vector< int > & v_i)
+		{
+			m_ptr = (void*)&v_i;
+			m_type = VR_STD_VECTOR_INT;
+		}
+
+		variant_ref(std::vector< float > & v_f)
+		{
+			m_ptr = (void*)&v_f;
+			m_type = VR_STD_VECTOR_FLOAT;
+		}
+
+		variant_ref(std::vector< vec2 > & v_v2)
+		{
+			m_ptr = (void*)&v_v2;
+			m_type = VR_STD_VECTOR_VEC2;
+		}
+
+		variant_ref(std::vector< vec3 > & v_v3)
+		{
+			m_ptr = (void*)&v_v3;
+			m_type = VR_STD_VECTOR_VEC3;
+		}
+
+		variant_ref(std::vector< vec4 > & v_v4)
+		{
+			m_ptr = (void*)&v_v4;
+			m_type = VR_STD_VECTOR_VEC4;
+		}
+		
+		variant_ref(const char*& c_str)
+		{
+			m_ptr = (void*)&c_str;
+			m_type = VR_C_STRING;
+		}
+
+		variant_ref(std::string& str)
+		{
+			m_ptr = (void*)&str;
+			m_type = VR_STD_STRING;
+		}
+
+		variant_ref(std::vector< std::string >& v_str)
+		{
+			m_ptr = (void*)&v_str;
+			m_type = VR_STD_VECTOR_STRING;
+		}
+
+		variant_ref(void*& ptr)
+		{
+			m_ptr = (void*)&ptr;
+			m_type = VR_PTR;
+		}
+
+		template < class T >
+		T& get()
+		{
+			return *((T*)m_ptr);
+		}
+
+
+		template < class T >
+		explicit  operator const T& () const
+		{
+			return *((T*)m_ptr);
+		}
+
+		variant_type get_type() const
+		{
+			return m_type;
+		}
+
+		void* get_ref() const
+		{
+			return m_ptr;
+		}
+
+	private:
+
+		void*		 m_ptr;
+		variant_type m_type;
+
+	};
+
 }

@@ -179,7 +179,11 @@
     <ClInclude Include="..\include\hcube\core\smart_pointers.h" />
     <ClInclude Include="..\include\hcube\core\system_manager.h" />
     <ClInclude Include="..\include\hcube\data\align16_data.h" />
-    <ClInclude Include="..\include\hcube\data\json11.h" />
+    <ClInclude Include="..\include\hcube\data\json.h" />
+    <ClInclude Include="..\include\hcube\data\parser\effect_parser.h" />
+    <ClInclude Include="..\include\hcube\data\parser\material_parser.h" />
+    <ClInclude Include="..\include\hcube\data\parser\utils_parser.h" />
+    <ClInclude Include="..\include\hcube\data\property.h" />
     <ClInclude Include="..\include\hcube\data\struct_attribute.h" />
     <ClInclude Include="..\include\hcube\data\variant.h" />
     <ClInclude Include="..\include\hcube\geometries\frustum.h" />
@@ -220,7 +224,6 @@
     <ClCompile Include="..\source\core\resources_manager.cpp" />
     <ClCompile Include="..\source\core\system_manager.cpp" />
     <ClCompile Include="..\source\core\window_native_dialog.cpp" />
-    <ClCompile Include="..\source\data\json11.cpp" />
     <ClCompile Include="..\source\data\stb_image.cpp" />
     <ClCompile Include="..\source\data\tga.cpp" />
     <ClCompile Include="..\source\geometries\frustum.cpp" />
