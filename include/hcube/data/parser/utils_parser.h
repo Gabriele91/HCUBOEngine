@@ -311,6 +311,59 @@ namespace parser
 			}
 			return false;
 		}
+
+		//////////////////////////////////////////////////////
+		static inline int is_a_complex_variant_type(variant_type type)
+		{
+			switch (type)
+			{
+			case hcube::VR_CHAR:
+			case hcube::VR_SHORT:
+			case hcube::VR_INT:
+			case hcube::VR_LONG:
+			case hcube::VR_LONGLONG:
+			case hcube::VR_UCHAR:
+			case hcube::VR_USHORT:
+			case hcube::VR_UINT:
+			case hcube::VR_ULONG:
+			case hcube::VR_ULONGLONG:
+			case hcube::VR_FLOAT:
+			case hcube::VR_DOUBLE:
+			case hcube::VR_C_STRING:
+			case hcube::VR_STD_STRING:
+				return 0;
+			break;
+			case hcube::VR_VEC2:
+			case hcube::VR_VEC3:
+			case hcube::VR_VEC4:
+			case hcube::VR_QUAT:
+			case hcube::VR_IVEC2:
+			case hcube::VR_IVEC3:
+			case hcube::VR_IVEC4:
+			case hcube::VR_DVEC2:
+			case hcube::VR_DVEC3:
+			case hcube::VR_DVEC4:
+			case hcube::VR_DQUAT:
+			case hcube::VR_MAT3:
+			case hcube::VR_MAT4:
+			case hcube::VR_DMAT3:
+			case hcube::VR_DMAT4:
+				return 1;
+			break;
+			case hcube::VR_NONE:
+			case hcube::VR_PTR:
+			case hcube::VR_STD_VECTOR_INT:
+			case hcube::VR_STD_VECTOR_FLOAT:
+			case hcube::VR_STD_VECTOR_VEC2:
+			case hcube::VR_STD_VECTOR_VEC3:
+			case hcube::VR_STD_VECTOR_VEC4:
+			case hcube::VR_STD_VECTOR_STRING:
+			default:
+				return -1; 
+			break;
+			}
+		}
+
 		//////////////////////////////////////////////////////
 		template < typename T >
 		static bool parse_type(size_t& line, const char*& inout, T& out)
@@ -469,10 +522,45 @@ namespace parser
 		}
 
 		template < typename T = std::vector<int> >
-		static bool parse_vector(size_t& line, const char* ptr, T& field)
+		static bool parse_vector(size_t& line, const char*& ptr, T& field)
 		{
-			//todo
-			return false;
+			do
+			{
+				//alloc
+				T::value_type value;
+				//type of types
+				int is_complex = is_a_complex_variant_type(static_variant_type<T::value_type>());
+				//wrong type?
+				if (is_complex == -1) return false;
+				//type
+				if(is_complex)
+				{
+					//skeep spaces
+					skeep_space_end_comment(line, ptr);
+					//'{'
+					if (!is_start_table(*ptr)) break; else ++ptr;
+					//skeep spaces
+					skeep_space_end_comment(line, ptr);
+					//parse
+					if (parse_type< T::value_type >(line, ptr, value)) field.push_back(value); else return false;
+					//skeep spaces
+					skeep_space_end_comment(line, ptr);
+					//'}'
+					if (!is_end_table(*ptr)) return false; else ++ptr;
+				}
+				else
+				{
+					//skeep spaces
+					skeep_space_end_comment(line, ptr);
+					//parse
+					if (parse_type< T::value_type >(line, ptr, value)) field.push_back(value);
+					//skeep spaces
+					skeep_space_end_comment(line, ptr);
+				}
+			} 
+			while (!is_comm_arg(*ptr));
+			//ok
+			return true;
 		}
 		//////////////////////////////////////////////////////
 		// VARIANT UTILS
@@ -863,6 +951,38 @@ namespace parser
 	{
 		return parse_mat4(line, inout, out);
 	}
+	///////////////////////////////////////////////////////////////////////////////////////////////////////
+	template <>
+	inline bool utils_parser::parse_type(size_t& line, const char*& inout, std::vector< int >& out)
+	{
+		return parse_vector(line, inout, out);
+	}
+	template <>
+	inline bool utils_parser::parse_type(size_t& line, const char*& inout, std::vector< float >& out)
+	{
+		return parse_vector(line, inout, out);
+	}
+	template <>
+	inline bool utils_parser::parse_type(size_t& line, const char*& inout, std::vector< vec2 >& out)
+	{
+		return parse_vector(line, inout, out);
+	}
+	template <>
+	inline bool utils_parser::parse_type(size_t& line, const char*& inout, std::vector< vec3 >& out)
+	{
+		return parse_vector(line, inout, out);
+	}
+	template <>
+	inline bool utils_parser::parse_type(size_t& line, const char*& inout, std::vector< vec4 >& out)
+	{
+		return parse_vector(line, inout, out);
+	}
+	template <>
+	inline bool utils_parser::parse_type(size_t& line, const char*& inout, std::vector< std::string >& out)
+	{
+		return parse_vector(line, inout, out);
+	}
+	///////////////////////////////////////////////////////////////////////////////////////////////////////
 
 }
 }

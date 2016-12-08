@@ -63,7 +63,55 @@ namespace hcube
 		//PTR
 		VR_PTR
 	};
-	
+
+	//get type
+	template < class T > inline variant_type static_variant_type() { return VR_NONE; };
+	//template specialization 
+	template <> inline variant_type static_variant_type<char>() { return VR_CHAR; };
+	template <> inline variant_type static_variant_type<short>() { return VR_SHORT; };
+	template <> inline variant_type static_variant_type<int>() { return VR_INT; };
+	template <> inline variant_type static_variant_type<long>() { return VR_LONG; };
+	template <> inline variant_type static_variant_type<long long>() { return VR_LONGLONG; };
+
+	template <> inline variant_type static_variant_type<unsigned char>() { return VR_UCHAR; };
+	template <> inline variant_type static_variant_type<unsigned short>() { return VR_USHORT; };
+	template <> inline variant_type static_variant_type<unsigned int>() { return VR_UINT; };
+	template <> inline variant_type static_variant_type<unsigned long>() { return VR_ULONG; };
+	template <> inline variant_type static_variant_type<unsigned long long>() { return VR_ULONGLONG; };
+
+	template <> inline variant_type static_variant_type<float>() { return VR_FLOAT; };
+	template <> inline variant_type static_variant_type<double>() { return VR_DOUBLE; };
+
+	template <> inline variant_type static_variant_type<ivec2>() { return VR_IVEC2; };
+	template <> inline variant_type static_variant_type<ivec3>() { return VR_IVEC3; };
+	template <> inline variant_type static_variant_type<ivec4>() { return VR_IVEC4; };
+
+	template <> inline variant_type static_variant_type<vec2>() { return VR_VEC2; };
+	template <> inline variant_type static_variant_type<vec3>() { return VR_VEC3; };
+	template <> inline variant_type static_variant_type<vec4>() { return VR_VEC4; };
+	template <> inline variant_type static_variant_type<quat>() { return VR_QUAT; };
+	template <> inline variant_type static_variant_type<mat3>() { return VR_MAT3; };
+	template <> inline variant_type static_variant_type<mat4>() { return VR_MAT4; };
+
+	template <> inline variant_type static_variant_type<dvec2>() { return VR_DVEC2; };
+	template <> inline variant_type static_variant_type<dvec3>() { return VR_DVEC3; };
+	template <> inline variant_type static_variant_type<dvec4>() { return VR_DVEC4; };
+	template <> inline variant_type static_variant_type<dquat>() { return VR_DQUAT; };
+	template <> inline variant_type static_variant_type<dmat3>() { return VR_DMAT3; };
+	template <> inline variant_type static_variant_type<dmat4>() { return VR_DMAT4; };
+
+	template <> inline variant_type static_variant_type< std::vector< int > >()   { return VR_STD_VECTOR_INT; };
+	template <> inline variant_type static_variant_type< std::vector< float > >() { return VR_STD_VECTOR_FLOAT; };
+	template <> inline variant_type static_variant_type< std::vector< vec2 > >()  { return VR_STD_VECTOR_VEC2; };
+	template <> inline variant_type static_variant_type< std::vector< vec3 > >()  { return VR_STD_VECTOR_VEC3; };
+	template <> inline variant_type static_variant_type< std::vector< vec4 > >()  { return VR_STD_VECTOR_VEC4; }
+
+	template <> inline variant_type static_variant_type<const char*>() { return VR_C_STRING; };
+	template <> inline variant_type static_variant_type<std::string>() { return VR_STD_STRING; };
+	template <> inline variant_type static_variant_type< std::vector< std::string > >() { return VR_STD_VECTOR_STRING; };
+
+	template <> inline variant_type static_variant_type<void*>() { return VR_PTR; };
+
 	class HCUBE_API variant
 	{
 	public:
