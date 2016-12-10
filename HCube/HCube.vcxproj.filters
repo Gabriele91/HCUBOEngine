@@ -225,6 +225,9 @@
     <ClInclude Include="..\include\hcube\data\parser\material_parser.h">
       <Filter>File di intestazione\hcube\data\parser</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\hcube\data\parser\properties_parser.h">
+      <Filter>File di intestazione\hcube\data\parser</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\render\effect.cpp">

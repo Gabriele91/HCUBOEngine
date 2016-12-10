@@ -182,6 +182,7 @@
     <ClInclude Include="..\include\hcube\data\json.h" />
     <ClInclude Include="..\include\hcube\data\parser\effect_parser.h" />
     <ClInclude Include="..\include\hcube\data\parser\material_parser.h" />
+    <ClInclude Include="..\include\hcube\data\parser\properties_parser.h" />
     <ClInclude Include="..\include\hcube\data\parser\utils_parser.h" />
     <ClInclude Include="..\include\hcube\data\property.h" />
     <ClInclude Include="..\include\hcube\data\struct_attribute.h" />

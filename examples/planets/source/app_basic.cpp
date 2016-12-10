@@ -19,19 +19,9 @@
 #include <hcube/utilities/basic_meshs.h>
 #include <hcube/data/property.h>
 #include <tuple>
-#include <hcube/data/parser/utils_parser.h>
+#include <hcube/data/parser/properties_parser.h>
 #include <app_basic.h>
 
-
-const char str_obj_mario[] =
-"name string(\"Mario\")\n "
-"age int(18)           \n"
-"life float(10.5)      \n"
-"nikenames string[]    \n"
-"{                     \n"
-"    \"Dr. Mario\",    \n"
-"    \"Super Mario\"   \n"
-"}";
 
 namespace hcube
 {
@@ -44,7 +34,7 @@ namespace hcube
 		int					     m_age;
 		std::vector<std::string> m_nikenames;
 		//wat?
-		void set_name(std::string& s)
+		void set_name(const std::string& s)
 		{
 			m_name = s;
 		}
@@ -227,7 +217,16 @@ namespace hcube
 		}
 		//parser test
 		Player in_mario;
-		parser_properties<Player>(str_obj_mario, in_mario);
+		parser::properties_parser(
+		"name string(\"Mario\")\n "
+		"age int(18)           \n"
+		"life float(10.5)      \n"
+		"nikenames string[]    \n"
+		"{                     \n"
+		"    \"Dr. Mario\",    \n"
+		"    \"Super Mario\"   \n"
+		"}", 
+		in_mario);
 	}
 
 	bool app_basic::run(application& app, double delta_time)
