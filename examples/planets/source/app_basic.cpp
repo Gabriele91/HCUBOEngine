@@ -17,12 +17,54 @@
 #include <hcube/components/renderable.h>
 #include <hcube/utilities/gameobject.h>
 #include <hcube/utilities/basic_meshs.h>
-
+#include <hcube/data/property.h>
+#include <tuple>
+#include <hcube/data/parser/utils_parser.h>
 #include <app_basic.h>
 
 
+const char str_obj_mario[] =
+"name string(\"Mario\")\n "
+"age int(18)           \n"
+"life float(10.5)      \n"
+"nikenames string[]    \n"
+"{                     \n"
+"    \"Dr. Mario\",    \n"
+"    \"Super Mario\"   \n"
+"}";
+
 namespace hcube
 {
+	class Player
+	{
+	public:
+		//values
+		float					 m_life;
+		std::string				 m_name;
+		int					     m_age;
+		std::vector<std::string> m_nikenames;
+		//wat?
+		void set_name(std::string& s)
+		{
+			m_name = s;
+		}
+		std::string& get_name()
+		{
+			return m_name;
+		}
+		//return
+		static std::vector< property* > properties()
+		{
+			return
+			{
+				make_property_member(&Player::m_life, "life"),
+				make_property_get_set(&Player::get_name, &Player::set_name, "name"),
+				make_property_member(&Player::m_age, "age"),
+				make_property_member(&Player::m_nikenames, "nikenames"),
+			};
+		}
+	};
+
 	enum 
 	{
 		SW_LOW,
@@ -183,6 +225,9 @@ namespace hcube
 			//set camera
 			m_systems.add_entity(m_camera);
 		}
+		//parser test
+		Player in_mario;
+		parser_properties<Player>(str_obj_mario, in_mario);
 	}
 
 	bool app_basic::run(application& app, double delta_time)
