@@ -313,7 +313,7 @@ namespace parser
 		}
 
 		//////////////////////////////////////////////////////
-		static inline int is_a_complex_variant_type(variant_type type)
+		static inline int  is_a_complex_variant_type(variant_type type)
 		{
 			switch (type)
 			{
@@ -332,7 +332,7 @@ namespace parser
 			case hcube::VR_C_STRING:
 			case hcube::VR_STD_STRING:
 				return 0;
-			break;
+				break;
 			case hcube::VR_VEC2:
 			case hcube::VR_VEC3:
 			case hcube::VR_VEC4:
@@ -349,7 +349,7 @@ namespace parser
 			case hcube::VR_DMAT3:
 			case hcube::VR_DMAT4:
 				return 1;
-			break;
+				break;
 			case hcube::VR_NONE:
 			case hcube::VR_PTR:
 			case hcube::VR_STD_VECTOR_INT:
@@ -359,11 +359,66 @@ namespace parser
 			case hcube::VR_STD_VECTOR_VEC4:
 			case hcube::VR_STD_VECTOR_STRING:
 			default:
-				return -1; 
-			break;
+				return -1;
+				break;
 			}
 		}
-
+		static inline bool is_a_value_variant_type(variant_type type)
+		{
+			switch (type)
+			{
+			case hcube::VR_NONE:
+			case hcube::VR_PTR:
+			case hcube::VR_CHAR:
+			case hcube::VR_SHORT:
+			case hcube::VR_INT:
+			case hcube::VR_LONG:
+			case hcube::VR_LONGLONG:
+			case hcube::VR_UCHAR:
+			case hcube::VR_USHORT:
+			case hcube::VR_UINT:
+			case hcube::VR_ULONG:
+			case hcube::VR_ULONGLONG:
+			case hcube::VR_FLOAT:
+			case hcube::VR_DOUBLE:
+			case hcube::VR_C_STRING:
+			case hcube::VR_STD_STRING:
+			case hcube::VR_VEC2:
+			case hcube::VR_VEC3:
+			case hcube::VR_VEC4:
+			case hcube::VR_QUAT:
+			case hcube::VR_IVEC2:
+			case hcube::VR_IVEC3:
+			case hcube::VR_IVEC4:
+			case hcube::VR_DVEC2:
+			case hcube::VR_DVEC3:
+			case hcube::VR_DVEC4:
+			case hcube::VR_DQUAT:
+			case hcube::VR_MAT3:
+			case hcube::VR_MAT4:
+			case hcube::VR_DMAT3:
+			case hcube::VR_DMAT4:
+			return true;
+			//else
+			default: return false;
+			}
+		}
+		static inline bool is_a_vector_variant_type(variant_type type)
+		{
+			switch (type)
+			{
+			//vector types
+			case hcube::VR_STD_VECTOR_INT:
+			case hcube::VR_STD_VECTOR_FLOAT:
+			case hcube::VR_STD_VECTOR_VEC2:
+			case hcube::VR_STD_VECTOR_VEC3:
+			case hcube::VR_STD_VECTOR_VEC4:
+			case hcube::VR_STD_VECTOR_STRING:
+			return true;
+			//else
+			default: return false;
+			}
+		}
 		//////////////////////////////////////////////////////
 		template < typename T >
 		static bool parse_type(size_t& line, const char*& inout, T& out)
@@ -442,19 +497,19 @@ namespace parser
 
 			if (!parse_type<T::value_type>(line, ptr, field.y)) return false;
 
-			skeep_space_end_comment(line, ptr);
-			if (!is_comm_arg(*ptr)) return false; else ++ptr;
-			skeep_space_end_comment(line, ptr);
+skeep_space_end_comment(line, ptr);
+if (!is_comm_arg(*ptr)) return false; else ++ptr;
+skeep_space_end_comment(line, ptr);
 
-			if (!parse_type<T::value_type>(line, ptr, field.z)) return false;
+if (!parse_type<T::value_type>(line, ptr, field.z)) return false;
 
-			skeep_space_end_comment(line, ptr);
-			if (!is_comm_arg(*ptr)) return false; else ++ptr;
-			skeep_space_end_comment(line, ptr);
+skeep_space_end_comment(line, ptr);
+if (!is_comm_arg(*ptr)) return false; else ++ptr;
+skeep_space_end_comment(line, ptr);
 
-			if (!parse_type<T::value_type>(line, ptr, field.w)) return false;
+if (!parse_type<T::value_type>(line, ptr, field.w)) return false;
 
-			return true;
+return true;
 		}
 
 		template < typename T = mat3 >
@@ -474,17 +529,17 @@ namespace parser
 			}
 			//for all
 			for (int x = 0; x != 3; ++x)
-			for (int y = 0; y != 3; ++y)
-			{
-				//jmp first
-				if ((x + y) == 0) continue;
-				//parse ','
-				skeep_space_end_comment(line, ptr);
-				if (!is_comm_arg(*ptr)) return false; else ++ptr;
-				skeep_space_end_comment(line, ptr);
-				//parse value
-				if (!parse_type<T::value_type>(line, ptr, field[x][y])) return false;
-			}
+				for (int y = 0; y != 3; ++y)
+				{
+					//jmp first
+					if ((x + y) == 0) continue;
+					//parse ','
+					skeep_space_end_comment(line, ptr);
+					if (!is_comm_arg(*ptr)) return false; else ++ptr;
+					skeep_space_end_comment(line, ptr);
+					//parse value
+					if (!parse_type<T::value_type>(line, ptr, field[x][y])) return false;
+				}
 
 			return true;
 		}
@@ -506,17 +561,17 @@ namespace parser
 			}
 			//for all
 			for (int x = 0; x != 4; ++x)
-			for (int y = 0; y != 4; ++y)
-			{
-				//jmp first
-				if ((x + y) == 0) continue;
-				//parse ','
-				skeep_space_end_comment(line, ptr);
-				if (!is_comm_arg(*ptr)) return false; else ++ptr;
-				skeep_space_end_comment(line, ptr);
-				//parse value
-				if (!parse_type<T::value_type>(line, ptr, field[x][y])) return false;
-			}
+				for (int y = 0; y != 4; ++y)
+				{
+					//jmp first
+					if ((x + y) == 0) continue;
+					//parse ','
+					skeep_space_end_comment(line, ptr);
+					if (!is_comm_arg(*ptr)) return false; else ++ptr;
+					skeep_space_end_comment(line, ptr);
+					//parse value
+					if (!parse_type<T::value_type>(line, ptr, field[x][y])) return false;
+				}
 
 			return true;
 		}
@@ -524,41 +579,72 @@ namespace parser
 		template < typename T = std::vector<int> >
 		static bool parse_vector(size_t& line, const char*& ptr, T& field)
 		{
+			//not jump ',' at start
+			bool jmp_comm = false;
+			//loop
 			do
 			{
+				//jmp ','
+				if (jmp_comm) ++ptr; else jmp_comm = true;
 				//alloc
 				T::value_type value;
-				//type of types
+				//is a complex type
 				int is_complex = is_a_complex_variant_type(static_variant_type<T::value_type>());
-				//wrong type?
+				//is a vector type (fail)
 				if (is_complex == -1) return false;
 				//type
-				if(is_complex)
+				if (is_complex)
 				{
+					//get type
+					variant_type type;
 					//skeep spaces
 					skeep_space_end_comment(line, ptr);
-					//'{'
-					if (!is_start_table(*ptr)) break; else ++ptr;
-					//skeep spaces
-					skeep_space_end_comment(line, ptr);
-					//parse
-					if (parse_type< T::value_type >(line, ptr, value)) field.push_back(value); else return false;
-					//skeep spaces
-					skeep_space_end_comment(line, ptr);
-					//'}'
-					if (!is_end_table(*ptr)) return false; else ++ptr;
+					//parse value
+					if (is_start_table(*ptr))
+					{
+						//skeep '{'
+						++ptr;
+						//skeep spaces
+						skeep_space_end_comment(line, ptr);
+						//parse
+						if (parse_type< T::value_type >(line, ptr, value)) field.push_back(value); else return false;
+						//skeep spaces
+						skeep_space_end_comment(line, ptr);
+						//test and skeep  '}'
+						if (is_end_table(*ptr)) ++ptr; else return false;
+						//skeep spaces
+						skeep_space_end_comment(line, ptr);
+					}
+					else if (parse_variant_type(ptr, &ptr, type) && type == static_variant_type<T::value_type>())
+					{
+						//skeep spaces
+						skeep_space_end_comment(line, ptr);
+						//test and skeep '('
+						if(is_start_arg(*ptr)) ++ptr; else return false;
+						//skeep spaces
+						skeep_space_end_comment(line, ptr);
+						//parse
+						if (parse_type< T::value_type >(line, ptr, value)) field.push_back(value); else return false;
+						//skeep spaces
+						skeep_space_end_comment(line, ptr);
+						//test and skeep ')'
+						if (is_end_arg(*ptr)) ++ptr; else return false;
+						//skeep spaces
+						skeep_space_end_comment(line, ptr);
+					}
+					else return false;
 				}
 				else
 				{
 					//skeep spaces
 					skeep_space_end_comment(line, ptr);
 					//parse
-					if (parse_type< T::value_type >(line, ptr, value)) field.push_back(value);
+					if (parse_type< T::value_type >(line, ptr, value)) field.push_back(value); else return false;
 					//skeep spaces
 					skeep_space_end_comment(line, ptr);
 				}
-			} 
-			while (!is_comm_arg(*ptr));
+			}
+			while (is_comm_arg(*ptr));
 			//ok
 			return true;
 		}
@@ -785,6 +871,13 @@ namespace parser
 			case variant_type::VR_C_STRING:
 			case variant_type::VR_STD_STRING: if (!parse_cstring(line, ptr, &ptr, field.get<std::string>())) return false; break;
 
+			case variant_type::VR_STD_VECTOR_INT:    if (!parse_vector(line, ptr, field.get<std::vector<int>>())) return false; break;
+			case variant_type::VR_STD_VECTOR_FLOAT:  if (!parse_vector(line, ptr, field.get<std::vector<float>>())) return false; break;
+			case variant_type::VR_STD_VECTOR_VEC2:   if (!parse_vector(line, ptr, field.get<std::vector<vec2>>())) return false; break;
+			case variant_type::VR_STD_VECTOR_VEC3:   if (!parse_vector(line, ptr, field.get<std::vector<vec3>>())) return false; break;
+			case variant_type::VR_STD_VECTOR_VEC4:   if (!parse_vector(line, ptr, field.get<std::vector<vec4>>())) return false; break;
+			case variant_type::VR_STD_VECTOR_STRING: if (!parse_vector(line, ptr, field.get<std::vector<std::string>>())) return false; break;
+
 			default: return false; break;
 			}
 			//jump space
@@ -802,24 +895,51 @@ namespace parser
 					return false;
 			}
 			//alloc
-			field = variant(type);
+			field.copy_from(variant(type));
 			//skeep spaces
 			skeep_space_end_comment(line, ptr);
-			//parse '('
-			if (!is_start_arg(*ptr)) return false;
-			//jump '('
-			++ptr;
-			//parse args
-			parse_variant_args(line,ptr,field);
-			//parse ')'
-			if (!is_end_arg(*ptr))  return false;
-			//jump ')'
-			++ptr;
-			//...
-			return true;
+			//parse '(' or '{'
+			if (is_start_table(*ptr) && is_a_vector_variant_type(type))
+			{
+				//jump '{'
+				++ptr;
+				//parse args
+				parse_variant_args(line, ptr, field);
+				//parse '}'
+				if (!is_end_table(*ptr))  return false;
+				//jump '}'
+				++ptr;
+				//...
+				return true;
+			}
+			else if (is_start_arg(*ptr))
+			{
+				//jump '('
+				++ptr;
+				//parse args
+				parse_variant_args(line, ptr, field);
+				//parse ')'
+				if (!is_end_arg(*ptr))  return false;
+				//jump ')'
+				++ptr;
+				//...
+				return true;
+			}
+			return false;
 		}
 	};
 
+	///////////////////////////////////////////////////////////////////////////////////////////////////////
+	template <>
+	inline bool utils_parser::parse_type(size_t& line, const char*& inout, float& out)
+	{
+		return parse_float(inout, &inout, out);
+	}
+	template <>
+	inline bool utils_parser::parse_type(size_t& line, const char*& inout, double& out)
+	{
+		return parse_double(inout, &inout, out);
+	}
 	///////////////////////////////////////////////////////////////////////////////////////////////////////
 	template <>
 	inline bool utils_parser::parse_type(size_t& line, const char*& inout, bool& out)

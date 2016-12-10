@@ -130,7 +130,7 @@ namespace hcube
 		{
 			copy_from(in);
 		}
-
+		
 		~variant()
 		{
 			set_type(VR_NONE);
@@ -354,9 +354,34 @@ namespace hcube
 
 		//cast objects
 		template < class T >
-		T& get() { return *((T*)&m_ptr); }
+		T& get() 
+		{ 
+			if(is_heap_value()) return *((T*)m_ptr);
+			else				return *((T*)&m_ptr);
+		}
 		template < class T >
-		explicit  operator const T& () const { return *((T*)&m_ptr); }
+		explicit  operator const T& () const 
+		{
+			if (is_heap_value()) return *((T*)m_ptr);
+			else				 return *((T*)&m_ptr);
+		}
+
+		//alloc_cast
+		template < class T >
+		T& get_alloc() 
+		{ 
+			if (static_variant_type<T>() != m_type)
+			{
+				if (!is_heap_value())
+				{ 
+					std::memset(this, 0, sizeof(variant));
+					m_type = VR_NONE;
+				}
+				set_type(static_variant_type<T>());
+			}
+			return *((T*)&m_ptr); 
+		}
+
 
 		//type
 		variant_type get_type() const
@@ -374,7 +399,12 @@ namespace hcube
 				case VR_DMAT3:			   
 				case VR_DMAT4:			   
 				case VR_C_STRING:          
-				case VR_STD_STRING:        
+				case VR_STD_STRING:
+				case VR_STD_VECTOR_INT:
+				case VR_STD_VECTOR_FLOAT:
+				case VR_STD_VECTOR_VEC2:
+				case VR_STD_VECTOR_VEC3:
+				case VR_STD_VECTOR_VEC4:
 				case VR_STD_VECTOR_STRING: return true; break;
 				default: return false; break;
 			}
@@ -468,7 +498,7 @@ namespace hcube
 			void* m_ptr;
 		};
 		//save type
-		variant_type m_type;
+		variant_type m_type{ VR_NONE };
 		//set type
 		void set_type(variant_type type)
 		{
