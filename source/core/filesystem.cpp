@@ -7,6 +7,7 @@
 #include <hcube/core/filesystem.h>
 #include <sstream>
 #include <cstdlib>
+#include <cstring>
 #ifdef _WIN32
 	#include <windows.h>
 	#include <direct.h>
@@ -256,8 +257,8 @@ namespace hcube
 			//read all
 			do
 			{
-				if (!strcmp(ffd.cFileName, ".")) continue;
-				if (!strcmp(ffd.cFileName, "..")) continue;
+				if (!std::strcmp(ffd.cFileName, ".")) continue;
+				if (!std::strcmp(ffd.cFileName, "..")) continue;
 				//put into vector only files
 				if (is_file(std_directorypath + ffd.cFileName))
 				{
@@ -285,8 +286,8 @@ namespace hcube
 			//read all
 			do
 			{
-				if (!strcmp(ffd.cFileName, ".")) continue;
-				if (!strcmp(ffd.cFileName, "..")) continue;
+				if (!std::strcmp(ffd.cFileName, ".")) continue;
+				if (!std::strcmp(ffd.cFileName, "..")) continue;
 				//put into vector only dirs
 				if (is_directory(std_directorypath + ffd.cFileName))
 				{
@@ -323,8 +324,8 @@ namespace hcube
 			//read all elements
 			while ((dirent = readdir(directory)) != NULL)
 			{
-				if (!strcmp(dirent->d_name, ".")) continue;
-				if (!strcmp(dirent->d_name, "..")) continue;
+				if (!std::strcmp(dirent->d_name, ".")) continue;
+				if (!std::strcmp(dirent->d_name, "..")) continue;
 				//put into vector only files
 				if (is_file(std_directorypath + dirent->d_name))
 				{
@@ -353,8 +354,8 @@ namespace hcube
 			//read all elements
 			while ((dirent = readdir(directory)) != NULL)
 			{
-				if (!strcmp(dirent->d_name, ".")) continue;
-				if (!strcmp(dirent->d_name, "..")) continue;
+				if (!std::strcmp(dirent->d_name, ".")) continue;
+				if (!std::strcmp(dirent->d_name, "..")) continue;
 				//put into vector only dirs
 				if (is_directory(std_directorypath + dirent->d_name))
 				{

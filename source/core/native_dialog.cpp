@@ -48,8 +48,28 @@ namespace hcube
 		);
 		#define xxxx_open_file window_open_file
 		#define xxxx_save_file window_save_file
+#elif defined( HCUBE_USE_GTK )
+		extern open_file_output gtk_open_file
+		(
+			GLFWwindow* window,
+			const std::string& title,
+			const std::string& path,
+			const std::vector< std::string >& allowed_file_types
+		);
+		extern save_file_output gtk_save_file
+		(
+			GLFWwindow* window,
+			const std::string& title,
+			const std::string& path,
+			const std::vector< std::string >& allowed_file_types
+		);
+		#define xxxx_open_file gtk_open_file
+		#define xxxx_save_file gtk_save_file
+#elif defined( HCUBE_NO_NATIVE_DIALOG )
+		#define xxxx_open_file(x,y,z,w) open_file_output()
+		#define xxxx_save_file(x,y,z,w) save_file_output()
 #else
-#error OS not supported
+		#error OS not supported
 #endif
 
 		static inline std::string get_home_or_working_dir()
