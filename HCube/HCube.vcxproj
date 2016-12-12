@@ -179,11 +179,15 @@
     <ClInclude Include="..\include\hcube\core\smart_pointers.h" />
     <ClInclude Include="..\include\hcube\core\system_manager.h" />
     <ClInclude Include="..\include\hcube\data\align16_data.h" />
+    <ClInclude Include="..\include\hcube\data\dump\cstring_dump.h" />
+    <ClInclude Include="..\include\hcube\data\dump\properties_dump.h" />
+    <ClInclude Include="..\include\hcube\data\dump\variant_dump.h" />
     <ClInclude Include="..\include\hcube\data\json.h" />
     <ClInclude Include="..\include\hcube\data\parser\effect_parser.h" />
     <ClInclude Include="..\include\hcube\data\parser\material_parser.h" />
     <ClInclude Include="..\include\hcube\data\parser\properties_parser.h" />
     <ClInclude Include="..\include\hcube\data\parser\utils_parser.h" />
+    <ClInclude Include="..\include\hcube\data\parser\variant_parser.h" />
     <ClInclude Include="..\include\hcube\data\property.h" />
     <ClInclude Include="..\include\hcube\data\struct_attribute.h" />
     <ClInclude Include="..\include\hcube\data\variant.h" />

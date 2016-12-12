@@ -79,6 +79,9 @@
     <Filter Include="File di intestazione\hcube\data\parser">
       <UniqueIdentifier>{b11331ba-aab2-417f-9dc2-c77ddc5feba0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="File di intestazione\hcube\data\dump">
+      <UniqueIdentifier>{5ade8c56-79fc-4664-baa3-86d03f9ccadf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\hcube\geometries\frustum.h">
@@ -227,6 +230,18 @@
     </ClInclude>
     <ClInclude Include="..\include\hcube\data\parser\properties_parser.h">
       <Filter>File di intestazione\hcube\data\parser</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\hcube\data\dump\variant_dump.h">
+      <Filter>File di intestazione\hcube\data\dump</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\hcube\data\parser\variant_parser.h">
+      <Filter>File di intestazione\hcube\data\parser</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\hcube\data\dump\cstring_dump.h">
+      <Filter>File di intestazione\hcube\data\dump</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\hcube\data\dump\properties_dump.h">
+      <Filter>File di intestazione\hcube\data\dump</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

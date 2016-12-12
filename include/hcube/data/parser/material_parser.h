@@ -318,18 +318,18 @@ namespace parser
 				return true;
 			}
 			//for all
+			for (int y = 0; y != 4; ++y)
 			for (int x = 0; x != 4; ++x)
-				for (int y = 0; y != 4; ++y)
-				{
-					//jmp first
-					if ((x + y) == 0) continue;
-					//parse ','
-					skeep_space_end_comment(m_context->m_line, ptr);
-					if (!is_comm_arg(*ptr)) return false; else ++ptr;
-					skeep_space_end_comment(m_context->m_line, ptr);
-					//parse value
-					if (!parse_float(ptr, &ptr, field.m_value.m_mat4[x][y])) return false;
-				}
+			{
+				//jmp first
+				if ((x + y) == 0) continue;
+				//parse ','
+				skeep_space_end_comment(m_context->m_line, ptr);
+				if (!is_comm_arg(*ptr)) return false; else ++ptr;
+				skeep_space_end_comment(m_context->m_line, ptr);
+				//parse value
+				if (!parse_float(ptr, &ptr, field.m_value.m_mat4[x][y])) return false;
+			}
 
 			return true;
 		}

@@ -328,21 +328,21 @@ namespace hcube
 			*((std::vector< vec4 >*)(m_ptr)) = v_v4;
 		}
 
-		variant(const std::string& str)
-		{
-			set_type(VR_STD_STRING);
-			*((std::string*)(m_ptr)) = str;
-		}
-
 		variant(const char* c_str)
 		{
 			set_type(VR_C_STRING);
 			*((std::string*)(m_ptr)) = c_str;
 		}
 
-		variant(const std::vector< std::string > & v_str)
+		variant(const std::string& str)
 		{
 			set_type(VR_STD_STRING);
+			*((std::string*)(m_ptr)) = str;
+		}
+
+		variant(const std::vector< std::string > & v_str)
+		{
+			set_type(VR_STD_VECTOR_STRING);
 			*((std::vector< std::string >*)(m_ptr)) = v_str;
 		}
 
@@ -354,9 +354,15 @@ namespace hcube
 
 		//cast objects
 		template < class T >
-		T& get() 
-		{ 
-			if(is_heap_value()) return *((T*)m_ptr);
+		T& get()
+		{
+			if (is_heap_value()) return *((T*)m_ptr);
+			else				return *((T*)&m_ptr);
+		}
+		template < class T >
+		const T& get() const
+		{
+			if (is_heap_value()) return *((T*)m_ptr);
 			else				return *((T*)&m_ptr);
 		}
 		template < class T >
@@ -555,6 +561,12 @@ namespace hcube
 		}
 
 		variant_ref(variant& var)
+		{
+			m_ptr = (void*)var.get_ref();
+			m_type = var.get_type();
+		}
+
+		variant_ref(const variant& var)
 		{
 			m_ptr = (void*)var.get_ref();
 			m_type = var.get_type();
@@ -778,6 +790,12 @@ namespace hcube
 
 		template < class T >
 		T& get()
+		{
+			return *((T*)m_ptr);
+		}
+
+		template < class T >
+		const T& get() const
 		{
 			return *((T*)m_ptr);
 		}

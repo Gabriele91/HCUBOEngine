@@ -2,44 +2,93 @@
 #include <vector>
 #include <hcube/data/property.h>
 #include <hcube/data/parser/utils_parser.h>
+#include <hcube/data/parser/variant_parser.h>
 
 namespace hcube
 {
 namespace parser
 {
-	inline bool properties_parser(const char* ptr, void* obj, const std::vector< property* >& properties)
+
+	class properties_parser : protected utils_parser
 	{
-		size_t line = 0;
-		variant value;
-		std::string name;
-		while (*ptr)
+	public:
+
+		struct error_field
 		{
-			//skeep
-			parser::utils_parser::skeep_space_end_comment(line, ptr);
-			//name
-			if (!parser::utils_parser::parse_name(ptr, &ptr, name)) return false;
-			//skeep
-			parser::utils_parser::skeep_space_end_comment(line, ptr);
-			//parse
-			if (!parser::utils_parser::parse_variant(line, ptr, value)) return false;
-			//search
-			for (property* p : properties)
+			size_t m_line{ 0 };
+			std::string m_error;
+
+			error_field()
 			{
-				if (p->get_name() == name)
+			}
+			error_field(size_t line, const std::string& error)
+				: m_line(line)
+				, m_error(error)
+			{
+			}
+		};
+
+		template<typename T>
+		bool parse(const std::string& str, T& obj)
+		{
+			return parser(str.c_str(), (void*)&obj, T::properties());
+		}
+
+		template<typename T>
+		bool parse(const char* ptr, T& obj)
+		{
+			return parser(ptr, (void*)&obj, T::properties());
+		}
+
+		template<typename T>
+		bool parse(const std::string& str, T& obj, std::vector< property* >& properties)
+		{
+			return parser(str.c_str(), (void*)&obj, properties);
+		}
+
+		template<typename T>
+		bool parse(const char* ptr, T& obj, std::vector< property* >& properties)
+		{
+			return parser(ptr, (void*)&obj, properties);
+		}
+
+	protected:
+		
+		bool parser(const char* ptr, void* obj, const std::vector< property* >& properties)
+		{
+			//info
+			size_t line = 0;
+			std::string name;
+			//variant parser
+			variant_parser			v_parser;
+			variant_parser::context v_parser_ctx;
+			//loop
+			while (*ptr)
+			{
+				//skeep
+				skeep_space_end_comment(line, ptr);
+				//name
+				if (!parse_name(ptr, &ptr, name)) return false;
+				//skeep
+				parser::utils_parser::skeep_space_end_comment(line, ptr);
+				//parse
+				if (!v_parser.parse(v_parser_ctx,ptr)) return false;
+				//add lines
+				line += v_parser_ctx.m_line;
+				//search
+				for (property* p : properties)
 				{
-					p->set(obj, value);
-					break;
+					if (p->get_name() == name)
+					{
+						p->set(obj, v_parser_ctx.m_variant);
+						break;
+					}
 				}
 			}
+			//success
+			return true;
 		}
-		//success
-		return true;
-	}
 
-	template<typename T>
-	inline bool properties_parser(const char* ptr, T& obj)
-	{
-		return properties_parser(ptr, (void*)&obj, T::properties());
-	}
+	};
 }
 }

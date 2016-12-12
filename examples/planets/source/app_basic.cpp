@@ -19,6 +19,7 @@
 #include <hcube/utilities/basic_meshs.h>
 #include <hcube/data/property.h>
 #include <tuple>
+#include <hcube/data/dump/properties_dump.h>
 #include <hcube/data/parser/properties_parser.h>
 #include <app_basic.h>
 
@@ -33,6 +34,11 @@ namespace hcube
 		std::string				 m_name;
 		int					     m_age;
 		std::vector<std::string> m_nikenames;
+		vec2				     m_hub{ 0, 1 };
+		vec3					 m_pos{ 0, 1, 0	};
+		vec4					 m_times{ 0, 1, 0, 1 };
+		mat3					 m_rot{ 1. };
+		mat4					 m_view{ 2. };
 		//wat?
 		void set_name(const std::string& s)
 		{
@@ -45,13 +51,17 @@ namespace hcube
 		//return
 		static std::vector< property* > properties()
 		{
-			return
+			static std::vector< property* > properties
 			{
 				make_property_member(&Player::m_life, "life"),
 				make_property_get_set(&Player::get_name, &Player::set_name, "name"),
 				make_property_member(&Player::m_age, "age"),
-				make_property_member(&Player::m_nikenames, "nikenames"),
+				make_property_member(&Player::m_hub, "hub"),
+				make_property_member(&Player::m_pos, "position"),
+				make_property_member(&Player::m_rot, "rotation"),
+				make_property_member(&Player::m_view, "view"),
 			};
+			return properties;
 		}
 	};
 
@@ -217,7 +227,7 @@ namespace hcube
 		}
 		//parser test
 		Player in_mario;
-		parser::properties_parser(
+		parser::properties_parser().parse(
 		"name string(\"Mario\")\n "
 		"age int(18)           \n"
 		"life float(10.5)      \n"
@@ -227,6 +237,10 @@ namespace hcube
 		"    \"Super Mario\"   \n"
 		"}", 
 		in_mario);
+		std::cout << dump::variant_dump(variant("\"\'mario\\\\")) << std::endl;
+		std::vector<std::string> vstr{ "mario1", "mario2\"hello\"", "lol" };
+		std::cout << dump::variant_dump(variant(vstr)) << std::endl;
+		std::cout << dump::properties_dump(in_mario) << std::endl;
 	}
 
 	bool app_basic::run(application& app, double delta_time)
