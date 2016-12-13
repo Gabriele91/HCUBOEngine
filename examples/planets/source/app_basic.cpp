@@ -17,8 +17,8 @@
 #include <hcube/components/renderable.h>
 #include <hcube/utilities/gameobject.h>
 #include <hcube/utilities/basic_meshs.h>
-#include <hcube/data/property.h>
 #include <tuple>
+#include <hcube/data/property.h>
 #include <hcube/data/dump/properties_dump.h>
 #include <hcube/data/parser/properties_parser.h>
 #include <app_basic.h>
@@ -26,16 +26,23 @@
 
 namespace hcube
 {
-	class Player
+	enum player_type
+	{
+		PR_WOMAN,
+		PR_MEN
+	};
+
+	class player
 	{
 	public:
 		//values
+		player_type				 m_type{ PR_WOMAN };
 		float					 m_life;
 		std::string				 m_name;
 		int					     m_age;
-		std::vector<std::string> m_nikenames;
+		std::vector<std::string> m_nicknames;
 		vec2				     m_hub{ 0, 1 };
-		vec3					 m_pos{ 0, 1, 0	};
+		vec3					 m_pos{ 0, 1, 0 };
 		vec4					 m_times{ 0, 1, 0, 1 };
 		mat3					 m_rot{ 1. };
 		mat4					 m_view{ 2. };
@@ -49,20 +56,23 @@ namespace hcube
 			return m_name;
 		}
 		//return
-		static std::vector< property* > properties()
-		{
-			static std::vector< property* > properties
+		HCUBE_DEFINE_PROPERTIES(
+			make_property_member(&player::m_life, "life"),
+			make_property_member(&player::m_nicknames, "nicknames"),
+			make_property_get_set(&player::get_name, &player::set_name, "name"),
+			make_property_member(&player::m_age, "age"),
+			make_property_member(&player::m_hub, "hub"),
+			make_property_member(&player::m_pos, "position"),
+			make_property_member(&player::m_rot, "rotation"),
+			make_property_member(&player::m_view, "view"),
+			make_property_enum_str(
+			&player::m_type,
 			{
-				make_property_member(&Player::m_life, "life"),
-				make_property_get_set(&Player::get_name, &Player::set_name, "name"),
-				make_property_member(&Player::m_age, "age"),
-				make_property_member(&Player::m_hub, "hub"),
-				make_property_member(&Player::m_pos, "position"),
-				make_property_member(&Player::m_rot, "rotation"),
-				make_property_member(&Player::m_view, "view"),
-			};
-			return properties;
-		}
+				{ std::string("men")  , PR_MEN   },
+				{ std::string("woman"), PR_WOMAN }
+			},
+			"type")
+		)
 	};
 
 	enum 
@@ -226,16 +236,17 @@ namespace hcube
 			m_systems.add_entity(m_camera);
 		}
 		//parser test
-		Player in_mario;
+		player in_mario;
 		parser::properties_parser().parse(
 		"name string(\"Mario\")\n "
 		"age int(18)           \n"
 		"life float(10.5)      \n"
-		"nikenames string[]    \n"
+		"nicknames string[]    \n"
 		"{                     \n"
 		"    \"Dr. Mario\",    \n"
 		"    \"Super Mario\"   \n"
-		"}", 
+		"}"
+		"type string(\"men\")", 
 		in_mario);
 		std::cout << dump::variant_dump(variant("\"\'mario\\\\")) << std::endl;
 		std::vector<std::string> vstr{ "mario1", "mario2\"hello\"", "lol" };

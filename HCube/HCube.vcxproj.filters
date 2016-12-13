@@ -347,6 +347,9 @@
     <ClCompile Include="..\source\utilities\basic_meshs.cpp">
       <Filter>File di origine\utilities</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\data\property.cpp">
+      <Filter>File di origine\data</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\common\effects\shaders\deferred_ambient_light.glsl">

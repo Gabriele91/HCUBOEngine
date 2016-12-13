@@ -229,6 +229,7 @@
     <ClCompile Include="..\source\core\resources_manager.cpp" />
     <ClCompile Include="..\source\core\system_manager.cpp" />
     <ClCompile Include="..\source\core\window_native_dialog.cpp" />
+    <ClCompile Include="..\source\data\property.cpp" />
     <ClCompile Include="..\source\data\stb_image.cpp" />
     <ClCompile Include="..\source\data\tga.cpp" />
     <ClCompile Include="..\source\geometries\frustum.cpp" />

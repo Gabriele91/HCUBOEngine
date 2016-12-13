@@ -41,20 +41,20 @@ namespace parser
 		}
 
 		template<typename T>
-		bool parse(const std::string& str, T& obj, std::vector< property* >& properties)
+		bool parse(const std::string& str, T& obj, properties_vector& properties)
 		{
 			return parser(str.c_str(), (void*)&obj, properties);
 		}
 
 		template<typename T>
-		bool parse(const char* ptr, T& obj, std::vector< property* >& properties)
+		bool parse(const char* ptr, T& obj, properties_vector& properties)
 		{
 			return parser(ptr, (void*)&obj, properties);
 		}
 
 	protected:
 		
-		bool parser(const char* ptr, void* obj, const std::vector< property* >& properties)
+		bool parser(const char* ptr, void* obj, const properties_vector& properties)
 		{
 			//info
 			size_t line = 0;

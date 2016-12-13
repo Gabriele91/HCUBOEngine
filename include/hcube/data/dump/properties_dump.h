@@ -8,7 +8,7 @@ namespace hcube
 {
 namespace dump
 {
-	inline std::string properties_dump(void* obj, std::vector< property* >& properties)
+	inline std::string properties_dump(void* obj,const properties_vector& properties)
 	{
 		//output
 		std::string out;
@@ -21,7 +21,7 @@ namespace dump
 	}
 
 	template < class T >
-	inline std::string properties_dump(T& obj, std::vector< property* >& properties)
+	inline std::string properties_dump(T& obj,const properties_vector& properties)
 	{
 		return properties_dump((void*)&obj, properties);
 	}
