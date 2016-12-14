@@ -427,8 +427,8 @@ namespace hcube
 			{
 				//count of tris
 				unsigned int n_tris = unsigned int(m_idxs.size() / 3);
-				const float factor_to_xto1 = 0.8;
-				const float factor_to_xto0 = 0.2;
+				const float factor_to_xto1 = 0.75;
+				const float factor_to_xto0 = 0.25;
 				//for all tris
 				for (unsigned int j = 0; j != n_tris; j++)
 				{
@@ -467,11 +467,40 @@ namespace hcube
 					}		
 				}
 			}
+
+			void compute_tangent()
+			{
+				#define _norm_smallest(_small,_other_a,_other_b)\
+					(std::abs(model_v.m_normal._small) < std::abs(model_v.m_normal._other_a) &&\
+					 std::abs(model_v.m_normal._small) < std::abs(model_v.m_normal._other_b))
+
+				for (VERTEX& model_v : m_vecs)
+				{
+					/**
+					 *  v' = ( 0,-z, y ) if x is the smallest
+					 *		 (-z, 0, x)  if y is the smallest
+					 *		 (-y, x, 0)  if z is the smallest
+					 *	v = normalize(v')
+					 *	w = u X v
+					 */
+					vec3 v1 =
+						(_norm_smallest(x, y, z)
+						? vec3(0, -model_v.m_normal.z, model_v.m_normal.y)
+						: (_norm_smallest(y, x, z)
+						  ? vec3(-model_v.m_normal.z, 0, model_v.m_normal.x)
+						  : vec3(-model_v.m_normal.y, model_v.m_normal.x, 0) ));
+					vec3 v = normalize(v1);
+					vec3 w = cross(model_v.m_normal, v);
+					model_v.m_tangent   = v;
+					model_v.m_bitangent = w;
+				}
+				#undef _norm_smallest
+			}
 		};
 
 		mesh::ptr icosphere(float radius, bool use_uvmap)
 		{
-			return icosphere(radius, 0, use_uvmap);
+			return icosphere(radius, 4, use_uvmap);
 		}
 
 		mesh::ptr icosphere(float radius, int lod, bool use_uvmap)
@@ -544,8 +573,8 @@ namespace hcube
 				//compute uv
 				is_helper.compute_uvmap();
 				//compute tangent per vertex
-				tangent_space_calculation::compute_tangent_fast<vertex>(is_helper.m_vecs);
-				//fix edge
+				is_helper.compute_tangent();
+				//fix edge (the vertex near 0.0 point now point to 1.0+offset vertex)
 				is_helper.fix_uvmap();
 				//build mesh
 				mesh_icosphere->build(

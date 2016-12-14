@@ -221,7 +221,8 @@ namespace hcube
 			//add cube 2
 			{
 				auto cube_grid = gameobject::node_new(
-					basic_meshs::cube({ 5,5,5 }, true)
+					//basic_meshs::cube({ 5,5,5 }, true)
+					basic_meshs::icosphere(5,true)
 				);
 				cube_grid->get_component<renderable>()->set_material(
 					m_resources.get_material("box2_grid_mat")
