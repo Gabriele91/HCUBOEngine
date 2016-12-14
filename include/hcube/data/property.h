@@ -83,17 +83,37 @@ namespace hcube
 
 		virtual void set(void* obj, variant_ref value) override
 		{
-			((CLASS*)obj)->*m_member = m_str_to_enum[value.get<std::string>()];
+			//get iterator
+			auto it = m_str_to_enum.find(value.get<std::string>());
+			//set value from iterator
+			if (it != m_str_to_enum.end())
+			{
+				((CLASS*)obj)->*m_member = it->second;
+			}
 		}
 
 		virtual variant_ref get(void* obj) override
 		{
-			return variant_ref(m_enum_to_str[((CLASS*)obj)->*m_member]);
+			//get iterator
+			auto it = m_enum_to_str.find(((CLASS*)obj)->*m_member);
+			//set value from iterator
+			if (it != m_enum_to_str.end())
+			{
+				return variant_ref(it->second);
+			}
+			return variant_ref();
 		}
 
 		virtual variant get_value(void* obj) override
 		{
-			return variant(m_enum_to_str[((CLASS*)obj)->*m_member]);
+			//get iterator
+			auto it = m_enum_to_str.find(((CLASS*)obj)->*m_member);
+			//set value from iterator
+			if (it != m_enum_to_str.end())
+			{
+				return variant(it->second);
+			}
+			return variant();
 		}
 
 
