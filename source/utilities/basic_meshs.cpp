@@ -422,6 +422,51 @@ namespace hcube
 					v.m_uvmap = get_latitude_longitude_UV(v.m_position);
 				}
 			}
+
+			void fix_uvmap()
+			{
+				//count of tris
+				unsigned int n_tris = unsigned int(m_idxs.size() / 3);
+				const float factor_to_xto1 = 0.8;
+				const float factor_to_xto0 = 0.2;
+				//for all tris
+				for (unsigned int j = 0; j != n_tris; j++)
+				{
+					//vector
+					auto a = m_vecs[m_idxs[j * 3 + 0]];
+					auto b = m_vecs[m_idxs[j * 3 + 1]];
+					auto c = m_vecs[m_idxs[j * 3 + 2]];
+					//test  f1 < v.x < 1.	
+					bool a_more = a.m_uvmap.x > factor_to_xto1;
+					bool b_more = b.m_uvmap.x > factor_to_xto1;
+					bool c_more = c.m_uvmap.x > factor_to_xto1;
+					int  abc_more = (a_more + b_more + c_more);
+					//bad case
+					if (!abc_more || abc_more == 3) continue;
+
+					//test  0. < v.x < f0	
+					if (a.m_uvmap.x < factor_to_xto0)
+					{
+						m_idxs[j * 3 + 0] = unsigned int(m_vecs.size());
+						m_vecs.push_back(a);
+						m_vecs[m_idxs[j * 3 + 0]].m_uvmap.x += 1.0;
+					}
+
+					if (b.m_uvmap.x < factor_to_xto0)
+					{
+						m_idxs[j * 3 + 1] = unsigned int(m_vecs.size());
+						m_vecs.push_back(b);
+						m_vecs[m_idxs[j * 3 + 1]].m_uvmap.x += 1.0;
+					}
+
+					if (c.m_uvmap.x < factor_to_xto0)
+					{
+						m_idxs[j * 3 + 2] = unsigned int(m_vecs.size());
+						m_vecs.push_back(c);
+						m_vecs[m_idxs[j * 3 + 2]].m_uvmap.x += 1.0;
+					}		
+				}
+			}
 		};
 
 		mesh::ptr icosphere(float radius, bool use_uvmap)
@@ -500,6 +545,8 @@ namespace hcube
 				is_helper.compute_uvmap();
 				//compute tangent per vertex
 				tangent_space_calculation::compute_tangent_fast<vertex>(is_helper.m_vecs);
+				//fix edge
+				is_helper.fix_uvmap();
 				//build mesh
 				mesh_icosphere->build(
 					layout,

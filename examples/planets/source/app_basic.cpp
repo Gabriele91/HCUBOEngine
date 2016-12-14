@@ -212,11 +212,12 @@ namespace hcube
 		rendering_system::ptr m_rendering = rendering_system::snew();
 		//add shadow support
 		m_rendering->add_rendering_pass(rendering_pass_shadow::snew(m_resources));
-		//add into system
-		m_systems.add_system(m_rendering);
+		//add default render
 		m_rendering->add_rendering_pass(rendering_pass_deferred::snew(app.get_window_size(), m_resources));
         //translucent
         m_rendering->add_rendering_pass(rendering_pass_forward::snew(RQ_TRANSLUCENT));
+		//add into system
+		m_systems.add_system(m_rendering);
 		//ambient color
 		m_rendering->set_ambient_color(vec4{ 0.16, 0.16, 0.16, 1.0 });
 		//scene
