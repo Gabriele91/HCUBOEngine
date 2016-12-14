@@ -400,7 +400,7 @@ namespace hcube
 
 			unsigned int add_mid_point_and_get_index(const unsigned int a, const unsigned int b)
 			{
-				auto mid_point = (m_vecs[a].m_position + m_vecs[b].m_position);
+				auto mid_point = (m_vecs[a].m_position + m_vecs[b].m_position) / 2.0f;
 				unsigned int i = m_vecs.size();
 				add_vertex(mid_point);
 				return i;
@@ -470,6 +470,10 @@ namespace hcube
 
 			void compute_tangent()
 			{
+				#if 0
+				//compute tangent per vertex
+				tangent_space_calculation::compute_tangent_fast<VERTEX>(m_vecs);
+				#else 
 				#define _norm_smallest(_small,_other_a,_other_b)\
 					(std::abs(model_v.m_normal._small) < std::abs(model_v.m_normal._other_a) &&\
 					 std::abs(model_v.m_normal._small) < std::abs(model_v.m_normal._other_b))
@@ -495,12 +499,13 @@ namespace hcube
 					model_v.m_bitangent = w;
 				}
 				#undef _norm_smallest
+				#endif
 			}
 		};
 
 		mesh::ptr icosphere(float radius, bool use_uvmap)
 		{
-			return icosphere(radius, 4, use_uvmap);
+			return icosphere(radius, 3, use_uvmap);
 		}
 
 		mesh::ptr icosphere(float radius, int lod, bool use_uvmap)
