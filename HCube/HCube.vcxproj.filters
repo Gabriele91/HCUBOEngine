@@ -82,6 +82,9 @@
     <Filter Include="File di intestazione\hcube\data\dump">
       <UniqueIdentifier>{5ade8c56-79fc-4664-baa3-86d03f9ccadf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="File di intestazione\hcube\math">
+      <UniqueIdentifier>{f23208e6-2879-4e84-ba2c-3a6b09d96c75}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\hcube\geometries\frustum.h">
@@ -245,6 +248,21 @@
     </ClInclude>
     <ClInclude Include="..\include\hcube\utilities\utf_convert.h">
       <Filter>File di intestazione\hcube\utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\hcube\math\arc_ball.h">
+      <Filter>File di intestazione\hcube\math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\hcube\math\picking.h">
+      <Filter>File di intestazione\hcube\math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\hcube\math\picking_rotation.h">
+      <Filter>File di intestazione\hcube\math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\hcube\math\tangent_space_calculation.h">
+      <Filter>File di intestazione\hcube\math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\hcube\math\vector_math.h">
+      <Filter>File di intestazione\hcube\math</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
