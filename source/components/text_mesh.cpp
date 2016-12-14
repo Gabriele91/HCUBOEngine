@@ -8,6 +8,7 @@
 #include <vector>
 #include <hcube/render/render.h>
 #include <hcube/components/text_mesh.h>
+#include <hcube/utilities/utf_convert.h>
 #include <algorithm>
 
 namespace hcube
@@ -24,6 +25,12 @@ namespace hcube
 		m_layout = render::create_IL({
 			attribute{ATT_POSITIONT,AST_INT,0}
 		});
+	}
+
+	text_mesh::text_mesh(const std::u32string text, size_t text_max_size)
+	: text_mesh(text_max_size)
+	{
+		set_text(text);
 	}
 
 	text_mesh::~text_mesh()
@@ -56,9 +63,7 @@ namespace hcube
 
 	void text_mesh::set_text(const std::string& text)
 	{
-		std::u32string u32text;
-		for (char c : text) u32text += (int)c;
-		set_text(u32text);
+		set_text( to_utf32(text) );
 	}
 
 	void text_mesh::draw()
@@ -68,9 +73,37 @@ namespace hcube
 		render::draw_arrays(DRAW_POINTS, (unsigned int)std::min(m_text.size(), m_text_max_size));
 		render::unmap_VBO(m_bpoints);
 	}
+
+	void text_mesh::set_text_max_size(size_t text_max_size)
+	{
+		//set max size
+		m_text_max_size = text_max_size;
+		//del buffer
+		render::delete_VBO(m_bpoints);
+		//gen buffer
+		m_bpoints = render::create_stream_VBO(nullptr, sizeof(int), text_max_size);
+		//update buffer
+		update_mesh();
+	}
 	
 	component_ptr text_mesh::copy() const
 	{
-		return text_mesh::snew(m_text_max_size);
+		return text_mesh::snew(m_text,m_text_max_size);
+	}
+
+
+	size_t text_mesh::get_text_max_size() const
+	{
+		return m_text_max_size;
+	}
+
+	std::u32string text_mesh::get_text() const
+	{
+		return m_text;
+	}
+
+	std::string text_mesh::get_text_utf8() const
+	{
+		return to_utf8(m_text);
 	}
 }

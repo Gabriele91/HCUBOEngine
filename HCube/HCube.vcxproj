@@ -213,6 +213,7 @@
     <ClInclude Include="..\include\hcube\resources\texture.h" />
     <ClInclude Include="..\include\hcube\utilities\basic_meshs.h" />
     <ClInclude Include="..\include\hcube\utilities\gameobject.h" />
+    <ClInclude Include="..\include\hcube\utilities\utf_convert.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\components\camera.cpp" />
@@ -250,6 +251,7 @@
     <ClCompile Include="..\source\resources\static_model.cpp" />
     <ClCompile Include="..\source\resources\texture.cpp" />
     <ClCompile Include="..\source\utilities\basic_meshs.cpp" />
+    <ClCompile Include="..\source\utilities\utf_convert.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\common\effects\base_texture_normal_specular.fxhc" />

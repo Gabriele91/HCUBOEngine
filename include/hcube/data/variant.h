@@ -11,6 +11,9 @@
 
 namespace hcube
 {
+
+	class variant;
+	class variant_ref;
 	enum variant_type
 	{
 		VR_NONE,
@@ -351,6 +354,8 @@ namespace hcube
 			set_type(VR_PTR);
 			m_ptr = ptr;
 		}
+
+		variant(const variant_ref& ref);
 
 		//cast objects
 		template < class T >
@@ -823,5 +828,49 @@ namespace hcube
 		variant_type m_type;
 
 	};
-
+	
+	inline variant::variant(const variant_ref& ref)
+	{
+		switch (ref.get_type())
+		{
+		case hcube::VR_NONE:  break;
+		case hcube::VR_CHAR:     (*this) = (const char)ref; break;
+		case hcube::VR_SHORT:    (*this) = (const short)ref; break;
+		case hcube::VR_INT:      (*this) = (const int)ref; break;
+		case hcube::VR_LONG:     (*this) = (const long)ref; break;
+		case hcube::VR_LONGLONG: (*this) = (const long long)ref; break;
+		case hcube::VR_UCHAR:    (*this) = (const unsigned char)ref; break;
+		case hcube::VR_USHORT:   (*this) = (const unsigned short)ref; break;
+		case hcube::VR_UINT:     (*this) = (const unsigned int)ref; break;
+		case hcube::VR_ULONG:    (*this) = (const unsigned long)ref; break;
+		case hcube::VR_ULONGLONG:(*this) = (const unsigned long long)ref; break;
+		case hcube::VR_FLOAT:    (*this) = (const float)ref; break;
+		case hcube::VR_DOUBLE:   (*this) = (const double)ref; break;
+		case hcube::VR_VEC2:     (*this) = (const vec2)ref; break;
+		case hcube::VR_VEC3:     (*this) = (const vec3)ref; break;
+		case hcube::VR_VEC4:     (*this) = (const vec4)ref; break;
+		case hcube::VR_QUAT:     (*this) = (const quat)ref; break;
+		case hcube::VR_IVEC2:    (*this) = (const ivec2)ref; break;
+		case hcube::VR_IVEC3:    (*this) = (const ivec3)ref; break;
+		case hcube::VR_IVEC4:    (*this) = (const ivec4)ref; break;
+		case hcube::VR_DVEC2:    (*this) = (const dvec2)ref; break;
+		case hcube::VR_DVEC3:    (*this) = (const dvec3)ref; break;
+		case hcube::VR_DVEC4:    (*this) = (const dvec4)ref; break;
+		case hcube::VR_DQUAT:    (*this) = (const dquat)ref; break;
+		case hcube::VR_MAT3:     (*this) = (const mat3)ref; break;
+		case hcube::VR_MAT4:     (*this) = (const mat4)ref; break;
+		case hcube::VR_DMAT3:    (*this) = (const dmat3)ref; break;
+		case hcube::VR_DMAT4:    (*this) = (const dmat4)ref; break;
+		case hcube::VR_STD_VECTOR_INT:     (*this) = (const std::vector<int>)ref; break;
+		case hcube::VR_STD_VECTOR_FLOAT:   (*this) = (const std::vector<float>)ref; break;
+		case hcube::VR_STD_VECTOR_VEC2:    (*this) = (const std::vector<vec2>)ref; break;
+		case hcube::VR_STD_VECTOR_VEC3:    (*this) = (const std::vector<vec3>)ref; break;
+		case hcube::VR_STD_VECTOR_VEC4:    (*this) = (const std::vector<vec4>)ref; break;
+		case hcube::VR_C_STRING:
+		case hcube::VR_STD_STRING:         (*this) = (const std::string)ref; break;
+		case hcube::VR_STD_VECTOR_STRING:  (*this) = (const std::vector<std::string>)ref; break;
+		case hcube::VR_PTR:				   (*this) = (void*)(const void*)ref; break;
+		default: break;
+		}
+	}
 }

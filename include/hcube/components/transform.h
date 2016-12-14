@@ -10,6 +10,7 @@
 #include <hcube/math/vector_math.h>
 #include <hcube/core/component.h>
 #include <hcube/render/shader.h>
+#include <hcube/data/property.h>
 #include <hcube/core/component_register.h>
 
 namespace hcube
@@ -62,6 +63,12 @@ namespace hcube
 		}
 
 		virtual component_ptr copy() const;
+
+		HCUBE_DEFINE_PROPERTIES(
+			make_property_const_get_set(&transform::get_position, &transform::rotation, "position"),
+			make_property_const_get_set(&transform::get_rotation, &transform::rotation, "rotation"),
+			make_property_const_get_set(&transform::get_scale,    &transform::scale,    "scale")
+		)
 
 	private:
 		//info

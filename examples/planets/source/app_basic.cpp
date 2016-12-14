@@ -252,6 +252,9 @@ namespace hcube
 		std::vector<std::string> vstr{ "mario1", "mario2\"hello\"", "lol" };
 		std::cout << dump::variant_dump(variant(vstr)) << std::endl;
 		std::cout << dump::properties_dump(in_mario) << std::endl;
+		std::cout << dump::properties_dump(*m_camera->get_component<transform>()) << std::endl;
+
+		
 	}
 
 	bool app_basic::run(application& app, double delta_time)

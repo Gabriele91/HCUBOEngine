@@ -14,6 +14,7 @@ namespace hcube
 	{
 		virtual void		set(void* obj, variant_ref value) = 0;
 		virtual variant_ref get(void* obj)					  = 0;
+		virtual variant     get_value(void* obj)			  = 0;
 		virtual	const char* get_name() const			      = 0;
 	};
 
@@ -44,6 +45,11 @@ namespace hcube
 		virtual variant_ref get(void* obj) override
 		{
 			return m_get((CLASS*)obj);
+		}
+
+		virtual variant get_value(void* obj) override
+		{
+			return variant(m_get((CLASS*)obj));
 		}
 
 		virtual	const char* get_name() const override
@@ -84,6 +90,12 @@ namespace hcube
 		{
 			return variant_ref(m_enum_to_str[((CLASS*)obj)->*m_member]);
 		}
+
+		virtual variant get_value(void* obj) override
+		{
+			return variant(m_enum_to_str[((CLASS*)obj)->*m_member]);
+		}
+
 
 		virtual	const char* get_name() const override
 		{
@@ -127,6 +139,11 @@ namespace hcube
 			return variant_ref((((CLASS*)obj)->*m_get)());
 		}
 
+		virtual variant get_value(void* obj)
+		{
+			return variant((((CLASS*)obj)->*m_get)());
+		}
+
 		virtual const char* get_name() const
 		{
 			return m_name;
@@ -159,6 +176,10 @@ namespace hcube
 		{
 			return variant_ref(((CLASS*)obj)->*m_member);
 		}
+		virtual variant get_value(void* obj)
+		{
+			return variant(((CLASS*)obj)->*m_member);
+		}
 
 		virtual const char* get_name() const
 		{
@@ -180,6 +201,9 @@ namespace hcube
 
 		//init vector
 		properties_vector(std::initializer_list< property* > properties);
+
+		//init vector
+		properties_vector(const std::vector< const properties_vector* >& extends,const std::vector< property* >& properties);
 
 		//dealloc vector
 		~properties_vector();
@@ -214,31 +238,58 @@ namespace hcube
 	}
 
 	template<typename CLASS, typename T>
-	property* make_property_member(T CLASS::*member, const char* name)
+	inline property* make_property_member(T CLASS::*member, const char* name)
 	{
 		return (property*)new property_member<CLASS, T> {member, name};
 	}
 
 	template<typename CLASS, typename ENUM>
-	property* make_property_enum_str(ENUM CLASS::*member, std::initializer_list< std::pair< std::string, ENUM > > map_enum, const char* name)
+	inline property* make_property_enum_str(ENUM CLASS::*member, std::initializer_list< std::pair< std::string, ENUM > > map_enum, const char* name)
 	{
 		return (property*)new property_enum_str<CLASS, ENUM>{ member, map_enum, name };
 	}
 
 	template<typename CLASS, typename T, typename I>
-	property* make_property_get_set(T(CLASS::*get)(void), void(CLASS::*set)(I),  const char* name)
+	inline property* make_property_get_set(T(CLASS::*get)(void), void(CLASS::*set)(I),  const char* name)
 	{
 		return (property*)new property_set_get<CLASS, T, I>{get, set, name};
 	}
 
+	template<typename CLASS, typename T, typename I>
+	inline property* make_property_const_get_set(T(CLASS::*get)(void) const, void(CLASS::*set)(I), const char* name)
+	{
+		return (property*)new property_set_get<CLASS, T, I>{ (T(CLASS::*)(void))get, set, name };
+	}
+
+	#define HCUBE_ENABLE_PROPERTIES\
+		friend struct hcube::property;\
+		template<typename CLASS, typename T>\
+		friend struct hcube::property_member;\
+		template<typename CLASS, typename ENUM>\
+		friend struct hcube::property_enum_str;\
+		template<typename CLASS, typename T, typename I>\
+		friend struct hcube::property_set_get;
+
 	#define HCUBE_DEFINE_PROPERTIES(...)\
+		HCUBE_ENABLE_PROPERTIES\
 		static const properties_vector& properties()\
 		{\
 			static properties_vector properties\
-			{\
+			({\
 				__VA_ARGS__\
-			};\
+			});\
 			return properties;\
 		}
 
+	#define HCUBE_EXTENDS_PROPERTIES(extends, ...)\
+		HCUBE_ENABLE_PROPERTIES\
+		static const properties_vector& properties()\
+		{\
+			static properties_vector properties\
+			(\
+				{ &extends::properties() },\
+				{ __VA_ARGS__ }\
+			);\
+			return properties;\
+		}
 }

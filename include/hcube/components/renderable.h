@@ -10,6 +10,7 @@
 #include <hcube/core/entity.h>
 #include <hcube/core/component.h>
 #include <hcube/geometries/obb.h>
+#include <hcube/data/property.h>
 #include <hcube/resources/material.h>
 #include <hcube/components/transform.h>
 
@@ -104,6 +105,14 @@ namespace hcube
 
 			}
 		}
+		
+		HCUBE_DEFINE_PROPERTIES(
+			make_property_const_get_set(
+				&renderable::has_support_culling,
+				&renderable::set_support_culling,
+				"culling"
+			)
+		)
 
 	private:
 

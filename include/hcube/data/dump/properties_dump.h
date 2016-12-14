@@ -15,7 +15,7 @@ namespace dump
 		//for all
 		for (property* p : properties)
 		{
-			out += std::string(p->get_name()) + " " + variant_dump(p->get(obj)) + "\n";
+			out += std::string(p->get_name()) + " " + variant_dump(p->get_value(obj)) + "\n";
 		}
 		return out;
 	}

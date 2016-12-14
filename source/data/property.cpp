@@ -10,6 +10,23 @@ namespace hcube
 		for (property* p : properties) m_properties.push_back(p);
 	}
 
+	properties_vector::properties_vector(
+		const std::vector< const properties_vector* >& extends,
+		const std::vector< property* >& properties
+	)
+	{
+		//for all class
+		for (const properties_vector* ex_properties : extends)
+		//for all properties
+		for (property* p : *ex_properties)
+		//add
+		m_properties.push_back(p);
+		//push all properties of this class
+		for (property* p : properties) m_properties.push_back(p);
+		
+	}
+
+
 	properties_vector::~properties_vector()
 	{
 		for (property* p : m_properties) delete p;

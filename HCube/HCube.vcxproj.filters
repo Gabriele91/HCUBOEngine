@@ -243,6 +243,9 @@
     <ClInclude Include="..\include\hcube\data\dump\properties_dump.h">
       <Filter>File di intestazione\hcube\data\dump</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\hcube\utilities\utf_convert.h">
+      <Filter>File di intestazione\hcube\utilities</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\render\effect.cpp">
@@ -349,6 +352,9 @@
     </ClCompile>
     <ClCompile Include="..\source\data\property.cpp">
       <Filter>File di origine\data</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\utilities\utf_convert.cpp">
+      <Filter>File di origine\utilities</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
