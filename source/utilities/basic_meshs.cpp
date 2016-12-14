@@ -285,5 +285,265 @@ namespace hcube
 
 
 		}
+		
+		//helper class
+		template < class VERTEX >
+		struct icosphere_helper
+		{
+			float						  m_radius;
+			std::vector < VERTEX >		  m_vecs;
+			std::vector < unsigned int >  m_idxs;
+
+			icosphere_helper(float radius) : m_radius(radius)
+			{
+				//const t fector (icosphere)
+				const float t = (1.0f + sqrt(5.0f)) / 2.0f;
+
+				//add vertex
+				add_vertex(vec3(-1, t, 0));
+				add_vertex(vec3(1, t, 0));
+				add_vertex(vec3(-1, -t, 0));
+				add_vertex(vec3(1, -t, 0));
+
+				add_vertex(vec3(0, -1, t));
+				add_vertex(vec3(0, 1, t));
+				add_vertex(vec3(0, -1, -t));
+				add_vertex(vec3(0, 1, -t));
+
+				add_vertex(vec3(t, 0, -1));
+				add_vertex(vec3(t, 0, 1));
+				add_vertex(vec3(-t, 0, -1));
+				add_vertex(vec3(-t, 0, 1));
+
+				//add indexs
+				add_index3(0, 11, 5);
+				add_index3(0, 5, 1);
+				add_index3(0, 1, 7);
+				add_index3(0, 7, 10);
+				add_index3(0, 10, 11);
+
+				add_index3(1, 5, 9);
+				add_index3(5, 11, 4);
+				add_index3(11, 10, 2);
+				add_index3(10, 7, 6);
+				add_index3(7, 1, 8);
+
+				add_index3(3, 9, 4);
+				add_index3(3, 4, 2);
+				add_index3(3, 2, 6);
+				add_index3(3, 6, 8);
+				add_index3(3, 8, 9);
+
+				add_index3(4, 9, 5);
+				add_index3(2, 4, 11);
+				add_index3(6, 2, 10);
+				add_index3(8, 6, 7);
+				add_index3(9, 8, 1);
+
+			}
+
+			inline void add_vertex(const vec3& in_v)
+			{
+				auto norm_v = normalize(in_v);
+				m_vecs.push_back({ norm_v * m_radius, norm_v });
+			}
+
+			inline void add_index3(unsigned int i0, unsigned int i1, unsigned int i2)
+			{
+				m_idxs.push_back(i0);
+				m_idxs.push_back(i1);
+				m_idxs.push_back(i2);
+			}
+
+			void tesselate(unsigned int tesselation_level)
+			{
+				//create
+				std::vector< unsigned int > replacement_idxs;
+				//for all levels
+				for (unsigned int l = 0; l != tesselation_level; ++l)
+				{
+					//alloc
+					replacement_idxs.reserve(m_idxs.size()*4);
+					//count of tris
+					unsigned int n_tris = unsigned int(m_idxs.size() / 3);
+					//compute
+					for (unsigned int j = 0; j != n_tris; j++)
+					{
+						unsigned int a = add_mid_point_and_get_index(m_idxs[j * 3 + 0], m_idxs[j * 3 + 1]);
+						unsigned int b = add_mid_point_and_get_index(m_idxs[j * 3 + 1], m_idxs[j * 3 + 2]);
+						unsigned int c = add_mid_point_and_get_index(m_idxs[j * 3 + 2], m_idxs[j * 3 + 0]);
+						
+						//1 tri x a c
+						replacement_idxs.push_back(m_idxs[j * 3 + 0]);
+						replacement_idxs.push_back(a);
+						replacement_idxs.push_back(c);
+
+						//2 tri a y b
+						replacement_idxs.push_back(a);
+						replacement_idxs.push_back(m_idxs[j * 3 + 1]);
+						replacement_idxs.push_back(b);
+
+						//3 tri c b z
+						replacement_idxs.push_back(c);
+						replacement_idxs.push_back(b);
+						replacement_idxs.push_back(m_idxs[j * 3 + 2]);
+
+						//4 tri c a b
+						replacement_idxs.push_back(c);
+						replacement_idxs.push_back(a);
+						replacement_idxs.push_back(b);
+					}
+					//add new level
+					m_idxs = replacement_idxs;
+				}
+			}
+
+			unsigned int add_mid_point_and_get_index(const unsigned int a, const unsigned int b)
+			{
+				auto mid_point = (m_vecs[a].m_position + m_vecs[b].m_position);
+				unsigned int i = m_vecs.size();
+				add_vertex(mid_point);
+				return i;
+			}
+
+			static vec2 get_latitude_longitude_UV(const vec3& position)
+			{
+				vec2 uv;
+				vec3 norm_position = normalize(position);
+				uv.x = 0.5f + std::atan2(norm_position.z, norm_position.x) / (float)(2.0f*constants::pi<float>());
+				uv.y = 0.5f + norm_position.y * 0.5;
+				return uv;
+			}
+
+			void compute_uvmap()
+			{
+				for (auto& v : m_vecs)
+				{
+					v.m_uvmap = get_latitude_longitude_UV(v.m_position);
+				}
+			}
+		};
+
+		mesh::ptr icosphere(float radius, bool use_uvmap)
+		{
+			return icosphere(radius, 0, use_uvmap);
+		}
+
+		mesh::ptr icosphere(float radius, int lod, bool use_uvmap)
+		{
+			//sphere
+			const float sphere_radius = radius * 0.5f;
+			//cube
+			mesh::ptr mesh_icosphere = mesh::snew();
+			//data
+			mesh::mesh_layout  layout;
+			//uv
+			if (use_uvmap)
+			{
+				struct vertex
+				{
+					vec3 m_position;
+					vec3 m_normal;
+					vec2 m_uvmap;
+					vec3 m_tangent;
+					vec3 m_bitangent;
+
+					vertex(const vec3& in_vertex,
+						   const vec3& in_normal)
+					{
+						m_position = in_vertex;
+						m_normal = in_normal;
+					}
+
+					vertex(const vec3& in_vertex,
+						const vec3& in_normal,
+						const vec2& in_uvmap)
+					{
+						m_position = in_vertex;
+						m_normal = in_normal;
+						m_uvmap = in_uvmap;
+					}
+
+					vertex(const vec3& in_vertex,
+						   const vec3& in_normal,
+						   const vec2& in_uvmap,
+						   const vec3& in_tangent,
+						   const vec3& in_bitangent)
+					{
+						m_position = in_vertex;
+						m_normal = in_normal;
+						m_uvmap = in_uvmap;
+						m_tangent = in_tangent;
+						m_bitangent = in_bitangent;
+					}
+				};
+				
+				layout = mesh::mesh_layout
+				{
+					render::create_IL({
+					sizeof(vertex),
+					{
+						attribute{ ATT_POSITIONT, AST_FLOAT3, offsetof(vertex, m_position) },
+						attribute{ ATT_NORMAL0, AST_FLOAT3,   offsetof(vertex, m_normal) },
+						attribute{ ATT_TEXCOORD0, AST_FLOAT2, offsetof(vertex, m_uvmap) },
+						attribute{ ATT_TANGENT0, AST_FLOAT3,  offsetof(vertex, m_tangent) },
+						attribute{ ATT_BINORMAL0, AST_FLOAT3, offsetof(vertex, m_bitangent) }
+					}
+					}),
+					DRAW_TRIANGLES
+				};
+				//init geometry
+				icosphere_helper<vertex> is_helper(sphere_radius);
+				//LOD
+				if(lod) is_helper.tesselate(lod);
+				//compute uv
+				is_helper.compute_uvmap();
+				//compute tangent per vertex
+				tangent_space_calculation::compute_tangent_fast<vertex>(is_helper.m_vecs);
+				//build mesh
+				mesh_icosphere->build(
+					layout,
+					is_helper.m_idxs.data(),
+					is_helper.m_idxs.size(),
+					(const mesh::byte*)is_helper.m_vecs.data(),
+					is_helper.m_vecs.size() * sizeof(vertex)
+				);
+			}
+			else
+			{
+				struct vertex
+				{
+					vec3 m_position;
+					vec3 m_normal;
+				};
+
+				layout = mesh::mesh_layout
+				{
+					render::create_IL({
+					sizeof(vertex),
+					{
+						attribute{ ATT_POSITIONT, AST_FLOAT3, offsetof(vertex, m_position) },
+						attribute{ ATT_NORMAL0, AST_FLOAT3,   offsetof(vertex, m_normal) }
+					}
+					}),
+					DRAW_TRIANGLES
+				};
+
+				//init geometry
+				icosphere_helper<vertex> is_helper(sphere_radius);
+				//LOD
+				if (lod) is_helper.tesselate(lod);
+				//build mesh
+				mesh_icosphere->build(
+					layout,
+					is_helper.m_idxs.data(),
+					is_helper.m_idxs.size(),
+					(const mesh::byte*)is_helper.m_vecs.data(),
+					is_helper.m_vecs.size() * sizeof(vertex)
+				);
+			}
+
+			return mesh_icosphere;
+		}
 	}
 }

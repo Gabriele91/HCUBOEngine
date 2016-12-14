@@ -16,5 +16,7 @@ namespace hcube
 	{
 		HCUBE_API mesh::ptr cube(const vec3& size, bool uvmap = false);
 		HCUBE_API mesh::ptr square3D(const vec2& size, bool uvmap = false);
-	};
+		HCUBE_API mesh::ptr icosphere(float radius, bool uvmap = false);
+		HCUBE_API mesh::ptr icosphere(float radius, int lod, bool uvmap = false);
+	}
 }
