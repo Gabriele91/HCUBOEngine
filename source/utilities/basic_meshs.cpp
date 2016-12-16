@@ -470,36 +470,8 @@ namespace hcube
 
 			void compute_tangent()
 			{
-				#if 0
 				//compute tangent per vertex
-				tangent_space_calculation::compute_tangent_fast<VERTEX>(m_vecs);
-				#else 
-				#define _norm_smallest(_small,_other_a,_other_b)\
-					(std::abs(model_v.m_normal._small) < std::abs(model_v.m_normal._other_a) &&\
-					 std::abs(model_v.m_normal._small) < std::abs(model_v.m_normal._other_b))
-
-				for (VERTEX& model_v : m_vecs)
-				{
-					/**
-					 *  v' = ( 0,-z, y ) if x is the smallest
-					 *		 (-z, 0, x)  if y is the smallest
-					 *		 (-y, x, 0)  if z is the smallest
-					 *	v = normalize(v')
-					 *	w = u X v
-					 */
-					vec3 v1 =
-						(_norm_smallest(x, y, z)
-						? vec3(0, -model_v.m_normal.z, model_v.m_normal.y)
-						: (_norm_smallest(y, x, z)
-						  ? vec3(-model_v.m_normal.z, 0, model_v.m_normal.x)
-						  : vec3(-model_v.m_normal.y, model_v.m_normal.x, 0) ));
-					vec3 v = normalize(v1);
-					vec3 w = cross(model_v.m_normal, v);
-					model_v.m_tangent   = v;
-					model_v.m_bitangent = w;
-				}
-				#undef _norm_smallest
-				#endif
+				tangent_space_calculation::compute_tangent_fast<VERTEX>(m_idxs,m_vecs);
 			}
 		};
 
