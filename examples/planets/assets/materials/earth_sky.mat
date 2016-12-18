@@ -1,0 +1,6 @@
+//effect "base_texture_normal_specular"
+effect "planet_sky"
+{
+	diffuse_map  texture("earth_color")
+	color        vec4(1.0,1.0,1.0,1.0)
+}

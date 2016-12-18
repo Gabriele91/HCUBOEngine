@@ -31,50 +31,7 @@ namespace hcube
 		PR_WOMAN,
 		PR_MEN
 	};
-
-	class player
-	{
-	public:
-		//values
-		player_type				 m_type{ PR_WOMAN };
-		float					 m_life;
-		std::string				 m_name;
-		int					     m_age;
-		std::vector<std::string> m_nicknames;
-		vec2				     m_hub{ 0, 1 };
-		vec3					 m_pos{ 0, 1, 0 };
-		vec4					 m_times{ 0, 1, 0, 1 };
-		mat3					 m_rot{ 1. };
-		mat4					 m_view{ 2. };
-		//wat?
-		void set_name(const std::string& s)
-		{
-			m_name = s;
-		}
-		std::string& get_name()
-		{
-			return m_name;
-		}
-		//return
-		HCUBE_DEFINE_PROPERTIES(
-			make_property_member(&player::m_life, "life"),
-			make_property_member(&player::m_nicknames, "nicknames"),
-			make_property_get_set(&player::get_name, &player::set_name, "name"),
-			make_property_member(&player::m_age, "age"),
-			make_property_member(&player::m_hub, "hub"),
-			make_property_member(&player::m_pos, "position"),
-			make_property_member(&player::m_rot, "rotation"),
-			make_property_member(&player::m_view, "view"),
-			make_property_enum_str(
-			&player::m_type,
-			{
-				{ std::string("men")  , PR_MEN   },
-				{ std::string("woman"), PR_WOMAN }
-			},
-			"type")
-		)
-	};
-
+	
 	enum 
 	{
 		SW_LOW,
@@ -90,9 +47,12 @@ namespace hcube
 		{ 2048,2048 },
 	};
 
+
 	void app_basic::key_event(application& app, int key, int scancode, int action, int mods)
 	{
-			 if (key == GLFW_KEY_ESCAPE)
+		const float move_vel = 5.0f;
+
+		if (key == GLFW_KEY_ESCAPE)
 		{
 			m_loop = false;
 			return;
@@ -131,12 +91,12 @@ namespace hcube
 			rendering_system*	r_system = m_systems.get_system<rendering_system>();
 			r_system->stop_frustum_culling(true);
 		}
-		else if (key == GLFW_KEY_W)    m_camera->get_component<transform>()->move({ 0,0,1 });
-		else if (key == GLFW_KEY_S)    m_camera->get_component<transform>()->move({ 0,0,-1 });
-		else if (key == GLFW_KEY_A)    m_camera->get_component<transform>()->move({-1,0,0 });
-		else if (key == GLFW_KEY_D)    m_camera->get_component<transform>()->move({ 1,0,0 });
-		else if (key == GLFW_KEY_R)    m_camera->get_component<transform>()->move({ 0,1,0 });
-		else if (key == GLFW_KEY_F)    m_camera->get_component<transform>()->move({ 0,-1,0 });
+		else if (key == GLFW_KEY_W)    m_camera->get_component<transform>()->move({ 0,0,move_vel });
+		else if (key == GLFW_KEY_S)    m_camera->get_component<transform>()->move({ 0,0,-move_vel });
+		else if (key == GLFW_KEY_A)    m_camera->get_component<transform>()->move({-move_vel,0,0 });
+		else if (key == GLFW_KEY_D)    m_camera->get_component<transform>()->move({ move_vel,0,0 });
+		else if (key == GLFW_KEY_R)    m_camera->get_component<transform>()->move({ 0,move_vel,0 });
+		else if (key == GLFW_KEY_F)    m_camera->get_component<transform>()->move({ 0,-move_vel,0 });
 		else if ((mods == GLFW_MOD_SUPER ||
 				  mods == GLFW_MOD_CONTROL) &&
 				  action == GLFW_PRESS)
@@ -176,6 +136,7 @@ namespace hcube
 
 	void app_basic::camera_look_around(application& app)
     {
+		const float speed = 1500.0f;
 		//center
 		dvec2 mouse_center = (dvec2)app.get_window_size()*0.5;
 		//mouse pos
@@ -183,7 +144,7 @@ namespace hcube
 		//direction
 		dvec2 mouse_dir = mouse_pos - mouse_center;
 		//compute speed
-		double mouse_speed = length(mouse_dir / (dvec2)app.get_window_size()) * 100.0f;
+		double mouse_speed = length(mouse_dir / (dvec2)app.get_window_size()) * speed;
 		//do not
 		if (mouse_speed <= 0.49) return;
 		//norm direction
@@ -202,6 +163,7 @@ namespace hcube
 		app.set_mouse_position((dvec2)app.get_window_size()*0.5);
 		//commond assets
 		m_resources.add_resources_file("common.rs");
+		m_resources.add_resources_file("planets/assets/assets.rs");
 		//get info about window
 		m_window_mode_info = window_info
 		{
@@ -219,7 +181,8 @@ namespace hcube
 		//add into system
 		m_systems.add_system(m_rendering);
 		//ambient color
-		m_rendering->set_ambient_color(vec4{ 0.16, 0.16, 0.16, 1.0 });
+		m_rendering->set_clear_color(vec4{ 0.0, 0.0, 0.0, 0.0 });
+		m_rendering->set_ambient_color(vec4{ 1.0, 1.0, 1.0, 1.0 });
 		//scene
 		{
 			//camera
@@ -230,31 +193,68 @@ namespace hcube
 			m_aspect = float(size.x) / float(size.y);
 			c_camera->set_viewport(ivec4{ 0, 0, size.x, size.y });
 			c_camera->set_perspective(m_fov, m_aspect, 0.1, 500.0);
-			t_camera->look_at(vec3{ 0.0f, 6.9f, -45.0f },
-							  vec3{ 0.0f, 1.0f, 0.0f },
-							  vec3{ 0.0f, 1.0f, 0.0f });
+			t_camera->look_at(
+				vec3{ 0.0f, 0.0f, -300.0f },
+				vec3{ 0.0f, 0.0f, 0.0f },
+				vec3{ 0.0f, 1.0f, 0.0f }
+			);
 			//set camera
 			m_systems.add_entity(m_camera);
-		}
-		//parser test
-		player in_mario;
-		parser::properties_parser().parse(
-		"name string(\"Mario\")\n "
-		"age int(18)           \n"
-		"life float(10.5)      \n"
-		"nicknames string[]    \n"
-		"{                     \n"
-		"    \"Dr. Mario\",    \n"
-		"    \"Super Mario\"   \n"
-		"}"
-		"type string(\"men\")", 
-		in_mario);
-		std::cout << dump::variant_dump(variant("\"\'mario\\\\")) << std::endl;
-		std::vector<std::string> vstr{ "mario1", "mario2\"hello\"", "lol" };
-		std::cout << dump::variant_dump(variant(vstr)) << std::endl;
-		std::cout << dump::properties_dump(in_mario) << std::endl;
-		std::cout << dump::properties_dump(*m_camera->get_component<transform>()) << std::endl;
 
+			//planet
+			auto planet_sky = gameobject::node_new(basic_meshs::sphere(102.5, true));
+			planet_sky->set_name("planet_sky");
+			{
+				//material
+				auto p_mat = m_resources.get_material("earth_sky");
+				p_mat->get_parameter_by_name("atmosphere_radius")->set_value(102.5f);
+				p_mat->get_parameter_by_name("planetary_radius")->set_value(100.0f);
+				p_mat->get_parameter_by_name("sun_pos")->set_value(vec3(30.0, 0, 0.0));
+				planet_sky->get_component<renderable>()->set_material(
+					p_mat
+				);
+			}
+			planet_sky->get_component<transform>()->position(
+				vec3{ 0.0, 0., 0.0 }
+			);
+
+			//planet ground
+			auto planet_ground = gameobject::node_new(basic_meshs::sphere(100., true));
+			planet_ground->set_name("planet_ground");
+			{
+				//material
+				auto p_mat = m_resources.get_material("earth_ground");
+				p_mat->get_parameter_by_name("atmosphere_radius")->set_value(102.5f);
+				p_mat->get_parameter_by_name("planetary_radius")->set_value(100.0f);
+				p_mat->get_parameter_by_name("sun_pos")->set_value(vec3(30.0, 0, 0.0));
+				planet_ground->get_component<renderable>()->set_material(
+					p_mat
+				);
+			}
+			planet_ground->get_component<transform>()->position(
+				vec3{ 0.0, 0., 0.0 }
+			);
+#if 0
+			const float scaleDepth = 0.25;
+			const float Kr = 0.0025f;
+			const float Km = 0.0010f;
+			const float ESun = 16.0f;
+			p_mat->get_parameter_by_name("inv_wave_length")->set_value(vec3
+			{	
+				1.f / std::pow(0.650f, 4.0f), // 650 nm for red
+				1.f / std::pow(0.570f, 4.0f), // 570 nm for green
+				1.f / std::pow(0.475f, 4.0f)  // 475 nm for blue
+			});
+			p_mat->get_parameter_by_name("fKrESun")->set_value(Kr * ESun);
+			p_mat->get_parameter_by_name("fKmESun")->set_value(Km * ESun);
+			p_mat->get_parameter_by_name("fKr4PI")->set_value(Kr * 4.0f * constants::pi<float>());
+			p_mat->get_parameter_by_name("fKm4PI")->set_value(Km * 4.0f * constants::pi<float>());
+			p_mat->get_parameter_by_name("fScaleDepth")->set_value(scaleDepth);
+#endif 
+			//set camera
+			m_systems.add_entity(planet_sky);
+			m_systems.add_entity(planet_ground);
+		}
 		
 	}
 
@@ -262,7 +262,26 @@ namespace hcube
     {
 		//////////////////////////////////////////////////////////
 		//update
-		//
+#if 1
+		for (const std::string& name : std::vector<std::string>({ "planet_sky","planet_ground" }))
+		{
+			auto list_of_e = m_systems.get_entities_by_name(name);
+			if (!list_of_e.size()) continue;
+			auto planet = list_of_e[0];
+			planet
+				->get_component<renderable>()
+				->get_material()
+				->get_parameter_by_name("camera_height")
+				->set_value(
+					distance(m_camera
+						->get_component<transform>()
+						->get_global_position(),
+						planet
+						->get_component<transform>()
+						->get_global_position())
+				);
+		}
+#endif
 		//////////////////////////////////////////////////////////
 		//////////////////////////////////////////////////////////
 		//draw

@@ -52,6 +52,10 @@ namespace hcube
 		};
 
 		const effect::parameter* get_default_parameter(default_parameters dp) const;
+		const effect::parameter* get_parameter_by_name(const std::string& name) const;
+
+		effect::parameter* get_default_parameter(default_parameters dp);
+		effect::parameter* get_parameter_by_name(const std::string& name);
 
 	protected:
 

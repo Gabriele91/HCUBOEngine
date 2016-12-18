@@ -285,6 +285,179 @@ namespace hcube
 
 
 		}
+		mesh::ptr sphere(const float sphere_radius, const bool use_uvmap)
+		{
+			return sphere(sphere_radius, 100, 50, use_uvmap);
+		}
+		mesh::ptr sphere(const float sphere_radius, const int rings, const int sectors, const bool use_uvmap)
+		{
+			//cube
+			mesh::ptr mesh_sphere = mesh::snew();
+			//data
+			mesh::mesh_layout  layout;
+			//if uv
+			if (use_uvmap)
+			{
+				struct vertex
+				{
+					vec3 m_position;
+					vec3 m_normal;
+					vec2 m_uvmap;
+					vec3 m_tangent;
+					vec3 m_bitangent;
+				};
+
+				layout = mesh::mesh_layout
+				{
+					render::create_IL({
+					sizeof(vertex),
+					{
+						attribute{ ATT_POSITIONT, AST_FLOAT3, offsetof(vertex, m_position) },
+						attribute{ ATT_NORMAL0, AST_FLOAT3,   offsetof(vertex, m_normal) },
+						attribute{ ATT_TEXCOORD0, AST_FLOAT2, offsetof(vertex, m_uvmap) },
+						attribute{ ATT_TANGENT0, AST_FLOAT3,  offsetof(vertex, m_tangent) },
+						attribute{ ATT_BINORMAL0, AST_FLOAT3, offsetof(vertex, m_bitangent) }
+					}
+					}),
+					DRAW_TRIANGLES
+				};
+				//set vertices
+				const size_t vertices_size = rings*sectors;
+				const size_t indices_size = (rings - 1)*(sectors - 1) * 6;
+				float const R = 1.0f / (float)(rings - 1);
+				float const S = 1.0f / (float)(sectors - 1);
+				float const RADIUS = sphere_radius;
+				int idv = 0;
+				//alloc
+				std::vector< vertex >       vertices(vertices_size);
+				std::vector< unsigned int > indices(indices_size);
+				//set vertex
+				for (int r = 0; r<rings; ++r)
+				{
+					for (int s = 0; s<sectors; ++s)
+					{
+						float const y = sin(-0.5*constants::pi<float>() + constants::pi<float>() * r * R);
+						float const x = cos(2 * constants::pi<float>() * s * S) * sin(constants::pi<float>() * r * R);
+						float const z = sin(2 * constants::pi<float>() * s * S) * sin(constants::pi<float>() * r * R);
+						/* calc vertex */
+						vertices[idv].m_position.x = -x * RADIUS;
+						vertices[idv].m_position.y = -y * RADIUS;
+						vertices[idv].m_position.z = -z * RADIUS;
+						/* calc normal */
+						vertices[idv].m_normal.x = -x;
+						vertices[idv].m_normal.y = -y;
+						vertices[idv].m_normal.z = -z;
+						/* calc uv */
+						vertices[idv].m_uvmap.x = s*S;
+						vertices[idv].m_uvmap.y = 1.0f - r*R;
+						//
+						++idv;
+					}
+				}
+				//set indices
+				int i = -1;
+				for (int r = 0; r < rings - 1; r++)
+				{
+					for (int s = 0; s < sectors - 1; s++)
+					{
+						//1 2 3
+						indices[++i] = r * sectors + s;
+						indices[++i] = r * sectors + (s + 1);
+						indices[++i] = (r + 1) * sectors + (s + 1);
+						//1 3 4
+						indices[++i] = r * sectors + s;
+						indices[++i] = (r + 1) * sectors + (s + 1);
+						indices[++i] = (r + 1) * sectors + s;
+					}
+				}
+				//compute tangent per vertex
+				tangent_space_calculation::compute_tangent_fast<vertex>(indices, vertices);
+				//build mesh
+				mesh_sphere->build(
+					layout,
+					indices.data(),
+					indices.size(),
+					(const mesh::byte*)vertices.data(),
+					vertices.size() * sizeof(vertex)
+				);
+			}
+			else
+			{
+				struct vertex
+				{
+					vec3 m_position;
+					vec3 m_normal;
+				};
+
+				layout = mesh::mesh_layout
+				{
+					render::create_IL({
+					sizeof(vertex),
+					{
+						attribute{ ATT_POSITIONT, AST_FLOAT3, offsetof(vertex, m_position) },
+						attribute{ ATT_NORMAL0, AST_FLOAT3,   offsetof(vertex, m_normal) }
+					}
+					}),
+					DRAW_TRIANGLES
+				};
+				//set vertices
+				const size_t vertices_size = rings*sectors;
+				const size_t indices_size = (rings - 1)*(sectors - 1) * 6;
+				float const R = 1.0f / (float)(rings - 1);
+				float const S = 1.0f / (float)(sectors - 1);
+				float const RADIUS = sphere_radius;
+				int idv = 0;
+				//alloc
+				std::vector< vertex >       vertices(vertices_size);
+				std::vector< unsigned int > indices(indices_size);
+				//set vertex
+				for (int r = 0; r<rings; ++r)
+				{
+					for (int s = 0; s<sectors; ++s)
+					{
+						float const y = sin(-0.5*constants::pi<float>() + constants::pi<float>() * r * R);
+						float const x = cos(2 * constants::pi<float>() * s * S) * sin(constants::pi<float>() * r * R);
+						float const z = sin(2 * constants::pi<float>() * s * S) * sin(constants::pi<float>() * r * R);
+						/* calc vertex */
+						vertices[idv].m_position.x = x * RADIUS;
+						vertices[idv].m_position.y = y * RADIUS;
+						vertices[idv].m_position.z = z * RADIUS;
+						/* calc normal */
+						vertices[idv].m_normal.x = x;
+						vertices[idv].m_normal.y = y;
+						vertices[idv].m_normal.z = z;
+						//
+						++idv;
+					}
+				}
+				//set indices
+				int i = -1;
+				for (int r = 0; r < rings - 1; r++)
+				{
+					for (int s = 0; s < sectors - 1; s++)
+					{
+						//1 2 3
+						indices[++i] = r * sectors + s;
+						indices[++i] = r * sectors + (s + 1);
+						indices[++i] = (r + 1) * sectors + (s + 1);
+						//1 3 4
+						indices[++i] = r * sectors + s;
+						indices[++i] = (r + 1) * sectors + (s + 1);
+						indices[++i] = (r + 1) * sectors + s;
+					}
+				}
+				//build mesh
+				mesh_sphere->build(
+					layout,
+					indices.data(),
+					indices.size(),
+					(const mesh::byte*)vertices.data(),
+					vertices.size() * sizeof(vertex)
+				);
+			}
+
+			return mesh_sphere;
+		}
 		
 		//helper class
 		template < class VERTEX >
@@ -475,15 +648,13 @@ namespace hcube
 			}
 		};
 
-		mesh::ptr icosphere(float radius, bool use_uvmap)
+		mesh::ptr icosphere(const float sphere_radius, const bool use_uvmap)
 		{
-			return icosphere(radius, 3, use_uvmap);
+			return icosphere(sphere_radius, 3, use_uvmap);
 		}
 
-		mesh::ptr icosphere(float radius, int lod, bool use_uvmap)
+		mesh::ptr icosphere(const float sphere_radius, const int lod, const bool use_uvmap)
 		{
-			//sphere
-			const float sphere_radius = radius * 0.5f;
 			//cube
 			mesh::ptr mesh_icosphere = mesh::snew();
 			//data

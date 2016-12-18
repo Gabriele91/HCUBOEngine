@@ -109,6 +109,32 @@ namespace hcube
 		return nullptr;
 	}
 
+	const effect::parameter* material::get_parameter_by_name(const std::string& name) const
+	{
+		if (!m_effect) return nullptr;
+		//get id
+		int   id_param = m_effect->get_parameter_id(name);
+		//return param
+		return (*m_parameters)[id_param].get();
+	}	
+
+	effect::parameter* material::get_default_parameter(material::default_parameters dp)
+	{
+		int id_param = m_default_parameters[dp];
+		if (id_param >= 0) return (*m_parameters)[m_default_parameters[dp]].get();
+		return nullptr;
+	}
+
+	effect::parameter* material::get_parameter_by_name(const std::string& name)
+	{
+		if (!m_effect) return nullptr;
+		//get id
+		int   id_param = m_effect->get_parameter_id(name);
+		//return param
+		return (*m_parameters)[id_param].get();
+	}
+
+
 	material_ptr material::copy() const
 	{
 		auto omaterial = material_snew();

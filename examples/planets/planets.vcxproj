@@ -164,6 +164,14 @@
   <ItemGroup>
     <ClInclude Include="include\app_basic.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="assets\assets.rs" />
+    <None Include="assets\effects\planet_ground.fxhc" />
+    <None Include="assets\materials\earth_ground.mat" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="assets\textures\earth_color.png" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
