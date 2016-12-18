@@ -29,6 +29,10 @@ void main()
                          t_pixel.z, b_pixel.z, n_pixel.z));
 	//uvmap
 	frag_uvcoord = uvcoord;
+	//more pass
+	#ifdef ADDITIONAL_VERTEX_SHADER
+		ADDITIONAL_VERTEX_SHADER()
+	#endif
 }
 
 #pragma fragment
@@ -75,6 +79,16 @@ void main()
 #endif
 	//specular
 	float specular = texture(specular_map, frag_uvcoord).r;
-	//outputs
-	output_fragment(frag_position, compute_normal(), (texture_color*color), specular);
+	//more pass
+	#ifdef ADDITIONAL_FRAGMENT_SHADER
+		vec4  v_position = frag_position;
+		vec3  v_normal = compute_normal();
+		vec4  v_color  = texture_color*color;
+		ADDITIONAL_FRAGMENT_SHADER(v_position, v_normal, v_color, specular);
+		//outputs
+		output_fragment(v_position, v_normal, v_color, specular);
+	#else
+		//outputs
+		output_fragment(frag_position, compute_normal(), (texture_color*color), specular);
+	#endif 
 }

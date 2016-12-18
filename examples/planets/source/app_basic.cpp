@@ -201,14 +201,18 @@ namespace hcube
 			//set camera
 			m_systems.add_entity(m_camera);
 
+			const float scale_depth = 0.25;
+			const float size_planet = 100.0;
+			const float size_sky = size_planet + 3;
 			//planet
-			auto planet_sky = gameobject::node_new(basic_meshs::sphere(102.5, true));
+			auto planet_sky = gameobject::node_new(basic_meshs::sphere(size_sky, true));
 			planet_sky->set_name("planet_sky");
 			{
 				//material
 				auto p_mat = m_resources.get_material("earth_sky");
-				p_mat->get_parameter_by_name("atmosphere_radius")->set_value(102.5f);
-				p_mat->get_parameter_by_name("planetary_radius")->set_value(100.0f);
+				p_mat->get_parameter_by_name("atmosphere_radius")->set_value(size_sky);
+				p_mat->get_parameter_by_name("planetary_radius")->set_value(size_planet);
+				p_mat->get_parameter_by_name("fScaleDepth")->set_value(scale_depth);
 				p_mat->get_parameter_by_name("sun_pos")->set_value(vec3(30.0, 0, 0.0));
 				planet_sky->get_component<renderable>()->set_material(
 					p_mat
@@ -219,13 +223,14 @@ namespace hcube
 			);
 
 			//planet ground
-			auto planet_ground = gameobject::node_new(basic_meshs::sphere(100., true));
+			auto planet_ground = gameobject::node_new(basic_meshs::sphere(size_planet, true));
 			planet_ground->set_name("planet_ground");
 			{
 				//material
 				auto p_mat = m_resources.get_material("earth_ground");
-				p_mat->get_parameter_by_name("atmosphere_radius")->set_value(102.5f);
-				p_mat->get_parameter_by_name("planetary_radius")->set_value(100.0f);
+				p_mat->get_parameter_by_name("atmosphere_radius")->set_value(size_sky);
+				p_mat->get_parameter_by_name("planetary_radius")->set_value(size_planet);
+				p_mat->get_parameter_by_name("fScaleDepth")->set_value(scale_depth);
 				p_mat->get_parameter_by_name("sun_pos")->set_value(vec3(30.0, 0, 0.0));
 				planet_ground->get_component<renderable>()->set_material(
 					p_mat
