@@ -471,8 +471,9 @@ namespace hcube
                         //shader
                         this_pass.m_shader = shader::snew();
                         //load effect
-                        if (!this_pass.m_shader->load_effect
-                            (parser_pass.m_shader.m_text,
+                        if (!this_pass.m_shader->load_effect(
+							 resources,
+							 parser_pass.m_shader.m_text,
                              path,
                              shader_defines,
                              parser_pass.m_shader.m_line - 1

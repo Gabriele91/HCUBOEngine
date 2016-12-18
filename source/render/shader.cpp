@@ -8,6 +8,7 @@
 #include <hcube/render/render.h>
 #include <hcube/render/OpenGL4.h>
 #include <hcube/render/shader.h>
+#include <hcube/core/resources_manager.h>
 
 namespace hcube
 {
@@ -215,7 +216,79 @@ R"GLSL(
 		return false;
 	}
 
-	inline bool process_include(shader::filepath_map& filepath_map, 
+	inline bool parse_cinclude(const char* in_out, std::string& out, size_t& line)
+	{
+		const char *tmp = in_out;
+		out = "";
+		//start parse
+		if ((*tmp) == '<')  //["...."]
+		{
+			++tmp;  //[...."]
+			while ((*tmp) != '>' && (*tmp) != '\n')
+			{
+				if ((*tmp) == '\\') //[\.]
+				{
+					++tmp;  //[.]
+					switch (*tmp)
+					{
+					case 'n':
+						out += '\n';
+						break;
+					case 't':
+						out += '\t';
+						break;
+					case 'b':
+						out += '\b';
+						break;
+					case 'r':
+						out += '\r';
+						break;
+					case 'f':
+						out += '\f';
+						break;
+					case 'a':
+						out += '\a';
+						break;
+					case '\\':
+						out += '\\';
+						break;
+					case '?':
+						out += '\?';
+						break;
+					case '\'':
+						out += '\'';
+						break;
+					case '\"':
+						out += '\"';
+						break;
+					case '\n': /* jump unix */
+						++line;
+						break;
+					case '\r': /* jump mac */
+						++line;
+						if ((*(tmp + 1)) == '\n') ++tmp; /* jump window (\r\n)*/
+						break;
+					default:
+						return true;
+						break;
+					}
+				}
+				else
+				{
+					if ((*tmp) != '\0') out += (*tmp);
+					else return false;
+				}
+				++tmp;//next char
+			}
+			if ((*tmp) == '\n') return false;
+			in_out = tmp + 1;
+			return true;
+		}
+		return false;
+	}
+
+	inline bool process_include(resources_manager* rs_manager, 
+								shader::filepath_map& filepath_map,
 								std::string& output,
 								const std::string& path_file,
 								size_t& n_files,
@@ -225,7 +298,7 @@ R"GLSL(
 		if (level > 16)
 		{
 			std::cout << "effect shader, header inclusion depth limit reached:" << std::endl
-				<< "might be caused by cyclic header inclusion" << std::endl;
+					  << "might be caused by cyclic header inclusion" << std::endl;
 			return false;
 		}
 		//get base dir
@@ -265,16 +338,25 @@ R"GLSL(
 					//jmp space
 					jmp_spaces(c_effect_line);
 					//path
+					std::string file_name;
 					std::string path_include;
 					//path
 					std::string output_include;
 					//get path
-					if (!parse_cstring(c_effect_line, path_include, line))
+					if (parse_cstring(c_effect_line, file_name, line))
 					{
-						return false;
+						path_include = filedir + "/" + file_name;
+					}
+					else
+					{
+						if (!rs_manager || !parse_cinclude(c_effect_line, file_name, line))
+						{
+							return false;
+						}
+						path_include = rs_manager->get_shader_path(file_name);
 					}
 					//add include
-					if (!process_include(filepath_map,output_include, filedir + "/" + path_include, n_files, level + 1))
+					if (!process_include(rs_manager, filepath_map, output_include, path_include, n_files, level + 1))
 					{
 						return false;
 					}
@@ -289,7 +371,8 @@ R"GLSL(
 		return true;
 	}
 
-	inline bool process_import(shader::filepath_map& filepath_map,
+	inline bool process_import(resources_manager* rs_manager,
+							   shader::filepath_map& filepath_map,
 							   std::stringstream& effect, 
 							   const std::string& path_effect_file,
 							   std::string& out_vertex,
@@ -305,7 +388,7 @@ R"GLSL(
 		if (level > 16)
 		{
 			std::cout << "effect shader, header inclusion depth limit reached:" << std::endl
-				<< "might be caused by cyclic header inclusion" << std::endl;
+					  << "might be caused by cyclic header inclusion" << std::endl;
 			return false;
 		}
 		//state
@@ -395,16 +478,25 @@ R"GLSL(
 					//jmp space
 					jmp_spaces(c_effect_line);
 					//path
-					std::string path_include;
+					std::string file_name;
+					std::string path_include; 
 					//path
 					std::string output_include;
 					//get path
-					if (!parse_cstring(c_effect_line, path_include, line))
+					if (parse_cstring(c_effect_line, file_name, line))
 					{
-						return false;
+						path_include = filedir + "/" + file_name;
+					}
+					else
+					{
+						if (!rs_manager || !parse_cinclude(c_effect_line, file_name, line))
+						{
+							return false;
+						}
+						path_include = rs_manager->get_shader_path(file_name);
 					}
 					//add include
-					if (!process_include(filepath_map,output_include, filedir + "/" + path_include, n_files, level + 1))
+					if (!process_include(rs_manager, filepath_map, output_include, path_include, n_files, level + 1))
 					{
 						return false;
 					}
@@ -418,18 +510,28 @@ R"GLSL(
 					//jmp space
 					jmp_spaces(c_effect_line);
 					//path
-					std::string path_include;
+					std::string file_name;
+					std::string import_path;			
 					//get path
-					if (!parse_cstring(c_effect_line, path_include, line))
+					if (parse_cstring(c_effect_line, file_name, line))
 					{
-						return false;
+						import_path = filedir + "/" + file_name;
 					}
-					//path
-					std::string import_path = filedir + "/" + path_include;
+					else
+					{
+						if (!rs_manager || !parse_cinclude(c_effect_line, file_name, line))
+						{
+							return false;
+						}
+						import_path = rs_manager->get_shader_path(file_name);
+					}
 					//input stream
 					std::stringstream import_effect(filesystem::text_file_read_all(import_path));
 					//add include
-					if (!process_import(filepath_map, import_effect, import_path, 
+					if (!process_import(rs_manager,
+										filepath_map, 
+										import_effect, 
+										import_path, 
 										vertex, 
 										fragment, 
 										geometry,
@@ -464,6 +566,40 @@ R"GLSL(
 
 	#pragma endregion 
 
+	bool shader::load(resources_manager& resources, const std::string& effect_file)
+
+	{
+		//id file
+		size_t  this_file = 0;
+		//buffers
+		std::string vertex, fragment, geometry, tcontrol, teval;
+		//input stream
+		std::stringstream stream_effect(filesystem::text_file_read_all(effect_file));
+		//process
+		if (!process_import(&resources,
+							m_file_path_id,
+							stream_effect,
+							effect_file,
+							vertex,
+							fragment,
+							geometry,
+							tcontrol,
+							teval,
+							this_file,
+							0, //line 0
+							0  //file 0
+						)) return false;
+		//load shader
+		return load_shader(
+			vertex, 0,
+			fragment, 0,
+			geometry, 0,
+			tcontrol, 0,
+			teval, 0,
+			{}
+		);
+	}
+
 	bool shader::load(const std::string& effect_file,
                       const preprocess_map& defines)
 	{
@@ -474,7 +610,8 @@ R"GLSL(
 		//input stream
 		std::stringstream stream_effect(filesystem::text_file_read_all(effect_file));
 		//process
-		if (!process_import(m_file_path_id, 
+		if (!process_import(nullptr,
+							m_file_path_id, 
 							stream_effect,
 						    effect_file,
 							vertex, 
@@ -509,7 +646,8 @@ R"GLSL(
 		//input stream
 		std::stringstream stream_effect(effect);
 		//process
-		if (!process_import(m_file_path_id,
+		if (!process_import(nullptr,
+						    m_file_path_id,
 							stream_effect,
 							effect_file,
 							vertex,
@@ -527,6 +665,43 @@ R"GLSL(
 						  tcontrol, 0,
 						  teval, 0,
 						  defines);
+	}
+
+
+	bool shader::load_effect(resources_manager& resources,
+							 const std::string& effect,
+							 const std::string& effect_file,
+							 const preprocess_map& defines,
+							 const size_t line_effect)
+
+	{
+
+		//id file
+		size_t  this_file = 0;
+		//buffers
+		std::string vertex, fragment, geometry, tcontrol, teval;
+		//input stream
+		std::stringstream stream_effect(effect);
+		//process
+		if (!process_import(&resources,
+							m_file_path_id,
+							stream_effect,
+							effect_file,
+							vertex,
+							fragment,
+							geometry,
+							tcontrol,
+							teval,
+							this_file,
+							line_effect,
+							0)) return false;
+		//load shader
+		return load_shader(vertex, 0,
+			fragment, 0,
+			geometry, 0,
+			tcontrol, 0,
+			teval, 0,
+			defines);
 	}
 
 	bool shader::load(const std::string& vs_file,

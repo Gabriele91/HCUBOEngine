@@ -77,7 +77,7 @@ sub_effect
 				out vec2 frag_uvcoord;
 				out mat3 tbn;
 				//uniform
-				#pragma include "lib/uniform.glsl"
+				#pragma include <uniform>
 				
 				uniform float camera_height;			
 				uniform float atmosphere_radius;			
@@ -188,7 +188,7 @@ sub_effect
 				in vec3 camera_direction;
 				
 				//out
-				#pragma include "lib/output_fragment.glsl"
+				#pragma include <output_fragment>
 				
 				//uniform
 				uniform vec4      color;

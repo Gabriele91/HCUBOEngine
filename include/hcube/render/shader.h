@@ -81,10 +81,7 @@ namespace hcube
 
 		virtual ~shader();
 
-		bool load(resources_manager& resources, const std::string& path)
-        {
-            return load(path,{});
-		}
+		bool load(resources_manager& resources, const std::string& path);
         
         bool load(const std::string& file_vs,
                   const std::string& file_fs,
@@ -101,6 +98,12 @@ namespace hcube
 			             const std::string& effect_file,
 						 const preprocess_map& defines,
                          const size_t line);
+
+		bool load_effect(resources_manager& resources, 
+						 const std::string& effect,
+						 const std::string& effect_file,
+						 const preprocess_map& defines,
+						 const size_t line);
 
 		bool load_shader(const std::string& vs,
                          const size_t line_vs,
