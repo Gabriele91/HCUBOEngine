@@ -192,7 +192,7 @@ namespace hcube
 			vec2 size = app.get_window_size();
 			m_aspect = float(size.x) / float(size.y);
 			c_camera->set_viewport(ivec4{ 0, 0, size.x, size.y });
-			c_camera->set_perspective(m_fov, m_aspect, 0.1, 500.0);
+			c_camera->set_perspective(m_fov, m_aspect, 0.1, 1000.0);
 			t_camera->look_at(
 				vec3{ 0.0f, 0.0f, -300.0f },
 				vec3{ 0.0f, 0.0f, 0.0f },
@@ -205,7 +205,7 @@ namespace hcube
 			const float size_planet = 100.0;
 			const float size_sky = size_planet + 2.5;
 			//planet
-			auto planet_sky = gameobject::node_new(basic_meshs::sphere(size_sky, true));
+			auto planet_sky = gameobject::node_new(basic_meshs::sphere(size_sky, 100, 100, true));
 			planet_sky->set_name("planet_sky");
 			{
 				//material
@@ -223,7 +223,7 @@ namespace hcube
 			);
 
 			//planet ground
-			auto planet_ground = gameobject::node_new(basic_meshs::sphere(size_planet, true));
+			auto planet_ground = gameobject::node_new(basic_meshs::icosphere(size_planet, 5, true));
 			planet_ground->set_name("planet_ground");
 			{
 				//material
