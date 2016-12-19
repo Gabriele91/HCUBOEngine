@@ -78,8 +78,8 @@ sub_effect
 				uniform float fKm4PI;				// Km * 4 * PI
 				uniform float fScaleDepth;			// The scale depth (i.e. the altitude at which the atmosphere's average density is found)
 
-				const int nSamples = 4;
-				const float fSamples = 4.0;
+				const int nSamples = 2;
+				const float fSamples = 2.0;
 
 				out vec3 planet_first_color;
 				out vec3 planet_secondary_color;				
@@ -138,8 +138,8 @@ sub_effect
 					}
 
 					// Finally, scale the Mie and Rayleigh colors and set up the varying variables for the pixel shader
-					planet_first_color = v3FrontColor * (inv_wave_length * fKrESun);
-					planet_secondary_color = v3FrontColor * fKmESun;
+					planet_first_color = clamp(v3FrontColor * (inv_wave_length * fKrESun), 0.0, 1.0);
+					planet_secondary_color =clamp( v3FrontColor * fKmESun, 0.0, 1.0);
 					// Direction
 					camera_direction = camera_position - v3Pos;
 				}

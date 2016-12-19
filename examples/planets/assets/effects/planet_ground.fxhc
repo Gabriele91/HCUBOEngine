@@ -69,8 +69,8 @@ sub_effect
 					uniform float fKm4PI;				// Km * 4 * PI
 					uniform float fScaleDepth;			// The scale depth (i.e. the altitude at which the atmosphere's average density is found)
 
-					const int nSamples = 6;
-					const float fSamples = 6.0;
+					const int nSamples = 2;
+					const float fSamples = 2.0;
 
 					out vec3 planet_first_color;
 					out vec3 planet_secondary_color;

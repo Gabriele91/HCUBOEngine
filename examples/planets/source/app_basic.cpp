@@ -203,7 +203,7 @@ namespace hcube
 
 			const float scale_depth = 0.25;
 			const float size_planet = 100.0;
-			const float size_sky = size_planet + 3;
+			const float size_sky = size_planet + 2.5;
 			//planet
 			auto planet_sky = gameobject::node_new(basic_meshs::sphere(size_sky, true));
 			planet_sky->set_name("planet_sky");
