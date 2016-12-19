@@ -28,8 +28,9 @@ namespace hcube
 
 	public:
 
-		text_mesh(size_t text_max_size = 255); 
-		text_mesh(const std::u32string text, size_t text_max_size = 255);
+        text_mesh(size_t text_max_size = 255);
+        text_mesh(const std::string& text, size_t text_max_size = 255);
+        text_mesh(const std::u32string& text, size_t text_max_size = 255);
 		virtual ~text_mesh();
 
 		void set_text_max_size(size_t max_size);
@@ -53,13 +54,13 @@ namespace hcube
 				"text_max_size"
 			),
 			make_property_function<text_mesh>(
-				[](text_mesh* self)-> variant_ref
+				[](text_mesh* _self)-> variant_ref
 				{ 
-					return self->get_text_utf8(); 
+					return variant_ref(_self->get_text_utf8());
 				},
-				[](text_mesh* self, variant_ref value) 
+				[](text_mesh* _self, variant_ref value)
 				{ 
-					self->set_text(value.get<std::string>()); 
+					_self->set_text(value.get<std::string>());
 				},
 				"text"
 			)

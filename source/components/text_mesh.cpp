@@ -26,12 +26,19 @@ namespace hcube
 			attribute{ATT_POSITIONT,AST_INT,0}
 		});
 	}
+    
+    text_mesh::text_mesh(const std::string& text, size_t text_max_size)
+    : text_mesh(text_max_size)
+    {
+        set_text(text);
+    }
 
-	text_mesh::text_mesh(const std::u32string text, size_t text_max_size)
+	text_mesh::text_mesh(const std::u32string& text, size_t text_max_size)
 	: text_mesh(text_max_size)
 	{
 		set_text(text);
 	}
+
 
 	text_mesh::~text_mesh()
 	{

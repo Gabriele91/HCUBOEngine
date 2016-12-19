@@ -538,7 +538,7 @@ namespace hcube
 					//alloc
 					replacement_idxs.reserve(m_idxs.size()*4);
 					//count of tris
-					unsigned int n_tris = unsigned int(m_idxs.size() / 3);
+					unsigned int n_tris = (unsigned int)(m_idxs.size() / 3);
 					//compute
 					for (unsigned int j = 0; j != n_tris; j++)
 					{
@@ -599,7 +599,7 @@ namespace hcube
 			void fix_uvmap()
 			{
 				//count of tris
-				unsigned int n_tris = unsigned int(m_idxs.size() / 3);
+				unsigned int n_tris = (unsigned int)(m_idxs.size() / 3);
 				const float factor_to_xto1 = 0.75;
 				const float factor_to_xto0 = 0.25;
 				//for all tris
@@ -620,21 +620,21 @@ namespace hcube
 					//test  0. < v.x < f0	
 					if (a.m_uvmap.x < factor_to_xto0)
 					{
-						m_idxs[j * 3 + 0] = unsigned int(m_vecs.size());
+						m_idxs[j * 3 + 0] = (unsigned int)(m_vecs.size());
 						m_vecs.push_back(a);
 						m_vecs[m_idxs[j * 3 + 0]].m_uvmap.x += 1.0;
 					}
 
 					if (b.m_uvmap.x < factor_to_xto0)
 					{
-						m_idxs[j * 3 + 1] = unsigned int(m_vecs.size());
+						m_idxs[j * 3 + 1] = (unsigned int)(m_vecs.size());
 						m_vecs.push_back(b);
 						m_vecs[m_idxs[j * 3 + 1]].m_uvmap.x += 1.0;
 					}
 
 					if (c.m_uvmap.x < factor_to_xto0)
 					{
-						m_idxs[j * 3 + 2] = unsigned int(m_vecs.size());
+						m_idxs[j * 3 + 2] = (unsigned int)(m_vecs.size());
 						m_vecs.push_back(c);
 						m_vecs[m_idxs[j * 3 + 2]].m_uvmap.x += 1.0;
 					}		

@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <utility>
+#include <type_traits>
 #include <functional>
 #include <unordered_map>
 #include <hcube/data/variant.h>
@@ -137,8 +138,8 @@ namespace hcube
 		//type
 		typedef T    (CLASS::*get_type) ();
 		typedef void (CLASS::*set_type) (I);
-		using return_type   = typename T;
-		using argument_type = typename I;
+        typedef T return_type;
+        typedef I argument_type;
 		//property
 	    property_set_get(get_type get,
 						 set_type set,
@@ -151,7 +152,7 @@ namespace hcube
 
 		virtual void set(void* obj, variant_ref value)
 		{
-			(((CLASS*)obj)->*m_set)( value.get< std::remove_reference<argument_type>::type >() );
+            (((CLASS*)obj)->*m_set)( value.get< typename std::remove_reference< I >::type >() );
 		}
 
 		virtual variant_ref get(void* obj)
@@ -180,7 +181,7 @@ namespace hcube
 	struct property_member : public property
 	{
 		//type
-		using type = T;
+		typedef T type;
 		//property
 		constexpr property_member(T CLASS::*member,  const char* name)
 		: m_member{ member }
