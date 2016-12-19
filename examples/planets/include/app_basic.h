@@ -81,6 +81,25 @@ namespace hcube
 		entity::ptr  m_camera;
 		//move camera info
 		dvec2 m_camera_angle;
+		//materials
+		enum planet_draw_state
+		{
+			PDRAW_NONE,
+			PDRAW_IN_SPACE,
+			PDRAW_ON_GROUND
+		};
+		enum planet_materials
+		{
+			MAT_GROUND_FROM_S,
+			MAT_SKY_FROM_S,
+			MAT_GROUND_FROM_P,
+			MAT_SKY_FROM_P
+		};
+		material_ptr m_material[4];
+		entity::ptr  m_planet;
+		entity::ptr  m_sky;
+		planet_draw_state m_planet_draw_state;
+		void set_planet_material(planet_draw_state material);
 		//aspect
 		float m_fov{ 45.0f };
 		float m_aspect{ 0.0f };

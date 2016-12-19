@@ -167,6 +167,9 @@
   <ItemGroup>
     <None Include="assets\assets.rs" />
     <None Include="assets\effects\planet_ground.fxhc" />
+    <None Include="assets\effects\planet_ground_from_ground.fxhc" />
+    <None Include="assets\effects\planet_sky.fxhc" />
+    <None Include="assets\effects\planet_sky_from_ground.fxhc" />
     <None Include="assets\materials\earth_ground.mat" />
   </ItemGroup>
   <ItemGroup>

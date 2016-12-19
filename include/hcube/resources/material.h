@@ -31,6 +31,10 @@ namespace hcube
 	{
 	public:
 
+		material();
+
+		material(effect::ptr effect);
+
 		virtual ~material();
 
 		bool load(resources_manager& resources, const std::string& path);

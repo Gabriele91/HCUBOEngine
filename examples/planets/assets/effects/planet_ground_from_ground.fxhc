@@ -94,15 +94,8 @@ sub_effect
 						float fFar = length(v3Ray);
 						v3Ray /= fFar;
 						
-						// Calculate the closest intersection of the ray with the outer atmosphere (which is the near point of the ray passing through the atmosphere)
-						float B = 2.0 * dot(camera_position, v3Ray);
-						float C = camera_height2 - atmosphere_radius2;
-						float fDet = max(0.0, B*B - 4.0 * C);
-						float fNear = 0.5 * (-B - sqrt(fDet));
-						
 						// Calculate the ray's starting position, then calculate its scattering offset
-						vec3 v3Start = camera_position + v3Ray * fNear;
-						fFar -= fNear;
+						vec3 v3Start = camera_position;
 						float fDepth = exp((planetary_radius - atmosphere_radius) / fScaleDepth);
 						float fCameraAngle = dot(-v3Ray, v3Pos) / length(v3Pos);
 						float fLightAngle = dot(v3LightPos, v3Pos) / length(v3Pos);
@@ -143,7 +136,7 @@ sub_effect
 					
 					void planet_color(inout vec4 pos,inout vec3 norm,inout vec4 color ,inout float snil)
 					{
-						#if 0
+						#if 1
 						color = clamp(
 						   vec4(planet_first_color, 0.0) +  color  * vec4(planet_secondary_color,1.0) 
 						 , 0.0

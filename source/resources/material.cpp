@@ -40,6 +40,29 @@ namespace hcube
 		}
 	}
 
+	material::material()
+	:resource()
+	{
+
+	}
+
+	material::material(effect::ptr effect)
+	:resource()
+	{
+		//effect
+		m_effect = effect;
+		//copy context
+		m_parameters = m_effect->copy_all_parameters();
+		//set default params
+		for (unsigned int i=0; i != material::MAT_DEFAULT_MAX; ++i)
+		{
+			//get param id
+			int param_id = m_effect->get_parameter_id(name_of_default_parameters[i]);
+			//save
+			if(param_id != -1) m_default_parameters[i] = param_id;
+		}
+	}
+
 	bool material::load(resources_manager& resources,const std::string& path)
 	{
 		//using namespace

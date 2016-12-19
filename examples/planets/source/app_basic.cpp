@@ -50,8 +50,9 @@ namespace hcube
 
 	void app_basic::key_event(application& app, int key, int scancode, int action, int mods)
 	{
-		const float move_vel = 5.0f;
-
+		//draw move
+		float move_vel = m_planet_draw_state == PDRAW_ON_GROUND ? 0.5 : 5.0f;
+		
 		if (key == GLFW_KEY_ESCAPE)
 		{
 			m_loop = false;
@@ -157,6 +158,31 @@ namespace hcube
 		app.set_mouse_position(mouse_center);
 	}
 
+	void app_basic::set_planet_material(planet_draw_state dstate)
+	{
+		if (m_planet_draw_state != dstate)
+		{
+			switch (dstate)
+			{
+			case PDRAW_IN_SPACE:
+				m_planet->get_component<renderable>()->set_material(m_material[MAT_GROUND_FROM_S]);
+				m_sky->get_component<renderable>()->set_material(m_material[MAT_SKY_FROM_S]);
+				break;
+			case PDRAW_ON_GROUND:
+				m_planet->get_component<renderable>()->set_material(m_material[MAT_GROUND_FROM_P]);
+				m_sky->get_component<renderable>()->set_material(m_material[MAT_SKY_FROM_P]);
+			break;
+			default: break;
+			}
+			m_planet_draw_state = dstate;
+		}
+	}
+
+	const float scale_planet = 300.0;
+	const float scale_depth  = 0.25;
+	const float size_planet  = (1.0) * scale_planet;
+	const float size_sky     = (1.025) * scale_planet;
+
 	void app_basic::start(application& app)
 	{
 		//set mouse at center
@@ -192,53 +218,36 @@ namespace hcube
 			vec2 size = app.get_window_size();
 			m_aspect = float(size.x) / float(size.y);
 			c_camera->set_viewport(ivec4{ 0, 0, size.x, size.y });
-			c_camera->set_perspective(m_fov, m_aspect, 0.1, 1000.0);
+			c_camera->set_perspective(m_fov, m_aspect, 0.01, 1000.0);
 			t_camera->look_at(
-				vec3{ 0.0f, 0.0f, -300.0f },
+				vec3{ 0.0f, 0.0f, -500.0f },
 				vec3{ 0.0f, 0.0f, 0.0f },
 				vec3{ 0.0f, 1.0f, 0.0f }
 			);
 			//set camera
 			m_systems.add_entity(m_camera);
-
-			const float scale_depth = 0.25;
-			const float size_planet = 100.0;
-			const float size_sky = size_planet + 2.5;
+			//materials
+			m_material[MAT_GROUND_FROM_S] = m_resources.get_material("earth_ground_from_space");
+			m_material[MAT_SKY_FROM_S]    = m_resources.get_material("earth_sky_from_space");
+			m_material[MAT_GROUND_FROM_P] = m_resources.get_material("earth_ground_from_ground");
+			m_material[MAT_SKY_FROM_P]    = m_resources.get_material("earth_sky_from_ground");
+			//set params
+			for (material_ptr& p_mat : m_material)
+			{
+				p_mat->get_parameter_by_name("atmosphere_radius")->set_value(size_sky);
+				p_mat->get_parameter_by_name("planetary_radius")->set_value(size_planet);
+				p_mat->get_parameter_by_name("fScaleDepth")->set_value(scale_depth);
+				p_mat->get_parameter_by_name("sun_pos")->set_value(vec3(30.0, 0, 0.0));
+			}
 			//planet
-			auto planet_sky = gameobject::node_new(basic_meshs::sphere(size_sky, 100, 100, true));
-			planet_sky->set_name("planet_sky");
-			{
-				//material
-				auto p_mat = m_resources.get_material("earth_sky");
-				p_mat->get_parameter_by_name("atmosphere_radius")->set_value(size_sky);
-				p_mat->get_parameter_by_name("planetary_radius")->set_value(size_planet);
-				p_mat->get_parameter_by_name("fScaleDepth")->set_value(scale_depth);
-				p_mat->get_parameter_by_name("sun_pos")->set_value(vec3(30.0, 0, 0.0));
-				planet_sky->get_component<renderable>()->set_material(
-					p_mat
-				);
-			}
-			planet_sky->get_component<transform>()->position(
-				vec3{ 0.0, 0., 0.0 }
-			);
-
+			m_sky = gameobject::node_new(basic_meshs::sphere(size_sky, 100, 100, true));
+			m_sky->set_name("planet_sky");
 			//planet ground
-			auto planet_ground = gameobject::node_new(basic_meshs::icosphere(size_planet, 5, true));
-			planet_ground->set_name("planet_ground");
-			{
-				//material
-				auto p_mat = m_resources.get_material("earth_ground");
-				p_mat->get_parameter_by_name("atmosphere_radius")->set_value(size_sky);
-				p_mat->get_parameter_by_name("planetary_radius")->set_value(size_planet);
-				p_mat->get_parameter_by_name("fScaleDepth")->set_value(scale_depth);
-				p_mat->get_parameter_by_name("sun_pos")->set_value(vec3(30.0, 0, 0.0));
-				planet_ground->get_component<renderable>()->set_material(
-					p_mat
-				);
-			}
-			planet_ground->get_component<transform>()->position(
-				vec3{ 0.0, 0., 0.0 }
-			);
+			m_planet = gameobject::node_new(basic_meshs::sphere(size_planet, 100, 100, true));
+			m_planet->set_name("planet_ground");
+			//set material
+			set_planet_material(PDRAW_IN_SPACE);
+
 #if 0
 			const float scaleDepth = 0.25;
 			const float Kr = 0.0025f;
@@ -257,8 +266,8 @@ namespace hcube
 			p_mat->get_parameter_by_name("fScaleDepth")->set_value(scaleDepth);
 #endif 
 			//set camera
-			m_systems.add_entity(planet_sky);
-			m_systems.add_entity(planet_ground);
+			m_systems.add_entity(m_planet);
+			m_systems.add_entity(m_sky);
 		}
 		
 	}
@@ -267,25 +276,30 @@ namespace hcube
     {
 		//////////////////////////////////////////////////////////
 		//update
+		float camera_dist_from_planet = distance(
+			m_camera->get_component<transform>()->get_global_position(),
+			m_planet->get_component<transform>()->get_global_position()
+		);
+		//set materials
+		if (camera_dist_from_planet < size_sky)
+			set_planet_material(PDRAW_ON_GROUND);
+		else
+			set_planet_material(PDRAW_IN_SPACE);
+
+		std::cout << camera_dist_from_planet << ", " << size_sky << std::endl;
+		//
 #if 1
-		for (const std::string& name : std::vector<std::string>({ "planet_sky","planet_ground" }))
-		{
-			auto list_of_e = m_systems.get_entities_by_name(name);
-			if (!list_of_e.size()) continue;
-			auto planet = list_of_e[0];
-			planet
-				->get_component<renderable>()
-				->get_material()
-				->get_parameter_by_name("camera_height")
-				->set_value(
-					distance(m_camera
-						->get_component<transform>()
-						->get_global_position(),
-						planet
-						->get_component<transform>()
-						->get_global_position())
-				);
-		}
+		m_planet
+		->get_component<renderable>()
+		->get_material()
+		->get_parameter_by_name("camera_height")
+		->set_value(camera_dist_from_planet);
+
+		m_sky
+		->get_component<renderable>()
+		->get_material()
+		->get_parameter_by_name("camera_height")
+		->set_value(camera_dist_from_planet);
 #endif
 		//////////////////////////////////////////////////////////
 		//////////////////////////////////////////////////////////

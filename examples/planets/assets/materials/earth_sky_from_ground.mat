@@ -1,0 +1,4 @@
+effect "planet_sky_from_ground"
+{
+	color        vec4(1.0,1.0,1.0,1.0)
+}

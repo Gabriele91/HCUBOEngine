@@ -49,6 +49,15 @@
     <None Include="assets\materials\earth_ground.mat">
       <Filter>File di risorse\assets\materials</Filter>
     </None>
+    <None Include="assets\effects\planet_sky.fxhc">
+      <Filter>File di risorse\assets\effects</Filter>
+    </None>
+    <None Include="assets\effects\planet_sky_from_ground.fxhc">
+      <Filter>File di risorse\assets\effects</Filter>
+    </None>
+    <None Include="assets\effects\planet_ground_from_ground.fxhc">
+      <Filter>File di risorse\assets\effects</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="assets\textures\earth_color.png">
