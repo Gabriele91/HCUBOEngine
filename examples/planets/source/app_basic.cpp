@@ -189,7 +189,7 @@ namespace hcube
 		app.set_mouse_position((dvec2)app.get_window_size()*0.5);
 		//commond assets
 		m_resources.add_resources_file("common.rs");
-		m_resources.add_resources_file("planets/assets/assets.rs");
+		m_resources.add_resources_file("planet_assets/assets.rs");
 		//get info about window
 		m_window_mode_info = window_info
 		{
@@ -286,7 +286,6 @@ namespace hcube
 		else
 			set_planet_material(PDRAW_IN_SPACE);
 
-		std::cout << camera_dist_from_planet << ", " << size_sky << std::endl;
 		//
 #if 1
 		m_planet

@@ -201,13 +201,13 @@ namespace parser
 			template < typename T = vec2 >
 			static bool parse_vec2(size_t& line, const char*& ptr, T& field)
 			{
-				if (!parse_type<T::value_type>(line, ptr, field.x)) return false;
+				if (!parse_type<typename T::value_type>(line, ptr, field.x)) return false;
 
 				skeep_space_end_comment(line, ptr);
 				if (!is_comm_arg(*ptr)) return false; else ++ptr;
 				skeep_space_end_comment(line, ptr);
 
-				if (!parse_type<T::value_type>(line, ptr, field.y)) return false;
+				if (!parse_type<typename T::value_type>(line, ptr, field.y)) return false;
 
 				return true;
 			}
@@ -215,19 +215,19 @@ namespace parser
 			template < typename T = vec3 >
 			static bool parse_vec3(size_t& line, const char*& ptr, T& field)
 			{
-				if (!parse_type<T::value_type>(line, ptr, field.x)) return false;
+				if (!parse_type<typename T::value_type>(line, ptr, field.x)) return false;
 
 				skeep_space_end_comment(line, ptr);
 				if (!is_comm_arg(*ptr)) return false; else ++ptr;
 				skeep_space_end_comment(line, ptr);
 
-				if (!parse_type<T::value_type>(line, ptr, field.y)) return false;
+				if (!parse_type<typename T::value_type>(line, ptr, field.y)) return false;
 
 				skeep_space_end_comment(line, ptr);
 				if (!is_comm_arg(*ptr)) return false; else ++ptr;
 				skeep_space_end_comment(line, ptr);
 
-				if (!parse_type<T::value_type>(line, ptr, field.z)) return false;
+				if (!parse_type<typename T::value_type>(line, ptr, field.z)) return false;
 
 				return true;
 			}
@@ -235,25 +235,25 @@ namespace parser
 			template < typename T = vec4 >
 			static bool parse_vec4(size_t& line, const char*& ptr, T& field)
 			{
-				if (!parse_type<T::value_type>(line, ptr, field.x)) return false;
+				if (!parse_type<typename T::value_type>(line, ptr, field.x)) return false;
 
 				skeep_space_end_comment(line, ptr);
 				if (!is_comm_arg(*ptr)) return false; else ++ptr;
 				skeep_space_end_comment(line, ptr);
 
-				if (!parse_type<T::value_type>(line, ptr, field.y)) return false;
+				if (!parse_type<typename T::value_type>(line, ptr, field.y)) return false;
 
 				skeep_space_end_comment(line, ptr);
 				if (!is_comm_arg(*ptr)) return false; else ++ptr;
 				skeep_space_end_comment(line, ptr);
 
-				if (!parse_type<T::value_type>(line, ptr, field.z)) return false;
+				if (!parse_type<typename T::value_type>(line, ptr, field.z)) return false;
 
 				skeep_space_end_comment(line, ptr);
 				if (!is_comm_arg(*ptr)) return false; else ++ptr;
 				skeep_space_end_comment(line, ptr);
 
-				if (!parse_type<T::value_type>(line, ptr, field.w)) return false;
+				if (!parse_type<typename T::value_type>(line, ptr, field.w)) return false;
 
 				return true;
 			}
@@ -261,25 +261,25 @@ namespace parser
 			template < typename T = quat >
 			static bool parse_quat(size_t& line, const char*& ptr, T& field)
 			{
-				if (!parse_type<T::value_type>(line, ptr, field.x)) return false;
+				if (!parse_type<typename T::value_type>(line, ptr, field.x)) return false;
 
 				skeep_space_end_comment(line, ptr);
 				if (!is_comm_arg(*ptr)) return false; else ++ptr;
 				skeep_space_end_comment(line, ptr);
 
-				if (!parse_type<T::value_type>(line, ptr, field.y)) return false;
+				if (!parse_type<typename T::value_type>(line, ptr, field.y)) return false;
 
 				skeep_space_end_comment(line, ptr);
 				if (!is_comm_arg(*ptr)) return false; else ++ptr;
 				skeep_space_end_comment(line, ptr);
 
-				if (!parse_type<T::value_type>(line, ptr, field.z)) return false;
+				if (!parse_type<typename T::value_type>(line, ptr, field.z)) return false;
 
 				skeep_space_end_comment(line, ptr);
 				if (!is_comm_arg(*ptr)) return false; else ++ptr;
 				skeep_space_end_comment(line, ptr);
 
-				if (!parse_type<T::value_type>(line, ptr, field.w)) return false;
+				if (!parse_type<typename T::value_type>(line, ptr, field.w)) return false;
 
 				return true;
 			}
@@ -288,13 +288,13 @@ namespace parser
 			static bool parse_mat3(size_t& line, const char*& ptr, T& field)
 			{
 				//first
-				if (!parse_type<T::value_type>(line, ptr, field[0][0])) return false;
+				if (!parse_type<typename T::value_type>(line, ptr, field[0][0])) return false;
 				//skeep spaces
 				skeep_space_end_comment(line, ptr);
 				// if one param, call mat4 constructor
 				if (!is_comm_arg(*ptr))
 				{
-					// is 'T('<T::value_type>')'
+					// is 'T('<typename T::value_type>')'
 					field = T(field[0][0]);
 					//success
 					return true;
@@ -310,7 +310,7 @@ namespace parser
 					if (!is_comm_arg(*ptr)) return false; else ++ptr;
 					skeep_space_end_comment(line, ptr);
 					//parse value
-					if (!parse_type<T::value_type>(line, ptr, field[x][y])) return false;
+					if (!parse_type<typename T::value_type>(line, ptr, field[x][y])) return false;
 				}
 
 				return true;
@@ -320,13 +320,13 @@ namespace parser
 			static bool parse_mat4(size_t& line, const char*& ptr, T& field)
 			{
 				//first
-				if (!parse_type<T::value_type>(line, ptr, field[0][0])) return false;
+				if (!parse_type<typename T::value_type>(line, ptr, field[0][0])) return false;
 				//skeep spaces
 				skeep_space_end_comment(line, ptr);
 				// if one param, call mat4 constructor
 				if (!is_comm_arg(*ptr))
 				{
-					// is 'T('<T::value_type>')'
+					// is 'T('<typename T::value_type>')'
 					field = T(field[0][0]);
 					//success
 					return true;
@@ -342,7 +342,7 @@ namespace parser
 					if (!is_comm_arg(*ptr)) return false; else ++ptr;
 					skeep_space_end_comment(line, ptr);
 					//parse value
-					if (!parse_type<T::value_type>(line, ptr, field[x][y])) return false;
+					if (!parse_type<typename T::value_type>(line, ptr, field[x][y])) return false;
 				}
 
 				return true;
@@ -359,9 +359,9 @@ namespace parser
 					//jmp ','
 					if (jmp_comm) ++ptr; else jmp_comm = true;
 					//alloc
-					T::value_type value;
+					typename T::value_type value;
 					//is a complex type
-					int is_complex = is_a_complex_variant_type(static_variant_type<T::value_type>());
+					int is_complex = is_a_complex_variant_type(static_variant_type<typename T::value_type>());
 					//is a vector type (fail)
 					if (is_complex == -1) return false;
 					//type
@@ -379,7 +379,7 @@ namespace parser
 							//skeep spaces
 							skeep_space_end_comment(line, ptr);
 							//parse
-							if (parse_type< T::value_type >(line, ptr, value)) field.push_back(value); else return false;
+							if (parse_type<typename T::value_type>(line, ptr, value)) field.push_back(value); else return false;
 							//skeep spaces
 							skeep_space_end_comment(line, ptr);
 							//test and skeep  '}'
@@ -387,7 +387,7 @@ namespace parser
 							//skeep spaces
 							skeep_space_end_comment(line, ptr);
 						}
-						else if (parse_variant_type(ptr, &ptr, type) && type == static_variant_type<T::value_type>())
+						else if (parse_variant_type(ptr, &ptr, type) && type == static_variant_type<typename T::value_type>())
 						{
 							//skeep spaces
 							skeep_space_end_comment(line, ptr);
@@ -396,7 +396,7 @@ namespace parser
 							//skeep spaces
 							skeep_space_end_comment(line, ptr);
 							//parse
-							if (parse_type< T::value_type >(line, ptr, value)) field.push_back(value); else return false;
+							if (parse_type<typename T::value_type>(line, ptr, value)) field.push_back(value); else return false;
 							//skeep spaces
 							skeep_space_end_comment(line, ptr);
 							//test and skeep ')'
@@ -411,7 +411,7 @@ namespace parser
 						//skeep spaces
 						skeep_space_end_comment(line, ptr);
 						//parse
-						if (parse_type< T::value_type >(line, ptr, value)) field.push_back(value); else return false;
+						if (parse_type<typename T::value_type>(line, ptr, value)) field.push_back(value); else return false;
 						//skeep spaces
 						skeep_space_end_comment(line, ptr);
 					}

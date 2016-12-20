@@ -143,7 +143,7 @@ sub_effect
 					
 					void planet_color(inout vec4 pos,inout vec3 norm,inout vec4 color ,inout float snil)
 					{
-						#if 0
+						#if 1
 						color = clamp(
 						   vec4(planet_first_color, 0.0) +  color  * vec4(planet_secondary_color,1.0) 
 						 , 0.0
