@@ -170,6 +170,7 @@
     <None Include="..\planet_assets\effects\planet_ground_from_ground.fxhc" />
     <None Include="..\planet_assets\effects\planet_sky.fxhc" />
     <None Include="..\planet_assets\effects\planet_sky_from_ground.fxhc" />
+    <None Include="..\planet_assets\effects\wiremesh.fxhc" />
     <None Include="..\planet_assets\materials\earth_ground_from_ground.mat" />
     <None Include="..\planet_assets\materials\earth_ground_from_space.mat" />
     <None Include="..\planet_assets\materials\earth_sky_from_ground.mat" />

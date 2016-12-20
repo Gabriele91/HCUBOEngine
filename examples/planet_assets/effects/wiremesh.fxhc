@@ -28,7 +28,7 @@ sub_effect
             shader source 
             {
                 #pragma all
-				#pragma include <uniform>				
+				#pragma include <uniform>		
                 #pragma vertex
                 //in
 				layout(location = ATT_POSITIONT) in vec3 vertex;

@@ -67,6 +67,9 @@
     <None Include="..\planet_assets\materials\earth_sky_from_space.mat">
       <Filter>File di risorse\assets\materials</Filter>
     </None>
+    <None Include="..\planet_assets\effects\wiremesh.fxhc">
+      <Filter>File di risorse\assets\effects</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\planet_assets\textures\earth_color.png">
