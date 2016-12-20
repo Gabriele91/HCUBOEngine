@@ -60,7 +60,7 @@ sub_effect
             zbuffer less
             blend one one
             cullface front
-            lights only_ambient
+            lights off
             shader source
             {
                 #define DISABLE_MASK

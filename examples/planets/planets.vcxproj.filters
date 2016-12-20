@@ -40,27 +40,36 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="assets\assets.rs">
+    <None Include="..\planet_assets\assets.rs">
       <Filter>File di risorse\assets</Filter>
     </None>
-    <None Include="assets\effects\planet_ground.fxhc">
+    <None Include="..\planet_assets\effects\planet_ground.fxhc">
       <Filter>File di risorse\assets\effects</Filter>
     </None>
-    <None Include="assets\materials\earth_ground.mat">
+    <None Include="..\planet_assets\effects\planet_ground_from_ground.fxhc">
+      <Filter>File di risorse\assets\effects</Filter>
+    </None>
+    <None Include="..\planet_assets\effects\planet_sky.fxhc">
+      <Filter>File di risorse\assets\effects</Filter>
+    </None>
+    <None Include="..\planet_assets\effects\planet_sky_from_ground.fxhc">
+      <Filter>File di risorse\assets\effects</Filter>
+    </None>
+    <None Include="..\planet_assets\materials\earth_ground_from_ground.mat">
       <Filter>File di risorse\assets\materials</Filter>
     </None>
-    <None Include="assets\effects\planet_sky.fxhc">
-      <Filter>File di risorse\assets\effects</Filter>
+    <None Include="..\planet_assets\materials\earth_ground_from_space.mat">
+      <Filter>File di risorse\assets\materials</Filter>
     </None>
-    <None Include="assets\effects\planet_sky_from_ground.fxhc">
-      <Filter>File di risorse\assets\effects</Filter>
+    <None Include="..\planet_assets\materials\earth_sky_from_ground.mat">
+      <Filter>File di risorse\assets\materials</Filter>
     </None>
-    <None Include="assets\effects\planet_ground_from_ground.fxhc">
-      <Filter>File di risorse\assets\effects</Filter>
+    <None Include="..\planet_assets\materials\earth_sky_from_space.mat">
+      <Filter>File di risorse\assets\materials</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="assets\textures\earth_color.png">
+    <Image Include="..\planet_assets\textures\earth_color.png">
       <Filter>File di risorse\assets\textures</Filter>
     </Image>
   </ItemGroup>

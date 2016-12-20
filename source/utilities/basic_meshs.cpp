@@ -536,6 +536,7 @@ namespace hcube
 				for (unsigned int l = 0; l != tesselation_level; ++l)
 				{
 					//alloc
+					replacement_idxs.clear();
 					replacement_idxs.reserve(m_idxs.size()*4);
 					//count of tris
 					unsigned int n_tris = (unsigned int)(m_idxs.size() / 3);

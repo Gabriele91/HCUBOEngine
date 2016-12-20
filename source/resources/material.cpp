@@ -135,10 +135,10 @@ namespace hcube
 	const effect::parameter* material::get_parameter_by_name(const std::string& name) const
 	{
 		if (!m_effect) return nullptr;
-		//get id
+		//get param
 		int   id_param = m_effect->get_parameter_id(name);
-		//return param
-		return (*m_parameters)[id_param].get();
+		if (id_param >= 0) return (*m_parameters)[id_param].get();
+		return nullptr;
 	}	
 
 	effect::parameter* material::get_default_parameter(material::default_parameters dp)
@@ -151,10 +151,10 @@ namespace hcube
 	effect::parameter* material::get_parameter_by_name(const std::string& name)
 	{
 		if (!m_effect) return nullptr;
-		//get id
+		//get param
 		int   id_param = m_effect->get_parameter_id(name);
-		//return param
-		return (*m_parameters)[id_param].get();
+		if (id_param >= 0) return (*m_parameters)[id_param].get();
+		return nullptr;
 	}
 
 

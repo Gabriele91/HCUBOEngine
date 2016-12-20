@@ -438,7 +438,13 @@ R"GLSL(
 				//jmp space
 				jmp_spaces(c_effect_line);
 				//type
-				if (compare_and_jmp_keyword(c_effect_line, "vertex"))
+				if (compare_and_jmp_keyword(c_effect_line, "all"))
+				{
+					state = P_ALL;
+					all += "#line " + std::to_string(line + 1) + " " + std::to_string(this_file) + "\n";
+					continue;
+				}
+				else if (compare_and_jmp_keyword(c_effect_line, "vertex"))
 				{
 					state = P_VERTEX;
 					vertex += "#line " + std::to_string(line + 1) + " " + std::to_string(this_file) + "\n";

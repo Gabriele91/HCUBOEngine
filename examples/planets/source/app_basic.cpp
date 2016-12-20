@@ -178,6 +178,8 @@ namespace hcube
 		}
 	}
 
+
+#define SET_PARAM_IF_EXIST(param,n) { auto p = param; if(p) p->set_value(n);  }
 	const float scale_planet = 300.0;
 	const float scale_depth  = 0.25;
 	const float size_planet  = (1.0) * scale_planet;
@@ -234,16 +236,16 @@ namespace hcube
 			//set params
 			for (material_ptr& p_mat : m_material)
 			{
-				p_mat->get_parameter_by_name("atmosphere_radius")->set_value(size_sky);
-				p_mat->get_parameter_by_name("planetary_radius")->set_value(size_planet);
-				p_mat->get_parameter_by_name("fScaleDepth")->set_value(scale_depth);
-				p_mat->get_parameter_by_name("sun_pos")->set_value(vec3(30.0, 0, 0.0));
+				SET_PARAM_IF_EXIST(p_mat->get_parameter_by_name("atmosphere_radius"), size_sky);
+				SET_PARAM_IF_EXIST(p_mat->get_parameter_by_name("planetary_radius"), size_planet);
+				SET_PARAM_IF_EXIST(p_mat->get_parameter_by_name("fScaleDepth"), scale_depth);
+				SET_PARAM_IF_EXIST(p_mat->get_parameter_by_name("sun_pos"), vec3(30.0, 0, 0.0));
 			}
 			//planet
-			m_sky = gameobject::node_new(basic_meshs::sphere(size_sky, 100, 100, true));
+			m_sky = gameobject::node_new(basic_meshs::icosphere(size_sky, 5, true));
 			m_sky->set_name("planet_sky");
 			//planet ground
-			m_planet = gameobject::node_new(basic_meshs::sphere(size_planet, 100, 100, true));
+			m_planet = gameobject::node_new(basic_meshs::icosphere(size_planet, 5, true));
 			m_planet->set_name("planet_ground");
 			//set material
 			set_planet_material(PDRAW_IN_SPACE);
@@ -288,17 +290,18 @@ namespace hcube
 
 		//
 #if 1
-		m_planet
-		->get_component<renderable>()
-		->get_material()
-		->get_parameter_by_name("camera_height")
-		->set_value(camera_dist_from_planet);
-
-		m_sky
-		->get_component<renderable>()
-		->get_material()
-		->get_parameter_by_name("camera_height")
-		->set_value(camera_dist_from_planet);
+		SET_PARAM_IF_EXIST(
+			m_planet
+			->get_component<renderable>()
+			->get_material()
+			->get_parameter_by_name("camera_height"), camera_dist_from_planet
+		);
+		SET_PARAM_IF_EXIST(
+			m_sky
+			->get_component<renderable>()
+			->get_material()
+			->get_parameter_by_name("camera_height"), camera_dist_from_planet
+		);
 #endif
 		//////////////////////////////////////////////////////////
 		//////////////////////////////////////////////////////////

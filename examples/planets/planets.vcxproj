@@ -165,15 +165,18 @@
     <ClInclude Include="include\app_basic.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="assets\assets.rs" />
-    <None Include="assets\effects\planet_ground.fxhc" />
-    <None Include="assets\effects\planet_ground_from_ground.fxhc" />
-    <None Include="assets\effects\planet_sky.fxhc" />
-    <None Include="assets\effects\planet_sky_from_ground.fxhc" />
-    <None Include="assets\materials\earth_ground.mat" />
+    <None Include="..\planet_assets\assets.rs" />
+    <None Include="..\planet_assets\effects\planet_ground.fxhc" />
+    <None Include="..\planet_assets\effects\planet_ground_from_ground.fxhc" />
+    <None Include="..\planet_assets\effects\planet_sky.fxhc" />
+    <None Include="..\planet_assets\effects\planet_sky_from_ground.fxhc" />
+    <None Include="..\planet_assets\materials\earth_ground_from_ground.mat" />
+    <None Include="..\planet_assets\materials\earth_ground_from_space.mat" />
+    <None Include="..\planet_assets\materials\earth_sky_from_ground.mat" />
+    <None Include="..\planet_assets\materials\earth_sky_from_space.mat" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="assets\textures\earth_color.png" />
+    <Image Include="..\planet_assets\textures\earth_color.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
