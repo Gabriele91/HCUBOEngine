@@ -22,16 +22,13 @@
 #include <hcube/data/dump/properties_dump.h>
 #include <hcube/data/parser/properties_parser.h>
 #include <app_basic.h>
+//component
+#include <component/lod_sphere_tree.h>
+#include <component/lod_terrain.h>
 
 
 namespace hcube
 {
-	enum player_type
-	{
-		PR_WOMAN,
-		PR_MEN
-	};
-	
 	enum 
 	{
 		SW_LOW,
@@ -180,7 +177,7 @@ namespace hcube
 
 
 #define SET_PARAM_IF_EXIST(param,n) { auto p = param; if(p) p->set_value(n);  }
-	const float scale_planet = 300.0;
+	const float scale_planet = 50.0;
 	const float scale_depth  = 0.25;
 	const float size_planet  = (1.0) * scale_planet;
 	const float size_sky     = (1.025) * scale_planet;
@@ -222,7 +219,7 @@ namespace hcube
 			c_camera->set_viewport(ivec4{ 0, 0, size.x, size.y });
 			c_camera->set_perspective(m_fov, m_aspect, 0.01, 1000.0);
 			t_camera->look_at(
-				vec3{ 0.0f, 0.0f, -500.0f },
+				vec3{ 0.0f, 0.0f, -100.0f },
 				vec3{ 0.0f, 0.0f, 0.0f },
 				vec3{ 0.0f, 1.0f, 0.0f }
 			);
@@ -250,24 +247,13 @@ namespace hcube
 			//set material
 			set_planet_material(PDRAW_IN_SPACE);
 
-#if 0
-			const float scaleDepth = 0.25;
-			const float Kr = 0.0025f;
-			const float Km = 0.0010f;
-			const float ESun = 16.0f;
-			p_mat->get_parameter_by_name("inv_wave_length")->set_value(vec3
-			{	
-				1.f / std::pow(0.650f, 4.0f), // 650 nm for red
-				1.f / std::pow(0.570f, 4.0f), // 570 nm for green
-				1.f / std::pow(0.475f, 4.0f)  // 475 nm for blue
-			});
-			p_mat->get_parameter_by_name("fKrESun")->set_value(Kr * ESun);
-			p_mat->get_parameter_by_name("fKmESun")->set_value(Km * ESun);
-			p_mat->get_parameter_by_name("fKr4PI")->set_value(Kr * 4.0f * constants::pi<float>());
-			p_mat->get_parameter_by_name("fKm4PI")->set_value(Km * 4.0f * constants::pi<float>());
-			p_mat->get_parameter_by_name("fScaleDepth")->set_value(scaleDepth);
-#endif 
+			//test terrain 
+			auto terrain = gameobject::node_new(lod_terrain::snew());
+			auto terrain_mat = m_resources.get_material("earth_terrain");
+			terrain->get_component<renderable>()->set_material(terrain_mat);
+
 			//set camera
+			m_systems.add_entity(terrain);
 			m_systems.add_entity(m_planet);
 			m_systems.add_entity(m_sky);
 		}

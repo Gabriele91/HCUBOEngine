@@ -159,10 +159,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="source\app_basic.cpp" />
+    <ClCompile Include="source\component\lod_sphere_tree.cpp" />
+    <ClCompile Include="source\component\lod_terrain.cpp" />
     <ClCompile Include="source\main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\app_basic.h" />
+    <ClInclude Include="include\component\lod_sphere_tree.h" />
+    <ClInclude Include="include\component\lod_terrain.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\planet_assets\assets.rs" />
