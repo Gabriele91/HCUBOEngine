@@ -179,6 +179,7 @@
     <None Include="..\planet_assets\materials\earth_ground_from_space.mat" />
     <None Include="..\planet_assets\materials\earth_sky_from_ground.mat" />
     <None Include="..\planet_assets\materials\earth_sky_from_space.mat" />
+    <None Include="..\planet_assets\materials\earth_terrain.mat" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\planet_assets\textures\earth_color.png" />

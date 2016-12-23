@@ -86,7 +86,8 @@ namespace hcube
 
 	private:
 		//levels
-        ivec2		 m_size;
+		ivec2		 m_size;
+		ivec2		 m_p_size;
         unsigned int m_levels;
         unsigned int m_level_to_draw{0};
 		//draw info

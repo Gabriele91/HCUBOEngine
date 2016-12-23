@@ -88,6 +88,9 @@
     <None Include="..\planet_assets\effects\wiremesh.fxhc">
       <Filter>File di risorse\assets\effects</Filter>
     </None>
+    <None Include="..\planet_assets\materials\earth_terrain.mat">
+      <Filter>File di risorse\assets\materials</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\planet_assets\textures\earth_color.png">

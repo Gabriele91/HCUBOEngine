@@ -62,7 +62,7 @@ namespace hcube
 	{
 		//compute root 
 		int  stride = std::pow(4, m_levels);
-		m_nodes[0].build({ m_size, ivec2(0,0), m_size,{ stride, stride } });
+		m_nodes[0].build({ m_p_size, ivec2(0,0), m_size,{ stride, stride } });
 		//count
 		unsigned int n = 1;
 		//build childs
@@ -94,22 +94,22 @@ namespace hcube
 		{
 			ivec2 start = p_info.m_start;
 			ivec2 end = start + l_size;
-			parent->m_chils[0]->build({ m_size, start,	end, v_stride });
+			parent->m_chils[0]->build({ m_p_size, start, end, v_stride });
 		}
 		{
 			ivec2 start = p_info.m_start + ivec2(p_g_size.x / 2, 0);
 			ivec2 end = start + l_size;
-			parent->m_chils[1]->build({ m_size, start,	end, v_stride });
+			parent->m_chils[1]->build({ m_p_size, start, end, v_stride });
 		}
 		{
 			ivec2 start = p_info.m_start + ivec2(0, p_g_size.y / 2);
 			ivec2 end = start + l_size;
-			parent->m_chils[2]->build({ m_size, start,	end, v_stride });
+			parent->m_chils[2]->build({ m_p_size, start, end, v_stride });
 		}
 		{
 			ivec2 start = p_info.m_start + p_g_size / 2;
 			ivec2 end = start + l_size;
-			parent->m_chils[3]->build({ m_size, start,	end, v_stride });
+			parent->m_chils[3]->build({ m_p_size, start, end, v_stride });
 		}
 		//next levels
 		++level;
@@ -166,14 +166,16 @@ namespace hcube
 				attribute{ ATT_BINORMAL0, AST_FLOAT3, offsetof(terrain_vertex, m_bitangent) }
 			}
 		});
+		//points size
+		m_p_size = m_size + ivec2(1,1);
 		//buffer
-		std::vector< terrain_vertex > vertices(m_size.x*m_size.y);
+		std::vector< terrain_vertex > vertices(m_p_size.x*m_p_size.y);
 		//half size
 		float map_height = std::sqrt(m_size.x * m_size.y) / 2.f;
 		vec3 half_size   = vec3(m_size.x, 0,m_size.y)     / 2.f;
 		//init all vertices
-		for (unsigned int y = 0; y != m_size.y; ++y)
-		for (unsigned int x = 0; x != m_size.x; ++x)
+		for (unsigned int y = 0; y != m_p_size.y; ++y)
+		for (unsigned int x = 0; x != m_p_size.x; ++x)
 		{
 #if 1
 			float h = std::cos(float(x) / m_size.x * constants::pi<float>()*16.0f)*2.0f +
@@ -181,7 +183,7 @@ namespace hcube
 #else
 			float h = 0;
 #endif 
-			vertices[y*m_size.x + x] = terrain_vertex
+			vertices[y*m_p_size.x + x] = terrain_vertex
 			(
 				vec3(x, h, y) - half_size,
 				vec3( 0,1,0 ),
@@ -219,11 +221,6 @@ namespace hcube
 		//size matrix
 		ivec2 l_size = ivec2(info.m_end - info.m_start);
 		ivec2 s_size = l_size / info.m_stride;
-        //jump last
-        //if(g_size.x == info.m_end.x)
-            s_size.x += -1;
-        //if(g_size.y == info.m_end.y)
-            s_size.y += -1;
 		//mapping tris
 		size_t n_quad = (s_size.x) * (s_size.y);
 		std::vector< unsigned int > idxs(n_quad * 6);
@@ -232,12 +229,12 @@ namespace hcube
 			for (unsigned int y = 0; y < s_size.y; ++y)
 			for (unsigned int x = 0; x < s_size.x; ++x)
 			{
-				const ivec2 g_coord = start + ivec2(y, x) * stride;
+				const ivec2 g_coord = start + ivec2(x,y) * stride;
 				// top
 				const unsigned int point  = (g_coord.y * g_size.x + g_coord.x);
 				const unsigned int point1 = point + (1 * stride.x);
 				// bottom
-				const unsigned int point2 = ((g_coord.y + 1 * stride.y) * g_size.x + g_coord.x);
+				const unsigned int point2 = ((g_coord.y + stride.y) * g_size.x + g_coord.x);
 				const unsigned int point3 = point2 + (1 * stride.x);
 				//tri 1
 				idxs[i * 6 + 0] = point;

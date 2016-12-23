@@ -1,6 +1,7 @@
-//effect "base_texture_normal_specular"
-effect "wiremesh"
+effect "base_texture_normal_specular"
+//effect "wiremesh"
 {
-	diffuse_map  texture("earth_color2")
+	//diffuse_map  texture("earth_color2")
+	diffuse_map  texture("earth_color")
 	color        vec4(1.0,1.0,1.0,1.0)
 }
