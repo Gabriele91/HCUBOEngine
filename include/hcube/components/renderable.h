@@ -70,12 +70,12 @@ namespace hcube
 			set_obb_has_dirty();
 		}
 
-		material_ptr get_material() const
+		virtual material_ptr get_material() const
 		{
 			return m_material;
 		}
 
-		void set_material(material_ptr material)
+		virtual void set_material(material_ptr material)
 		{
 			m_material = material;
 		}

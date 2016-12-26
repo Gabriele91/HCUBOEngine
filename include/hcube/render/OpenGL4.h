@@ -64,17 +64,19 @@ namespace hcube
 			{
 				if (!print_file)
 				{
-					output << "At file: " << filename << " :" << std::endl;
+					output << "At file: " << filename << " (" << line << ")"<< ":" << std::endl;
 				}
 				const char* gl_err_str = debug::get_open_gl_error(gl_err); \
-					output << "OpenGL error: " << line << " : " << gl_err << " : " << (gl_err_str ? gl_err_str : "unknow") << std::endl; \
+					output << "OpenGL error: " << gl_err << " : " << (gl_err_str ? gl_err_str : "unknow") << std::endl; \
 			}
 			return output.str();
 		}
 	}
 }
 #ifdef _DEBUG
+	#define debug_gl_errors_to_string_args(source,line) ::hcube::debug::gl_errors_to_string(source,line)
 	#define debug_gl_errors_to_string() ::hcube::debug::gl_errors_to_string(__FILE__,__LINE__)
 #else
+	#define debug_gl_errors_to_string_args(source,line) ::std::string()
 	#define debug_gl_errors_to_string() ::std::string()
 #endif

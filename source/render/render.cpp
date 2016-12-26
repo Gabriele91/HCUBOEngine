@@ -132,12 +132,13 @@ namespace hcube
     ////////////////////
     struct bind_context
     {
-        context_texture*       m_textures[32] { nullptr };
-		context_const_buffer*  m_const_buffer { nullptr };
-        context_vertex_buffer* m_vertex_buffer{ nullptr };
-        context_index_buffer*  m_index_buffer { nullptr };
-        context_input_layout*  m_input_layout { nullptr };
-        context_render_target* m_render_target{ nullptr };
+        context_texture*       m_textures[32]  { nullptr };
+		context_texture*	   m_texture_buffer{ nullptr };
+		context_const_buffer*  m_const_buffer  { nullptr };
+        context_vertex_buffer* m_vertex_buffer { nullptr };
+        context_index_buffer*  m_index_buffer  { nullptr };
+        context_input_layout*  m_input_layout  { nullptr };
+        context_render_target* m_render_target { nullptr };
     };
     
     static int make_test_to_get_shader_version()
@@ -686,21 +687,40 @@ namespace hcube
             }
 		}
 
-		GLbitfield get_mapping_type(mapping_type type)
+
+		GLbitfield get_mapping_type_map_buff_range(mapping_type type)
+		{
+			/*
+			* GL_INVALID_OPERATION is generated for any of the following conditions: 
+			* [...]
+			* GL_MAP_READ_BIT is set and any of GL_MAP_INVALIDATE_RANGE_BIT, GL_MAP_INVALIDATE_BUFFER_BIT or GL_MAP_UNSYNCHRONIZED_BIT is set. 
+			* [...]
+			*/
+			switch (type)
+			{
+			default:
+			case MAP_WRITE_AND_READ: return GL_MAP_WRITE_BIT | GL_MAP_READ_BIT /*| GL_MAP_UNSYNCHRONIZED_BIT*/; break;
+			case MAP_WRITE: return GL_MAP_WRITE_BIT /*| GL_MAP_UNSYNCHRONIZED_BIT*/;
+			case MAP_READ:  return GL_MAP_READ_BIT /*| GL_MAP_UNSYNCHRONIZED_BIT*/;
+			}
+		}
+
+		GLbitfield get_mapping_type_map_buff(mapping_type type)
 		{
 			switch (type)
 			{
 			default:
-			case MAP_WRITE_AND_READ: return GL_MAP_WRITE_BIT | GL_MAP_WRITE_BIT | GL_MAP_UNSYNCHRONIZED_BIT; break;
-			case MAP_WRITE: return GL_MAP_WRITE_BIT | GL_MAP_UNSYNCHRONIZED_BIT;
-			case MAP_READ:  return GL_MAP_READ_BIT | GL_MAP_UNSYNCHRONIZED_BIT;
+			case MAP_WRITE_AND_READ: return GL_READ_WRITE; break;
+			case MAP_WRITE: return GL_WRITE_ONLY ;
+			case MAP_READ:  return GL_READ_ONLY;
 			}
 		}
 
 		unsigned char* map_CB(context_const_buffer* cb, size_t start, size_t n, mapping_type type)
 		{
 			bind_CB(cb);
-			return (unsigned char*)glMapBufferRange(GL_UNIFORM_BUFFER, start, n, get_mapping_type(type));
+			glMemoryBarrier(GL_BUFFER_UPDATE_BARRIER_BIT);
+			return (unsigned char*)glMapBufferRange(GL_UNIFORM_BUFFER, start, n, get_mapping_type_map_buff_range(type));
 		}
 
 		void unmap_CB(context_const_buffer* cb)
@@ -712,7 +732,8 @@ namespace hcube
 		unsigned char* map_VBO(context_vertex_buffer* vbo, size_t start, size_t n, mapping_type type)
 		{
 			bind_VBO(vbo);
-			return (unsigned char*)glMapBufferRange(GL_ARRAY_BUFFER, start, n, get_mapping_type(type));
+			glMemoryBarrier(GL_BUFFER_UPDATE_BARRIER_BIT);
+			return (unsigned char*)glMapBufferRange(GL_ARRAY_BUFFER, start, n, get_mapping_type_map_buff_range(type));
 		}
 
 		void unmap_VBO(context_vertex_buffer* vbo)
@@ -724,7 +745,8 @@ namespace hcube
 		unsigned int*  map_IBO(context_index_buffer* ibo, size_t start, size_t n, mapping_type type)
 		{
 			bind_IBO(ibo);
-			return (unsigned int*)glMapBufferRange(GL_ELEMENT_ARRAY_BUFFER, start * sizeof(unsigned int), n * sizeof(unsigned int), get_mapping_type(type));
+			glMemoryBarrier(GL_BUFFER_UPDATE_BARRIER_BIT);
+			return (unsigned int*)glMapBufferRange(GL_ELEMENT_ARRAY_BUFFER, start * sizeof(unsigned int), n * sizeof(unsigned int), get_mapping_type_map_buff_range(type));
 		}
 
 		void unmap_IBO(context_index_buffer* ibo)
@@ -733,6 +755,39 @@ namespace hcube
 			unbind_IBO(ibo);
 		}
 
+		unsigned char* map_TBO(context_texture* tbo, mapping_type type)
+		{
+			if (tbo && s_bind_context.m_texture_buffer != tbo)
+			{
+				//unbind / unmap
+				if (s_bind_context.m_texture_buffer)
+				{
+					unmap_TBO(s_bind_context.m_texture_buffer);
+				}
+				//bind
+				glBindBuffer(GL_TEXTURE_BUFFER, tbo->m_tbo);
+				//update
+				s_bind_context.m_texture_buffer = tbo;
+				//wait
+				glMemoryBarrier(GL_BUFFER_UPDATE_BARRIER_BIT);
+				//map
+				return (unsigned char*)glMapBuffer(GL_TEXTURE_BUFFER, get_mapping_type_map_buff(type));
+			}
+		}
+
+		void unmap_TBO(context_texture* tbo)
+		{
+			if (tbo)
+			{
+				assert(s_bind_context.m_texture_buffer == tbo);
+				//unmap
+				glUnmapBuffer(GL_TEXTURE_BUFFER);
+				//unbind
+				glBindBuffer(GL_TEXTURE_BUFFER, 0);
+				//update
+				s_bind_context.m_texture_buffer = nullptr;
+			}
+		}
 
 		void delete_CB(context_const_buffer*& cb)
 		{
@@ -1156,6 +1211,43 @@ namespace hcube
 			return ctx_texture;
 		}
         
+		std::vector< unsigned char > get_texture(context_texture* tex, int level)
+		{
+			// get last bind
+			auto last_texture = s_bind_context.m_textures[0];
+			//unbind
+			unbind_texture(last_texture);
+			// bind texture
+			bind_texture(tex, 0);
+			// format
+			GLint format, components, width, height;
+			// get internal format type of GL texture
+			glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_INTERNAL_FORMAT, &format);
+			glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_COMPONENTS, &components);
+			glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &width);
+			glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &height);
+			// return
+			std::vector< unsigned char > output;
+			GLint image_ret_format;
+			// cases
+			switch (components)
+			{
+			case GL_R8:   output.resize(width*height * 1); image_ret_format = GL_R;     break;
+			case GL_RG8:  output.resize(width*height * 2); image_ret_format = GL_RG;    break;
+			case GL_RGB8: output.resize(width*height * 3); image_ret_format = GL_RGB;   break;
+			case GL_RGBA8:output.resize(width*height * 4); image_ret_format = GL_RGBA;  break;
+			default: return output; break;
+			}
+			// get
+			glGetTexImage(GL_TEXTURE_2D, 0, image_ret_format, GL_UNSIGNED_BYTE, (GLbyte*)output.data());
+			// unbind
+			unbind_texture(tex);
+			// bind last 
+			bind_texture(last_texture, 0);
+			//return
+			return output;
+		}
+
 		void bind_texture(context_texture* ctx_texture, int n)
 		{
             if (ctx_texture && ctx_texture != s_bind_context.m_textures[n])
@@ -1373,6 +1465,20 @@ namespace hcube
 		{
 			//get all gl errors
 			std::string gl_errors = debug_gl_errors_to_string();
+			//print
+			if (gl_errors.size())
+			{
+				std::cout << gl_errors << std::endl;
+				return true;
+			}
+			return false;
+		}
+
+		//Output file name and line
+		bool print_errors(const char* source_file_name, int line)
+		{
+			//get all gl errors
+			std::string gl_errors = debug_gl_errors_to_string_args(source_file_name,line);
 			//print
 			if (gl_errors.size())
 			{

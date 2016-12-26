@@ -48,7 +48,7 @@ namespace hcube
 	void app_basic::key_event(application& app, int key, int scancode, int action, int mods)
 	{
 		//draw move
-		float move_vel   = m_planet_draw_state == PDRAW_ON_GROUND ? 0.5 : 5.0f;
+		float move_vel   = m_planet_draw_state == PDRAW_ON_GROUND ? 0.125 : 5.0f;
         auto l_terrain = (lod_terrain*)&(*m_terrain->get_component<renderable>());
         
 		if (key == GLFW_KEY_ESCAPE)
@@ -194,7 +194,7 @@ namespace hcube
 
 
 #define SET_PARAM_IF_EXIST(param,n) { auto p = param; if(p) p->set_value(n);  }
-	const float scale_planet = 50.0;
+	const float scale_planet = 100.0;
 	const float scale_depth  = 0.25;
 	const float size_planet  = (1.0) * scale_planet;
 	const float size_sky     = (1.025) * scale_planet;
@@ -265,10 +265,10 @@ namespace hcube
 			set_planet_material(PDRAW_IN_SPACE);
 
 			//test terrain
-            
-            m_terrain   = gameobject::node_new(lod_terrain::snew(ivec2{1024,1024},4));
+            m_terrain = gameobject::node_new(lod_terrain::snew(ivec2(512, 512) * 4, 4));
 			m_terrain->get_component<renderable>()->set_material(m_resources.get_material("earth_terrain"));
             m_terrain->get_component<transform>()->position({0,-100,0});
+			m_terrain->get_component<transform>()->scale({ 300,10,300 });
             
             m_systems.add_entity(m_terrain);
             m_systems.add_entity(m_planet);

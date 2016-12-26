@@ -65,6 +65,11 @@ namespace hcube
 			ivec2 size = { 1024, 1024 },
 			unsigned int levels = 3
 		);
+		lod_terrain(
+			material_ptr material,
+			ivec2 size = { 1024, 1024 },
+			unsigned int levels = 3
+		);
 		virtual ~lod_terrain();
 
 		//build tree
@@ -84,6 +89,10 @@ namespace hcube
             m_level_to_draw = level;
         }
 
+
+		virtual void set_material(material_ptr material);
+
+
 	private:
 		//levels
 		ivec2		 m_size;
@@ -95,6 +104,8 @@ namespace hcube
 		context_vertex_buffer* m_vbuffer{ nullptr };
 		//root
 		std::vector< node > m_nodes;
+		//update mesh
+		void recompute_mesh_heigth();
 
 	};
 }

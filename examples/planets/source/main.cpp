@@ -19,7 +19,7 @@ int main(int argc, const char * argv[])
 		  hcube::window_size_percentage{ { 90., 90. } }//window size
 		, hcube::window_mode::NOT_RESIZABLE            //mode
 		, 4									           //OpenGL version
-		, 1									           //OpenGL sub-version
+		, 3									           //OpenGL sub-version
 		, "HCUBE DEMO"					               //window title
 		, new hcube::app_basic) 					   //instance
 		? 0 : 1;
@@ -29,7 +29,7 @@ int main(int argc, const char * argv[])
 		  hcube::window_size_percentage{ { 100., 100. } }//window size
 		, hcube::window_mode::FULLSCREEN                 //mode
 		, 4									             //OpenGL version
-        , 1									             //OpenGL sub-version
+        , 3									             //OpenGL sub-version
         , "HCUBE DEMO"					                 //window title
 		, new hcube::app_basic) 					     //instance
 		? 0 : 1;
@@ -39,7 +39,7 @@ int main(int argc, const char * argv[])
                        hcube::window_size_percentage{ { 50., 50. } }  //window size
                        , hcube::window_mode::NOT_RESIZABLE            //mode
                        , 4									          //OpenGL version
-                       , 1									          //OpenGL sub-version
+                       , 3									          //OpenGL sub-version
                        , "HCUBE DEMO"					              //window title
                        , new hcube::app_basic) 					      //instance
     ? 0 : 1;
@@ -48,7 +48,7 @@ int main(int argc, const char * argv[])
     return app.execute(  hcube::window_size_percentage{ { 80., 80. } }   //window size
                        , hcube::window_mode::FULLSCREEN                  //mode
                        , 4									             //OpenGL version
-                       , 1									             //OpenGL sub-version
+                       , 3									             //OpenGL sub-version
                        , "HCUBE DEMO"					                 //window title
                        , new hcube::app_basic) 					         //instance
                        ? 0 : 1;

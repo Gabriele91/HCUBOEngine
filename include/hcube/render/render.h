@@ -639,6 +639,9 @@ namespace hcube
 		HCUBE_RENDER_API unsigned int*  map_IBO(context_index_buffer*, size_t start, size_t n, mapping_type type);
 		HCUBE_RENDER_API void unmap_IBO(context_index_buffer*);
 
+		HCUBE_RENDER_API unsigned char* map_TBO(context_texture*, mapping_type type);
+		HCUBE_RENDER_API void unmap_TBO(context_texture*);
+
 		HCUBE_RENDER_API void delete_CB(context_const_buffer*&);
 		HCUBE_RENDER_API void delete_VBO(context_vertex_buffer*&);
 		HCUBE_RENDER_API void delete_IBO(context_index_buffer*&);
@@ -672,11 +675,11 @@ namespace hcube
 			const texture_raw_data_information  data[6],
 			const texture_gpu_data_information& info
 		);
+		HCUBE_RENDER_API std::vector< unsigned char > get_texture(context_texture*, int level = 0);
 		HCUBE_RENDER_API void bind_texture(context_texture*, int n);
 		HCUBE_RENDER_API void unbind_texture(context_texture*);
         HCUBE_RENDER_API void unbind_texture(int n);
 		HCUBE_RENDER_API void delete_texture(context_texture*&);
-
 
 		//target
 		HCUBE_RENDER_API context_render_target* create_render_target(const std::vector< target_field >& textures);
@@ -694,6 +697,9 @@ namespace hcube
 
 		//debug
 		HCUBE_RENDER_API bool print_errors();
+		//Output file name and line
+		HCUBE_RENDER_API bool print_errors(const char* source_file_name, int line);
+		#define HCUBE_RENDER_PRINT_ERRORS ::hcube::render::print_errors(__FILE__,__LINE__);
 
 	};
 }

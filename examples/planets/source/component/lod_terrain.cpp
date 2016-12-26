@@ -45,19 +45,93 @@ namespace hcube
 		}
 	};
 	//size
-	lod_terrain::lod_terrain(ivec2 size,unsigned int levels)
+	lod_terrain::lod_terrain(ivec2 size, unsigned int levels)
 	{
-		m_size   = size;
+		m_size = size;
 		m_levels = levels;
 		build();
 	}
+	
+	lod_terrain::lod_terrain(material_ptr material,ivec2 size, unsigned int levels)
+	{
+		set_material(material);
+		m_size = size;
+		m_levels = levels;
+		build();
+		recompute_mesh_heigth();
+	}
+
+	void lod_terrain::set_material(material_ptr material)
+	{
+		//set
+		renderable::set_material(material);
+		//update vertex
+		recompute_mesh_heigth();
+	}
+
+	void lod_terrain::recompute_mesh_heigth()
+	{
+		//return;
+		//param
+		auto param = get_material()->get_default_parameter(material::MAT_DEFAULT_DIFFUSE_MAP);
+		//test
+		if (!param) return;
+		//get material texture
+		auto diff_texture = param->get_texture();
+		//test
+		if (!diff_texture) return;
+		//get texture
+		auto raw_image = render::get_texture(diff_texture->get_context_texture());
+		//type
+		int channels = 0;
+		switch (diff_texture->get_type())
+		{
+			case texture_type::TT_R:    channels = 1; break;
+			case texture_type::TT_RG:   channels = 2; break;
+			case texture_type::TT_RGB:  channels = 3; break;
+			case texture_type::TT_RGBA: channels = 4; break;
+			default: break;
+		}
+		//hfunction
+		auto get_height = [&](float normx, float normy) -> float
+		{
+			int y = normy * (diff_texture->get_height() - 1);
+			int x = normx * (diff_texture->get_width() - 1);
+			int pixel = (y * diff_texture->get_width() + x) * channels;
+			return float(raw_image[pixel]) / 255.;
+		};
+		//size buffer
+		size_t n_vertex = m_p_size.x*m_p_size.y;
+		//half size
+		vec3 half_size = vec3(m_size.x, 0, m_size.y) / 2.f;
+		//map h 
+		float map_height = 0.01;
+		//get vertexs
+		terrain_vertex* vertices = (terrain_vertex*)render::map_VBO(m_vbuffer, 0, sizeof(terrain_vertex)*n_vertex, MAP_WRITE_AND_READ);
+		HCUBE_RENDER_PRINT_ERRORS
+		#pragma omp parallel for num_threads(4)
+		for (int y = 0; y < m_p_size.y; ++y)
+		{
+			for (int x = 0; x < m_p_size.x; ++x)
+			{
+				float h = get_height(float(x) / (m_p_size.x - 1), float(y) / (m_p_size.y - 1));
+				vertices[y*m_p_size.x + x].m_position.y = h;
+				//max
+				map_height = std::max(map_height, h);
+			}
+		}
+		//set obb
+		set_bounding_box(obb(mat3(1), vec3(0, 0, 0), vec3(0.5, map_height, 0.5)));
+		//unmap
+		render::unmap_VBO(m_vbuffer);
+	}
+
 	lod_terrain::~lod_terrain()
 	{
 		if (m_layout) render::delete_IL(m_layout);
 		if (m_vbuffer) render::delete_VBO(m_vbuffer);
 	}
-
-
+	
 	void lod_terrain::build_tree()
 	{
 		//compute root 
@@ -147,13 +221,6 @@ namespace hcube
 	//build tree
 	void lod_terrain::build()
 	{
-#if 0
-		//get material texture
-		auto texture = 
-			get_material()
-			->get_default_parameter(material::MAT_DEFAULT_DIFFUSE_MAP)
-			->get_texture();
-#endif
 		//vertex data description GPU
 		m_layout =
 			render::create_IL({
@@ -171,46 +238,56 @@ namespace hcube
 		//buffer
 		std::vector< terrain_vertex > vertices(m_p_size.x*m_p_size.y);
 		//half size
-		float map_height = std::sqrt(m_size.x * m_size.y) / 2.f;
-		vec3 half_size   = vec3(m_size.x, 0,m_size.y)     / 2.f;
+		vec3 half_size   = vec3(m_size.x, 0,m_size.y) / 2.f;
+		//map h 
+		float map_height = 0.01;
 		//init all vertices
-		for (unsigned int y = 0; y != m_p_size.y; ++y)
-		for (unsigned int x = 0; x != m_p_size.x; ++x)
+		#pragma omp parallel for num_threads(4)
+		for (int y = 0; y < m_p_size.y; ++y)
 		{
-#if 1
-			float h = std::cos(float(x) / m_size.x * constants::pi<float>()*16.0f)*2.0f +
-					  std::cos(float(y) / m_size.y * constants::pi<float>()*16.0f)*2.0f;
-#else
-			float h = 0;
-#endif 
-			vertices[y*m_p_size.x + x] = terrain_vertex
-			(
-				vec3(x, h, y) - half_size,
-				vec3( 0,1,0 ),
-				vec2( x , y ) / vec2(m_size)
-			);
+			for (int x = 0; x < m_p_size.x; ++x)
+			{
+				vertices[y*m_p_size.x + x] = terrain_vertex
+				(
+					(vec3(x, 0, y) - half_size) / vec3(m_p_size.x, 1, m_p_size.y),
+					vec3(0, 1, 0),
+					vec2(x, y) / vec2(m_size)
+				);
+			}
 		}
 		//set obb
-		set_bounding_box(obb(mat3(1), vec3(0, 0, 0), vec3(half_size.x, map_height, half_size.y)));
+		set_bounding_box(obb(mat3(1), vec3(0, 0, 0), vec3(0.5, map_height, 0.5)));
 		//compute tangents
 		//tangent_space_calculation::compute_tangent_fast<terrain_vertex>(vertices);
 		//alloc vertex buffer
+		size_t size_vers = sizeof(terrain_vertex) * vertices.size();
+#if 0
+		std::cout << "size: " << size_vers << " B" << std::endl;
+		std::cout << "size: " << size_vers / 1024 << " KB" << std::endl;
+		std::cout << "size: " << size_vers / 1024 / 1024 << " MB" << std::endl;
+#endif
 		m_vbuffer = render::create_stream_VBO((unsigned char*)vertices.data(), sizeof(terrain_vertex), vertices.size());
+		//errors
+		HCUBE_RENDER_PRINT_ERRORS
 		//for all childs
 		size_t n_nodes = std::pow(m_levels, 4);
 		m_nodes.resize(n_nodes+1);
 		//build tree
 		build_tree();
+		//errors
+		HCUBE_RENDER_PRINT_ERRORS
 	}
 
 
 	void lod_terrain::node::build(const lod_terrain::node::build_info& info)
 	{
+#if 0
 		std::cout << "--------------------------------------------------------------\n";
 		std::cout << "g_size: " << info.m_g_size.x << ", " << info.m_g_size.y << "\n";
 		std::cout << "start: "  << info.m_start.x  << ", " << info.m_start.y << "\n";
 		std::cout << "end: "    << info.m_end.x << ", " << info.m_end.y << "\n";
 		std::cout << "stride: " << info.m_stride.x << ", " << info.m_stride.y << "\n";
+#endif
 		//save
 		m_info = info;
 		//ref
