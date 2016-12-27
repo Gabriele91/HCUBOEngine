@@ -131,7 +131,7 @@ namespace hcube
 		}
 	}
 
-	void ssao_technique::applay(entity::ptr e_camera, g_buffer& buffer, mesh::ptr square)
+	void ssao_technique::applay(rendering_system& rsystem, entity::ptr e_camera, g_buffer& buffer, mesh::ptr square)
 	{
 		//clear
 		auto temp_cullface = render::get_cullface_state();
@@ -165,7 +165,7 @@ namespace hcube
 		m_normal->set_value(buffer.get_texture(g_buffer::G_BUFFER_TEXTURE_TYPE_NORMAL));
 		m_noise->set_value(m_noise_texture);
 		//////////////////////////////////////////////////////////////////////////////////////////////////////	
-		square->draw();
+		square->draw(rsystem,e_camera);
 		//////////////////////////////////////////////////////////////////////////////////////////////////////	
 		//unbind
 		m_shader->unbind();
@@ -186,7 +186,7 @@ namespace hcube
 		//uniform texture
 		m_uniform_ssoa_input->set_value(m_ssao_texture);
 		//draw
-		square->draw();
+		square->draw(rsystem, e_camera);
 		//unbind
 		m_shader_blur->unbind();
 		//disable fbo

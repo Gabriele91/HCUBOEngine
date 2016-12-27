@@ -9,6 +9,7 @@
 #include <hcube/config.h>
 #include <hcube/core/smart_pointers.h>
 #include <hcube/render/render.h>
+#include <hcube/render/rendering_system.h>
 #include <hcube/components/renderable.h>
 #include <hcube/core/component_register.h>
 #include <hcube/data/property.h>
@@ -40,7 +41,7 @@ namespace hcube
 		size_t get_text_max_size() const;
 		std::u32string get_text() const;
 		std::string    get_text_utf8() const;
-		void draw();
+		void draw(rendering_system& rsystem, entity::ptr view);
 
 		virtual component_ptr copy() const;
 

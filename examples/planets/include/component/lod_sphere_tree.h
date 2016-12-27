@@ -20,11 +20,9 @@ namespace hcube
 		
 		void build();
 
-		//set target
-		void target(const vec3& pos);
 
 		//overload renderable::draw
-		void draw();
+		void draw(rendering_system& rsystem, entity::ptr view) override;
 
 		//overload component::copy 
 		virtual component_ptr copy() const;

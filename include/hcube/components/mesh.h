@@ -11,6 +11,7 @@
 #include <hcube/math/vector_math.h>
 #include <hcube/core/smart_pointers.h>
 #include <hcube/render/render.h>
+#include <hcube/render/rendering_system.h>
 #include <hcube/components/renderable.h>
 #include <hcube/core/component_register.h>
 
@@ -124,7 +125,7 @@ namespace hcube
 
 		void disable_support_culling();
 
-		void draw();
+		void draw(rendering_system& rsystem, entity::ptr view);
 
 		void destoy();
 

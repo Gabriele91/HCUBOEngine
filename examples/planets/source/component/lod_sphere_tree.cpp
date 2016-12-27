@@ -69,7 +69,7 @@ namespace hcube
 	}
 
 	//overload renderable::draw
-	void load_sphere_tree::draw()
+	void load_sphere_tree::draw(rendering_system& rsystem, entity::ptr view)
 	{
 		//
 	}

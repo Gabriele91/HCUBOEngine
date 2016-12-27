@@ -144,8 +144,8 @@ namespace hcube
 	{
 		renderable::set_support_culling(false);
 	}
-
-	void mesh::draw()
+	
+	void mesh::draw(rendering_system& rsystem,entity::ptr view)
 	{
 		//bind buffer
 		render::bind_VBO(m_bvertex);

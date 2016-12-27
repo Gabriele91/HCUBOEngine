@@ -28,7 +28,8 @@ namespace hcube
                                vec4&  clear_color,
                                vec4&  ambient_color,
                                entity::ptr camera,
-                               render_scene& scene);
+                               render_scene& rscene,
+							   rendering_system& rsystem);
 
 		struct ambient_occlusion_param
 		{
@@ -79,8 +80,9 @@ namespace hcube
                       context_texture* ssao,
 					  entity::ptr t_camera,
                       const vec4& ambient_light,
-					  render_scene& rsceme,
-					  render_scene_queue_type type);
+					  render_scene& rscene,
+					  render_scene_queue_type type,
+					  rendering_system& rsystem);
         };
         
         class HCUBE_API point_light_shader
@@ -101,8 +103,9 @@ namespace hcube
                       context_texture* ssao,
 					  entity::ptr t_camera,
                       const vec4& ambient_light,
-					  render_scene& rsceme,
-					  render_scene_queue_type type);
+					  render_scene& rscene,
+					  render_scene_queue_type type,
+					  rendering_system& rsystem);
         };
 
 		class HCUBE_API direction_light_shader
@@ -122,9 +125,10 @@ namespace hcube
 					  context_texture* ssao,
 					  entity::ptr t_camera,
 					  const vec4& ambient_light,
-					  render_scene& rsceme,
+					  render_scene& rscene,
 					  render_scene_queue_type type,
-					  mesh::ptr square);
+					  mesh::ptr square,
+					  rendering_system& rsystem);
 		};
         //size
         ivec2    m_q_size;

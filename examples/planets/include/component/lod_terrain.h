@@ -76,7 +76,7 @@ namespace hcube
 		void build();
 
 		//overload renderable::draw
-		void draw();
+		void draw(rendering_system& rsystem,entity::ptr view) override;
 
 		//overload component::copy 
 		virtual component_ptr copy() const

@@ -9,6 +9,9 @@
 
 namespace hcube
 {
+	//Forward declaration
+	class rendering_system;
+	//Renderable
 	class HCUBE_API ssao_technique
 	{
 	public:
@@ -21,7 +24,7 @@ namespace hcube
 
 		void destoy();
 
-		void applay(entity::ptr e_camera, g_buffer& buffer, mesh::ptr square);
+		void applay(rendering_system& rsystem,entity::ptr e_camera, g_buffer& buffer, mesh::ptr square);
 
 		void set_texture(int n_text = 0);
 		

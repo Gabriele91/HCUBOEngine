@@ -87,7 +87,8 @@ namespace hcube
         vec4&  clear_color,
         vec4&  ambient_color,
         entity::ptr e_camera,
-        render_scene& rscene
+        render_scene& rscene,
+		rendering_system& rsystem
     )
     {
         
@@ -127,7 +128,7 @@ namespace hcube
             
 			pass.m_shader->get_uniform("model")->set_value(model);
 
-            m_cone->draw();
+            m_cone->draw(rsystem, e_camera);
         }
         HCUBE_FOREACH_QUEUE(weak_light, rscene.get_first(RQ_POINT_LIGHT))
         {
@@ -153,7 +154,7 @@ namespace hcube
             
             pass.m_shader->get_uniform("model")->set_value(model);
             
-            m_sphere->draw();
+            m_sphere->draw(rsystem, e_camera);
         }
         
         
@@ -167,6 +168,8 @@ namespace hcube
 		//culling
 		camera::ptr     c_camera = m_camera->get_component<camera>();
 		const frustum&  f_camera = c_camera->get_frustum();
+		//save state
+		m_current_draw_camera = m_camera;
 		//update view frustum
 		if (m_update_frustum) c_camera->update_frustum();
         //lights queue
@@ -184,7 +187,8 @@ namespace hcube
 				m_clear_color,
 				m_ambient_color,
                 weak_light->lock(),
-                m_scene
+                m_scene,
+				*this
 			);
 			//point lights
 			HCUBE_FOREACH_QUEUE(weak_light, m_scene.get_first(RQ_POINT_LIGHT))
@@ -194,7 +198,8 @@ namespace hcube
 				m_clear_color,
 				m_ambient_color,
                 weak_light->lock(),
-                m_scene
+                m_scene,
+				*this
 			);
             //next
             ++n_shadow_pass;
@@ -222,7 +227,8 @@ namespace hcube
               m_clear_color,
               m_ambient_color,
               m_camera,
-              m_scene
+              m_scene,
+			  *this
              );
             //error
         }
@@ -237,9 +243,12 @@ namespace hcube
              m_clear_color,
              m_ambient_color,
              m_camera,
-             m_scene
+             m_scene,
+			 *this
             );
         }
+		//save state
+		m_current_draw_camera = nullptr;
 	}
 
 	const vec4& rendering_system::get_clear_color() const
@@ -255,6 +264,11 @@ namespace hcube
 	entity::ptr rendering_system::get_camera() const
 	{
 		return m_camera;
+	}
+
+	entity::ptr rendering_system::get_current_draw_camera() const
+	{
+		return m_current_draw_camera;
 	}
 
 	const std::vector< rendering_pass_ptr >& rendering_system::get_rendering_pass(rendering_pass_type type) const

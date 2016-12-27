@@ -51,7 +51,8 @@ namespace hcube
      vec4&  clear_color,
      vec4&  ambient_color,
      entity::ptr e_light,
-     render_scene& rscene
+     render_scene& rscene,
+	 rendering_system& rsystem
      )
     {
         //shadow map
@@ -165,7 +166,7 @@ namespace hcube
                 //set transform
                 u_shadow_model->set_value(t_entity->get_matrix());
                 //draw
-                r_entity->draw();
+                r_entity->draw(rsystem,e_light);
             }
         }
         //disable shadow buffer/texture

@@ -16,6 +16,9 @@
 
 namespace hcube
 {
+	//Forward declaration
+	class rendering_system;
+	//Renderable
 	class HCUBE_API renderable : public component
 	{
 
@@ -27,7 +30,7 @@ namespace hcube
 
 		virtual ~renderable() {};
 
-		virtual void draw()
+		virtual void draw(rendering_system& rsystem, entity::ptr view)
 		{
 			assert(0);
 		};

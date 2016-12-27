@@ -73,7 +73,7 @@ namespace hcube
 		set_text( to_utf32(text) );
 	}
 
-	void text_mesh::draw()
+	void text_mesh::draw(rendering_system& rsystem, entity::ptr camera)
 	{
 		render::bind_VBO(m_bpoints);
 		render::bind_IL(m_layout);

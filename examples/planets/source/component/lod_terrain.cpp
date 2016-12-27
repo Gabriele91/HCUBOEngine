@@ -331,7 +331,7 @@ namespace hcube
 	}
 
 	//overload renderable::draw
-	void lod_terrain::draw()
+	void lod_terrain::draw(rendering_system& rsystem, entity::ptr view) 
 	{
 		//bind buffer
 		render::bind_VBO(m_vbuffer);
