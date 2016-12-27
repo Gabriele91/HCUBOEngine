@@ -1,0 +1,62 @@
+parameters
+{
+    mask float(-1.0)
+    diffuse_map texture("white")
+    normal_map texture("normal_up")
+    specular_map texture("black")
+    height_map texture("black")
+	color vec4(1.0,1.0,1.0,1.0)
+}
+
+sub_effect
+{
+    requirement
+    {
+        driver  OpenGL(4,1)
+        shader  GLSL(410)
+    }
+    
+    technique "forward"
+    {
+        pass 
+        {
+            zbuffer less
+            blend off
+            cullface back
+            lights only_ambient
+            shader source 
+            {
+                #define FORWARD_RENDERING
+                #pragma import <base_texture_normal_specular>
+            }
+        }
+        pass 
+        {
+            zbuffer equal
+            blend one one
+            cullface back
+            lights spot_point_direction
+            shader source 
+            {
+                #define FORWARD_RENDERING
+                #pragma import <base_texture_normal_specular>
+            }
+        }
+    }
+
+    technique "deferred"
+    {
+        pass
+        {
+            zbuffer less
+            blend off
+            cullface back
+            lights off
+            shader source
+            {
+                #define DEFERRED_RENDERING
+                #pragma import <base_texture_normal_specular>
+            }
+        }
+    }
+}

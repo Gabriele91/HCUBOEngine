@@ -71,9 +71,9 @@ namespace hcube
 
 	void lod_terrain::recompute_mesh_heigth()
 	{
-		//return;
+		if (!get_material()) return;
 		//param
-		auto param = get_material()->get_default_parameter(material::MAT_DEFAULT_DIFFUSE_MAP);
+		auto param = get_material()->get_parameter_by_name("height_map");
 		//test
 		if (!param) return;
 		//get material texture
