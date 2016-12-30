@@ -9,6 +9,21 @@ namespace hcube
 	{
 
 		//HCUBE_COMPONENT_DEC(lod_terrain)
+		enum node_nears
+		{
+			NODE_TOP,
+			NODE_RIGHT,
+			NODE_BOTTOM,
+			NODE_LEFT
+		};
+		enum node_child
+		{
+			NODE_CHILD_TOP_LEFT,
+			NODE_CHILD_TOP_RIGHT,
+			NODE_CHILD_BOTTOM_LEFT,
+			NODE_CHILD_BOTTOM_RIGHT,
+			NODE_CHILD_MAX
+		};
 
 		enum node_state
 		{
@@ -27,11 +42,13 @@ namespace hcube
 				ivec2 m_stride;
 			};
 			//state
-			node_state m_state;
+			node_state m_state{ NODE_NOT_DRAW };
 			build_info m_info;
 			//data info node
 			size_t				   m_ib_size{ 0 };
 			context_index_buffer*  m_ibuffer{ nullptr };
+			//obb
+			obb m_box;
 			//init index buffer
 			void build(const build_info& build_info);
 			//parent 
@@ -54,9 +71,25 @@ namespace hcube
 			};
 		};
 
+		//////////////////////////////////////////////////////////////////////////////////////
 		void build_tree();
 		void build_tree(node* parent, unsigned int& node, unsigned int level=0);
-        void draw_tree(node* parent, unsigned int level_to_draw = 0, unsigned int level = 0);
+		//////////////////////////////////////////////////////////////////////////////////////
+		void compute_object_to_draw
+		(
+			node* parent,
+			const float camera_factor,
+			const vec3& camera_position,
+			const frustum& frustum,
+			const mat4& model_view,
+			unsigned int level = 0
+		);
+		//////////////////////////////////////////////////////////////////////////////////////
+		void compute_object_to_draw_debug(
+			node* parent, 
+			unsigned int level_to_draw = 0, 
+			unsigned int level = 0
+		);
         
 	public:
 

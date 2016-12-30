@@ -1,4 +1,5 @@
 effect "base_texture_normal_specular_height"
+//effect "wiremesh"
 {
 	diffuse_map  texture("earth_color")
 	height_map 	 texture("earth_height_2")

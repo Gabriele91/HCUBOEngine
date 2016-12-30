@@ -25,6 +25,12 @@
     <Filter Include="File di risorse\assets\textures">
       <UniqueIdentifier>{56d05c7c-7be2-48cd-96c3-189b0c591683}</UniqueIdentifier>
     </Filter>
+    <Filter Include="File di origine\component">
+      <UniqueIdentifier>{ffe3fc41-7750-4c88-bef7-9699d239a4a5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="File di intestazione\component">
+      <UniqueIdentifier>{39001298-55ab-4bd9-a0cf-43899d5fb9b1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\app_basic.cpp">
@@ -33,10 +39,22 @@
     <ClCompile Include="source\main.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
+    <ClCompile Include="source\component\lod_sphere_tree.cpp">
+      <Filter>File di origine\component</Filter>
+    </ClCompile>
+    <ClCompile Include="source\component\lod_terrain.cpp">
+      <Filter>File di origine\component</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\app_basic.h">
       <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="include\component\lod_sphere_tree.h">
+      <Filter>File di intestazione\component</Filter>
+    </ClInclude>
+    <ClInclude Include="include\component\lod_terrain.h">
+      <Filter>File di intestazione\component</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

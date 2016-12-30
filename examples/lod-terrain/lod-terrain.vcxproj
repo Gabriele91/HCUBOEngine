@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{2FE5BA85-3112-4A79-A75F-76D87146012E}</ProjectGuid>
+    <ProjectGuid>{C07129B2-9FD9-4A17-9CA1-D19C8004BE20}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>base</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
@@ -163,10 +163,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="source\app_basic.cpp" />
+    <ClCompile Include="source\component\lod_sphere_tree.cpp" />
+    <ClCompile Include="source\component\lod_terrain.cpp" />
     <ClCompile Include="source\main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\app_basic.h" />
+    <ClInclude Include="include\component\lod_sphere_tree.h" />
+    <ClInclude Include="include\component\lod_terrain.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\planet_assets\assets.rs" />

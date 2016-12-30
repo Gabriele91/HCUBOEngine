@@ -22,6 +22,9 @@
 #include <hcube/data/dump/properties_dump.h>
 #include <hcube/data/parser/properties_parser.h>
 #include <app_basic.h>
+//component
+#include <component/lod_sphere_tree.h>
+#include <component/lod_terrain.h>
 
 
 namespace hcube
@@ -45,12 +48,29 @@ namespace hcube
 	void app_basic::key_event(application& app, int key, int scancode, int action, int mods)
 	{
 		//draw move
-		float move_vel   = m_planet_draw_state == PDRAW_ON_GROUND ? 0.125 : 5.0f;
+		float move_vel = 5.0f;
+        auto l_terrain = (lod_terrain*)&(*m_terrain->get_component<renderable>());
         
 		if (key == GLFW_KEY_ESCAPE)
 		{
 			m_loop = false;
 			return;
+        }
+        else if (key == GLFW_KEY_0)
+        {
+            l_terrain->set_draw_level(0);
+        }
+        else if (key == GLFW_KEY_1)
+        {
+            l_terrain->set_draw_level(1);
+        }
+        else if (key == GLFW_KEY_2)
+        {
+            l_terrain->set_draw_level(2);
+        }
+        else if (key == GLFW_KEY_3)
+        {
+            l_terrain->set_draw_level(3);
         }
 		else if (key == GLFW_KEY_O)
 		{
@@ -152,33 +172,6 @@ namespace hcube
 		app.set_mouse_position(mouse_center);
 	}
 
-	void app_basic::set_planet_material(planet_draw_state dstate)
-	{
-		if (m_planet_draw_state != dstate)
-		{
-			switch (dstate)
-			{
-			case PDRAW_IN_SPACE:
-				m_planet->get_component<renderable>()->set_material(m_material[MAT_GROUND_FROM_S]);
-				m_sky->get_component<renderable>()->set_material(m_material[MAT_SKY_FROM_S]);
-				break;
-			case PDRAW_ON_GROUND:
-				m_planet->get_component<renderable>()->set_material(m_material[MAT_GROUND_FROM_P]);
-				m_sky->get_component<renderable>()->set_material(m_material[MAT_SKY_FROM_P]);
-			break;
-			default: break;
-			}
-			m_planet_draw_state = dstate;
-		}
-	}
-
-
-#define SET_PARAM_IF_EXIST(param,n) { auto p = param; if(p) p->set_value(n);  }
-	const float scale_planet = 100.0;
-	const float scale_depth  = 0.25;
-	const float size_planet  = (1.0) * scale_planet;
-	const float size_sky     = (1.025) * scale_planet;
-
 	void app_basic::start(application& app)
 	{
 		//set mouse at center
@@ -216,69 +209,28 @@ namespace hcube
 			c_camera->set_viewport(ivec4{ 0, 0, size.x, size.y });
 			c_camera->set_perspective(m_fov, m_aspect, 0.01, 1000.0);
 			t_camera->look_at(
-				vec3{ 0.0f, 0.0f, -scale_planet*2.5f },
+				vec3{ 0.0f, 0.0f, -100.0f },
 				vec3{ 0.0f, 0.0f, 0.0f },
 				vec3{ 0.0f, 1.0f, 0.0f }
 			);
 			//set camera
 			m_systems.add_entity(m_camera);
-			//materials
-			m_material[MAT_GROUND_FROM_S] = m_resources.get_material("earth_ground_from_space");
-			m_material[MAT_SKY_FROM_S]    = m_resources.get_material("earth_sky_from_space");
-			m_material[MAT_GROUND_FROM_P] = m_resources.get_material("earth_ground_from_ground");
-			m_material[MAT_SKY_FROM_P]    = m_resources.get_material("earth_sky_from_ground");
-			//set params
-			for (material_ptr& p_mat : m_material)
-			{
-				SET_PARAM_IF_EXIST(p_mat->get_parameter_by_name("atmosphere_radius"), size_sky);
-				SET_PARAM_IF_EXIST(p_mat->get_parameter_by_name("planetary_radius"), size_planet);
-				SET_PARAM_IF_EXIST(p_mat->get_parameter_by_name("fScaleDepth"), scale_depth);
-				SET_PARAM_IF_EXIST(p_mat->get_parameter_by_name("sun_pos"), vec3(30.0, 0, 0.0));
-			}
-			//planet
-			m_sky = gameobject::node_new(basic_meshs::icosphere(size_sky, 5, true));
-			m_sky->set_name("planet_sky");
-			//planet ground
-			m_planet = gameobject::node_new(basic_meshs::icosphere(size_planet, 5, true));
-			m_planet->set_name("planet_ground");
-			//set material
-			set_planet_material(PDRAW_IN_SPACE);
 
 			//test terrain
-            m_systems.add_entity(m_planet);
-			m_systems.add_entity(m_sky);
+            m_terrain = gameobject::node_new(lod_terrain::snew(ivec2(512, 512) * 4, 4));
+			m_terrain->get_component<renderable>()->set_material(m_resources.get_material("earth_terrain"));
+            m_terrain->get_component<transform>()->position({0,-100,0});
+			m_terrain->get_component<transform>()->scale({ 300,10,300 });
+            
+            m_systems.add_entity(m_terrain);
 		}
 		
 	}
 
 	bool app_basic::run(application& app, double delta_time)
     {
-		//////////////////////////////////////////////////////////
-		//update
-		float camera_dist_from_planet = distance(
-			m_camera->get_component<transform>()->get_global_position(),
-			m_planet->get_component<transform>()->get_global_position()
-		);
-		//set materials
-		if (camera_dist_from_planet < size_sky)
-			set_planet_material(PDRAW_ON_GROUND);
-		else
-			set_planet_material(PDRAW_IN_SPACE);
-
-		//
-#if 1
-		SET_PARAM_IF_EXIST(
-			m_planet
-			->get_component<renderable>()
-			->get_material()
-			->get_parameter_by_name("camera_height"), camera_dist_from_planet
-		);
-		SET_PARAM_IF_EXIST(
-			m_sky
-			->get_component<renderable>()
-			->get_material()
-			->get_parameter_by_name("camera_height"), camera_dist_from_planet
-		);
+#if 0
+		m_terrain->get_component<transform>()->turn(quat(vec3(0,constants::pi<float>() / 180. * delta_time,0)));
 #endif
 		//////////////////////////////////////////////////////////
 		//////////////////////////////////////////////////////////
