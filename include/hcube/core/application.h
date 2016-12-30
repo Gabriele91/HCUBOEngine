@@ -8,6 +8,12 @@
 #pragma once
 #include <string>
 #include <tuple>
+#include <mutex>
+#include <queue>
+#include <thread>
+#include <future>
+#include <functional>
+#include <condition_variable>
 #include <GLFW/glfw3.h>
 #include <hcube/config.h>
 #include <hcube/math/vector_math.h>
@@ -63,13 +69,19 @@ namespace hcube
 
 	class HCUBE_API application
 	{
-		GLFWwindow* m_window{ nullptr };
-		instance*   m_instance{ nullptr };
-		double		m_last_delta_time{ 0 };
-		bool		m_is_resizable{ false };
-
 	public:
-
+		//type of task
+		enum task_type
+		{
+			MAIN_THREAD,
+			OTHERS_THREADS
+		};
+		//type ok callback
+		using task_function = std::function<void(void)>;
+		//list of task to do
+		using tasks   = std::queue< task_function >;
+		using workers = std::vector< std::thread >;
+		//application
 		application();
 		~application();
 		//actions
@@ -93,8 +105,11 @@ namespace hcube
 		GLFWwindow* get_window();
 		const instance* get_instance() const;
 		const GLFWwindow* get_window() const;
-
-
+		//push task to main thread
+		template<class function, class... arguments>
+		auto push_task(task_type type, function&& f, arguments&&... args)
+			 -> std::future<typename std::result_of<function(arguments...)>::type>;
+		//execute a instance
 		bool execute
 		(
 			const window_size& size,
@@ -102,9 +117,169 @@ namespace hcube
 			int major_gl_ctx,
 			int minor_gl_ctx,
 			const std::string& app_name,
-			instance* app
+			instance* app,
+			size_t n_workers = 4
 		);
 
+	private:
+
+		GLFWwindow*	m_window{ nullptr };
+		instance*	m_instance{ nullptr };
+		double		m_last_delta_time{ 0 };
+		bool		m_is_resizable{ false };
+
+		workers					m_workers;
+		bool					m_workers_stop;
+		std::mutex				m_workers_mutex;
+		tasks				    m_workers_tasks;
+		std::condition_variable m_workers_condition;
+
+		std::mutex	m_main_mutex;
+		tasks		m_main_tasks;
+
+		//execute main task
+		void execute_a_main_task();
+		void execute_all_main_task();
+		//utilities
+		void init_threads_pool(size_t n_threads);
+		void delete_threads_pool();
+
 	};
+	//main task
+	inline void application::execute_a_main_task()
+	{
+		std::function<void()> task;
+		{
+			//lock main thread
+			std::unique_lock<std::mutex> lock(m_main_mutex);
+			//exist case
+			if (m_main_tasks.empty()) return;
+			//get task
+			task = std::move(m_main_tasks.front());
+			//pop
+			m_main_tasks.pop();
+		}
+		//execute
+		task();
+	}
+	inline void application::execute_all_main_task()
+	{
+		while (true)
+		{
+			std::function<void()> task;
+			{
+				//lock main thread
+				std::unique_lock<std::mutex> lock(m_main_mutex);
+				//exist case (exit from while!)
+				if (m_main_tasks.empty()) return;
+				//get task
+				task = std::move(m_main_tasks.front());
+				//pop
+				m_main_tasks.pop();
+			}
+			//execute
+			task();
+		}
+	}
+	//thread pool
+	template<class function, class... arguments>
+	inline auto application::push_task(task_type type, function&& f, arguments&&... args) -> std::future<typename std::result_of<function(arguments...)>::type>
+	{
+		using return_type = typename std::result_of<function(arguments...)>::type;
+		//type of queue
+		if (type == MAIN_THREAD)
+		{
+			//make task
+			auto task = std::make_shared< std::packaged_task<return_type()> >
+			(
+				std::bind(std::forward<function>(f), std::forward<arguments>(args)...)
+			);
+			//return future result
+			std::future<return_type> res = task->get_future();
+			{
+				//lock m_woker_tasks
+				std::unique_lock<std::mutex> lock(m_main_mutex);
+				//push
+				m_main_tasks.emplace([task](){ (*task)(); });
+			}
+			//return promise
+			return res;
+		}
+		else
+		{
+			//make task
+			auto task = std::make_shared< std::packaged_task<return_type()> >
+			(
+				std::bind(std::forward<function>(f), std::forward<arguments>(args)...)
+			);
+			//return future result
+			std::future<return_type> res = task->get_future();
+			{
+				//lock m_woker_tasks
+				std::unique_lock<std::mutex> lock(this->m_workers_mutex);
+				// don't allow enqueueing after stopping the pool
+				if (this->m_workers_stop) throw std::runtime_error("push a task on stopped thread pool");
+				//push
+				this->m_workers_tasks.emplace([task]() { (*task)(); });
+			}
+			//notify push
+			m_workers_condition.notify_one();
+			//return promise
+			return res;
+		}
+	}
+	inline void application::init_threads_pool(size_t n_threads)
+	{
+		//enable
+		this->m_workers_stop = false;
+		//init
+		for (size_t i = 0; i < n_threads; ++i)
+		{
+			m_workers.emplace_back(
+				[this]()
+				{
+					while (true)
+					{
+						std::function<void()> task;
+						{
+							//lock thread
+							std::unique_lock<std::mutex> lock(this->m_workers_mutex);
+							//wait condition
+							this->m_workers_condition.wait(lock,
+								[this]
+								{
+									return this->m_workers_stop || !this->m_workers_tasks.empty();
+								}
+							);
+							//exit case
+							if (this->m_workers_stop && this->m_workers_tasks.empty())
+								return;
+							//get task
+							task = std::move(this->m_workers_tasks.front());
+							//pop
+							this->m_workers_tasks.pop();
+						}
+						//execute
+						task();
+					}
+				}
+			);
+		}
+	}
+	inline void application::delete_threads_pool()
+	{
+		//stop
+		{
+			std::unique_lock<std::mutex> lock(m_workers_mutex);
+			m_workers_stop = true;
+		}
+		//notify to all
+		m_workers_condition.notify_all();
+		//wait all
+		for (std::thread& worker : m_workers) worker.join();
+		//clear workers list
+		m_workers.clear();
+	}
+
 
 };

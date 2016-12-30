@@ -135,7 +135,8 @@ namespace hcube
 		int major_gl_ctx,
 		int minor_gl_ctx,
 		const std::string& app_name,
-		instance* app
+		instance* app,
+		size_t n_workers
 	)
 	{
 		//save
@@ -243,6 +244,8 @@ namespace hcube
 			//call
 			l_app->get_instance()->resize_event(*l_app, ivec2{ width,height });
 		});
+		//init thread pool
+		init_threads_pool(n_workers);
 		//start
 		m_instance->start(*this);
 		render::print_errors();
@@ -255,6 +258,10 @@ namespace hcube
 			//compute delta time
 			old_time = last_time;
 			last_time = query_performance::get_time();
+			//execute main task
+			execute_a_main_task();
+			//print
+			render::print_errors();
 			//update delta time
 			m_last_delta_time = std::max(last_time - old_time, 0.0001);
 			//update
@@ -266,6 +273,8 @@ namespace hcube
 			glfwPollEvents();
 		}
 		bool end_state = m_instance->end(*this);
+		//stop thread pool
+		delete_threads_pool();
 		//dealloc
 		delete m_instance;
 		m_instance = nullptr;
