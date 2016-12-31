@@ -36,21 +36,16 @@ namespace hcube
 		{
 			struct build_info
 			{
-				ivec2 m_g_size;
-				ivec2 m_start;
-				ivec2 m_end;
-				ivec2 m_stride;
+				vec2 m_start;
+				vec2 m_end;
+				vec2 m_detail;
 			};
 			//state
 			node_state m_state{ NODE_NOT_DRAW };
 			build_info m_info;
-			//data info node
-			size_t				   m_ib_size{ 0 };
-			context_index_buffer*  m_ibuffer{ nullptr };
-			//obb
-			obb m_box;
-			//init index buffer
-			void build(const build_info& build_info);
+			obb		   m_box;
+			//info
+			void set(const build_info& build_info);
 			//parent 
 			node*  m_parent{ nullptr };
 			//childs
@@ -73,7 +68,12 @@ namespace hcube
 
 		//////////////////////////////////////////////////////////////////////////////////////
 		void build_tree();
-		void build_tree(node* parent, unsigned int& node, unsigned int level=0);
+		void build_tree
+		(
+			node* parent,
+			unsigned int& node,
+			unsigned int level=0
+		);
 		//////////////////////////////////////////////////////////////////////////////////////
 		void compute_object_to_draw
 		(
@@ -85,7 +85,8 @@ namespace hcube
 			unsigned int level = 0
 		);
 		//////////////////////////////////////////////////////////////////////////////////////
-		void compute_object_to_draw_debug(
+		void compute_object_to_draw_debug
+		(
 			node* parent, 
 			unsigned int level_to_draw = 0, 
 			unsigned int level = 0
@@ -94,13 +95,9 @@ namespace hcube
 	public:
 
 		//size
-		lod_terrain(
-			ivec2 size = { 1024, 1024 },
-			unsigned int levels = 3
-		);
-		lod_terrain(
-			material_ptr material,
-			ivec2 size = { 1024, 1024 },
+		lod_terrain
+		(
+			vec2 detail = { 16, 16 },
 			unsigned int levels = 3
 		);
 		virtual ~lod_terrain();
@@ -128,15 +125,31 @@ namespace hcube
 
 	private:
 		//levels
-		ivec2		 m_size;
-		ivec2		 m_p_size;
+		ivec2		 m_detail;
+		ivec2		 m_detail_vertexs;
         unsigned int m_levels;
         unsigned int m_level_to_draw{0};
 		//draw info
+		unsigned int		   m_ib_size{ 0 };
+		unsigned int		   m_vb_size{ 0 };
 		context_input_layout*  m_layout { nullptr };
 		context_vertex_buffer* m_vbuffer{ nullptr };
-		//root
-		std::vector< node > m_nodes;
+		context_index_buffer*  m_ibuffer{ nullptr };
+		//pool nodes
+		std::vector< node >  m_nodes;
+		//hmap
+		unsigned int m_hmap_width { 0 };
+		unsigned int m_hmap_height{ 0 };
+		std::vector< float > m_hmap; 
+		//get height from map
+		inline float get_height(float normx, float normy) const
+		{
+			if (!m_hmap.size()) return 0.0;
+			int x = normx * (m_hmap_width - 1);
+			int y = normy * (m_hmap_height - 1);
+			int pixel = (y * m_hmap_width + x);
+			return float(m_hmap[pixel]) / 255.;
+		}
 		//update mesh
 		void recompute_mesh_heigth();
 

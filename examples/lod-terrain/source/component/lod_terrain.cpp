@@ -7,7 +7,7 @@
 namespace hcube
 {
 	//vertex data description CPU
-	struct terrain_vertex
+	struct alignas(16) terrain_vertex
 	{
 		vec3 m_position;
 		vec3 m_normal;
@@ -49,67 +49,27 @@ namespace hcube
 
 	//node methos
 	#pragma region node
-	void lod_terrain::node::build(const lod_terrain::node::build_info& info)
+	void lod_terrain::node::set(const lod_terrain::node::build_info& info)
 	{
 #if 0
 		std::cout << "--------------------------------------------------------------\n";
-		std::cout << "g_size: " << info.m_g_size.x << ", " << info.m_g_size.y << "\n";
 		std::cout << "start: " << info.m_start.x << ", " << info.m_start.y << "\n";
 		std::cout << "end: " << info.m_end.x << ", " << info.m_end.y << "\n";
-		std::cout << "stride: " << info.m_stride.x << ", " << info.m_stride.y << "\n";
 #endif
 		//save
 		m_info = info;
 		//ref
-		const ivec2& g_size = info.m_g_size;
-		const ivec2& start = info.m_start;
-		const ivec2& end = info.m_end;
-		const ivec2& stride = info.m_stride;
-		//size matrix
-		ivec2 l_size = ivec2(info.m_end - info.m_start);
-		ivec2 s_size = l_size / info.m_stride;
-		//mapping tris
-		size_t n_quad = (s_size.x) * (s_size.y);
-		std::vector< unsigned int > idxs(n_quad * 6);
-		{
-			unsigned int i = 0;
-			for (unsigned int y = 0; y < s_size.y; ++y)
-				for (unsigned int x = 0; x < s_size.x; ++x)
-				{
-					const ivec2 g_coord = start + ivec2(x, y) * stride;
-					// top
-					const unsigned int point = (g_coord.y * g_size.x + g_coord.x);
-					const unsigned int point1 = point + (1 * stride.x);
-					// bottom
-					const unsigned int point2 = ((g_coord.y + stride.y) * g_size.x + g_coord.x);
-					const unsigned int point3 = point2 + (1 * stride.x);
-					//tri 1
-					idxs[i * 6 + 0] = point;
-					idxs[i * 6 + 1] = point3;
-					idxs[i * 6 + 2] = point1;
-					//tri 2
-					idxs[i * 6 + 3] = point;
-					idxs[i * 6 + 4] = point2;
-					idxs[i * 6 + 5] = point3;
-					//next
-					++i;
-				}
-		}
-		//alloc gpu memory
-		m_ib_size = idxs.size();
-		m_ibuffer = render::create_stream_IBO(idxs.data(), idxs.size());
-		//////////////////////////////////////////////////////////////////////////////////////////////////
-		//compute size
+		const vec2& _start  = info.m_start;
+		const vec2& _end    = info.m_end;
+		//compute box size
 		vec3
-			box_size(float(l_size.x) / g_size.x,
-				2.0,
-				float(l_size.y) / g_size.y);
+		box_size(_end.x - _start.x, 1.0, _end.y - _start.y);
 		box_size /= 2.0f;
-		//compute position
+		//compute box position
 		vec3
-			box_pos(float(start.x + end.x)*0.5 / g_size.x,
+		box_pos((_start.x + _end.x)*0.5,
 				0.0,
-				float(start.y + end.y)*0.5 / g_size.y);
+				(_start.y + _end.y)*0.5);
 		box_pos -= vec3(0.5, 0.0, 0.5);
 		//set OBB
 		m_box.build_from_attributes
@@ -129,7 +89,8 @@ namespace hcube
 	{
 		//vertex data description GPU
 		m_layout =
-			render::create_IL({
+		render::create_IL
+		({
 			sizeof(terrain_vertex),
 			{
 				attribute{ ATT_POSITIONT, AST_FLOAT3, offsetof(terrain_vertex, m_position) },
@@ -139,45 +100,43 @@ namespace hcube
 				attribute{ ATT_BINORMAL0, AST_FLOAT3, offsetof(terrain_vertex, m_bitangent) }
 			}
 		});
-		//points size
-		m_p_size = m_size + ivec2(1, 1);
 		//buffer
-		std::vector< terrain_vertex > vertices(m_p_size.x*m_p_size.y);
-		//half size
-		vec3 half_size = vec3(m_size.x, 0, m_size.y) / 2.f;
-		//map h 
-		float map_height = 0.01;
-		//init all vertices
-		#pragma omp parallel for num_threads(4)
-		for (int y = 0; y < m_p_size.y; ++y)
+		std::vector< unsigned int >   indices(m_detail.x * m_detail.y * 6);
+		std::vector< terrain_vertex > vertices(m_detail_vertexs.x*m_detail_vertexs.y);
+		//init index
+		int i = 0;
+		//#pragma omp parallel for num_threads(4)
+		for (int y = 0; y < m_detail.y; ++y)
+		for (int x = 0; x < m_detail.x; ++x)
 		{
-			for (int x = 0; x < m_p_size.x; ++x)
-			{
-				vertices[y*m_p_size.x + x] = terrain_vertex
-				(
-					(vec3(x, 0, y) - half_size) / vec3(m_p_size.x, 1, m_p_size.y),
-					vec3(0, 1, 0),
-					vec2(x, y) / vec2(m_size)
-				);
-			}
+			// top
+			const unsigned int point = y * m_detail_vertexs.x + x;
+			const unsigned int point1 = point + 1;
+			// bottom
+			const unsigned int point2 = (y + 1) * m_detail_vertexs.x + x;
+			const unsigned int point3 = point2 + 1;
+			//add tri 1
+			indices[i++] = point;
+			indices[i++] = point3;
+			indices[i++] = point1;
+			//add tri 2
+			indices[i++] = point;
+			indices[i++] = point2;
+			indices[i++] = point3;
 		}
-		//set obb
-		set_bounding_box(obb(mat3(1), vec3(0, 0, 0), vec3(0.5, map_height, 0.5)));
 		//compute tangents
-		//tangent_space_calculation::compute_tangent_fast<terrain_vertex>(vertices);
+		//tangent_space_calculation::compute_tangent_fast<terrain_vertex>(vertices,indices);
+		//set obb
+		set_bounding_box(obb(mat3(1), vec3(0, 0, 0), vec3(0.5, 0.5, 0.5)));
+		//save sizes
+		m_vb_size = vertices.size();
+		m_ib_size = indices.size();
 		//alloc vertex buffer
-		size_t size_vers = sizeof(terrain_vertex) * vertices.size();
-#if 0
-		std::cout << "size: " << size_vers << " B" << std::endl;
-		std::cout << "size: " << size_vers / 1024 << " KB" << std::endl;
-		std::cout << "size: " << size_vers / 1024 / 1024 << " MB" << std::endl;
-#endif
 		m_vbuffer = render::create_stream_VBO((unsigned char*)vertices.data(), sizeof(terrain_vertex), vertices.size());
+		//alloc index buffer
+		m_ibuffer = render::create_stream_IBO(indices.data(), indices.size());
 		//errors
 		HCUBE_RENDER_PRINT_ERRORS
-			//for all childs
-			size_t n_nodes = std::pow(m_levels, 4);
-		m_nodes.resize(n_nodes + 1);
 		//build tree
 		build_tree();
 		//errors
@@ -186,9 +145,11 @@ namespace hcube
 
 	void lod_terrain::build_tree()
 	{
+		//alloc all childs
+		size_t n_nodes = std::pow(4, m_levels+1) + 1;
+		m_nodes.resize(n_nodes);
 		//compute root 
-		int  stride = std::pow(4, m_levels);
-		m_nodes[0].build({ m_p_size, ivec2(0,0), m_size,{ stride, stride } });
+		m_nodes[0].set({ vec2(0.0,0.0), vec2(1.0,1.0), m_detail });
 		//count
 		unsigned int n = 1;
 		//build childs
@@ -202,7 +163,8 @@ namespace hcube
 		unsigned int  level
 	)
 	{
-		//safe: if (level == m_levels) return;
+		//safe: 
+		if (level == m_levels) return;
 		//add childs
 		for (size_t i = 0; i != NODE_CHILD_MAX; ++i)
 		{
@@ -222,33 +184,30 @@ namespace hcube
 		//
 		parent->m_chils[NODE_CHILD_BOTTOM_RIGHT]->m_neighbors[NODE_LEFT] = parent->m_chils[NODE_CHILD_BOTTOM_LEFT];
 		parent->m_chils[NODE_CHILD_BOTTOM_RIGHT]->m_neighbors[NODE_TOP]  = parent->m_chils[NODE_CHILD_TOP_RIGHT];
-		//level
-		int  stride = std::pow(4, m_levels - level);
 		//compute local size
-		auto& p_info = parent->m_info;
-		ivec2 p_g_size = p_info.m_end - p_info.m_start;
-		ivec2 l_size = p_g_size / 2;
-		ivec2 v_stride = { stride, stride };
+		auto& p_info  = parent->m_info;
+		vec2 p_g_size = p_info.m_end - p_info.m_start;
+		vec2 l_size   = p_g_size / 2.0f;
 		//coord
 		{
-			ivec2 start = p_info.m_start;
-			ivec2 end = start + l_size;
-			parent->m_chils[NODE_CHILD_TOP_LEFT]->build({ m_p_size, start, end, v_stride });
+			vec2 start = p_info.m_start;
+			vec2 end = start + l_size;
+			parent->m_chils[NODE_CHILD_TOP_LEFT]->set({ start, end, m_detail });
 		}
 		{
-			ivec2 start = p_info.m_start + ivec2(p_g_size.x / 2, 0);
-			ivec2 end = start + l_size;
-			parent->m_chils[NODE_CHILD_TOP_RIGHT]->build({ m_p_size, start, end, v_stride });
+			vec2 start = p_info.m_start + vec2(p_g_size.x / 2.0f, 0);
+			vec2 end = start + l_size;
+			parent->m_chils[NODE_CHILD_TOP_RIGHT]->set({ start, end, m_detail });
 		}
 		{
-			ivec2 start = p_info.m_start + ivec2(0, p_g_size.y / 2);
-			ivec2 end = start + l_size;
-			parent->m_chils[NODE_CHILD_BOTTOM_LEFT]->build({ m_p_size, start, end, v_stride });
+			vec2 start = p_info.m_start + vec2(0, p_g_size.y / 2.0f);
+			vec2 end = start + l_size;
+			parent->m_chils[NODE_CHILD_BOTTOM_LEFT]->set({ start, end, m_detail });
 		}
 		{
-			ivec2 start = p_info.m_start + p_g_size / 2;
-			ivec2 end = start + l_size;
-			parent->m_chils[NODE_CHILD_BOTTOM_RIGHT]->build({ m_p_size, start, end, v_stride });
+			vec2 start = p_info.m_start + p_g_size / 2.0f;
+			vec2 end = start + l_size;
+			parent->m_chils[NODE_CHILD_BOTTOM_RIGHT]->set({ start, end, m_detail });
 		}
 		//next levels
 		++level;
@@ -284,63 +243,58 @@ namespace hcube
 		//hfunction
 		auto get_height = [&](float normx, float normy) -> float
 		{
-			int y = normy * (diff_texture->get_height() - 1);
 			int x = normx * (diff_texture->get_width() - 1);
+			int y = normy * (diff_texture->get_height() - 1);
 			int pixel = (y * diff_texture->get_width() + x) * channels;
 			return float(raw_image[pixel]) / 255.;
 		};
-		//size buffer
-		size_t n_vertex = m_p_size.x*m_p_size.y;
-		//half size
-		vec3 half_size = vec3(m_size.x, 0, m_size.y) / 2.f;
 		//map h 
 		float map_height = 0.01;
-		//get vertexs
-		terrain_vertex* vertices = (terrain_vertex*)render::map_VBO(m_vbuffer, 0, sizeof(terrain_vertex)*n_vertex, MAP_WRITE_AND_READ);
-		HCUBE_RENDER_PRINT_ERRORS
-#pragma omp parallel for num_threads(4)
-			for (int y = 0; y < m_p_size.y; ++y)
-			{
-				for (int x = 0; x < m_p_size.x; ++x)
-				{
-					float h = get_height(float(x) / (m_p_size.x - 1), float(y) / (m_p_size.y - 1));
-					vertices[y*m_p_size.x + x].m_position.y = h;
-					//max
-					map_height = std::max(map_height, h);
-				}
-			}
+		//alloc
+		m_hmap_width = diff_texture->get_width();
+		m_hmap_height = diff_texture->get_height();
+		m_hmap.resize(m_hmap_width * m_hmap_height);
+		//for all
+		//#pragma omp parallel for num_threads(4)
+		for (int y = 0; y < diff_texture->get_height(); ++y)
+		for (int x = 0; x < diff_texture->get_width();  ++x)
+		{
+			int pixel_pos	 = (y * diff_texture->get_width() + x);
+			m_hmap[pixel_pos]= float(raw_image[pixel_pos*channels]) / 255.0f - 0.5f;
+			//max
+			map_height = std::max(map_height, std::abs(m_hmap[pixel_pos]));
+		}
 		//set obb
 		set_bounding_box(obb(mat3(1), vec3(0, 0, 0), vec3(0.5, map_height, 0.5)));
-		//unmap
-		render::unmap_VBO(m_vbuffer);
 	}
 
 	#pragma endregion
 
 	//terrain
 	#pragma region terrain
-	lod_terrain::lod_terrain(ivec2 size, unsigned int levels)
+	lod_terrain::lod_terrain(vec2 detail, unsigned int levels)
 	{
-		m_size = size;
-		m_levels = levels;
+		m_detail		 = detail;
+		m_detail_vertexs = detail + vec2(1,1);
+		m_levels		 = levels;
 		build();
 		set_support_culling(true);
 	}
 	
-	lod_terrain::lod_terrain(material_ptr material,ivec2 size, unsigned int levels)
-	{
-		set_material(material);
-		m_size = size;
-		m_levels = levels;
-		build();
-		recompute_mesh_heigth();
-		set_support_culling(true);
-	}
-		
 	lod_terrain::~lod_terrain()
 	{
-		if (m_layout) render::delete_IL(m_layout);
-		if (m_vbuffer) render::delete_VBO(m_vbuffer);
+		if (m_layout)
+		{
+			render::delete_IL(m_layout);
+		}
+		if (m_ibuffer)
+		{
+			render::delete_IBO(m_ibuffer);
+		}
+		if (m_vbuffer)
+		{
+			render::delete_VBO(m_vbuffer);
+		}
 	}
 
 	void lod_terrain::set_material(material_ptr material)
@@ -357,9 +311,8 @@ namespace hcube
 	//overload renderable::draw
 	void lod_terrain::draw(rendering_system& rsystem, entity::ptr view) 
 	{
-		//bind buffer
-		render::bind_VBO(m_vbuffer);
-		render::bind_IL(m_layout);
+		//all no draw
+		for (node& thiz_node : m_nodes) thiz_node.m_state = NODE_NOT_DRAW;
 		//set index
 #if 0
 		compute_object_to_draw(&m_nodes[0], m_level_to_draw, 0);
@@ -370,31 +323,74 @@ namespace hcube
 		auto c_camera = e_camera->get_component<camera>();
 		auto t_camera = e_camera->get_component<transform>();
 		auto t_this   = get_entity()->get_component<transform>();
-		//get matrix
-		//mat4 m4_view = c_camera->get_view();
 		//this model
 		mat4 m4_model = get_entity()->get_component<transform>()->get_matrix();
 		//draw
-		compute_object_to_draw(
+		compute_object_to_draw
+		(
 			&m_nodes[0], 
-			std::pow(get_bounding_box().volume(), 1.0f/3.f)* 1.25f,
+			std::pow(get_bounding_box().volume(), 1.0f/3.f) * (2.0f / float(m_levels)),
 			t_camera->get_global_position(), 
 			c_camera->get_frustum(),
 			m4_model
 		);
 #endif 
-		for (auto& thiz_node : m_nodes)
+#if 1
+		HCUBE_RENDER_PRINT_ERRORS
+		//draw
+		for (node& thiz_node : m_nodes)
 		{
 			if (thiz_node.m_state == NODE_DRAW)
 			{
-				//set index
-				render::bind_IBO(thiz_node.m_ibuffer);
+				terrain_vertex* vecs = (terrain_vertex*)render::map_VBO(m_vbuffer, 0, m_vb_size * sizeof(terrain_vertex), MAP_WRITE);
+				//uv range in terrain
+				vec2  uv_area = thiz_node.m_info.m_end - thiz_node.m_info.m_start;
+				vec2  uv_step = uv_area / (vec2(m_detail_vertexs) - vec2(1, 1));
+				//mapping
+				#pragma omp parallel for num_threads(4)
+				for (int y = 0; y < m_detail_vertexs.y; ++y)
+				for (int x = 0; x < m_detail_vertexs.x; ++x)
+				{
+					//vertex id
+					int vid = y * m_detail_vertexs.x + x;
+					assert(vid < m_vb_size);
+					//current uv
+					vec2 uv_coord(thiz_node.m_info.m_start + uv_step * vec2(x,y));
+					//get height
+					float height = get_height(uv_coord.x, uv_coord.y);
+					//pos
+					vec3 pos
+					{
+						  uv_coord.x - 0.5
+						, height
+						, uv_coord.y - 0.5
+					};
+					//add new vertex
+					vecs[vid] = terrain_vertex
+					(
+						pos,
+						vec3(0, 1, 0),
+						uv_coord
+					);
+				}
+				render::unmap_VBO(m_vbuffer);
+				HCUBE_RENDER_PRINT_ERRORS
+				//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+				render::bind_VBO(m_vbuffer);
+				render::bind_IBO(m_ibuffer);
+				render::bind_IL(m_layout);
 				//draw
-				render::draw_elements(DRAW_TRIANGLES, thiz_node.m_ib_size);
+				render::draw_elements(DRAW_TRIANGLES, m_ib_size);
 				//unbind
-				render::unbind_IBO(thiz_node.m_ibuffer);
+				render::unbind_IL(m_layout);
+				render::unbind_IBO(m_ibuffer);
+				render::unbind_VBO(m_vbuffer);
+				HCUBE_RENDER_PRINT_ERRORS
+				//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			}
 		}
+		HCUBE_RENDER_PRINT_ERRORS
+#endif
 	}
 
 	void lod_terrain::compute_object_to_draw
