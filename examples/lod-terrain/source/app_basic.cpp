@@ -217,10 +217,10 @@ namespace hcube
 			m_systems.add_entity(m_camera);
 
 			//test terrain
-            m_terrain = gameobject::node_new(lod_terrain::snew(ivec2(64, 64), 8));
+            m_terrain = gameobject::node_new(lod_terrain::snew(ivec2(16, 16), 4));
 			m_terrain->get_component<renderable>()->set_material(m_resources.get_material("earth_terrain"));
             m_terrain->get_component<transform>()->position({0,-100,0});
-			m_terrain->get_component<transform>()->scale({ 300, 6*300,300 });
+			m_terrain->get_component<transform>()->scale({ 600, 20*300,600 });
             
             m_systems.add_entity(m_terrain);
 		}

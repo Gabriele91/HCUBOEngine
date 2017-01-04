@@ -1,0 +1,111 @@
+parameters
+{
+    line_size vec2(1.0,1.0)
+	color vec4(1.0,1.0,1.0,1.0)
+	height_map texture("black")
+}
+
+sub_effect
+{
+    requirement
+    {
+        driver  OpenGL(4,1)
+        shader  GLSL(410)
+    }
+
+    queue
+    {
+        type translucent
+    }
+
+    technique "forward"
+    {
+        pass 
+        {
+            zbuffer less
+            blend one one
+            cullface off
+            lights off
+            shader source 
+            {
+                #pragma all
+				#pragma include <uniform>		
+                #pragma vertex
+                //in
+				layout(location = ATT_POSITIONT) in vec3 vertex;
+                
+                void main()
+                {
+                    gl_Position = camera.m_projection * camera.m_view * transform.m_model * vec4(vertex,1.0);
+                }
+                
+                
+                #pragma geometry
+                
+                //uniforms
+                uniform vec2 line_size;
+                
+                //struct geometry input
+                layout(triangles) in;
+                layout(triangle_strip, max_vertices = 3) out;
+                
+                //out
+                noperspective out vec3 dist;
+                
+                void main(void)
+                {
+                    vec2 viewport_size = camera.m_viewport.zw - camera.m_viewport.xy;
+                    vec2 window_scale  = viewport_size * (1.0 / (2.0*line_size));
+                    
+                    int a=0,
+                        b=1,
+                        c=2;
+                    
+                    vec2 p0 = window_scale * gl_in[a].gl_Position.xy/gl_in[a].gl_Position.w;
+                    vec2 p1 = window_scale * gl_in[b].gl_Position.xy/gl_in[b].gl_Position.w;
+                    vec2 p2 = window_scale * gl_in[c].gl_Position.xy/gl_in[c].gl_Position.w;
+                    
+                    vec2 v0 = p2-p1;
+                    vec2 v1 = p2-p0;
+                    vec2 v2 = p1-p0;
+                    float area = abs(v1.x*v2.y - v1.y * v2.x);
+                    
+                    dist = vec3(area/length(v0),0,0);
+                    gl_Position = gl_in[a].gl_Position;
+                    EmitVertex();
+                    
+                    dist = vec3(0,area/length(v1),0);
+                    gl_Position = gl_in[b].gl_Position;
+                    EmitVertex();
+                    
+                    dist = vec3(0,0,area/length(v2));
+                    gl_Position = gl_in[c].gl_Position;
+                    EmitVertex();
+                    
+                    EndPrimitive();
+                }
+                
+                
+                #pragma fragment
+                //uniform
+                uniform vec4 color;
+                //in
+                noperspective in vec3 dist;
+                //out
+                layout(location = 0) out vec4 frag_out_color;
+                
+                void main(void)
+                {
+                    float d = min(dist[0],min(dist[1],dist[2]));
+                    float intensity = exp2(-2*d*d);
+                    
+					frag_out_color = vec4(0.0,0.0,0.0,0.0);
+					
+                    if(exp2(-2*d*d) < 0.5) discard;
+                    
+                    frag_out_color = color;
+                }
+            }
+        }
+    }
+}
