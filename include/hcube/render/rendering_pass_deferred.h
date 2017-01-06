@@ -48,11 +48,11 @@ namespace hcube
         {
         public:
             shader::ptr        m_shader;
-            uniform*           m_position;
-            uniform*           m_normal;
-            uniform*           m_albedo;
-			uniform*           m_occlusion;
-            uniform*           m_ambient_light;
+            context_uniform*           m_position;
+            context_uniform*           m_normal;
+            context_uniform*           m_albedo;
+			context_uniform*           m_occlusion;
+            context_uniform*           m_ambient_light;
             
             void init(resources_manager& resources);
             void uniform(g_buffer& gbuffer,
@@ -66,10 +66,10 @@ namespace hcube
         public:            
             shader::ptr        m_shader;
 			uniform_camera	   m_camera;
-            uniform*           m_position;
-            uniform*           m_normal;
-            uniform*           m_albedo;
-            uniform*           m_occlusion;            
+            context_uniform*           m_position;
+            context_uniform*           m_normal;
+            context_uniform*           m_albedo;
+            context_uniform*           m_occlusion;            
             uniform_light_spot m_spot_light;
 			//geometry
 			uniform_transform  m_transform_cone;
@@ -90,10 +90,10 @@ namespace hcube
         public:
             shader::ptr         m_shader;
 			uniform_camera	    m_camera;
-            uniform*            m_position;
-            uniform*            m_normal;
-            uniform*            m_albedo;
-            uniform*            m_occlusion;
+            context_uniform*            m_position;
+            context_uniform*            m_normal;
+            context_uniform*            m_albedo;
+            context_uniform*            m_occlusion;
             uniform_light_point m_point_light;
 			//geometry
 			mesh::ptr			m_sphere;
@@ -114,10 +114,10 @@ namespace hcube
 
 			shader::ptr        m_shader;
 			uniform_camera	   m_camera;
-			uniform*           m_position;
-			uniform*           m_normal;
-			uniform*           m_albedo;
-			uniform*           m_occlusion;
+			context_uniform*           m_position;
+			context_uniform*           m_normal;
+			context_uniform*           m_albedo;
+			context_uniform*           m_occlusion;
 			uniform_light_direction m_direction_light;
 
 			void init(resources_manager& resources);
@@ -150,7 +150,7 @@ namespace hcube
 		std::vector < uniform_light_direction > m_uniform_lights_direction;
 
 		//size lights
-		uniform* m_uniform_n_lights_used;
+		context_uniform* m_uniform_n_lights_used;
 
 	};
 }

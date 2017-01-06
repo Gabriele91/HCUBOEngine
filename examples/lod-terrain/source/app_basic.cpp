@@ -207,12 +207,12 @@ namespace hcube
 			vec2 size = app.get_window_size();
 			m_aspect = float(size.x) / float(size.y);
 			c_camera->set_viewport(ivec4{ 0, 0, size.x, size.y });
-			c_camera->set_perspective(m_fov, m_aspect, 0.01, 1000.0);
+			c_camera->set_perspective( radians( m_fov ), m_aspect, 0.01, 1000.0);
 			t_camera->look_at(
 				vec3{ 0.0f, 0.0f, -100.0f },
 				vec3{ 0.0f, 0.0f, 0.0f },
 				vec3{ 0.0f, 1.0f, 0.0f }
-			);
+			);		
 			//set camera
 			m_systems.add_entity(m_camera);
 
@@ -220,7 +220,8 @@ namespace hcube
             m_terrain = gameobject::node_new(lod_terrain::snew(ivec2(16, 16), 4));
 			m_terrain->get_component<renderable>()->set_material(m_resources.get_material("earth_terrain"));
             m_terrain->get_component<transform>()->position({0,-100,0});
-			m_terrain->get_component<transform>()->scale({ 600, 20*300,600 });
+			//m_terrain->get_component<transform>()->scale({ 1200, 20 * 300,1200 });
+			m_terrain->get_component<transform>()->scale({ 1200, 120 , 1200 });
             
             m_systems.add_entity(m_terrain);
 		}

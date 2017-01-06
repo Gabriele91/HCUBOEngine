@@ -276,23 +276,23 @@ namespace hcube
 	
 	struct uniform_light_spot
 	{
-		uniform* m_uniform_position { nullptr };
-		uniform* m_uniform_direction{ nullptr };
+		context_uniform* m_uniform_position { nullptr };
+		context_uniform* m_uniform_direction{ nullptr };
 
-		uniform* m_uniform_diffuse { nullptr };
-		uniform* m_uniform_specular{ nullptr };
+		context_uniform* m_uniform_diffuse { nullptr };
+		context_uniform* m_uniform_specular{ nullptr };
 
-		uniform* m_uniform_constant     { nullptr };
-		uniform* m_uniform_inside_radius{ nullptr };
-		uniform* m_uniform_radius       { nullptr };
+		context_uniform* m_uniform_constant     { nullptr };
+		context_uniform* m_uniform_inside_radius{ nullptr };
+		context_uniform* m_uniform_radius       { nullptr };
 
-		uniform* m_uniform_inner_cut_off{ nullptr };
-		uniform* m_uniform_outer_cut_off{ nullptr };
+		context_uniform* m_uniform_inner_cut_off{ nullptr };
+		context_uniform* m_uniform_outer_cut_off{ nullptr };
 
-		uniform* m_uniform_use_shadow{ nullptr };
-		uniform* m_uniform_shadow_projection{ nullptr };
-		uniform* m_uniform_shadow_view{ nullptr };
-		uniform* m_uniform_shadow_map{ nullptr };
+		context_uniform* m_uniform_use_shadow{ nullptr };
+		context_uniform* m_uniform_shadow_projection{ nullptr };
+		context_uniform* m_uniform_shadow_view{ nullptr };
+		context_uniform* m_uniform_shadow_map{ nullptr };
 
 		void get_uniform(shader::ptr shader);
 		void get_uniform(const std::string& name,shader::ptr shader);
@@ -310,17 +310,17 @@ namespace hcube
 
 	struct uniform_light_point
 	{
-		uniform* m_uniform_position{ nullptr };
+		context_uniform* m_uniform_position{ nullptr };
 		
-		uniform* m_uniform_diffuse{ nullptr };
-		uniform* m_uniform_specular{ nullptr };
+		context_uniform* m_uniform_diffuse{ nullptr };
+		context_uniform* m_uniform_specular{ nullptr };
 
-		uniform* m_uniform_constant{ nullptr };
-		uniform* m_uniform_inside_radius{ nullptr };
-		uniform* m_uniform_radius{ nullptr };
+		context_uniform* m_uniform_constant{ nullptr };
+		context_uniform* m_uniform_inside_radius{ nullptr };
+		context_uniform* m_uniform_radius{ nullptr };
 
-		uniform* m_uniform_use_shadow{ nullptr };
-		uniform* m_uniform_shadow_map{ nullptr };
+		context_uniform* m_uniform_use_shadow{ nullptr };
+		context_uniform* m_uniform_shadow_map{ nullptr };
 
 		void get_uniform(shader::ptr shader);
 		void get_uniform(const std::string& name, shader::ptr shader);
@@ -338,10 +338,10 @@ namespace hcube
 
 	struct uniform_light_direction
 	{
-		uniform* m_uniform_direction{ nullptr };
+		context_uniform* m_uniform_direction{ nullptr };
 
-		uniform* m_uniform_diffuse{ nullptr };
-		uniform* m_uniform_specular{ nullptr };
+		context_uniform* m_uniform_diffuse{ nullptr };
+		context_uniform* m_uniform_specular{ nullptr };
 
 		void get_uniform(shader::ptr shader);
 		void get_uniform(const std::string& name, shader::ptr shader);

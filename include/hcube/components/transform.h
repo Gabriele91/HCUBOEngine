@@ -103,10 +103,10 @@ namespace hcube
 
 	struct uniform_transform
 	{
-		uniform* m_uniform_model   { nullptr };
-		uniform* m_uniform_position{ nullptr };
-		uniform* m_uniform_rotation{ nullptr };
-		uniform* m_uniform_scale   { nullptr };
+		context_uniform* m_uniform_model   { nullptr };
+		context_uniform* m_uniform_position{ nullptr };
+		context_uniform* m_uniform_rotation{ nullptr };
+		context_uniform* m_uniform_scale   { nullptr };
 
 		void get_uniform(shader::ptr shader);
 

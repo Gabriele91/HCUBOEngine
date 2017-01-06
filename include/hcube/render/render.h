@@ -21,12 +21,116 @@ namespace hcube
 	class context_vertex_buffer;
 	class context_index_buffer;
 	class context_input_layout;
+	class context_uniform;
+	//shader
+	class context_shader;
+	//uniform
+	class HCUBE_RENDER_API context_uniform
+	{
+	public:
+		void set_value(context_texture* in_texture);
+		void set_value(int i);
+		void set_value(float f);
+		void set_value(const vec2& v2);
+		void set_value(const vec3& v3);
+		void set_value(const vec4& v4);
+		void set_value(const mat3& m3);
+		void set_value(const mat4& m4);
 
-	using context_texture_ptr = std::shared_ptr< context_texture >;
+		void set_value(const int* i, size_t n);
+		void set_value(const float* f, size_t n);
+		void set_value(const vec2* v2, size_t n);
+		void set_value(const vec3* v3, size_t n);
+		void set_value(const vec4* v4, size_t n);
+		void set_value(const mat3* m3, size_t n);
+		void set_value(const mat4* m4, size_t n);
+
+		void set_value(const std::vector < int >& i);
+		void set_value(const std::vector < float >& f);
+		void set_value(const std::vector < vec2 >& v2);
+		void set_value(const std::vector < vec3 >& v3);
+		void set_value(const std::vector < vec4 >& v4);
+		void set_value(const std::vector < mat3 >& m3);
+		void set_value(const std::vector < mat4 >& m4);
+
+		void set_value(const context_const_buffer*);
+		
+		bool is_valid();
+
+		context_shader* get_shader();
+
+		context_uniform(context_shader* shader = nullptr, void* data = nullptr);
+
+		virtual ~context_uniform();
+
+	protected:
+
+		void*			m_data;
+		context_shader* m_shader;
+
+	};
+	//shader type
+	enum shader_type
+	{
+		ST_VERTEX_SHADER,
+		ST_FRAGMENT_SHADER,
+		ST_GEOMETRY_SHADER,
+		ST_TASSELLATION_CONTROL_SHADER,
+		ST_TASSELLATION_EVALUATION_SHADER,
+		ST_COMPUTE_SHADER,
+		ST_N_SHADER
+	};
+	//shader info
+	struct shader_source_information
+	{
+		const shader_type  m_type;
+		const std::string  m_shader_header;
+		const std::string& m_shader_source;
+		const size_t m_line;
+
+		shader_source_information(const shader_source_information& info)
+		: m_type(info.m_type)
+		, m_shader_header(info.m_shader_header)
+		, m_shader_source(info.m_shader_source)
+		, m_line(info.m_line)
+		{
+
+		}
+
+		shader_source_information
+		(
+			shader_type type,
+			const std::string& shader_source,
+			const size_t line = 0
+		)
+		: m_type(type)
+		, m_shader_source(shader_source)
+		, m_line(line)
+		{
+		}
+
+		shader_source_information
+		(
+			shader_type type,
+			const std::string& shader_header,
+			const std::string& shader_source,
+			const size_t line = 0
+		)
+		: m_type(type)
+		, m_shader_header(shader_header)
+		, m_shader_source(shader_source)
+		, m_line(line)
+		{
+		}
+	};
+
+
+	using context_texture_ptr		= std::shared_ptr< context_texture >;
 	using context_render_target_ptr = std::shared_ptr< context_render_target >;
 	using context_vertex_buffer_ptr = std::shared_ptr< context_vertex_buffer >;
-	using context_index_buffer_ptr = std::shared_ptr< context_index_buffer >;
-	using context_input_layout_ptr = std::shared_ptr< context_input_layout >;
+	using context_index_buffer_ptr  = std::shared_ptr< context_index_buffer >;
+	using context_input_layout_ptr  = std::shared_ptr< context_input_layout >;
+	using context_shader_ptr	    = std::shared_ptr< context_shader >;
     
     enum render_driver
     {
@@ -680,6 +784,22 @@ namespace hcube
 		HCUBE_RENDER_API void unbind_texture(context_texture*);
         HCUBE_RENDER_API void unbind_texture(int n);
 		HCUBE_RENDER_API void delete_texture(context_texture*&);
+
+		//shader
+		HCUBE_RENDER_API context_shader* create_shader(const std::vector< shader_source_information >& infos);
+
+		HCUBE_RENDER_API bool shader_compiled_with_errors(context_shader* shader);
+		HCUBE_RENDER_API bool shader_linked_with_error(context_shader* shader);
+		HCUBE_RENDER_API std::vector< std::string > get_shader_compiler_errors(context_shader* shader);
+		HCUBE_RENDER_API std::string get_shader_liker_error(context_shader* shader);
+
+		HCUBE_RENDER_API void bind_shader(context_shader* shader);
+		HCUBE_RENDER_API void unbind_shader(context_shader* shader);
+
+		HCUBE_RENDER_API void delete_shader(context_shader*&);
+
+		HCUBE_RENDER_API context_shader*  get_bind_shader();
+		HCUBE_RENDER_API context_uniform* get_uniform(context_shader*, std::string& uname);
 
 		//target
 		HCUBE_RENDER_API context_render_target* create_render_target(const std::vector< target_field >& textures);

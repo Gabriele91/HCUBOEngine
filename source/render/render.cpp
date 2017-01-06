@@ -5,9 +5,11 @@
 //  Created by Gabriele on 15/08/16.
 //  Copyright © 2016 Gabriele. All rights reserved.
 //
+#include <string>
+#include <iostream>
+#include <unordered_map>
 #include <hcube/render/render.h>
 #include <hcube/render/OpenGL4.h>
-#include <iostream>
 #define DIRECTX_MODE
 
 namespace hcube
@@ -50,6 +52,267 @@ namespace hcube
 		}
 
 	};
+
+	//shader
+	class  context_shader
+	{
+	public:
+		/////////////////////////////////////////////////////////////////////////
+		using uniform_map = std::unordered_map< std::string, context_uniform >;
+		/////////////////////////////////////////////////////////////////////////
+		static const char* glsl_default_header;
+		static const char* glsl_header_by_type[ST_N_SHADER];
+		static GLenum      glsl_type_from_hcube_type[ST_N_SHADER];
+		/////////////////////////////////////////////////////////////////////////
+		//delete
+		~context_shader()
+		{
+			//detach and delete all shader
+			if (m_shader_id)
+			{
+				for (unsigned int& shader : m_shaders)
+				{
+					if (shader)
+					{
+						//detach
+						glDetachShader(m_shader_id, shader);
+						//delete
+						glDeleteShader(shader);
+						//to null
+						shader = 0;
+					}
+				}
+				//delete shader program
+				glDeleteProgram(m_shader_id);
+				//to null
+				m_shader_id = 0;
+			}
+		}
+
+		//uniforms
+		uniform_map m_uniform_map;
+		long m_uniform_ntexture{ -1 }; //n texture bind
+
+		//context
+		unsigned int m_shader_id{ 0 }; //< shader program
+		unsigned int m_shaders[ST_N_SHADER];//< shaders
+
+		//shader compile errors
+		struct shader_compile_error
+		{
+			shader_type m_type;
+			std::string m_log;
+		};
+
+		//shaders compiler errors
+		std::vector < shader_compile_error > m_errors;
+
+		//linking error
+		std::string m_liker_log;
+
+		//add error log
+		void push_compiler_error(const shader_compile_error& error_log)
+		{
+			m_errors.push_back(std::move(error_log));
+		}
+
+		void push_liker_error(const std::string& error_log)
+		{
+			m_liker_log += error_log;
+			m_liker_log += "\n";
+		}
+
+	};
+
+	const char* context_shader::glsl_default_header=
+	R"GLSL(
+	//POSITION TRANSFORM
+	#define ATT_POSITIONT 0
+	#define ATT_NORMAL0   1
+	#define ATT_TEXCOORD0 2
+	#define ATT_TANGENT0  3
+	#define ATT_BINORMAL0 4
+	#define ATT_COLOR0    5
+
+	//POSITION 0
+	#define ATT_POSITION0 6
+	#define ATT_NORMAL1   7
+	#define ATT_TEXCOORD1 8
+	#define ATT_TANGENT1  9
+	#define ATT_BINORMAL1 10
+	#define ATT_COLOR1    11
+
+	//POSITION 1
+	#define ATT_POSITION1 12
+	#define ATT_NORMAL2   13
+	#define ATT_TEXCOORD2 14
+	#define ATT_TANGENT2  15
+	#define ATT_BINORMAL2 16
+	#define ATT_COLOR2    17
+	)GLSL";
+
+	const char* context_shader::glsl_header_by_type[ST_N_SHADER] =
+	{
+		//VERTEX
+		"#define cbuffer     layout(std140) uniform     \n"
+		"#define saturate(x) clamp( x, 0.0, 1.0 )       \n"
+		"#define lerp        mix                        \n",
+		//FRAGMENT
+		"#define cbuffer     layout(std140) uniform     \n"
+		"#define saturate(x) clamp( x, 0.0, 1.0 )       \n"
+		"#define lerp        mix                        \n"
+		"#define bestp                                  \n"
+		"#define highp                                  \n"
+		"#define mediump                                \n"
+		"#define lowp                                   \n",
+		//GEOMETRY
+		"#define cbuffer     layout(std140) uniform     \n"
+		"#define saturate(x) clamp( x, 0.0, 1.0 )       \n"
+		"#define lerp        mix                        \n",
+		//TASSELLATION_CONTROL
+		"#define cbuffer     layout(std140) uniform     \n"
+		"#define saturate(x) clamp( x, 0.0, 1.0 )       \n"
+		"#define lerp        mix                        \n",
+		//TASSELLATION_EVALUATION
+		"#define cbuffer     layout(std140) uniform     \n"
+		"#define saturate(x) clamp( x, 0.0, 1.0 )       \n"
+		"#define lerp        mix                        \n",
+		//COMPUTE
+		"#define cbuffer     layout(std140) uniform     \n"
+		"#define saturate(x) clamp( x, 0.0, 1.0 )       \n"
+		"#define lerp        mix                        \n"
+	};
+
+	GLenum context_shader::glsl_type_from_hcube_type[ST_N_SHADER] =
+	{
+		GL_VERTEX_SHADER,
+		GL_FRAGMENT_SHADER,
+		GL_GEOMETRY_SHADER,
+		GL_TESS_CONTROL_SHADER,
+		GL_TESS_EVALUATION_SHADER,
+		GL_COMPUTE_SHADER
+	};
+
+	//util_define
+	#define uniform_id(shader) ((GLint)(m_data))
+	//uniform
+	void context_uniform::set_value(context_texture* in_texture)
+	{
+		long n_texture = ++m_shader->m_uniform_ntexture;
+		//bind texture
+		render::bind_texture(in_texture, (int)n_texture);
+		//bind id
+		glUniform1i(uniform_id(m_shader), (int)n_texture);
+	}
+
+	void context_uniform::set_value(int i)
+	{
+		glUniform1i(uniform_id(m_shader), i);
+	}
+	void context_uniform::set_value(float f)
+	{
+		glUniform1f(uniform_id(m_shader), f);
+	}
+	void context_uniform::set_value(const vec2& v2)
+	{
+		glUniform2fv(uniform_id(m_shader), 1, value_ptr(v2));
+	}
+	void context_uniform::set_value(const vec3& v3)
+	{
+		glUniform3fv(uniform_id(m_shader), 1, value_ptr(v3));
+	}
+	void context_uniform::set_value(const vec4& v4)
+	{
+		glUniform4fv(uniform_id(m_shader), 1, value_ptr(v4));
+	}
+	void context_uniform::set_value(const mat3& m3)
+	{
+		glUniformMatrix3fv(uniform_id(m_shader), 1, GL_FALSE, value_ptr(m3));
+	}
+	void context_uniform::set_value(const mat4& m4)
+	{
+		glUniformMatrix4fv(uniform_id(m_shader), 1, GL_FALSE, value_ptr(m4));
+	}
+
+	void context_uniform::set_value(const int* i, size_t n)
+	{
+		glUniform1iv(uniform_id(m_shader), (GLsizei)n, i);
+	}
+	void context_uniform::set_value(const float* f, size_t n)
+	{
+		glUniform1fv(uniform_id(m_shader), (GLsizei)n, f);
+	}
+	void context_uniform::set_value(const vec2* v2, size_t n)
+	{
+		glUniform2fv(uniform_id(m_shader), (GLsizei)n, value_ptr(*v2));
+	}
+	void context_uniform::set_value(const vec3* v3, size_t n)
+	{
+		glUniform3fv(uniform_id(m_shader), (GLsizei)n, value_ptr(*v3));
+	}
+	void context_uniform::set_value(const vec4* v4, size_t n)
+	{
+		glUniform4fv(uniform_id(m_shader), (GLsizei)n, value_ptr(*v4));
+	}
+	void context_uniform::set_value(const mat3* m3, size_t n)
+	{
+		glUniformMatrix3fv(uniform_id(m_shader), (GLsizei)n, GL_FALSE, value_ptr(*m3));
+	}
+	void context_uniform::set_value(const mat4* m4, size_t n)
+	{
+		glUniformMatrix4fv(uniform_id(m_shader), (GLsizei)n, GL_FALSE, value_ptr(*m4));
+	}
+
+	void context_uniform::set_value(const std::vector < int >& i)
+	{
+		set_value(i.data(), i.size());
+	}
+	void context_uniform::set_value(const std::vector < float >& f)
+	{
+		set_value(f.data(), f.size());
+	}
+	void context_uniform::set_value(const std::vector < vec2 >& v2)
+	{
+		set_value(v2.data(), v2.size());
+	}
+	void context_uniform::set_value(const std::vector < vec3 >& v3)
+	{
+		set_value(v3.data(), v3.size());
+	}
+	void context_uniform::set_value(const std::vector < vec4 >& v4)
+	{
+		set_value(v4.data(), v4.size());
+	}
+	void context_uniform::set_value(const std::vector < mat3 >& m3)
+	{
+		set_value(m3.data(), m3.size());
+	}
+	void context_uniform::set_value(const std::vector < mat4 >& m4)
+	{
+		set_value(m4.data(), m4.size());
+	}
+
+	void context_uniform::set_value(const context_const_buffer* buffer)
+	{
+		glUniformBlockBinding(GL_UNIFORM_BUFFER, (GLuint)m_shader->m_shader_id, (GLuint)render::get_native_CB(buffer));
+	}
+
+	bool context_uniform::is_valid(){ return m_shader && uniform_id(m_shader) != -1; }
+	
+	context_shader* context_uniform::get_shader()
+	{
+		return m_shader;
+	}
+
+	context_uniform::context_uniform(context_shader* shader, void* data)
+	:m_shader(shader)
+	,m_data(data)
+	{
+	}
+	context_uniform::~context_uniform()
+	{
+
+	}
 
 	//BUFFER
 	class context_buffer
@@ -139,6 +402,7 @@ namespace hcube
         context_index_buffer*  m_index_buffer  { nullptr };
         context_input_layout*  m_input_layout  { nullptr };
         context_render_target* m_render_target { nullptr };
+		context_shader*		   m_shader		   { nullptr };
     };
     
     static int make_test_to_get_shader_version()
@@ -1289,6 +1553,207 @@ namespace hcube
 			delete ctx_texture;
 			ctx_texture = nullptr;
 		}
+
+		/*
+		Shader
+		*/
+		static std::string compiler_shader_error_log(unsigned int shader)
+		{
+			//return
+			std::string info_log;
+			//get len
+			GLint info_len = 0;
+			glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &info_len);
+			//print
+			if (info_len > 1)
+			{
+				info_log.resize(info_len + 1, '\0');
+				glGetShaderInfoLog(shader, info_len, NULL, (char*)info_log.c_str());
+			}
+			return info_log;
+		}
+		static std::string liker_shader_error_log(unsigned int program)
+		{
+			//return
+			std::string info_log;
+			//get len
+			GLint info_len = 0;
+			glGetProgramiv(program, GL_INFO_LOG_LENGTH, &info_len);
+			//print
+			if (info_len > 1)
+			{
+				info_log.resize(info_len + 1, '\0');
+				glGetProgramInfoLog(program, info_len, NULL, (char*)info_log.c_str());
+			}
+			return info_log;
+		}
+		static const char* glsl_type_to_string(GLenum type)
+		{
+			switch (type)
+			{
+			case GL_BOOL: return "bool";
+			case GL_INT: return "int";
+			case GL_FLOAT: return "float";
+			case GL_FLOAT_VEC2: return "vec2";
+			case GL_FLOAT_VEC3: return "vec3";
+			case GL_FLOAT_VEC4: return "vec4";
+			case GL_FLOAT_MAT2: return "mat2";
+			case GL_FLOAT_MAT3: return "mat3";
+			case GL_FLOAT_MAT4: return "mat4";
+			case GL_SAMPLER_2D: return "sampler2D";
+			case GL_SAMPLER_3D: return "sampler3D";
+			case GL_SAMPLER_CUBE: return "samplerCube";
+			case GL_SAMPLER_2D_SHADOW: return "sampler2DShadow";
+			default: break;
+			}
+			return "other";
+		}
+
+		context_shader* create_shader(const std::vector< shader_source_information >& infos)
+		{
+			//alloc
+			context_shader* out_shader = new context_shader();
+			//shader program
+			out_shader->m_shader_id = glCreateProgram();
+			//compile
+			for (const shader_source_information& info : infos)
+			{
+				if (info.m_shader_source.size())
+				{
+					//get shader
+					auto& source_shader = out_shader->m_shaders[info.m_type];
+					//create 
+					source_shader = glCreateShader(context_shader::glsl_type_from_hcube_type[info.m_type]);
+					//start line
+					std::string start_line = "#line " + std::to_string(info.m_line) + "\n";
+					//source
+					const char* sources[] =
+					{
+					  info.m_shader_header.c_str(),
+					  context_shader::glsl_header_by_type[info.m_type],
+					  context_shader::glsl_default_header,
+					  start_line.c_str(),
+					  info.m_shader_source.c_str()
+					};
+					//add source
+					glShaderSource(source_shader, 5, sources, 0);
+					//compiling
+					glCompileShader(source_shader);
+					//get status
+					{
+						//test
+						int is_compiled = false;
+						glGetShaderiv(source_shader, GL_COMPILE_STATUS, &is_compiled);
+						//get error
+						if (!is_compiled)
+						{
+							//save error
+							out_shader->push_compiler_error({ info.m_type, compiler_shader_error_log(source_shader) });
+							//delete and to null
+							glDeleteShader(source_shader); source_shader = 0;
+						}
+					}
+				}
+			}
+			//attach
+			for (auto shader : out_shader->m_shaders)
+			{
+				if (shader)  glAttachShader(out_shader->m_shader_id, shader);
+			}
+			//liking
+			glLinkProgram(out_shader->m_shader_id);
+			//error?
+			{
+				//status
+				int is_linked = false;
+				//get link status
+				glGetProgramiv(out_shader->m_shader_id, GL_LINK_STATUS, &is_linked);
+				//ok?
+				if (!is_linked)
+				{
+					//get error
+					out_shader->push_liker_error(liker_shader_error_log(out_shader->m_shader_id));
+				}
+			}
+			//return shader
+			return out_shader;
+		}
+
+		bool shader_compiled_with_errors(context_shader* shader)
+		{
+			return shader->m_errors.size() != 0;
+		}
+		bool shader_linked_with_error(context_shader* shader)
+		{
+			return shader->m_liker_log.size() != 0;
+		}
+		std::vector< std::string > get_shader_compiler_errors(context_shader* shader)
+		{
+			std::vector< std::string > output;
+			for (auto& error_log : shader->m_errors) output.push_back(error_log.m_log);
+			return output;
+		}
+		std::string get_shader_liker_error(context_shader* shader)
+		{
+			return shader->m_liker_log;
+		}
+
+		void bind_shader(context_shader* shader)
+		{
+			if (s_bind_context.m_shader)
+			{
+				unbind_shader(s_bind_context.m_shader);
+			}
+			//save
+			s_bind_context.m_shader = shader;
+			//start texture uniform
+			shader->m_uniform_ntexture = -1;
+			//uniform parogram shaders
+			glUseProgram(shader->m_shader_id);
+		}
+		void unbind_shader(context_shader* shader)
+		{
+			if (shader)
+			{
+				assert(s_bind_context.m_shader == shader);
+				//disable textures
+				while (shader->m_uniform_ntexture >= 0)
+				{
+					render::unbind_texture((int)shader->m_uniform_ntexture);
+					--shader->m_uniform_ntexture;
+				}
+				//disable program
+				glUseProgram(0);
+				//to null
+				s_bind_context.m_shader = nullptr;
+			}
+		}
+		void delete_shader(context_shader*& shader)
+		{
+			if (s_bind_context.m_shader == shader)
+			{
+				unbind_shader(shader);
+			}
+			delete shader;
+			shader = nullptr;
+		}
+
+		context_shader* get_bind_shader()
+		{
+			return s_bind_context.m_shader;
+		}
+		context_uniform* get_uniform(context_shader* shader, std::string& uname)
+		{
+			auto uit = shader->m_uniform_map.find(uname);
+			//if find
+			if (uit != shader->m_uniform_map.end()) return &uit->second;
+			//else
+			int uid = glGetUniformLocation(shader->m_shader_id,uname.c_str());
+			if (uid < 0) return nullptr;
+			//add and return
+			return &(shader->m_uniform_map[uname] = context_uniform(shader, (void*)uid));
+		}
+
 		/*
 		 FBO
 		*/

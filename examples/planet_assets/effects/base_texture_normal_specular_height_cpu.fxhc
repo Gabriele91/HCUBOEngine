@@ -5,8 +5,6 @@ parameters
     normal_map texture("normal_up")
     specular_map texture("black")
     height_map texture("black")
-	uv_height_offset vec2(0.0,0.0)
-	uv_height_step vec2(1.0,1.0)
 	color vec4(1.0,1.0,1.0,1.0)
 }
 
@@ -57,30 +55,7 @@ sub_effect
             shader source
             {
                 #define DEFERRED_RENDERING
-				/////////////////////////////////////////////////////////
-				#pragma vertex
-				uniform vec2 uv_height_offset;
-				uniform vec2 uv_height_step;
-				uniform sampler2D height_map;
-				
-				vec4 compute_height_ground(in mat4 proj_view, in mat4 model, in vec3 vertex, inout vec4 frag_position, inout vec2 uv_coords)
-				{
-					//compute uv
-					uv_coords = uv_height_offset + vertex.xy * uv_height_step;
-					//compute height
-					float height = texture( height_map, uv_coords ).r - 0.5;
-					//compute vertex pos
-					vec4  position = vec4(uv_coords.x - 0.5, height, uv_coords.y - 0.5, 1.0);
-					//compute frag position
-					frag_position = model * position;
-					//compute vertex in projection space
-					return proj_view * frag_position;
-				}
-				
-				#define ADDITIONAL_VERTEX_SHADER(camera, transform, vertex, frag_position, uv_coords, tbn)\
-					compute_height_ground(camera.m_projection * camera.m_view, transform.m_model, vertex, frag_position, uv_coords);
-				/////////////////////////////////////////////////////////
-				#pragma import <base_texture_normal_specular>
+                #pragma import <base_texture_normal_specular>
             }
         }
     }

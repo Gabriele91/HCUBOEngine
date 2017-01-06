@@ -183,9 +183,6 @@
     <ClInclude Include="..\include\hcube\render\rendering_system.h">
       <Filter>File di intestazione\hcube\render</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\hcube\render\shader.h">
-      <Filter>File di intestazione\hcube\render</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\hcube\render\shadow_buffer.h">
       <Filter>File di intestazione\hcube\render</Filter>
     </ClInclude>
@@ -264,6 +261,9 @@
     <ClInclude Include="..\include\hcube\math\vector_math.h">
       <Filter>File di intestazione\hcube\math</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\hcube\render\shader.h">
+      <Filter>File di intestazione\hcube\render</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\render\effect.cpp">
@@ -288,9 +288,6 @@
       <Filter>File di origine\render</Filter>
     </ClCompile>
     <ClCompile Include="..\source\render\rendering_system.cpp">
-      <Filter>File di origine\render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\render\shader.cpp">
       <Filter>File di origine\render</Filter>
     </ClCompile>
     <ClCompile Include="..\source\render\shadow_buffer.cpp">
@@ -373,6 +370,9 @@
     </ClCompile>
     <ClCompile Include="..\source\utilities\utf_convert.cpp">
       <Filter>File di origine\utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\render\shader.cpp">
+      <Filter>File di origine\render</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

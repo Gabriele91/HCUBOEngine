@@ -50,20 +50,20 @@ namespace hcube
 
 		shader::ptr	m_shader;
 
-        uniform* m_uniform_noise_scale;
-        uniform* m_uniform_projection;
-        uniform* m_uniform_view;
-		uniform* m_uniform_kernel_size;
-		uniform* m_uniform_radius;
+		context_uniform* m_uniform_noise_scale;
+		context_uniform* m_uniform_projection;
+		context_uniform* m_uniform_view;
+		context_uniform* m_uniform_kernel_size;
+		context_uniform* m_uniform_radius;
 
-		uniform* m_position;
-		uniform* m_normal;
-		uniform* m_noise;
+		context_uniform* m_position;
+		context_uniform* m_normal;
+		context_uniform* m_noise;
 		//////////////////////////////////////////////////////////////////////
 		context_render_target* m_fbo_blur{ nullptr };
 		context_texture*       m_ssao_blur_texture{ nullptr };
 		shader::ptr			   m_shader_blur;
-		uniform*               m_uniform_ssoa_input;
+		context_uniform*       m_uniform_ssoa_input;
 		//////////////////////////////////////////////////////////////////////
 
 	};

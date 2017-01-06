@@ -62,11 +62,11 @@ namespace hcube
         //current technique
         effect::technique* current_technique = nullptr;
         //current mask uniform
-        uniform* u_shadow_mask = nullptr;
+        context_uniform* u_shadow_mask = nullptr;
         //current u
-        uniform* u_shadow_projection = nullptr;
-        uniform* u_shadow_view	     = nullptr;
-        uniform* u_shadow_model		 = nullptr;
+        context_uniform* u_shadow_projection = nullptr;
+        context_uniform* u_shadow_view	     = nullptr;
+        context_uniform* u_shadow_model		 = nullptr;
         //type
         switch (l_light->get_type())
         {

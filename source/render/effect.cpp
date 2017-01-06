@@ -270,19 +270,19 @@ namespace hcube
 				/* void */
 				break;
 				//uniform
-			case PT_INT: m_uniform[i]->set_value(param->get_int()); break;
-			case PT_FLOAT: m_uniform[i]->set_value(param->get_float()); break;
-			case PT_TEXTURE: m_uniform[i]->set_value(param->get_texture()); break;
-			case PT_VEC2: m_uniform[i]->set_value(param->get_vec2()); break;
-			case PT_VEC3: m_uniform[i]->set_value(param->get_vec3()); break;
-			case PT_VEC4: m_uniform[i]->set_value(param->get_vec4()); break;
-			case PT_MAT4: m_uniform[i]->set_value(param->get_mat4()); break;
-			case PT_INT_ARRAY: m_uniform[i]->set_value(param->get_int_array()); break;
+			case PT_INT:	 m_uniform[i]->set_value(param->get_int()); break;
+			case PT_FLOAT:	 m_uniform[i]->set_value(param->get_float()); break;
+			case PT_TEXTURE: m_uniform[i]->set_value(param->get_texture()->get_context_texture()); break;
+			case PT_VEC2:	 m_uniform[i]->set_value(param->get_vec2()); break;
+			case PT_VEC3:	 m_uniform[i]->set_value(param->get_vec3()); break;
+			case PT_VEC4:    m_uniform[i]->set_value(param->get_vec4()); break;
+			case PT_MAT4:    m_uniform[i]->set_value(param->get_mat4()); break;
+			case PT_INT_ARRAY:   m_uniform[i]->set_value(param->get_int_array()); break;
 			case PT_FLOAT_ARRAY: m_uniform[i]->set_value(param->get_float_array()); break;
-			case PT_VEC2_ARRAY: m_uniform[i]->set_value(param->get_vec2_array()); break;
-			case PT_VEC3_ARRAY: m_uniform[i]->set_value(param->get_vec3_array()); break;
-			case PT_VEC4_ARRAY: m_uniform[i]->set_value(param->get_vec4_array()); break;
-			case PT_MAT4_ARRAY: m_uniform[i]->set_value(param->get_mat4_array()); break;
+			case PT_VEC2_ARRAY:  m_uniform[i]->set_value(param->get_vec2_array()); break;
+			case PT_VEC3_ARRAY:  m_uniform[i]->set_value(param->get_vec3_array()); break;
+			case PT_VEC4_ARRAY:  m_uniform[i]->set_value(param->get_vec4_array()); break;
+			case PT_MAT4_ARRAY:  m_uniform[i]->set_value(param->get_mat4_array()); break;
 			}
 		}
 	}
@@ -491,6 +491,7 @@ namespace hcube
                                       << std::endl
                                       << "Error from technique: " << ptr_sub_effect->m_techniques[t].m_name << ", pass["<< p << "] "
                                       << debug_preproc
+									  << this_pass.m_shader->get_errors()
                                       << std::endl;
 
                         }
@@ -523,7 +524,7 @@ namespace hcube
                     for (auto it : m_map_parameters)
                     {
                         //get
-                        uniform* u_shader = this_pass.m_shader->get_uniform(it.first.c_str());
+						context_uniform* u_shader = this_pass.m_shader->get_uniform(it.first.c_str());
                         //test
                         if (u_shader)
                         {

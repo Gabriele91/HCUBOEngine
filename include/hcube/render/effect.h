@@ -8,7 +8,6 @@
 #include <hcube/math/vector_math.h>
 #include <hcube/core/smart_pointers.h>
 #include <hcube/render/render_scene.h>
-#include <hcube/render/shader.h>
 #include <hcube/resources/texture.h>
 #include <hcube/components/light.h>
 #include <hcube/components/camera.h>
@@ -110,20 +109,20 @@ namespace hcube
 		//pass type
 		struct HCUBE_API pass
 		{
-			effect*				    m_effect{ nullptr };
-			cullface_state		    m_cullface;
-			depth_buffer_state	    m_depth;
-			blend_state			    m_blend;
-			shader::ptr			    m_shader;
-			std::vector< int >		m_param_id;
-			std::vector< uniform* > m_uniform;
+			effect*							m_effect{ nullptr };
+			cullface_state					m_cullface;
+			depth_buffer_state			    m_depth;
+			blend_state						m_blend;
+			shader::ptr					    m_shader;
+			std::vector< int >				m_param_id;
+			std::vector< context_uniform* > m_uniform;
 			//default uniform
 			uniform_camera    m_uniform_camera;
 			uniform_transform m_uniform_transform;
 			//all light uniform
 			bool m_support_light{ false };
 			//uniforms
-			uniform*				 m_uniform_ambient_light{ nullptr };
+			context_uniform*		 m_uniform_ambient_light{ nullptr };
 			uniform_light_spot       m_uniform_spot;
 			uniform_light_point      m_uniform_point;
 			uniform_light_direction  m_uniform_direction;

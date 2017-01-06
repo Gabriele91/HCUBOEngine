@@ -3,6 +3,8 @@
 #include <hcube/geometries/intersection.h>
 #include <hcube/math/tangent_space_calculation.h>
 #include <hcube/render/rendering_system.h>
+#include <hcube/render/OpenGL4.h>
+#define HCUBE_USE_GPU_TERRAIN
 
 namespace hcube
 {
@@ -425,6 +427,20 @@ namespace hcube
 		});
 		//buffer
 		std::vector< terrain_vertex > vertices(m_detail_vertexs.x*m_detail_vertexs.y);
+		//GPU TERRAIN
+		#ifdef HCUBE_USE_GPU_TERRAIN
+		for (unsigned int y = 0; y != m_detail_vertexs.y; ++y)
+		for (unsigned int x = 0; x != m_detail_vertexs.x; ++x)
+		{
+#if 0
+			vertices[y* m_detail_vertexs.x + x].m_position.x = float(x) / (m_detail_vertexs.x - 1);
+			vertices[y* m_detail_vertexs.x + x].m_position.y = float(y) / (m_detail_vertexs.y - 1);
+#else
+			vertices[y* m_detail_vertexs.x + x].m_position.x = float(x);
+			vertices[y* m_detail_vertexs.x + x].m_position.y = float(y);
+#endif
+		}
+		#endif 
 		//set obb
 		set_bounding_box(obb(mat3(1), vec3(0, 0, 0), vec3(0.5, 0.5, 0.5)));
 		//save sizes
@@ -598,7 +614,7 @@ namespace hcube
 			return float(raw_image[pixel]) / 255.;
 		};
 		//map h 
-		float map_height = 0.01;
+		float map_height = 0.0;
 		//alloc
 		m_hmap_width = diff_texture->get_width();
 		m_hmap_height = diff_texture->get_height();
@@ -677,11 +693,24 @@ namespace hcube
 		auto t_this   = get_entity()->get_component<transform>();
 		//this model
 		mat4 m4_model = get_entity()->get_component<transform>()->get_matrix();
+		//fov
+		/*
+		a = std::tan(fov / h);
+
+		Here, fov and  h represent  the  camera’s  field  of  view  and  viewport’s  width  in  pixels,  respectively. 
+		This makes a approximately the size of one world unit perpendicular to the camera  per  screen  pixel  per  world  unit  in  the  
+		direction  of  the  camera 
+		*/
+		float fov = std::atan(1.0 / c_camera->get_projection()[1][1]) * 2.0f;
+		float h   = c_camera->get_viewport_size().x;
+		float camera_a = std::tan(fov / h);
+		float camera_e = c_camera->get_viewport_size().x;
 		//draw
 		compute_object_to_draw
 		(
-			get_node(0,0,0), 
-			length(get_bounding_box().get_extension()) / (std::pow(4, m_levels - 1)),
+			get_node(0,0,0),
+			camera_a,
+			camera_e,
 			t_camera->get_global_position(), 
 			c_camera->get_frustum(),
 			m4_model
@@ -692,10 +721,23 @@ namespace hcube
 		{
 			if (thiz_node.m_state == NODE_DRAW)
 			{
-				terrain_vertex* vecs = (terrain_vertex*)render::map_VBO(m_vbuffer, 0, m_vb_size * sizeof(terrain_vertex), MAP_WRITE);
 				//uv range in terrain
 				vec2  uv_area = thiz_node.m_info.m_end - thiz_node.m_info.m_start;
 				vec2  uv_step = uv_area / (vec2(m_detail_vertexs) - vec2(1, 1));
+#ifdef HCUBE_USE_GPU_TERRAIN
+				if (material_ptr mat = get_material())
+				{
+					if (context_shader* curr_shader = render::get_bind_shader())
+					{
+						if (auto* u_offset = render::get_uniform(curr_shader, std::string("uv_height_offset")))
+							u_offset->set_value(thiz_node.m_info.m_start);
+						if (auto* u_step = render::get_uniform(curr_shader, std::string("uv_height_step")))
+							u_step->set_value(uv_step);
+						
+					}
+				}				 
+#else
+				terrain_vertex* vecs = (terrain_vertex*)render::map_VBO(m_vbuffer, 0, m_vb_size * sizeof(terrain_vertex), MAP_WRITE);
 				//compute pos
 				#define compute_pos(_uv_,_pos_,_x_,_y_)\
 				{\
@@ -726,6 +768,7 @@ namespace hcube
 				}
 				render::unmap_VBO(m_vbuffer);
 				HCUBE_RENDER_PRINT_ERRORS
+#endif
 				//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				render::bind_VBO(m_vbuffer);
 				render::bind_IL(m_layout);
@@ -753,7 +796,8 @@ namespace hcube
 	void lod_terrain::compute_object_to_draw
 	(
 		node* current,
-		const float camera_factor,
+		const float camera_a,
+		const float camera_e,
 		const vec3& camera_position,
 		const frustum& frustum,
 		const mat4& model,
@@ -770,12 +814,28 @@ namespace hcube
 		auto intersection_res = intersection::check(frustum, this_box);
 		//is inside?
 		if (intersection_res != intersection::OUTSIDE)
-		{
+		{	
+			/*
+				L = (a*d / s) * e
+
+				s is  the  fixed  world  distance  between  neighboring  height  samples  in  the
+				tile, or the grid cell size.
+
+				d represents the distance between the camera position and the closest  point  on  the  axis-aligned
+				box  formed  by  the  tile’s  position,
+				size  and  full  height range.
+
+				Assuming the heightfield is viewed from above, ad/s is the (maximum) amount of grid cells per pixel.
+				e is the maximum allowed screen ‘error’ in pixels
+			*/
 			//distance
-			float distance_from_cam = distance(camera_position, this_box.closest_point(camera_position));
-			float distance_factor   = camera_factor * pow(2, m_levels - level);
+			const float d = distance(camera_position, this_box.closest_point(camera_position));
+			const float s = length(vec2(this_box.get_extension().x, this_box.get_extension().z));
+			const float L = ((camera_a*d) / (s*2.0) ) * camera_e;
+			const const float max_l     = 1.5;
+			const const float inv_max_l = 1.0 / max_l;
 			//levels
-			if (m_levels == (level+1) || distance_factor < distance_from_cam)
+			if (m_levels == (level+1) || L > inv_max_l)
 			{
 				//draw this
 				current->m_state = NODE_DRAW;
@@ -785,10 +845,10 @@ namespace hcube
 				//draw childs
 				current->m_state = NODE_DRAW_CHILD;
 				//draw
-				compute_object_to_draw(current->m_chils[0], camera_factor, camera_position, frustum, model, level + 1);
-				compute_object_to_draw(current->m_chils[1], camera_factor, camera_position, frustum, model, level + 1);
-				compute_object_to_draw(current->m_chils[2], camera_factor, camera_position, frustum, model, level + 1);
-				compute_object_to_draw(current->m_chils[3], camera_factor, camera_position, frustum, model, level + 1);
+				compute_object_to_draw(current->m_chils[0], camera_a, camera_e, camera_position, frustum, model, level + 1);
+				compute_object_to_draw(current->m_chils[1], camera_a, camera_e, camera_position, frustum, model, level + 1);
+				compute_object_to_draw(current->m_chils[2], camera_a, camera_e, camera_position, frustum, model, level + 1);
+				compute_object_to_draw(current->m_chils[3], camera_a, camera_e, camera_position, frustum, model, level + 1);
 			}
 		}
 	}

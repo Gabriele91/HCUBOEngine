@@ -25,25 +25,25 @@ namespace hcube
         effect::technique* m_technique_shadow_point;
         effect::technique* m_technique_shadow_direction;
         //spot light
-        uniform*           m_shadow_spot_mask		    { nullptr };
+        context_uniform*           m_shadow_spot_mask		    { nullptr };
         //point light
-        uniform*           m_shadow_point_mask			{ nullptr };
-        uniform*           m_shadow_point_light_position{ nullptr };
-        uniform*           m_shadow_point_far_plane		{ nullptr };
+        context_uniform*           m_shadow_point_mask			{ nullptr };
+        context_uniform*           m_shadow_point_light_position{ nullptr };
+        context_uniform*           m_shadow_point_far_plane		{ nullptr };
         //direction light
-        uniform*           m_shadow_direction_mask		{ nullptr };
+        context_uniform*           m_shadow_direction_mask		{ nullptr };
         //view / projection
-        uniform*           m_shadow_spot_model      { nullptr };
-        uniform*           m_shadow_spot_view		{ nullptr };
-        uniform*           m_shadow_spot_projection { nullptr };
+        context_uniform*           m_shadow_spot_model      { nullptr };
+        context_uniform*           m_shadow_spot_view		{ nullptr };
+        context_uniform*           m_shadow_spot_projection { nullptr };
         
-        uniform*           m_shadow_point_model     { nullptr };
-        uniform*           m_shadow_point_view      { nullptr };
-        uniform*           m_shadow_point_projection{ nullptr };
+        context_uniform*           m_shadow_point_model     { nullptr };
+        context_uniform*           m_shadow_point_view      { nullptr };
+        context_uniform*           m_shadow_point_projection{ nullptr };
         
-        uniform*           m_shadow_direction_model	    { nullptr };
-        uniform*           m_shadow_direction_view	    { nullptr };
-        uniform*           m_shadow_direction_projection{ nullptr };
+        context_uniform*           m_shadow_direction_model	    { nullptr };
+        context_uniform*           m_shadow_direction_view	    { nullptr };
+        context_uniform*           m_shadow_direction_projection{ nullptr };
         
     public:
         

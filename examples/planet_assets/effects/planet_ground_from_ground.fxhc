@@ -127,7 +127,9 @@ sub_effect
 						planet_secondary_color = clamp(v3Attenuate, 0.0, 1.0);
 					}
 					
-					#define ADDITIONAL_VERTEX_SHADER() compute_planet_ground(camera.m_position, frag_position.xyz,normalize(sun_pos));
+					#define ADDITIONAL_VERTEX_SHADER(camera, transform, vertex, frag_position, uv_coords, tbn)\
+					    camera.m_projection * camera.m_view * frag_position;\
+						compute_planet_ground(camera.m_position, frag_position.xyz,normalize(sun_pos));
 				
 				#pragma fragment
 				

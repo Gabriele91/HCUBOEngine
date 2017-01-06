@@ -131,7 +131,8 @@ namespace hcube
 		void compute_object_to_draw
 		(
 			node* parent,
-			const float camera_factor,
+			const float camera_a,
+			const float camera_e,
 			const vec3& camera_position,
 			const frustum& frustum,
 			const mat4& model_view,
@@ -217,7 +218,7 @@ namespace hcube
 			int x = normx * (m_hmap_width - 1);
 			int y = normy * (m_hmap_height - 1);
 			int pixel = (y * m_hmap_width + x);
-			return float(m_hmap[pixel]) / 255.;
+			return float(m_hmap[pixel]);
 		}
 		//update mesh
 		void recompute_mesh_heigth();

@@ -15,8 +15,7 @@ out mat3 tbn;
 void main()
 {
 	//vertex
-	frag_position     = transform.m_model * vec4(vertex, 1.0);
-	gl_Position 	  = camera.m_projection * camera.m_view * frag_position;
+	frag_position = transform.m_model * vec4(vertex, 1.0);
     //normal
     mat3 normal_mat = transpose(inverse(mat3(transform.m_model)));
     //pass T/B/N
@@ -31,7 +30,10 @@ void main()
 	frag_uvcoord = uvcoord;
 	//more pass
 	#ifdef ADDITIONAL_VERTEX_SHADER
-		ADDITIONAL_VERTEX_SHADER()
+		gl_Position = ADDITIONAL_VERTEX_SHADER(camera, transform, vertex, frag_position, frag_uvcoord, tbn)
+	#else
+		//final pos
+		gl_Position = camera.m_projection * camera.m_view * frag_position;
 	#endif
 }
 

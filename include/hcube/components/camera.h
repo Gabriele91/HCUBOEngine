@@ -58,11 +58,11 @@ namespace hcube
 
 	struct uniform_camera
 	{
-		uniform* m_uniform_viewport{ nullptr };
-		uniform* m_uniform_projection{ nullptr };
-		uniform* m_uniform_view{ nullptr };
-		uniform* m_uniform_model{ nullptr };
-		uniform* m_uniform_position{ nullptr };
+		context_uniform* m_uniform_viewport{ nullptr };
+		context_uniform* m_uniform_projection{ nullptr };
+		context_uniform* m_uniform_view{ nullptr };
+		context_uniform* m_uniform_model{ nullptr };
+		context_uniform* m_uniform_position{ nullptr };
 
 		void get_uniform(shader::ptr shader);
 

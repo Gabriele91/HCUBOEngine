@@ -84,7 +84,7 @@ namespace hcube
 		//entity
         entity::ptr  m_terrain;
 		//aspect
-		float m_fov{ 45.0f };
+		float m_fov{ 60.0f };
 		float m_aspect{ 0.0f };
 
 	};
