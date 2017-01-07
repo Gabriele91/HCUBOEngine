@@ -56,6 +56,9 @@ sub_effect
             shader source
             {
                 #define DEFERRED_RENDERING
+				#define USE_VERTEX_SHADER
+				#define USE_FRAGMENT_SHADER
+				#pragma import <base_texture_normal_specular>
 				#pragma vertex 
 				
 					uniform float camera_height;			
@@ -134,16 +137,28 @@ sub_effect
 						planet_secondary_color = clamp(v3Attenuate, 0.0, 1.0);
 					}
 					
-					#define ADDITIONAL_VERTEX_SHADER(camera, transform, vertex, frag_position, uv_coords, tbn)\
-					    camera.m_projection * camera.m_view * frag_position;\
-						compute_planet_ground(camera.m_position, frag_position.xyz,normalize(sun_pos));
+					
+					//define function
+					void vertex_shader(out vertex_output output)
+					{
+						//compute uv
+						output.m_uvmap = uvcoord;
+						//compute vertex in model space
+						output.m_world_position = transform.m_model * vec4(vertex, 1.0);
+						//compute vertex in projection space
+						output.m_position = camera.m_projection * camera.m_view * output.m_world_position;
+						//compute tbn 
+						output.m_tbn = compute_tbn(transpose(inverse(mat3(transform.m_model))), normal, tangent, bitangents);
+						//compute compute_planet_ground
+						compute_planet_ground(camera.m_position, output.m_world_position.xyz, normalize(sun_pos));
+					}    
 				
 				#pragma fragment
 				
 					in vec3 planet_first_color;
 					in vec3 planet_secondary_color;
 					
-					void planet_color(inout vec4 pos,inout vec3 norm,inout vec4 color ,inout float snil)
+					void fragment_shader(inout vec4 position, inout vec3 normal, inout vec4 color, inout float specular)
 					{
 						#if 1
 						color = clamp(
@@ -159,10 +174,6 @@ sub_effect
 						);
 						#endif
 					}
-					
-					#define ADDITIONAL_FRAGMENT_SHADER(pos, norm, color, snil) planet_color(pos, norm, color, snil)
-				
-				#pragma import <base_texture_normal_specular>
 				
             }
         }

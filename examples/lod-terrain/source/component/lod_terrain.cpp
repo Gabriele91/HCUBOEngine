@@ -432,13 +432,8 @@ namespace hcube
 		for (unsigned int y = 0; y != m_detail_vertexs.y; ++y)
 		for (unsigned int x = 0; x != m_detail_vertexs.x; ++x)
 		{
-#if 0
-			vertices[y* m_detail_vertexs.x + x].m_position.x = float(x) / (m_detail_vertexs.x - 1);
-			vertices[y* m_detail_vertexs.x + x].m_position.y = float(y) / (m_detail_vertexs.y - 1);
-#else
 			vertices[y* m_detail_vertexs.x + x].m_position.x = float(x);
 			vertices[y* m_detail_vertexs.x + x].m_position.y = float(y);
-#endif
 		}
 		#endif 
 		//set obb
