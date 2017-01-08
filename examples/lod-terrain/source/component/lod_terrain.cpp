@@ -12,41 +12,16 @@ namespace hcube
 	struct alignas(16) terrain_vertex
 	{
 		vec3 m_position;
-		vec3 m_normal;
 		vec2 m_uvmap;
-		vec3 m_tangent;
-		vec3 m_bitangent;
 		
 		terrain_vertex(){}
-
-		terrain_vertex(const vec3& in_vertex, 
-			           const vec3& in_normal)
-		{
-			m_position = in_vertex;
-			m_normal = in_normal;
-		}
-
 		terrain_vertex(const vec3& in_vertex,
-			           const vec3& in_normal,
 			           const vec2& in_uvmap)
 		{
 			m_position = in_vertex;
-			m_normal = in_normal;
 			m_uvmap = in_uvmap;
 		}
 
-		terrain_vertex(const vec3& in_vertex,
-			           const vec3& in_normal,
-					   const vec2& in_uvmap,
-					   const vec3& in_tangent,
-					   const vec3& in_bitangent)
-		{
-			m_position = in_vertex;
-			m_normal = in_normal;
-			m_uvmap = in_uvmap;
-			m_tangent = in_tangent;
-			m_bitangent = in_bitangent;
-		}
 	};
 
 	//node methos
@@ -419,23 +394,18 @@ namespace hcube
 			sizeof(terrain_vertex),
 			{
 				attribute{ ATT_POSITIONT, AST_FLOAT3, offsetof(terrain_vertex, m_position) },
-				attribute{ ATT_NORMAL0, AST_FLOAT3,   offsetof(terrain_vertex, m_normal) },
-				attribute{ ATT_TEXCOORD0, AST_FLOAT2, offsetof(terrain_vertex, m_uvmap) },
-				attribute{ ATT_TANGENT0, AST_FLOAT3,  offsetof(terrain_vertex, m_tangent) },
-				attribute{ ATT_BINORMAL0, AST_FLOAT3, offsetof(terrain_vertex, m_bitangent) }
+				attribute{ ATT_TEXCOORD0, AST_FLOAT2, offsetof(terrain_vertex, m_uvmap) }
 			}
 		});
 		//buffer
 		std::vector< terrain_vertex > vertices(m_detail_vertexs.x*m_detail_vertexs.y);
-		//GPU TERRAIN
-		#ifdef HCUBE_USE_GPU_TERRAIN
+		//gpu will compute the height 
 		for (unsigned int y = 0; y != m_detail_vertexs.y; ++y)
 		for (unsigned int x = 0; x != m_detail_vertexs.x; ++x)
 		{
 			vertices[y* m_detail_vertexs.x + x].m_position.x = float(x);
 			vertices[y* m_detail_vertexs.x + x].m_position.y = float(y);
 		}
-		#endif 
 		//set obb
 		set_bounding_box(obb(mat3(1), vec3(0, 0, 0), vec3(0.5, 0.5, 0.5)));
 		//save sizes
@@ -455,9 +425,10 @@ namespace hcube
 	void lod_terrain::build_tree()
 	{
 		//alloc all and link
-		alloc_all(m_levels);
+		alloc_all();
 		link_all_childs();
 		link_all_nears();
+		level_to_all_nodes();
 		//compute root 
 		get_node(0, 0, 0)->set({ vec2(0.0,0.0), vec2(1.0,1.0), m_detail });
 		//build childs
@@ -466,7 +437,7 @@ namespace hcube
 
 	void lod_terrain::build_tree
 	(
-		node* parent,
+		link<node>& parent,
 		unsigned int  level
 	)
 	{
@@ -480,62 +451,71 @@ namespace hcube
 		{
 			vec2 start = p_info.m_start;
 			vec2 end = start + l_size;
-			parent->m_chils[NODE_CHILD_TOP_LEFT]->set({ start, end, m_detail });
+			(*parent->m_chils[NODE_CHILD_TOP_LEFT])->set({ start, end, m_detail });
 		}
 		{
 			vec2 start = p_info.m_start + vec2(p_g_size.x / 2.0f, 0);
 			vec2 end = start + l_size;
-			parent->m_chils[NODE_CHILD_TOP_RIGHT]->set({ start, end, m_detail });
+			(*parent->m_chils[NODE_CHILD_TOP_RIGHT])->set({ start, end, m_detail });
 		}
 		{
 			vec2 start = p_info.m_start + vec2(0, p_g_size.y / 2.0f);
 			vec2 end = start + l_size;
-			parent->m_chils[NODE_CHILD_BOTTOM_LEFT]->set({ start, end, m_detail });
+			(*parent->m_chils[NODE_CHILD_BOTTOM_LEFT])->set({ start, end, m_detail });
 		}
 		{
 			vec2 start = p_info.m_start + p_g_size / 2.0f;
 			vec2 end = start + l_size;
-			parent->m_chils[NODE_CHILD_BOTTOM_RIGHT]->set({ start, end, m_detail });
+			(*parent->m_chils[NODE_CHILD_BOTTOM_RIGHT])->set({ start, end, m_detail });
 		}
 		//next levels
 		++level;
 		//call for all childs
 		if (level < m_levels)
 		for (size_t i = 0; i != NODE_CHILD_MAX; ++i)
-			build_tree(parent->m_chils[i], level);
+			build_tree((*parent->m_chils[i]), level);
 	}
 
 	//alloc nodes
-	void lod_terrain::alloc_all(unsigned int level)
+	void lod_terrain::alloc_all()
 	{
 		//alloc all levels
-		m_nodes.resize(level);
+		m_nodes.resize(m_levels);
 		//alloc all nodes
-		for (unsigned int l = 0; l != level; ++l)
+		for (unsigned int l = 0; l != m_levels; ++l)
 		{
 			m_nodes[l].resize(std::pow(4, l));
 		}
 	}
+	
+	void lod_terrain::level_to_all_nodes()
+	{
+		for (unsigned int l = 0; l != m_levels; ++l)
+		for (unsigned int n = 0; n != m_nodes[l].size(); ++n)
+		{
+			m_nodes[l][n]->m_level = l;
+		}
+	}
 
-	lod_terrain::node* lod_terrain::get_node(unsigned int level, unsigned int x, unsigned int y)
+	link<lod_terrain::node>& lod_terrain::get_node(unsigned int level, unsigned int x, unsigned int y)
 	{
 		unsigned int level_w_size = std::pow(2, level);
-		return &m_nodes[level][y * level_w_size + x];
+		return m_nodes[level][y * level_w_size + x];
 	}
 
 	void lod_terrain::link_childs(unsigned int level, unsigned int x, unsigned int y)
 	{
-		node* thiz = get_node(level, x, y);
-		thiz->m_chils[NODE_CHILD_TOP_LEFT]	   = get_node(level + 1, x * 2 + 0, y * 2 + 0);
-		thiz->m_chils[NODE_CHILD_TOP_RIGHT]    = get_node(level + 1, x * 2 + 1, y * 2 + 0);
-		thiz->m_chils[NODE_CHILD_BOTTOM_LEFT]  = get_node(level + 1, x * 2 + 0, y * 2 + 1);
-		thiz->m_chils[NODE_CHILD_BOTTOM_RIGHT] = get_node(level + 1, x * 2 + 1, y * 2 + 1);
+		link<node>& thiz = get_node(level, x, y);
+		thiz->m_chils[NODE_CHILD_TOP_LEFT]	   = &get_node(level + 1, x * 2 + 0, y * 2 + 0);
+		thiz->m_chils[NODE_CHILD_TOP_RIGHT]    = &get_node(level + 1, x * 2 + 1, y * 2 + 0);
+		thiz->m_chils[NODE_CHILD_BOTTOM_LEFT]  = &get_node(level + 1, x * 2 + 0, y * 2 + 1);
+		thiz->m_chils[NODE_CHILD_BOTTOM_RIGHT] = &get_node(level + 1, x * 2 + 1, y * 2 + 1);
 		//link to parent
 		//for (node_child i : std::vector<node_child>{ NODE_CHILD_TOP_LEFT , NODE_CHILD_TOP_RIGHT, NODE_CHILD_BOTTOM_LEFT, NODE_CHILD_BOTTOM_RIGHT })
 		for(unsigned int i = 0; i!=4; ++i)
 		{ 
-			thiz->m_chils[i]->m_parent	     = thiz; 
-			thiz->m_chils[i]->m_in_parent_is = (node_child)i;
+			(*thiz->m_chils[i])->m_parent	     = &thiz; 
+			(*thiz->m_chils[i])->m_in_parent_is = (node_child)i;
 		};
 	}
 
@@ -568,65 +548,15 @@ namespace hcube
 			for (unsigned int y = 0; y != level_w_size; ++y)
 			for (unsigned int x = 0; x != level_w_size; ++x)
 			{
-				node* thiz = get_node(level, x, y);
-				if (y != (level_w_size - 1)) thiz->m_neighbors[NODE_EDGE_BOTTOM] = get_node(level, x, y + 1);
-				if (y != 0)                  thiz->m_neighbors[NODE_EDGE_TOP]    = get_node(level, x, y - 1);
-				if (x != 0)                  thiz->m_neighbors[NODE_EDGE_LEFT]   = get_node(level, x - 1, y);
-				if (x != (level_w_size - 1)) thiz->m_neighbors[NODE_EDGE_RIGHT]  = get_node(level, x + 1, y);
+				link<node>& thiz = get_node(level, x, y);
+				if (y != (level_w_size - 1)) thiz->m_neighbors[NODE_EDGE_BOTTOM] = &get_node(level, x, y + 1);
+				if (y != 0)                  thiz->m_neighbors[NODE_EDGE_TOP]    = &get_node(level, x, y - 1);
+				if (x != 0)                  thiz->m_neighbors[NODE_EDGE_LEFT]   = &get_node(level, x - 1, y);
+				if (x != (level_w_size - 1)) thiz->m_neighbors[NODE_EDGE_RIGHT]  = &get_node(level, x + 1, y);
 			}
 		}
 	}
 
-	void lod_terrain::recompute_mesh_heigth()
-	{
-		if (!get_material()) return;
-		//param
-		auto param = get_material()->get_parameter_by_name("height_map");
-		//test
-		if (!param) return;
-		//get material texture
-		auto diff_texture = param->get_texture();
-		//test
-		if (!diff_texture) return;
-		//get texture
-		auto raw_image = render::get_texture(diff_texture->get_context_texture());
-		//type
-		int channels = 0;
-		switch (diff_texture->get_type())
-		{
-		case texture_type::TT_R:    channels = 1; break;
-		case texture_type::TT_RG:   channels = 2; break;
-		case texture_type::TT_RGB:  channels = 3; break;
-		case texture_type::TT_RGBA: channels = 4; break;
-		default: break;
-		}
-		//hfunction
-		auto get_height = [&](float normx, float normy) -> float
-		{
-			int x = normx * (diff_texture->get_width() - 1);
-			int y = normy * (diff_texture->get_height() - 1);
-			int pixel = (y * diff_texture->get_width() + x) * channels;
-			return float(raw_image[pixel]) / 255.;
-		};
-		//map h 
-		float map_height = 0.0;
-		//alloc
-		m_hmap_width = diff_texture->get_width();
-		m_hmap_height = diff_texture->get_height();
-		m_hmap.resize(m_hmap_width * m_hmap_height);
-		//for all
-		//#pragma omp parallel for num_threads(4)
-		for (int y = 0; y < diff_texture->get_height(); ++y)
-		for (int x = 0; x < diff_texture->get_width();  ++x)
-		{
-			int pixel_pos	 = (y * diff_texture->get_width() + x);
-			m_hmap[pixel_pos]= float(raw_image[pixel_pos*channels]) / 255.0f - 0.5f;
-			//max
-			map_height = std::max(map_height, std::abs(m_hmap[pixel_pos]));
-		}
-		//set obb
-		set_bounding_box(obb(mat3(1), vec3(0, 0, 0), vec3(0.5, map_height, 0.5)));
-	}
 
 	#pragma endregion
 
@@ -661,14 +591,6 @@ namespace hcube
 			render::delete_VBO(m_vbuffer);
 		}
 	}
-
-	void lod_terrain::set_material(material_ptr material)
-	{
-		//set
-		renderable::set_material(material);
-		//update vertex
-		recompute_mesh_heigth();
-	}
 	#pragma endregion
 	
 	//draw
@@ -676,10 +598,6 @@ namespace hcube
 	//overload renderable::draw
 	void lod_terrain::draw(rendering_system& rsystem, entity::ptr view) 
 	{
-		//all no draw
-		for (auto& leve_nodes : m_nodes)
-		for (auto& thiz_node  : leve_nodes)
-			thiz_node.m_state = NODE_NOT_DRAW;
 		//get camera
 		entity::ptr e_camera = rsystem.get_current_draw_camera();
 		//get components
@@ -701,9 +619,8 @@ namespace hcube
 		float camera_a = std::tan(fov / h);
 		float camera_e = c_camera->get_viewport_size().x;
 		//draw
-		compute_object_to_draw
+		compute_objects_to_draw_in_all_levels
 		(
-			get_node(0,0,0),
 			camera_a,
 			camera_e,
 			t_camera->get_global_position(), 
@@ -711,15 +628,13 @@ namespace hcube
 			m4_model
 		);
 		//draw
-		for (auto& leve_nodes : m_nodes)
-		for (auto& thiz_node : leve_nodes)
+		for (const node& thiz_node : m_draw_queue)
 		{
 			if (thiz_node.m_state == NODE_DRAW)
 			{
 				//uv range in terrain
 				vec2  uv_area = thiz_node.m_info.m_end - thiz_node.m_info.m_start;
 				vec2  uv_step = uv_area / (vec2(m_detail_vertexs) - vec2(1, 1));
-#ifdef HCUBE_USE_GPU_TERRAIN
 				if (material_ptr mat = get_material())
 				{
 					if (context_shader* curr_shader = render::get_bind_shader())
@@ -731,39 +646,6 @@ namespace hcube
 						
 					}
 				}				 
-#else
-				terrain_vertex* vecs = (terrain_vertex*)render::map_VBO(m_vbuffer, 0, m_vb_size * sizeof(terrain_vertex), MAP_WRITE);
-				//compute pos
-				#define compute_pos(_uv_,_pos_,_x_,_y_)\
-				{\
-					_uv_ = vec2(thiz_node.m_info.m_start + uv_step * vec2(x, y));\
-					float height = get_height(_uv_.x, _uv_.y);\
-					_pos_ = vec3(_uv_.x - 0.5, height, _uv_.y - 0.5);\
-				}
-				//mapping
-				#pragma omp parallel for num_threads(4)
-				for (int y = 0; y < m_detail_vertexs.y; ++y)
-				for (int x = 0; x < m_detail_vertexs.x; ++x)
-				{
-					//vertex id
-					int vid = y * m_detail_vertexs.x + x;
-					//current uv
-					vec2 uv_coord;
-					//pos
-					vec3 pos;
-					//compute pos
-					compute_pos(uv_coord, pos, x, y);
-					//add new vertex
-					vecs[vid] = terrain_vertex
-					(
-						pos,
-						vec3(0, 1, 0),
-						uv_coord
-					);
-				}
-				render::unmap_VBO(m_vbuffer);
-				HCUBE_RENDER_PRINT_ERRORS
-#endif
 				//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				render::bind_VBO(m_vbuffer);
 				render::bind_IL(m_layout);
@@ -788,28 +670,101 @@ namespace hcube
 		}
 	}
 
-	void lod_terrain::compute_object_to_draw
+
+	void lod_terrain::compute_objects_to_draw_in_all_levels
 	(
-		node* current,
 		const float camera_a,
 		const float camera_e,
 		const vec3& camera_position,
 		const frustum& frustum,
-		const mat4& model,
-		unsigned int level
+		const mat4& model_view
+	) 
+	{
+		//all no draw
+		for (auto& leve_nodes : m_nodes)
+		for (auto& thiz_node : leve_nodes)
+		{
+			thiz_node.next_to_null();
+			thiz_node->m_state = NODE_NOT_DRAW;
+		}
+		//clear queue
+		m_draw_queue.clear();
+		m_child_to_draw_queue.clear();
+		//root
+		compute_object_to_draw_of_a_node
+		(
+			get_node(0, 0, 0),
+			camera_a, 
+			camera_e, 
+			camera_position,
+			frustum, 
+			model_view
+		);
+		//
+		int n = 0; 
+		link<node>* ln_node;
+		link<node>* ln_next;
+		//queue
+		for(ln_node = m_child_to_draw_queue.top();
+			ln_node;
+			ln_node = ln_next)
+		{
+			//get next (safe)
+			ln_next = ln_node->get_next();
+			//test a node (n.b. this method can break the queue)
+			compute_object_to_draw_of_a_node
+			(
+				*ln_node,
+				camera_a,
+				camera_e,
+				camera_position,
+				frustum,
+				model_view
+			);
+		}
+		//clean the broken queue
+		m_child_to_draw_queue.clear();
+	}
+
+	bool lod_terrain::compute_object_to_draw_of_a_node
+	(
+		link<node>& ln_node,
+		const float camera_a,
+		const float camera_e,
+		const vec3& camera_position,
+		const frustum& frustum,
+		const mat4& model
 	)
 	{
-		//not draw
-		current->m_state = NODE_NOT_DRAW;
 		//copy box
-		obb this_box = current->m_box;
+		obb this_box = ln_node->m_box;
 		//compute box
 		this_box.applay(model);
 		//event, intersection
 		auto intersection_res = intersection::check(frustum, this_box);
 		//is inside?
 		if (intersection_res != intersection::OUTSIDE)
-		{	
+		{
+			//level
+			if (m_levels == (ln_node->m_level+1))
+			{
+				//draw this
+				ln_node->m_state = NODE_DRAW;
+				m_draw_queue.push(ln_node);
+				return true;
+			}
+			//if near node draw parent i must to be draw
+			for (unsigned char n = 0; n != NODE_EDGES; ++n)
+			{
+				if (ln_node->m_neighbors[n])
+				if ((*ln_node->m_neighbors[n])->m_parent)
+				if ((*(*ln_node->m_neighbors[n])->m_parent)->m_state == NODE_DRAW)
+				{
+					ln_node->m_state = NODE_DRAW;
+					m_draw_queue.push(ln_node);
+					return true;
+				}
+			}
 			/*
 				L = (a*d / s) * e
 
@@ -826,48 +781,49 @@ namespace hcube
 			//distance
 			const float d = distance(camera_position, this_box.closest_point(camera_position));
 			const float s = length(vec2(this_box.get_extension().x, this_box.get_extension().z));
-			const float L = ((camera_a*d) / (s*2.0) ) * camera_e;
-			const const float max_l     = 1.5;
+			const float L = ((camera_a*d) / (s*2.0)) * camera_e;
+			const const float max_l = 1.5;
 			const const float inv_max_l = 1.0 / max_l;
 			//levels
-			if (m_levels == (level+1) || L > inv_max_l)
+			if (L > inv_max_l)
 			{
 				//draw this
-				current->m_state = NODE_DRAW;
+				ln_node->m_state = NODE_DRAW;
+				m_draw_queue.push(ln_node);
+				return true;
 			}
 			else
 			{
 				//draw childs
-				current->m_state = NODE_DRAW_CHILD;
-				//draw
-				compute_object_to_draw(current->m_chils[0], camera_a, camera_e, camera_position, frustum, model, level + 1);
-				compute_object_to_draw(current->m_chils[1], camera_a, camera_e, camera_position, frustum, model, level + 1);
-				compute_object_to_draw(current->m_chils[2], camera_a, camera_e, camera_position, frustum, model, level + 1);
-				compute_object_to_draw(current->m_chils[3], camera_a, camera_e, camera_position, frustum, model, level + 1);
+				ln_node->m_state = NODE_DRAW_CHILD;
+				//edges
+				for (int child = 0; child < NODE_CHILD_MAX; ++child)
+				{
+					if (ln_node->m_chils[child])
+						m_child_to_draw_queue.push(ln_node->m_chils[child]);
+				}
+				//return true
+				return true;
 			}
 		}
+		return false;
 	}
 	#pragma endregion
 
 	#pragma region debug
-	void lod_terrain::compute_object_to_draw_debug(node* current, unsigned int level_to_draw, unsigned int level)
+	void lod_terrain::compute_object_to_draw_debug(unsigned int level_to_draw)
 	{
-		//not draw
-		current->m_state = NODE_NOT_DRAW;
-		//draw
-		if (level_to_draw == level)
+		//level size
+		unsigned int level_w_size = std::pow(2, level_to_draw);
+		//for all
+		for (unsigned int y = 0; y != level_w_size; ++y)
+		for (unsigned int x = 0; x != level_w_size; ++x)
 		{
-			//draw this
+			//get node
+			link<node>& current = get_node(level_to_draw, x, y);
 			current->m_state = NODE_DRAW;
+			m_draw_queue.push(current);
 		}
-		else
-		{
-			compute_object_to_draw_debug(current->m_chils[0], level_to_draw, level + 1);
-			compute_object_to_draw_debug(current->m_chils[1], level_to_draw, level + 1);
-			compute_object_to_draw_debug(current->m_chils[2], level_to_draw, level + 1);
-			compute_object_to_draw_debug(current->m_chils[3], level_to_draw, level + 1);
-		}
-
 	}
 	#pragma endregion
 }

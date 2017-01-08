@@ -169,6 +169,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\app_basic.h" />
+    <ClInclude Include="include\component\link_queue.h" />
     <ClInclude Include="include\component\lod_sphere_tree.h" />
     <ClInclude Include="include\component\lod_terrain.h" />
   </ItemGroup>

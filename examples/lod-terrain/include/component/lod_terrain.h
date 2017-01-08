@@ -2,9 +2,11 @@
 
 #include <hcube/render/render.h>
 #include <hcube/components/renderable.h>
+#include <component/link_queue.h>
 
 namespace hcube
 {
+
 	class lod_terrain : public smart_pointers< lod_terrain >, public renderable
 	{
 
@@ -60,19 +62,20 @@ namespace hcube
 				vec2 m_detail;
 			};
 			//state
-			node_child   m_in_parent_is{ NODE_CHILD_MAX };
-			node_state   m_state       { NODE_NOT_DRAW };
-			build_info   m_info;
-			obb		     m_box;
+			node_child    m_in_parent_is{ NODE_CHILD_MAX };
+			node_state    m_state       { NODE_NOT_DRAW };
+			build_info    m_info;
+			obb		      m_box;
+			unsigned int  m_level{ 0 };
 			//info
 			void set(const build_info& build_info);
 			//parente edge
 			bool is_draw_node_of_edge(node_edges edge) const
 			{
 				return
-				!m_neighbors[edge] 
-				|| m_neighbors[edge]->m_state == NODE_DRAW 
-				|| m_neighbors[edge]->m_state == NODE_DRAW_CHILD;
+				    !m_neighbors[edge] 
+				|| (*m_neighbors[edge])->m_state == NODE_DRAW 
+				|| (*m_neighbors[edge])->m_state == NODE_DRAW_CHILD;
 			}
 			bool is_on_top() const
 			{
@@ -91,9 +94,9 @@ namespace hcube
 				return m_in_parent_is != NODE_CHILD_MAX && ((m_in_parent_is & NODE_MASK_LEFT_RIGHT) == NODE_RIGHT);
 			}
 			//parent 
-			node*  m_parent{ nullptr };
+			link<node>*  m_parent{ nullptr };
 			//childs
-			node* m_chils[4]
+			link<node>* m_chils[4]
 			{
 				  nullptr
 				, nullptr
@@ -101,7 +104,7 @@ namespace hcube
 				, nullptr
 			};
 			//neighbors
-			node* m_neighbors[4]
+			link<node>* m_neighbors[4]
 			{
 				  nullptr
 				, nullptr
@@ -114,13 +117,15 @@ namespace hcube
 		void build_tree();
 		void build_tree
 		(
-			node* parent,
+			link<node>& parent,
 			unsigned int level=0
 		);
 		//alloc nodes
-		void alloc_all(unsigned int level);
+		void alloc_all();
 
-		node* get_node(unsigned int level, unsigned int x, unsigned int y);
+		void level_to_all_nodes();
+
+		link<node>& get_node(unsigned int level, unsigned int x, unsigned int y);
 
 		void link_childs(unsigned int level, unsigned int x, unsigned int y);
 
@@ -128,22 +133,27 @@ namespace hcube
 
 		void link_all_nears();
 		//////////////////////////////////////////////////////////////////////////////////////
-		void compute_object_to_draw
+		void compute_objects_to_draw_in_all_levels
 		(
-			node* parent,
 			const float camera_a,
 			const float camera_e,
 			const vec3& camera_position,
 			const frustum& frustum,
-			const mat4& model_view,
-			unsigned int level = 0
+			const mat4& model_view
+		);
+		bool compute_object_to_draw_of_a_node
+		(
+			link<node>& node,
+			const float camera_a,
+			const float camera_e,
+			const vec3& camera_position,
+			const frustum& frustum,
+			const mat4& model_view
 		);
 		//////////////////////////////////////////////////////////////////////////////////////
 		void compute_object_to_draw_debug
 		(
-			node* parent, 
-			unsigned int level_to_draw = 0, 
-			unsigned int level = 0
+			unsigned int level_to_draw = 0
 		);
         
 	public:
@@ -168,21 +178,12 @@ namespace hcube
 			return nullptr;
 		}
 
-        void set_draw_level(unsigned int level=0)
-        {
-            m_level_to_draw = level;
-        }
-
-
-		virtual void set_material(material_ptr material);
-
-
+		
 	private:
 		//levels
 		ivec2		 m_detail;
 		ivec2		 m_detail_vertexs;
-        unsigned int m_levels;
-        unsigned int m_level_to_draw{0};
+		unsigned int m_levels{ 0 };
 		//draw info
 		unsigned int		   m_vb_size{ 0 };
 		context_input_layout*  m_layout { nullptr };
@@ -206,22 +207,9 @@ namespace hcube
 		context_index_buffer* m_ibuffer_middle{ nullptr };
 		void build_index_buffer();
 		//pool nodes
-		std::vector< std::vector< node > >  m_nodes;
-		//hmap
-		unsigned int m_hmap_width { 0 };
-		unsigned int m_hmap_height{ 0 };
-		std::vector< float > m_hmap; 
-		//get height from map
-		inline float get_height(float normx, float normy) const
-		{
-			if (!m_hmap.size()) return 0.0;
-			int x = normx * (m_hmap_width - 1);
-			int y = normy * (m_hmap_height - 1);
-			int pixel = (y * m_hmap_width + x);
-			return float(m_hmap[pixel]);
-		}
-		//update mesh
-		void recompute_mesh_heigth();
-
+		std::vector< std::vector< link< node > > >  m_nodes;
+		//draw queue
+		linked_queue_lifo< node > m_draw_queue;
+		linked_queue_fifo< node > m_child_to_draw_queue;
 	};
 }

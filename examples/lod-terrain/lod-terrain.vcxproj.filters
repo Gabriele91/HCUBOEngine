@@ -56,6 +56,9 @@
     <ClInclude Include="include\component\lod_terrain.h">
       <Filter>File di intestazione\component</Filter>
     </ClInclude>
+    <ClInclude Include="include\component\link_queue.h">
+      <Filter>File di intestazione\component</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\planet_assets\assets.rs">

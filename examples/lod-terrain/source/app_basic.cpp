@@ -55,7 +55,7 @@ namespace hcube
 		{
 			m_loop = false;
 			return;
-        }
+        }/*
         else if (key == GLFW_KEY_0)
         {
             l_terrain->set_draw_level(0);
@@ -71,7 +71,7 @@ namespace hcube
         else if (key == GLFW_KEY_3)
         {
             l_terrain->set_draw_level(3);
-        }
+        }*/
 		else if (key == GLFW_KEY_O)
 		{
 			rendering_system*	r_system = m_systems.get_system<rendering_system>();
@@ -207,7 +207,7 @@ namespace hcube
 			vec2 size = app.get_window_size();
 			m_aspect = float(size.x) / float(size.y);
 			c_camera->set_viewport(ivec4{ 0, 0, size.x, size.y });
-			c_camera->set_perspective( radians( m_fov ), m_aspect, 0.01, 1000.0);
+			c_camera->set_perspective( radians( m_fov ), m_aspect, 0.1, 10000.0);
 			t_camera->look_at(
 				vec3{ 0.0f, 0.0f, -100.0f },
 				vec3{ 0.0f, 0.0f, 0.0f },
@@ -217,11 +217,10 @@ namespace hcube
 			m_systems.add_entity(m_camera);
 
 			//test terrain
-            m_terrain = gameobject::node_new(lod_terrain::snew(ivec2(16, 16), 4));
+            m_terrain = gameobject::node_new(lod_terrain::snew(ivec2(64, 64), 5));
 			m_terrain->get_component<renderable>()->set_material(m_resources.get_material("earth_terrain"));
             m_terrain->get_component<transform>()->position({0,-100,0});
-			//m_terrain->get_component<transform>()->scale({ 1200, 20 * 300,1200 });
-			m_terrain->get_component<transform>()->scale({ 1200, 120 , 1200 });
+			m_terrain->get_component<transform>()->scale({ 6000, 600 , 6000 });
             
             m_systems.add_entity(m_terrain);
 		}
