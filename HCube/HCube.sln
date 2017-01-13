@@ -24,6 +24,14 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "planets", "..\examples\plan
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lod-terrain", "..\examples\lod-terrain\lod-terrain.vcxproj", "{C07129B2-9FD9-4A17-9CA1-D19C8004BE20}"
+	ProjectSection(ProjectDependencies) = postProject
+		{21E4FD04-EBB1-4E61-845B-1000B15224F2} = {21E4FD04-EBB1-4E61-845B-1000B15224F2}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "noise-lod-terrain", "..\examples\noise-lod-terrain\noise-lod-terrain.vcxproj", "{35663B72-1EAA-4F3E-A94B-044260969C1B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{21E4FD04-EBB1-4E61-845B-1000B15224F2} = {21E4FD04-EBB1-4E61-845B-1000B15224F2}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -81,6 +89,14 @@ Global
 		{C07129B2-9FD9-4A17-9CA1-D19C8004BE20}.Release|x64.Build.0 = Release|x64
 		{C07129B2-9FD9-4A17-9CA1-D19C8004BE20}.Release|x86.ActiveCfg = Release|Win32
 		{C07129B2-9FD9-4A17-9CA1-D19C8004BE20}.Release|x86.Build.0 = Release|Win32
+		{35663B72-1EAA-4F3E-A94B-044260969C1B}.Debug|x64.ActiveCfg = Debug|x64
+		{35663B72-1EAA-4F3E-A94B-044260969C1B}.Debug|x64.Build.0 = Debug|x64
+		{35663B72-1EAA-4F3E-A94B-044260969C1B}.Debug|x86.ActiveCfg = Debug|Win32
+		{35663B72-1EAA-4F3E-A94B-044260969C1B}.Debug|x86.Build.0 = Debug|Win32
+		{35663B72-1EAA-4F3E-A94B-044260969C1B}.Release|x64.ActiveCfg = Release|x64
+		{35663B72-1EAA-4F3E-A94B-044260969C1B}.Release|x64.Build.0 = Release|x64
+		{35663B72-1EAA-4F3E-A94B-044260969C1B}.Release|x86.ActiveCfg = Release|Win32
+		{35663B72-1EAA-4F3E-A94B-044260969C1B}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -91,5 +107,6 @@ Global
 		{A717719D-F3CC-4EA0-BAA0-2F3B9E92E37D} = {E81C2EE6-8BF7-4F8A-BED5-127894609B40}
 		{2FE5BA85-3112-4A79-A75F-76D87146012E} = {E81C2EE6-8BF7-4F8A-BED5-127894609B40}
 		{C07129B2-9FD9-4A17-9CA1-D19C8004BE20} = {E81C2EE6-8BF7-4F8A-BED5-127894609B40}
+		{35663B72-1EAA-4F3E-A94B-044260969C1B} = {E81C2EE6-8BF7-4F8A-BED5-127894609B40}
 	EndGlobalSection
 EndGlobal

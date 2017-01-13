@@ -1,4 +1,4 @@
-effect "base_texture_normal_specular_height"
+effect "base_texture_normal_specular_height_nois"
 {
 	diffuse_map  texture("earth_color")
 	height_map 	 texture("earth_height_2")

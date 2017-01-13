@@ -264,6 +264,12 @@
     <ClInclude Include="..\include\hcube\render\shader.h">
       <Filter>File di intestazione\hcube\render</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\hcube\render\rendering_pass_ui.h">
+      <Filter>File di intestazione\hcube\render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\hcube\utilities\timer.h">
+      <Filter>File di intestazione\hcube\utilities</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\render\effect.cpp">
@@ -373,6 +379,12 @@
     </ClCompile>
     <ClCompile Include="..\source\render\shader.cpp">
       <Filter>File di origine\render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\render\rendering_pass_ui.cpp">
+      <Filter>File di origine\render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\utilities\timer.cpp">
+      <Filter>File di origine\utilities</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

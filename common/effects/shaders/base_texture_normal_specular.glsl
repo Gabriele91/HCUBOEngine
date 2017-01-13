@@ -1,4 +1,14 @@
 #pragma vertex
+/*
+hcube_input
+{
+	vec2 vertex     : ATT_POSITIONT
+	vec2 normal     : ATT_NORMAL0
+	vec2 uvcoord    : ATT_TEXCOORD0
+	vec2 tangent    : ATT_TANGENT0
+	vec2 bitangents : ATT_BINORMAL0
+}
+*/
 //in
 layout(location = ATT_POSITIONT) in vec3 vertex;
 layout(location = ATT_NORMAL0)   in vec3 normal;

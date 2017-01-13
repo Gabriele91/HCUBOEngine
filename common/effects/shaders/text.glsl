@@ -1,12 +1,12 @@
 #pragma vertex
-layout(location = ATT_POSITIONT) in int character;
+layout(location = ATT_POSITIONT) in int ucs4_character;
 
 out int v_character;
 out int v_position;
 
 void main()
 {
-    v_character = character;
+    v_character = ucs4_character;
     v_position  = gl_VertexID;
     gl_Position = vec4(0, 0, 0, 1);
 }
@@ -21,7 +21,6 @@ in int v_character[1];
 in int v_position[1];
 out vec2 tex_coord;
 
-uniform sampler2D image;
 uniform vec2 cell_size;
 uniform vec2 cell_offset;
 uniform vec2 render_size;
@@ -64,10 +63,10 @@ void main()
 in vec2 tex_coord;
 out vec4 frag_color;
 
-uniform sampler2D image;
-uniform vec4 in_color;
+uniform sampler2D font_image;
+uniform vec4 color;
 
 void main()
 {
-    frag_color = vec4(in_color.xyz, in_color.a*texture(image, tex_coord).r);
+    frag_color = vec4(color.xyz, color.a * texture(font_image, tex_coord).r);
 }

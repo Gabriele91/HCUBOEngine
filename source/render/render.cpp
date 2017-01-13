@@ -1182,6 +1182,25 @@ namespace hcube
 			}
 		}
 
+		static bool type_component_is_integer(attribute_strip_type type)
+		{
+
+			switch (type)
+			{
+			case AST_INT:
+			case AST_INT2:
+			case AST_INT3:
+			case AST_INT4:
+			case AST_UINT: 
+			case AST_UINT2:
+			case AST_UINT3:
+			case AST_UINT4: 
+				return true;
+			default: 
+				return false;
+			}
+		}
+
 		void bind_IL(context_input_layout* layout)
 		{
             if(layout && s_bind_context.m_input_layout != layout)
@@ -1195,12 +1214,23 @@ namespace hcube
                 for (const attribute& data : layout->m_list)
                 {
                     glEnableVertexAttribArray(data.m_attribute);
-                    glVertexAttribPointer(data.m_attribute,
-                        (GLint)data.components(),
-                        type_component(data.m_strip),
-                        GL_FALSE,
-                        (GLuint)layout->m_list.size(),
-                        ((char *)NULL + (data.m_offset)));
+					//types
+					if (type_component_is_integer(data.m_strip))
+						glVertexAttribIPointer(
+							data.m_attribute,
+							(GLint)data.components(),
+							type_component(data.m_strip),
+							(GLuint)layout->m_list.size(),
+							((char *)NULL + (data.m_offset))
+						);
+					else glVertexAttribPointer(
+						data.m_attribute,
+						(GLint)data.components(),
+						type_component(data.m_strip),
+						GL_FALSE,
+						(GLuint)layout->m_list.size(),
+						((char *)NULL + (data.m_offset))
+					);
                 }
                 //save
                 s_bind_context.m_input_layout = layout;

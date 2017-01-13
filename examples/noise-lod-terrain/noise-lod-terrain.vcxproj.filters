@@ -39,6 +39,9 @@
     <ClCompile Include="source\main.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
+    <ClCompile Include="source\component\lod_sphere_tree.cpp">
+      <Filter>File di origine\component</Filter>
+    </ClCompile>
     <ClCompile Include="source\component\lod_terrain.cpp">
       <Filter>File di origine\component</Filter>
     </ClCompile>
@@ -46,6 +49,9 @@
   <ItemGroup>
     <ClInclude Include="include\app_basic.h">
       <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="include\component\lod_sphere_tree.h">
+      <Filter>File di intestazione\component</Filter>
     </ClInclude>
     <ClInclude Include="include\component\lod_terrain.h">
       <Filter>File di intestazione\component</Filter>

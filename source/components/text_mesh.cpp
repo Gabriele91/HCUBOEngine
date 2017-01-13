@@ -75,11 +75,37 @@ namespace hcube
 
 	void text_mesh::draw(rendering_system& rsystem, entity::ptr camera)
 	{
-		render::bind_VBO(m_bpoints);
-		render::bind_IL(m_layout);
-		render::draw_arrays(DRAW_POINTS, (unsigned int)std::min(m_text.size(), m_text_max_size));
-		render::unbind_IL(m_layout);		
-		render::unmap_VBO(m_bpoints);
+		if (m_text.size())
+		{
+			if (context_shader* shader = render::get_bind_shader())
+			{
+				//view
+				vec2 view_size = vec2(render::get_viewport_state().m_viewport.z - render::get_viewport_state().m_viewport.x,
+							 	      render::get_viewport_state().m_viewport.w - render::get_viewport_state().m_viewport.y);
+				//get params
+				vec2 size, origin;
+				//get
+				if (material_ptr material = get_material())
+				{
+					if (auto* param = material->get_parameter_by_name("render_size"))
+						size = param->get_vec2();
+					if (auto* param = material->get_parameter_by_name("render_origin"))
+						origin = param->get_vec2();
+				}
+				//uniform
+				if (context_uniform* render_size = render::get_uniform(shader, std::string("render_size")))
+					render_size->set_value(size / view_size);
+				if (context_uniform* render_origin = render::get_uniform(shader, std::string("render_origin")))
+					render_origin->set_value(
+						((size + origin) * vec2(1.0,-1.0)) / view_size - vec2(1.0f,-1.0f)
+					);
+			}
+			render::bind_VBO(m_bpoints);
+			render::bind_IL(m_layout);
+			render::draw_arrays(DRAW_POINTS, (unsigned int)std::min(m_text.size(), m_text_max_size));
+			render::unbind_IL(m_layout);
+			render::unbind_VBO(m_bpoints);
+		}
 
 	}
 

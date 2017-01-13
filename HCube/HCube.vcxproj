@@ -211,6 +211,7 @@
     <ClInclude Include="..\include\hcube\render\rendering_pass_deferred.h" />
     <ClInclude Include="..\include\hcube\render\rendering_pass_forward.h" />
     <ClInclude Include="..\include\hcube\render\rendering_pass_shadow.h" />
+    <ClInclude Include="..\include\hcube\render\rendering_pass_ui.h" />
     <ClInclude Include="..\include\hcube\render\rendering_system.h" />
     <ClInclude Include="..\include\hcube\render\render_scene.h" />
     <ClInclude Include="..\include\hcube\render\shader.h" />
@@ -222,6 +223,7 @@
     <ClInclude Include="..\include\hcube\resources\texture.h" />
     <ClInclude Include="..\include\hcube\utilities\basic_meshs.h" />
     <ClInclude Include="..\include\hcube\utilities\gameobject.h" />
+    <ClInclude Include="..\include\hcube\utilities\timer.h" />
     <ClInclude Include="..\include\hcube\utilities\utf_convert.h" />
   </ItemGroup>
   <ItemGroup>
@@ -251,6 +253,7 @@
     <ClCompile Include="..\source\render\rendering_pass_deferred.cpp" />
     <ClCompile Include="..\source\render\rendering_pass_forward.cpp" />
     <ClCompile Include="..\source\render\rendering_pass_shadow.cpp" />
+    <ClCompile Include="..\source\render\rendering_pass_ui.cpp" />
     <ClCompile Include="..\source\render\rendering_system.cpp" />
     <ClCompile Include="..\source\render\render_scene.cpp" />
     <ClCompile Include="..\source\render\shader.cpp" />
@@ -260,6 +263,7 @@
     <ClCompile Include="..\source\resources\static_model.cpp" />
     <ClCompile Include="..\source\resources\texture.cpp" />
     <ClCompile Include="..\source\utilities\basic_meshs.cpp" />
+    <ClCompile Include="..\source\utilities\timer.cpp" />
     <ClCompile Include="..\source\utilities\utf_convert.cpp" />
   </ItemGroup>
   <ItemGroup>
