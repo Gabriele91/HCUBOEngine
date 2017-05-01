@@ -8,6 +8,7 @@
 #include <hcube/math/vector_math.h>
 #include <hcube/render/render.h>
 #include <hcube/components/mesh.h>
+#include <hcube/geometries/geometry.h>
 
 namespace hcube
 {
@@ -89,7 +90,7 @@ namespace hcube
 		//define obb
 		obb bounding_box;
 		//compute box
-		bounding_box.build_from_triangles
+		bounding_box= geometry::obb_from_triangles
 		(
 			(const unsigned char*)points,
 			(size_t)m_layout.position_offset(),
@@ -112,7 +113,7 @@ namespace hcube
 		//compute box
 		if (m_layout.m_draw_mode == draw_type::DRAW_TRIANGLES)
 		{
-			bounding_box.build_from_sequenzial_triangles(
+			bounding_box = geometry::obb_from_sequenzial_triangles(
 				(const unsigned char*)points,
 				(size_t)m_layout.position_offset(),
 				(size_t)render::size_IL(m_layout.m_input_layout.get()),
@@ -121,7 +122,7 @@ namespace hcube
 		}
 		else
 		{
-			bounding_box.build_from_points(
+			bounding_box = geometry::obb_from_points(
 				(const unsigned char*)points,
 				(size_t)m_layout.position_offset(),
 				(size_t)render::size_IL(m_layout.m_input_layout.get()),

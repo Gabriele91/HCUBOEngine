@@ -73,6 +73,11 @@ namespace hcube
 			set_obb_has_dirty();
 		}
 
+		virtual const obb& get_base_bounding_box()
+		{
+			return m_bounding_box;
+		}
+
 		virtual material_ptr get_material() const
 		{
 			return m_material;
@@ -102,8 +107,7 @@ namespace hcube
 				if (get_entity())
 				if (auto t_entity = get_entity()->get_component<transform>())
 				{
-					m_global_bounding_box = m_bounding_box;
-					m_global_bounding_box.applay(t_entity->get_matrix());
+					m_global_bounding_box = m_bounding_box * t_entity->get_matrix();
 				}
 
 			}

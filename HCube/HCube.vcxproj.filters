@@ -270,6 +270,12 @@
     <ClInclude Include="..\include\hcube\utilities\timer.h">
       <Filter>File di intestazione\hcube\utilities</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\hcube\geometries\geometry.h">
+      <Filter>File di intestazione\hcube\geometries</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\hcube\geometries\aabb.h">
+      <Filter>File di intestazione\hcube\geometries</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\render\effect.cpp">
@@ -385,6 +391,12 @@
     </ClCompile>
     <ClCompile Include="..\source\utilities\timer.cpp">
       <Filter>File di origine\utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\geometries\geometry.cpp">
+      <Filter>File di origine\geometries</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\geometries\aabb.cpp">
+      <Filter>File di origine\geometries</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

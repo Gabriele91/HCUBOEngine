@@ -62,6 +62,7 @@ namespace hcube
 		/////////////////////////////////////////////////////////////////////////
 		static const char* glsl_default_header;
 		static const char* glsl_header_by_type[ST_N_SHADER];
+		static const char* glsl_shader_names[ST_N_SHADER];
 		static GLenum      glsl_type_from_hcube_type[ST_N_SHADER];
 		/////////////////////////////////////////////////////////////////////////
 		//delete
@@ -181,6 +182,16 @@ namespace hcube
 		"#define cbuffer     layout(std140) uniform     \n"
 		"#define saturate(x) clamp( x, 0.0, 1.0 )       \n"
 		"#define lerp        mix                        \n"
+	};
+
+	const char* context_shader::glsl_shader_names[ST_N_SHADER] =
+	{
+		"VERTEX_SHADER",
+		"FRAGMENT_SHADER",
+		"GEOMETRY_SHADER",
+		"TESS_CONTROL_SHADER",
+		"TESS_EVALUATION_SHADER",
+		"COMPUTE_SHADER"
 	};
 
 	GLenum context_shader::glsl_type_from_hcube_type[ST_N_SHADER] =
@@ -1720,7 +1731,18 @@ namespace hcube
 		std::vector< std::string > get_shader_compiler_errors(context_shader* shader)
 		{
 			std::vector< std::string > output;
-			for (auto& error_log : shader->m_errors) output.push_back(error_log.m_log);
+			//state
+			shader_type last_type = ST_N_SHADER;
+			//push
+			for (auto& error_log : shader->m_errors)
+			{
+				if (last_type != error_log.m_type)
+				{
+					output.push_back(context_shader::glsl_shader_names[error_log.m_type]);
+					last_type = error_log.m_type;
+				}
+				output.push_back(error_log.m_log);
+			}
 			return output;
 		}
 		std::string get_shader_liker_error(context_shader* shader)

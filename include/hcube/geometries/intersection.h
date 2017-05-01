@@ -2,6 +2,7 @@
 #include <hcube/config.h>
 #include <hcube/math/vector_math.h>
 #include <hcube/geometries/obb.h>
+#include <hcube/geometries/aabb.h>
 #include <hcube/geometries/sphere.h>
 #include <hcube/geometries/frustum.h>
 
@@ -18,6 +19,8 @@ namespace hcube
 
 		//frustum vs obb
 		HCUBE_API result check(const frustum& in_frustum, const obb& in_obb);
+		//frustum vs aabb
+		HCUBE_API result check(const frustum& in_frustum, const aabb& in_aabb);
 		//frustum vs sphere
 		HCUBE_API result check(const frustum& in_frustum, const sphere& in_sphere);
 		//frustum vs point
@@ -26,9 +29,11 @@ namespace hcube
 		HCUBE_API result check(const obb& in_obb, const sphere& in_sphere);
 		//obb vs point
 		HCUBE_API result check(const obb& in_obb, const vec3& in_point);
-		//sphere vs sphere
-		HCUBE_API result check(const sphere& in_sphere1, const sphere& in_sphere2);
+		//obb vs obb
+		HCUBE_API result check(const obb& in_obb1, const obb& in_obb2);
 		//sphere vs point
 		HCUBE_API result check(const sphere& in_sphere, const vec3& in_point);
+		//sphere vs sphere
+		HCUBE_API result check(const sphere& in_sphere1, const sphere& in_sphere2);
 	}
 }

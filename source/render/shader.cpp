@@ -489,9 +489,9 @@ namespace hcube
 		//copy output
 		out_vertex		 += all + vertex;
 		out_fragment	 += all + fragment;
-		out_geometry	 += geometry.size()     ? all + geometry     : "";
-		out_tass_control += tass_control.size() ? all + tass_control : "";
-		out_tass_eval    += tass_eval.size()    ? all + tass_eval    : "";
+		out_geometry	 += geometry.size()     || out_geometry.size()     ? all + geometry     : "";
+		out_tass_control += tass_control.size() || out_tass_control.size() ? all + tass_control : "";
+		out_tass_eval    += tass_eval.size()    || out_tass_eval.size()    ? all + tass_eval    : "";
 
 		return true;
 	}

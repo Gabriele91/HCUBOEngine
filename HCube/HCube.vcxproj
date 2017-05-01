@@ -195,7 +195,9 @@
     <ClInclude Include="..\include\hcube\data\property.h" />
     <ClInclude Include="..\include\hcube\data\struct_attribute.h" />
     <ClInclude Include="..\include\hcube\data\variant.h" />
+    <ClInclude Include="..\include\hcube\geometries\aabb.h" />
     <ClInclude Include="..\include\hcube\geometries\frustum.h" />
+    <ClInclude Include="..\include\hcube\geometries\geometry.h" />
     <ClInclude Include="..\include\hcube\geometries\intersection.h" />
     <ClInclude Include="..\include\hcube\geometries\obb.h" />
     <ClInclude Include="..\include\hcube\geometries\sphere.h" />
@@ -244,7 +246,9 @@
     <ClCompile Include="..\source\data\property.cpp" />
     <ClCompile Include="..\source\data\stb_image.cpp" />
     <ClCompile Include="..\source\data\tga.cpp" />
+    <ClCompile Include="..\source\geometries\aabb.cpp" />
     <ClCompile Include="..\source\geometries\frustum.cpp" />
+    <ClCompile Include="..\source\geometries\geometry.cpp" />
     <ClCompile Include="..\source\geometries\intersection.cpp" />
     <ClCompile Include="..\source\geometries\obb.cpp" />
     <ClCompile Include="..\source\render\effect.cpp" />
