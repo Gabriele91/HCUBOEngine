@@ -1,3 +1,8 @@
+#pragma all
+//uniform
+#pragma include "lib/uniform.glsl"
+#pragma include "lib/utilities.glsl"
+//vertex
 #pragma vertex
 /*
 hcube_input
@@ -19,9 +24,6 @@ layout(location = ATT_BINORMAL0) in vec3 bitangents;
 out vec4 vertex_position;
 out vec2 vertex_uvcoord;
 out mat3 vertex_tbn;
-//uniform
-#pragma include "lib/uniform.glsl"
-#pragma include "lib/utilities.glsl"
 
 
 #ifndef USE_VERTEX_SHADER
@@ -61,12 +63,28 @@ void main()
 
 #endif
 
-
+//fragment
 #pragma fragment
+
+#ifndef USE_GEOMETRY_SHADER
+
 //in 
 in vec4 vertex_position;
 in vec2 vertex_uvcoord;
 in mat3 vertex_tbn;
+//alias
+#define frag_position vertex_position
+#define frag_uvcoord vertex_uvcoord
+#define frag_tbn vertex_tbn
+
+#else 
+//in 
+in vec4 frag_position;
+in vec2 frag_uvcoord;
+in mat3 frag_tbn;
+
+#endif
+
 //out
 #pragma include "lib/output_fragment.glsl"
 //uniform
@@ -76,11 +94,11 @@ uniform sampler2D diffuse_map;
 uniform sampler2D normal_map;
 uniform sampler2D specular_map;
 
-vec3 compute_normal()
+vec3 compute_normal(in sampler2D in_normal_map, in vec2 uvcoord)
 {
 	#define INV_X_NORMAL_MAP
     //get normal texture
-	vec3 tex_normal = texture(normal_map, vertex_uvcoord).rgb;
+	vec3 tex_normal = texture(in_normal_map, uvcoord).rgb;
 	//
 #if defined (INV_X_NORMAL_MAP)
 	tex_normal.r = 1.0f-tex_normal.r;
@@ -94,24 +112,23 @@ vec3 compute_normal()
 	//normal image
     vec3 normal = normalize( tex_normal * 2.0f - 1.0f );
     //return
-    return vertex_tbn*normal;
+    return frag_tbn*normal;
 }
-
 
 #ifndef USE_FRAGMENT_SHADER
 
 void main()
 {
 	//color
-	vec4 texture_color = texture(diffuse_map, vertex_uvcoord);
+	vec4 texture_color = texture(diffuse_map, frag_uvcoord);
 	//mask
 #ifndef DISABLE_MASK
 	if (texture_color.a <= mask) discard;
 #endif
 	//specular
-	float specular = texture(specular_map, vertex_uvcoord).r;
+	float specular = texture(specular_map, frag_uvcoord).r;
 	//outputs
-	output_fragment(vertex_position, compute_normal(), (texture_color*color), specular);
+	output_fragment(frag_position, compute_normal(normal_map,frag_uvcoord), (texture_color*color), specular);
 }
 
 #else 
@@ -121,16 +138,16 @@ void fragment_shader(inout vec4 position, inout vec3 normal, inout vec4 color, i
 void main()
 {		
 	//color
-	vec4 texture_color = texture(diffuse_map, vertex_uvcoord);
+	vec4 texture_color = texture(diffuse_map, frag_uvcoord);
 	//mask
 #ifndef DISABLE_MASK
 	if (texture_color.a <= mask) discard;
 #endif
 	//values
-	vec4  v_position = vertex_position;
-	vec3  v_normal   = compute_normal();
+	vec4  v_position = frag_position;
+	vec3  v_normal   = compute_normal(normal_map,frag_uvcoord);
 	vec4  v_color    = texture_color*color;
-	float v_specular = texture(specular_map, vertex_uvcoord).r;
+	float v_specular = texture(specular_map, frag_uvcoord).r;
 	//shader
 	fragment_shader(v_position, v_normal, v_color, v_specular);
 	//outputs
