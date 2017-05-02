@@ -21,6 +21,8 @@
 //mesh types
 #include <hcube/components/mesh.h>
 #include <hcube/components/text_mesh.h>
+//utilities
+#include <hcube/utilities/timer.h>
 
 namespace hcube
 {
@@ -86,6 +88,8 @@ namespace hcube
 		//aspect
 		float m_fov{ 60.0f };
 		float m_aspect{ 0.0f };
+		//fps counter
+		fps_counter m_fps_counter;
 
 	};
 

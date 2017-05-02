@@ -1,3 +1,4 @@
+#include <windows.h>
 #include <iostream>
 #include <component/lod_terrain.h>
 #include <hcube/geometries/intersection.h>
@@ -26,36 +27,11 @@ namespace hcube
 
 	//node methos
 	#pragma region node
-	void lod_terrain::node::set(const lod_terrain::node::build_info& info)
+	void lod_terrain::node::set(const BOX_TYPE& box, const lod_terrain::node::build_info& info)
 	{
-#if 0
-		std::cout << "--------------------------------------------------------------\n";
-		std::cout << "start: " << info.m_start.x << ", " << info.m_start.y << "\n";
-		std::cout << "end: " << info.m_end.x << ", " << info.m_end.y << "\n";
-#endif
 		//save
 		m_info = info;
-		//ref
-		const vec2& _start  = info.m_start;
-		const vec2& _end    = info.m_end;
-		//compute box size
-		vec3
-		box_size(_end.x - _start.x, 1.0, _end.y - _start.y);
-		box_size /= 2.0f;
-		//compute box position
-		vec3
-		box_pos((_start.x + _end.x)*0.5,
-				0.0,
-				(_start.y + _end.y)*0.5);
-		box_pos -= vec3(0.5, 0.0, 0.5);
-		//set OBB
-		m_box.build_from_attributes
-		(
-			mat3(1), //rotation
-			box_pos, //position
-			box_size //extesion
-		);
-		//////////////////////////////////////////////////////////////////////////////////////////////////
+		m_box  = box;
 	}
 	#pragma endregion
 
@@ -407,7 +383,7 @@ namespace hcube
 			vertices[y* m_detail_vertexs.x + x].m_position.y = float(y);
 		}
 		//set obb
-		set_bounding_box(obb(mat3(1), vec3(0, 0, 0), vec3(0.5, 0.5, 0.5)));
+		set_bounding_box(obb(mat3(1), vec3(0, 0, 0), vec3(0.5, 1.0, 0.5)));
 		//save sizes
 		m_vb_size = vertices.size();
 		//alloc vertex buffer
@@ -421,7 +397,7 @@ namespace hcube
 		//errors
 		HCUBE_RENDER_PRINT_ERRORS
 	}
-
+	
 	void lod_terrain::build_tree()
 	{
 		//alloc all and link
@@ -429,53 +405,9 @@ namespace hcube
 		link_all_childs();
 		link_all_nears();
 		level_to_all_nodes();
-		//compute root 
-		get_node(0, 0, 0)->set({ vec2(0.0,0.0), vec2(1.0,1.0), m_detail });
-		//build childs
-		build_tree(get_node(0, 0, 0), 1);
+		compute_all_obb();
 	}
-
-	void lod_terrain::build_tree
-	(
-		link<node>& parent,
-		unsigned int  level
-	)
-	{
-		//safe: 
-		if (level == m_levels) return;
-		//compute local size
-		auto& p_info  = parent->m_info;
-		vec2 p_g_size = p_info.m_end - p_info.m_start;
-		vec2 l_size   = p_g_size / 2.0f;
-		//coord
-		{
-			vec2 start = p_info.m_start;
-			vec2 end = start + l_size;
-			(*parent->m_chils[NODE_CHILD_TOP_LEFT])->set({ start, end, m_detail });
-		}
-		{
-			vec2 start = p_info.m_start + vec2(p_g_size.x / 2.0f, 0);
-			vec2 end = start + l_size;
-			(*parent->m_chils[NODE_CHILD_TOP_RIGHT])->set({ start, end, m_detail });
-		}
-		{
-			vec2 start = p_info.m_start + vec2(0, p_g_size.y / 2.0f);
-			vec2 end = start + l_size;
-			(*parent->m_chils[NODE_CHILD_BOTTOM_LEFT])->set({ start, end, m_detail });
-		}
-		{
-			vec2 start = p_info.m_start + p_g_size / 2.0f;
-			vec2 end = start + l_size;
-			(*parent->m_chils[NODE_CHILD_BOTTOM_RIGHT])->set({ start, end, m_detail });
-		}
-		//next levels
-		++level;
-		//call for all childs
-		if (level < m_levels)
-		for (size_t i = 0; i != NODE_CHILD_MAX; ++i)
-			build_tree((*parent->m_chils[i]), level);
-	}
-
+	
 	//alloc nodes
 	void lod_terrain::alloc_all()
 	{
@@ -556,8 +488,69 @@ namespace hcube
 			}
 		}
 	}
+	
+	void lod_terrain::compute_all_obb()
+	{
+		//base obb
+		vec3 position  = get_base_bounding_box().get_position();
+		vec3 extension = get_base_bounding_box().get_extension();
+		vec3 b_start   = position - extension;
+		vec3 b_end     = position + extension;
+		vec3 b_size	   = extension * 2.0f;
+		//compute root 
+		get_node(0, 0, 0)->set(
+		{
+#ifdef BOX_AABB
+			  b_start
+			, b_end
+#else
+			  mat3(1)
+			, position
+			, extension
+#endif
+		},
+		{
+			  vec2(0,0)
+			, vec2(1,1)
+			, m_detail 
+		});
+		//all
+		for (unsigned int level = 1; level < m_nodes.size(); ++level)
+		{
+			//len
+			unsigned int level_w_size = std::pow(2, level);
+			//extension factor
+			vec2 factor(1.0 / level_w_size, 1.0 / level_w_size);
+			vec3 size_factor = b_size / (float)level_w_size;
+			//for all
+			for (unsigned int y = 0; y != level_w_size; ++y)
+			for (unsigned int x = 0; x != level_w_size; ++x)
+			{
+				vec3 start = size_factor*vec3(x,              0, y  ) + b_start;
+				vec3 end   = size_factor*vec3(x+1, level_w_size, y+1) + b_start;
+				vec3 pos   = (start + end) / 2.0f;
+				vec3 ext   = abs(end - pos);
 
-
+				link<node>& thiz = get_node(level, x, y);
+				thiz->set(
+				{
+#ifdef BOX_AABB
+					  start
+					, end
+#else
+					  mat3(1)
+					, pos
+					, ext
+#endif
+				},
+				{
+					  factor*vec2(x, y)
+					, factor*vec2(x + 1, y + 1)
+					, m_detail
+				});
+			}
+		}
+	}
 	#pragma endregion
 
 	//terrain
@@ -617,13 +610,13 @@ namespace hcube
 		float fov = std::atan(1.0 / c_camera->get_projection()[1][1]) * 2.0f;
 		float h   = c_camera->get_viewport_size().x;
 		float camera_a = std::tan(fov / h);
-		float camera_e = c_camera->get_viewport_size().x;
+		float camera_e = c_camera->get_viewport_size().x; 
 		//draw
 		compute_objects_to_draw_in_all_levels
 		(
 			camera_a,
 			camera_e,
-			t_camera->get_global_position(), 
+			t_camera->get_global_position(),
 			c_camera->get_frustum(),
 			m4_model
 		);
@@ -632,45 +625,113 @@ namespace hcube
 		{
 			if (thiz_node.m_state == NODE_DRAW)
 			{
-				//uv range in terrain
-				vec2  uv_area = thiz_node.m_info.m_end - thiz_node.m_info.m_start;
-				vec2  uv_step = uv_area / (vec2(m_detail_vertexs) - vec2(1, 1));
-				if (material_ptr mat = get_material())
+				#if 0
 				{
-					if (context_shader* curr_shader = render::get_bind_shader())
+					//debug
+					debug = !(GetAsyncKeyState('M') & 0x8000);
+					//
+					auto vertices = thiz_node.m_box.get_bounding_box(); 
+					std::vector< unsigned int > indices
 					{
-						if (auto* u_offset = render::get_uniform(curr_shader, std::string("uv_height_offset")))
-							u_offset->set_value(thiz_node.m_info.m_start);
-						if (auto* u_step = render::get_uniform(curr_shader, std::string("uv_height_step")))
-							u_step->set_value(uv_step);
-						
-					}
-				}				 
-				//////////////////////////////////////////////////////////////////////////////////////////////////////////////
-				render::bind_VBO(m_vbuffer);
-				render::bind_IL(m_layout);
-				//draw center
-				render::bind_IBO(m_ibuffer_middle);
-				render::draw_elements(DRAW_TRIANGLES, m_ib_middle_size);
-				render::unbind_IBO(m_ibuffer_middle);
-				//edges
-				for(int edge = 0; edge < NODE_EDGES; ++edge)
+						// front
+						0, 1, 2,
+						2, 3, 0,
+						// top
+						1, 5, 6,
+						6, 2, 1,
+						// back
+						7, 6, 5,
+						5, 4, 7,
+						// bottom
+						4, 0, 3,
+						3, 7, 4,
+						// left
+						4, 5, 1,
+						1, 0, 4,
+						// right
+						3, 2, 6,
+						6, 7, 3
+					};
+					//vertex data description GPU
+					auto* layout =
+					render::create_IL
+					({
+						sizeof(vec3),
+						{
+							attribute{ ATT_POSITIONT, AST_FLOAT3, 0 },
+						}
+					});
+
+					auto* vbo = render::create_stream_VBO
+					(
+						(unsigned char*)vertices.data(), 
+						sizeof(vec3), 
+						vertices.size()
+					);
+					auto* ibo = render::create_stream_IBO
+					(
+						indices.data(),
+						indices.size()
+					);
+
+					render::bind_VBO(vbo);
+					render::bind_IL(layout);
+					render::bind_IBO(ibo);
+
+					render::draw_elements(DRAW_TRIANGLES, indices.size());
+
+					render::unbind_IBO(ibo);
+					render::unbind_IL(layout);
+					render::unbind_VBO(vbo);
+
+					render::delete_IBO(ibo);
+					render::delete_VBO(vbo);
+					render::delete_IL(layout);
+				}
+				#else
 				{
-					int i = !thiz_node.is_draw_node_of_edge((node_edges)edge);
-					render::bind_IBO(m_ibuffer_edges[edge][i]);
-					render::draw_elements(DRAW_TRIANGLES, m_ib_edge_size[edge][i]);
-					render::unbind_IBO(m_ibuffer_edges[edge][i]);
-				}				
-				//unbind
-				render::unbind_IL(m_layout);
-				render::unbind_VBO(m_vbuffer);
-				HCUBE_RENDER_PRINT_ERRORS
-				//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+					//uv range in terrain
+					const vec2 offset_model(-0.5, -0.5);
+					vec2  uv_area = thiz_node.m_info.m_end - thiz_node.m_info.m_start;
+					vec2  uv_step = uv_area / (vec2(m_detail_vertexs) - vec2(1, 1));
+					if (material_ptr mat = get_material())
+					{
+						if (context_shader* curr_shader = render::get_bind_shader())
+						{
+							if (auto* u_offset = render::get_uniform(curr_shader, std::string("uv_height_offset")))
+								u_offset->set_value(thiz_node.m_info.m_start);
+							if (auto* u_offset_model = render::get_uniform(curr_shader, std::string("offset_model")))
+								u_offset_model->set_value(offset_model);
+							if (auto* u_step = render::get_uniform(curr_shader, std::string("uv_height_step")))
+								u_step->set_value(uv_step);
+
+						}
+					}
+					//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+					render::bind_VBO(m_vbuffer);
+					render::bind_IL(m_layout);
+					//draw center
+					render::bind_IBO(m_ibuffer_middle);
+					render::draw_elements(DRAW_TRIANGLES, m_ib_middle_size);
+					render::unbind_IBO(m_ibuffer_middle);
+					//edges
+					for (int edge = 0; edge < NODE_EDGES; ++edge)
+					{
+						int i = !thiz_node.is_draw_node_of_edge((node_edges)edge);
+						render::bind_IBO(m_ibuffer_edges[edge][i]);
+						render::draw_elements(DRAW_TRIANGLES, m_ib_edge_size[edge][i]);
+						render::unbind_IBO(m_ibuffer_edges[edge][i]);
+					}
+					//unbind
+					render::unbind_IL(m_layout);
+					render::unbind_VBO(m_vbuffer);
+					//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+				}
+				#endif
 			}
 		}
 	}
-
-
+	
 	void lod_terrain::compute_objects_to_draw_in_all_levels
 	(
 		const float camera_a,
@@ -710,6 +771,7 @@ namespace hcube
 			ln_node = ln_next)
 		{
 			//get next (safe)
+			int size = m_child_to_draw_queue.size();
 			ln_next = ln_node->get_next();
 			//test a node (n.b. this method can break the queue)
 			compute_object_to_draw_of_a_node
@@ -721,6 +783,11 @@ namespace hcube
 				frustum,
 				model_view
 			);
+			//update next
+			if (size < m_child_to_draw_queue.size())
+			{
+				ln_next = ln_node->get_next();
+			}
 		}
 		//clean the broken queue
 		m_child_to_draw_queue.clear();
@@ -736,10 +803,10 @@ namespace hcube
 		const mat4& model
 	)
 	{
-		//copy box
-		obb this_box = ln_node->m_box;
+		//no draw
+		ln_node->m_state = NODE_NOT_DRAW;
 		//compute box
-		this_box.applay(model);
+		auto this_box = ln_node->m_box * model;
 		//event, intersection
 		auto intersection_res = intersection::check(frustum, this_box);
 		//is inside?
@@ -794,13 +861,24 @@ namespace hcube
 			}
 			else
 			{
+				bool no_childs = true;
 				//draw childs
 				ln_node->m_state = NODE_DRAW_CHILD;
 				//edges
 				for (int child = 0; child < NODE_CHILD_MAX; ++child)
 				{
 					if (ln_node->m_chils[child])
+					{
 						m_child_to_draw_queue.push(ln_node->m_chils[child]);
+						no_childs = false;
+					}
+				}
+				//no childs?
+				if (no_childs)
+				{
+					//draw this
+					ln_node->m_state = NODE_DRAW;
+					m_draw_queue.push(ln_node);
 				}
 				//return true
 				return true;

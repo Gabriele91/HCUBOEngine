@@ -1,6 +1,7 @@
 #pragma once
 
 #include <hcube/render/render.h>
+#include <hcube/geometries/aabb.h>
 #include <hcube/components/renderable.h>
 #include <component/link_queue.h>
 
@@ -52,6 +53,13 @@ namespace hcube
 			NODE_DRAW,
 			NODE_DRAW_CHILD
 		};
+		#if 1
+		#define BOX_OBB
+		#define BOX_TYPE obb
+		#else 
+		#define BOX_AABB
+		#define BOX_TYPE aabb
+		#endif
 
 		struct node : public smart_pointers< node >
 		{
@@ -65,10 +73,10 @@ namespace hcube
 			node_child    m_in_parent_is{ NODE_CHILD_MAX };
 			node_state    m_state       { NODE_NOT_DRAW };
 			build_info    m_info;
-			obb		      m_box;
+			BOX_TYPE	  m_box;
 			unsigned int  m_level{ 0 };
 			//info
-			void set(const build_info& build_info);
+			void set(const BOX_TYPE& box, const build_info& build_info);
 			//parente edge
 			bool is_draw_node_of_edge(node_edges edge) const
 			{
@@ -115,11 +123,6 @@ namespace hcube
 
 		//////////////////////////////////////////////////////////////////////////////////////
 		void build_tree();
-		void build_tree
-		(
-			link<node>& parent,
-			unsigned int level=0
-		);
 		//alloc nodes
 		void alloc_all();
 
@@ -132,6 +135,8 @@ namespace hcube
 		void link_all_childs();
 
 		void link_all_nears();
+		
+		void compute_all_obb();
 		//////////////////////////////////////////////////////////////////////////////////////
 		void compute_objects_to_draw_in_all_levels
 		(

@@ -12,6 +12,7 @@
 #include <hcube/geometries/frustum.h>
 #include <hcube/render/rendering_pass_deferred.h>
 #include <hcube/render/rendering_pass_forward.h>
+#include <hcube/render/rendering_pass_ui.h>
 #include <hcube/render/rendering_pass_shadow.h>
 #include <hcube/components/transform.h>
 #include <hcube/components/renderable.h>
@@ -23,7 +24,6 @@
 #include <hcube/data/parser/properties_parser.h>
 #include <app_basic.h>
 //component
-#include <component/lod_sphere_tree.h>
 #include <component/lod_terrain.h>
 
 
@@ -43,35 +43,19 @@ namespace hcube
 		{ 1024,1024 },
 		{ 2048,2048 },
 	};
-
+	static float move_vel = 5.0;
 
 	void app_basic::key_event(application& app, int key, int scancode, int action, int mods)
 	{
 		//draw move
-		float move_vel = 5.0f;
+		//float move_vel = 5.0f;
         auto l_terrain = (lod_terrain*)&(*m_terrain->get_component<renderable>());
         
 		if (key == GLFW_KEY_ESCAPE)
 		{
 			m_loop = false;
 			return;
-        }/*
-        else if (key == GLFW_KEY_0)
-        {
-            l_terrain->set_draw_level(0);
         }
-        else if (key == GLFW_KEY_1)
-        {
-            l_terrain->set_draw_level(1);
-        }
-        else if (key == GLFW_KEY_2)
-        {
-            l_terrain->set_draw_level(2);
-        }
-        else if (key == GLFW_KEY_3)
-        {
-            l_terrain->set_draw_level(3);
-        }*/
 		else if (key == GLFW_KEY_O)
 		{
 			rendering_system*	r_system = m_systems.get_system<rendering_system>();
@@ -133,6 +117,10 @@ namespace hcube
 
 	void app_basic::mouse_button_event(application& app, int button, int action, int mods)
 	{
+		if (button == GLFW_MOUSE_BUTTON_1 && action == GLFW_PRESS)
+			move_vel = 20.0f;
+		else
+			move_vel = 5.0f;
 	}
 
 	void app_basic::scroll_event(application& application, const dvec2& scroll_offset)
@@ -178,7 +166,7 @@ namespace hcube
 		app.set_mouse_position((dvec2)app.get_window_size()*0.5);
 		//commond assets
 		m_resources.add_resources_file("common.rs");
-		m_resources.add_resources_file("planet_assets/assets.rs");
+		m_resources.add_resources_file("terrain_assets/assets.rs");
 		//get info about window
 		m_window_mode_info = window_info
 		{
@@ -191,13 +179,15 @@ namespace hcube
 		m_rendering->add_rendering_pass(rendering_pass_shadow::snew(m_resources));
 		//add default render
 		m_rendering->add_rendering_pass(rendering_pass_deferred::snew(app.get_window_size(), m_resources));
-        //translucent
-        m_rendering->add_rendering_pass(rendering_pass_forward::snew(RQ_TRANSLUCENT));
+		//translucent
+		m_rendering->add_rendering_pass(rendering_pass_forward::snew(RQ_TRANSLUCENT));
+		//ui
+		m_rendering->add_rendering_pass(rendering_pass_ui::snew());
 		//add into system
 		m_systems.add_system(m_rendering);
 		//ambient color
 		m_rendering->set_clear_color(vec4{ 0.0, 0.0, 0.0, 0.0 });
-		m_rendering->set_ambient_color(vec4{ 1.0, 1.0, 1.0, 1.0 });
+		m_rendering->set_ambient_color(vec4{ 0.5, 0.5, 0.5, 0.5 });
 		//scene
 		{
 			//camera
@@ -209,20 +199,61 @@ namespace hcube
 			c_camera->set_viewport(ivec4{ 0, 0, size.x, size.y });
 			c_camera->set_perspective( radians( m_fov ), m_aspect, 0.1, 10000.0);
 			t_camera->look_at(
-				vec3{ 0.0f, 0.0f, -100.0f },
-				vec3{ 0.0f, 0.0f, 0.0f },
+				vec3{ 0.0f, 200.0f, -100.0f },
+				vec3{ 0.0f, -100.0f, 0.0f },
 				vec3{ 0.0f, 1.0f, 0.0f }
 			);		
 			//set camera
 			m_systems.add_entity(m_camera);
-
-			//test terrain
-            m_terrain = gameobject::node_new(lod_terrain::snew(ivec2(64, 64), 5));
-			m_terrain->get_component<renderable>()->set_material(m_resources.get_material("earth_terrain"));
-            m_terrain->get_component<transform>()->position({0,-100,0});
-			m_terrain->get_component<transform>()->scale({ 6000, 600 , 6000 });
-            
-            m_systems.add_entity(m_terrain);
+			//gui
+			{
+				//ui element
+				auto r_text = text_mesh::snew();
+				auto e_text = gameobject::node_new(r_text);
+				r_text->set_material(m_resources.get_material("text"));
+				e_text->set_name("output");
+				m_systems.add_entity(e_text);
+			}
+			//scene
+			{
+				
+				//light
+				{
+					auto e_light = gameobject::light_new();
+					auto l_light = e_light->get_component<light>();
+					auto t_light = e_light->get_component<transform>();
+					l_light->set_color({ 1.0f, 1.0f, 1.0f }, { 1.0f, 1.0f, 1.0f });
+					l_light->set_radius(
+						100.0,
+						300.0
+					);
+					l_light->disable_shadow();
+					t_light->position({ 0, 200.0f, 0 });
+					e_light->set_name("light");
+					m_systems.add_entity(e_light);
+				}
+				//light
+				{
+					auto e_light = gameobject::light_new();
+					auto l_light = e_light->get_component<light>();
+					auto t_light = e_light->get_component<transform>();
+					l_light->set_color({ 1.0f, 1.0f, 1.0f }, { 1.0f, 1.0f, 1.0f });
+					l_light->set_radius(
+						400.0,
+						500.0
+					);
+					l_light->disable_shadow();
+					t_light->position({ 1500.0f, 0.0f, 0 });
+					e_light->set_name("light");
+					m_systems.add_entity(e_light);
+				}
+				//test terrain
+				m_terrain = gameobject::node_new(lod_terrain::snew(ivec2(64, 64), 5));
+				m_terrain->get_component<renderable>()->set_material(m_resources.get_material("terrain"));
+				m_terrain->get_component<transform>()->position({ 0,-150,0 });
+				m_terrain->get_component<transform>()->scale({ 6000, 600 , 6000 });
+				m_systems.add_entity(m_terrain);
+			}
 		}
 		
 	}
@@ -233,7 +264,19 @@ namespace hcube
 		m_terrain->get_component<transform>()->turn(quat(vec3(0,constants::pi<float>() / 180. * delta_time,0)));
 #endif
 		//////////////////////////////////////////////////////////
+		text_mesh::ptr t_text = m_systems.get_entities_by_name("output")[0]->get_component<text_mesh>();
+		t_text->set_text("frames: " + std::to_string(int(m_fps_counter.count_frame())));
 		//////////////////////////////////////////////////////////
+		static float f = 0; 
+		const  float t = 0.25;
+		//////////////////////////////////////////////////////////
+		      f += delta_time;
+		float c = cos(f * constants::pi<float>() * t);
+		float s = sin(f * constants::pi<float>() * t);
+		const vec2 dist(300, 300);
+		//////////////////////////////////////////////////////////
+		transform_ptr t_light = m_systems.get_entities_by_name("light")[0]->get_component<transform>();
+		t_light->position(vec3(dist.x * c, t_light->get_position().y, dist.y * s));
 		//draw
 		m_systems.update(delta_time);
 		//////////////////////////////////////////////////////////
