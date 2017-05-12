@@ -3,6 +3,7 @@
 #include <vector>
 #include <cstdio>
 #include <iostream>
+#include <cctype>
 #include <hcube/math/vector_math.h>
 #include <hcube/core/filesystem.h>
 #include <hcube/render/render.h>
@@ -40,7 +41,7 @@ namespace hcube
     static bool generic_parse_error_file_id(const char* in, const char** cout, int& out)
     {
         //jump all
-        while(*in && (!::isnumber(*in))) ++in;
+        while(*in && (!std::isdigit(*in))) ++in;
         //parse
         out = (int)std::strtod(in, (char**)cout);
         return in != (*cout);
