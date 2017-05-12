@@ -10,7 +10,28 @@
 #include <unordered_map>
 #include <hcube/render/render.h>
 #include <hcube/render/OpenGL4.h>
+//RIGHT HEAND
 #define DIRECTX_MODE
+//--------------------------------------------------
+//MacOS only 4.1 GL
+// shader type
+#ifndef GL_COMPUTE_SHADER
+#define GL_COMPUTE_SHADER   0x91B9
+#endif
+// texture ops
+#ifndef GL_TEXTURE_COMPONENTS
+#define GL_TEXTURE_COMPONENTS 0x1003
+#endif
+// memory ops
+#ifndef GL_BUFFER_UPDATE_BARRIER_BIT
+#define GL_BUFFER_UPDATE_BARRIER_BIT    0x00000200
+#define glMemoryBarrier(__args__)
+#endif
+// undef GL_R
+#ifndef GL_R
+#define GL_R GL_RED
+#endif
+//--------------------------------------------------
 
 namespace hcube
 {
@@ -205,7 +226,7 @@ namespace hcube
 	};
 
 	//util_define
-	#define uniform_id(shader) ((GLint)(m_data))
+	#define uniform_id(shader) (*((GLint*)(m_data)))
 	//uniform
 	void context_uniform::set_value(context_texture* in_texture)
 	{
@@ -1048,6 +1069,7 @@ namespace hcube
 				//map
 				return (unsigned char*)glMapBuffer(GL_TEXTURE_BUFFER, get_mapping_type_map_buff(type));
 			}
+            return nullptr;
 		}
 
 		void unmap_TBO(context_texture* tbo)
@@ -1794,7 +1816,7 @@ namespace hcube
 		{
 			return s_bind_context.m_shader;
 		}
-		context_uniform* get_uniform(context_shader* shader, std::string& uname)
+		context_uniform* get_uniform(context_shader* shader,const std::string& uname)
 		{
 			auto uit = shader->m_uniform_map.find(uname);
 			//if find

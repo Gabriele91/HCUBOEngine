@@ -799,7 +799,7 @@ namespace hcube
 		HCUBE_RENDER_API void delete_shader(context_shader*&);
 
 		HCUBE_RENDER_API context_shader*  get_bind_shader();
-		HCUBE_RENDER_API context_uniform* get_uniform(context_shader*, std::string& uname);
+		HCUBE_RENDER_API context_uniform* get_uniform(context_shader*,const std::string& uname);
 
 		//target
 		HCUBE_RENDER_API context_render_target* create_render_target(const std::vector< target_field >& textures);

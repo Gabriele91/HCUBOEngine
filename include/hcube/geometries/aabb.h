@@ -46,7 +46,7 @@ namespace hcube
 		*/
 		aabb& operator*= (const mat4& model);
 
-		vec3 aabb::closest_point(const vec3& point) const;
+		vec3 closest_point(const vec3& point) const;
 
 	protected:
 

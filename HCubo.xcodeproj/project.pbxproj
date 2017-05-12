@@ -22,9 +22,13 @@
 		E03996C61E0810BA00CC98DA /* utf_convert.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E03996AE1E080EDB00CC98DA /* utf_convert.cpp */; };
 		E03996C71E0810DE00CC98DA /* property.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E03996AC1E080EBB00CC98DA /* property.cpp */; };
 		E03996C91E0811FB00CC98DA /* utf_convert.h in Headers */ = {isa = PBXBuildFile; fileRef = E03996C81E0811FB00CC98DA /* utf_convert.h */; };
+		E04A91261EB9CF0A0021FC11 /* aabb.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E04A91241EB9CF0A0021FC11 /* aabb.cpp */; };
+		E04A91271EB9CF0A0021FC11 /* geometry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E04A91251EB9CF0A0021FC11 /* geometry.cpp */; };
 		E05F87BB1DD08F4700985EFB /* basic_meshs.h in Headers */ = {isa = PBXBuildFile; fileRef = E05F87B91DD08F4700985EFB /* basic_meshs.h */; };
 		E05F87BC1DD08F4700985EFB /* gameobject.h in Headers */ = {isa = PBXBuildFile; fileRef = E05F87BA1DD08F4700985EFB /* gameobject.h */; };
 		E05F87C21DD098F600985EFB /* component_register.h in Headers */ = {isa = PBXBuildFile; fileRef = E05F87C11DD098F600985EFB /* component_register.h */; };
+		E06AABB41EC5F16800919953 /* geometry.h in Headers */ = {isa = PBXBuildFile; fileRef = E06AABB21EC5F16800919953 /* geometry.h */; };
+		E06AABB51EC5F16800919953 /* aabb.h in Headers */ = {isa = PBXBuildFile; fileRef = E06AABB31EC5F16800919953 /* aabb.h */; };
 		E0B0F3761DD1005400E96215 /* camera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E0B0F34C1DD1005400E96215 /* camera.cpp */; };
 		E0B0F3771DD1005400E96215 /* camera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E0B0F34C1DD1005400E96215 /* camera.cpp */; };
 		E0B0F3781DD1005400E96215 /* light.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E0B0F34D1DD1005400E96215 /* light.cpp */; };
@@ -121,9 +125,13 @@
 		E03996BA1E080FD800CC98DA /* json.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = json.h; sourceTree = "<group>"; };
 		E03996C41E080FFF00CC98DA /* property.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = property.h; sourceTree = "<group>"; };
 		E03996C81E0811FB00CC98DA /* utf_convert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = utf_convert.h; sourceTree = "<group>"; };
+		E04A91241EB9CF0A0021FC11 /* aabb.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = aabb.cpp; sourceTree = "<group>"; };
+		E04A91251EB9CF0A0021FC11 /* geometry.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = geometry.cpp; sourceTree = "<group>"; };
 		E05F87B91DD08F4700985EFB /* basic_meshs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = basic_meshs.h; sourceTree = "<group>"; };
 		E05F87BA1DD08F4700985EFB /* gameobject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gameobject.h; sourceTree = "<group>"; };
 		E05F87C11DD098F600985EFB /* component_register.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = component_register.h; sourceTree = "<group>"; };
+		E06AABB21EC5F16800919953 /* geometry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = geometry.h; sourceTree = "<group>"; };
+		E06AABB31EC5F16800919953 /* aabb.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = aabb.h; sourceTree = "<group>"; };
 		E0B0F34C1DD1005400E96215 /* camera.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = camera.cpp; sourceTree = "<group>"; };
 		E0B0F34D1DD1005400E96215 /* light.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = light.cpp; sourceTree = "<group>"; };
 		E0B0F34E1DD1005400E96215 /* mesh.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mesh.cpp; sourceTree = "<group>"; };
@@ -371,6 +379,8 @@
 		E0B0F3601DD1005400E96215 /* geometries */ = {
 			isa = PBXGroup;
 			children = (
+				E04A91241EB9CF0A0021FC11 /* aabb.cpp */,
+				E04A91251EB9CF0A0021FC11 /* geometry.cpp */,
 				E0B0F3611DD1005400E96215 /* frustum.cpp */,
 				E0B0F3621DD1005400E96215 /* intersection.cpp */,
 				E0B0F3631DD1005400E96215 /* obb.cpp */,
@@ -466,6 +476,8 @@
 		E0B8C93D1D9D40E500754DEA /* geometries */ = {
 			isa = PBXGroup;
 			children = (
+				E06AABB21EC5F16800919953 /* geometry.h */,
+				E06AABB31EC5F16800919953 /* aabb.h */,
 				E0B8C93E1D9D40E500754DEA /* frustum.h */,
 				E0B8C93F1D9D40E500754DEA /* intersection.h */,
 				E0B8C9401D9D40E500754DEA /* obb.h */,
@@ -529,6 +541,8 @@
 			files = (
 				E03996BD1E080FD800CC98DA /* variant_dump.h in Headers */,
 				E05F87BB1DD08F4700985EFB /* basic_meshs.h in Headers */,
+				E06AABB51EC5F16800919953 /* aabb.h in Headers */,
+				E06AABB41EC5F16800919953 /* geometry.h in Headers */,
 				E03996BF1E080FD800CC98DA /* material_parser.h in Headers */,
 				E05F87C21DD098F600985EFB /* component_register.h in Headers */,
 				E03996C21E080FD800CC98DA /* variant_parser.h in Headers */,
@@ -640,6 +654,7 @@
 				E0B0F3B81DD1005400E96215 /* static_model.cpp in Sources */,
 				E0B0F38A1DD1005400E96215 /* native_dialog.cpp in Sources */,
 				E0B0F3761DD1005400E96215 /* camera.cpp in Sources */,
+				E04A91261EB9CF0A0021FC11 /* aabb.cpp in Sources */,
 				E0B0F3801DD1005400E96215 /* application.cpp in Sources */,
 				E0B0F38E1DD1005400E96215 /* resources_manager.cpp in Sources */,
 				E0B0F3AA1DD1005400E96215 /* rendering_pass_forward.cpp in Sources */,
@@ -659,6 +674,7 @@
 				E0B0F3AC1DD1005400E96215 /* rendering_pass_shadow.cpp in Sources */,
 				E0B0F3841DD1005400E96215 /* component_register.cpp in Sources */,
 				E03996AD1E080EBB00CC98DA /* property.cpp in Sources */,
+				E04A91271EB9CF0A0021FC11 /* geometry.cpp in Sources */,
 				E0B0F39E1DD1005400E96215 /* obb.cpp in Sources */,
 				E0B0F3B21DD1005400E96215 /* shadow_buffer.cpp in Sources */,
 				E0B0F3861DD1005400E96215 /* entity.cpp in Sources */,
