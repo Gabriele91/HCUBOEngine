@@ -139,18 +139,18 @@ sub_effect
 					
 					
 					//define function
-					void vertex_shader(out vertex_output output)
+					void vertex_shader(out vertex_output vtx_output)
 					{
 						//compute uv
-						output.m_uvmap = uvcoord;
+						vtx_output.m_uvmap = uvcoord;
 						//compute vertex in model space
-						output.m_world_position = transform.m_model * vec4(vertex, 1.0);
+						vtx_output.m_world_position = transform.m_model * vec4(vertex, 1.0);
 						//compute vertex in projection space
-						output.m_position = camera.m_projection * camera.m_view * output.m_world_position;
+						vtx_output.m_position = camera.m_projection * camera.m_view * vtx_output.m_world_position;
 						//compute tbn 
-						output.m_tbn = compute_tbn(transpose(inverse(mat3(transform.m_model))), normal, tangent, bitangents);
+						vtx_output.m_tbn = compute_tbn(transpose(inverse(mat3(transform.m_model))), normal, tangent, bitangents);
 						//compute compute_planet_ground
-						compute_planet_ground(camera.m_position, output.m_world_position.xyz, normalize(sun_pos));
+						compute_planet_ground(camera.m_position, vtx_output.m_world_position.xyz, normalize(sun_pos));
 					}    
 				
 				#pragma fragment

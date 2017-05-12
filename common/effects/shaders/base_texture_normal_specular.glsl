@@ -47,18 +47,18 @@ struct vertex_output
 	vec4 m_position;
 };
 //define function
-void vertex_shader(out vertex_output output);
+void vertex_shader(out vertex_output vtx_output);
 //call function
 void main()
 {
 	//execute shader
-	vertex_output output;
-	vertex_shader(output);
+	vertex_output vtx_output;
+	vertex_shader(vtx_output);
 	//output shacer
-	vertex_position 	 = output.m_world_position;
-	vertex_tbn			 = output.m_tbn;
-	vertex_uvcoord       = output.m_uvmap;
-	gl_Position  		 = output.m_position;
+	vertex_position 	 = vtx_output.m_world_position;
+	vertex_tbn			 = vtx_output.m_tbn;
+	vertex_uvcoord       = vtx_output.m_uvmap;
+	gl_Position  		 = vtx_output.m_position;
 }
 
 #endif
