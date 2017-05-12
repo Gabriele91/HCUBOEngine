@@ -14,19 +14,46 @@ namespace hcube
 
 	#pragma region "Shader parser"
 
+    enum vendor_error_type
+    {
+        VET_INTEL,
+        VET_NVIDIA,
+        VET_AMD,
+        VET_UNKNOW
+    };
+    
+    static vendor_error_type get_type_of_error()
+    {
+        std::string vendor = render::get_render_driver_info().m_name;
+        std::transform(vendor.begin(), vendor.end(), vendor.begin(), ::tolower);
+        if(vendor.find("intel")  != std::string::npos)  return VET_INTEL;
+        if(vendor.find("amd")    != std::string::npos)    return VET_AMD;
+        if(vendor.find("nvidia") != std::string::npos) return VET_NVIDIA;
+        return VET_UNKNOW;
+    }
+    
 	static void skeep_error_line_space(const char*& inout)
 	{
 		while ((*inout) == ' ' || (*inout) == '\t' || (*inout) == '\r') ++(inout);
-	}
-
-	static bool parse_error_file_id(const char* in, const char** cout, int& out)
-	{
-		skeep_error_line_space(in);
-		out = (int)std::strtod(in, (char**)cout);
-		return in != (*cout);
-	}
-
-	static std::string parsing_error_log(const shader::filepath_map& filepath_map, const char* error)
+    }
+    
+    static bool generic_parse_error_file_id(const char* in, const char** cout, int& out)
+    {
+        //jump all
+        while(*in && (!::isnumber(*in))) ++in;
+        //parse
+        out = (int)std::strtod(in, (char**)cout);
+        return in != (*cout);
+    }
+    
+    static bool nvidia_parse_error_file_id(const char* in, const char** cout, int& out)
+    {
+        skeep_error_line_space(in);
+        out = (int)std::strtod(in, (char**)cout);
+        return in != (*cout);
+    }
+    
+    static std::string parsing_error_log(const shader::filepath_map& filepath_map, const char* error)
 	{
 		std::stringstream stream_error(error);
 		std::string error_line;
@@ -37,20 +64,38 @@ namespace hcube
 			const char* c_error_line_in  = error_line.c_str();
 			const char* c_error_line_out = c_error_line_in;
 			int line_id = -1;
-			if (parse_error_file_id(c_error_line_in, &c_error_line_out, line_id))
-			{
-				//get file path
-				auto it_filepat_map = filepath_map.find(line_id);
-				//put file path to output
-				if (it_filepat_map != filepath_map.end())
-				{
-					stream_output << it_filepat_map->second << " : ";
-					stream_output << c_error_line_out << "\n";
-					continue;
-				}
-			}
-			//put file path to output
-			stream_output << error_line << "\n";
+            bool error_id_found = false;
+            //type
+            //render info
+            vendor_error_type type = get_type_of_error();
+            //parsing by type
+            switch (type)
+            {
+                default:
+                case VET_AMD:
+                case VET_INTEL:
+                    error_id_found = generic_parse_error_file_id(c_error_line_in, &c_error_line_out, line_id);
+                break;
+                //AMD/NVIDIA
+                case VET_NVIDIA:
+                    error_id_found = nvidia_parse_error_file_id(c_error_line_in, &c_error_line_out, line_id);
+                break;
+            }
+            
+            if (error_id_found)
+            {
+                //get file path
+                auto it_filepath_map = filepath_map.find(line_id);
+                //put file path to output
+                if (it_filepath_map != filepath_map.end())
+                {
+                    stream_output << it_filepath_map->second << ", line ";
+                    stream_output << c_error_line_out << "\n";
+                    continue;
+                }
+            }
+            //default output
+            stream_output << error_line << "\n";
 		}
 		return stream_output.str();
 	}

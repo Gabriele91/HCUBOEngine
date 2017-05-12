@@ -521,6 +521,8 @@ namespace hcube
             render_driver_info m_info;
             //type
             s_render_driver_info.m_render_driver = DR_OPENGL;
+            //Get driver vendor
+            s_render_driver_info.m_name = (const char*)glGetString(GL_VENDOR);
             //get version
             glGetIntegerv(GL_MAJOR_VERSION, &s_render_driver_info.m_major_version);
             glGetIntegerv(GL_MINOR_VERSION, &s_render_driver_info.m_minor_version);
