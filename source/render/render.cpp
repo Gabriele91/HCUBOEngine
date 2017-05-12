@@ -226,7 +226,7 @@ namespace hcube
 	};
 
 	//util_define
-	#define uniform_id(shader) (*((GLint*)(m_data)))
+	#define uniform_id(shader) (*((GLint*)(&m_data)))
 	//uniform
 	void context_uniform::set_value(context_texture* in_texture)
 	{
