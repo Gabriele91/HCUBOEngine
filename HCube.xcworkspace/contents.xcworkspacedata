@@ -5,6 +5,9 @@
       location = "container:examples"
       name = "examples">
       <FileRef
+         location = "group:hello-world/hello-world.xcodeproj">
+      </FileRef>
+      <FileRef
          location = "group:planets/planets.xcodeproj">
       </FileRef>
       <FileRef
