@@ -14,7 +14,7 @@ namespace hcube
 		* Constructor of obb
 		*/
 		obb() {} //default
-		
+
 		/**
 		* Constructor of obb
 		* @param rotation, set rotation of obb
@@ -22,6 +22,14 @@ namespace hcube
 		* @param extension, set extension (aka size) of obb
 		*/
 		obb(const mat3& rotation, const vec3& position, const vec3& extension);
+
+		/**
+		* Set values of obb
+		* @param rotation, set rotation of obb
+		* @param position, set local position of obb
+		* @param extension, set extension (aka size) of obb
+		*/
+		void set(const mat3& rotation, const vec3& position, const vec3& extension);
 
 		/**
 		* Return the 8 point of obb

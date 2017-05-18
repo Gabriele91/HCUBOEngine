@@ -49,7 +49,7 @@ namespace hcube
 				(_start.y + _end.y)*0.5);
 		box_pos -= vec3(0.5, 0.0, 0.5);
 		//set OBB
-		m_box.build_from_attributes
+		m_box.set
 		(
 			mat3(1), //rotation
 			box_pos, //position

@@ -11,6 +11,13 @@ namespace hcube
 		m_extension = extension;
 	}
 
+	void obb::set(const mat3& rotation, const vec3& position, const vec3& extension)
+	{
+		m_rotation = rotation;
+		m_position = position;
+		m_extension = extension;
+	}
+
 	float obb::volume() const
 	{
 		return 8 * m_extension[0] * m_extension[1] * m_extension[2];
