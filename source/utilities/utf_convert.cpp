@@ -5,7 +5,7 @@
 namespace hcube
 {
 //work around for bug in MS Visual C++ 2015 https://social.msdn.microsoft.com/Forums/en-US/8f40dcd8-c67f-4eba-9134-a19b9178e481/vs-2015-rc-linker-stdcodecvt-error?forum=vcgeneral
-#if _MSC_VER == 1900 
+#if _MSC_VER >= 1900 
 
 	HCUBE_API std::u8string to_utf8(const std::u16string &s)
 	{
