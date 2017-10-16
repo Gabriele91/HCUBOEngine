@@ -1,9 +1,10 @@
 #pragma once
+#include <hcube/config.h>
 #include <hcube/math/vector_math.h>
 
 namespace hcube
 {
-	class sphere
+	class HCUBE_API sphere
 	{
 	public:
 

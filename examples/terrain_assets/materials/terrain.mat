@@ -1,0 +1,32 @@
+
+effect "base_texture_normal_specular_height"
+{
+    
+	diffuse_map  texture("desert_sand_big_d")
+	normal_map  texture("desert_sand_big_n")
+	specular_map  texture("desert_sand_big_s")
+	
+	diffuse_map_1  texture("grass_ground_d")
+	normal_map_1  texture("grass_ground_n")
+	specular_map_1  texture("grass_ground_s")
+	
+	diffuse_map_2  texture("snow_grass2_d")
+	normal_map_2   texture("snow_grass2_n")
+	specular_map_2  texture("snow_grass2_s")
+		
+	diffuse_map_3  texture("snow_bumpy_d")
+	normal_map_3 texture("snow_bumpy_n")
+	specular_map_3  texture("snow_bumpy_s")
+	
+	levels 				  vec3(0.75,0.5,0.25)
+	height_map 	          texture("height_map")
+	color                 vec4(1.0,1.0,1.0,1.0)
+	uv_mapping_ripetition vec2(32.0,32.0)
+}
+/*
+effect "wiremesh"
+{
+    line_size vec2(2.0,2.0)
+	color vec4(1.0,1.0,1.0,1.0)
+}
+*/

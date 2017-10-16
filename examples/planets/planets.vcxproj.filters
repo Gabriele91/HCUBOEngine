@@ -1,0 +1,82 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="File di origine">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="File di intestazione">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="File di risorse">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="File di risorse\assets">
+      <UniqueIdentifier>{eded5853-ab1a-4550-b89f-b6e7423adb9c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="File di risorse\assets\effects">
+      <UniqueIdentifier>{75ecc0d0-456a-486a-8485-3ff4ef7af449}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="File di risorse\assets\materials">
+      <UniqueIdentifier>{3eb194ce-9b52-4d4a-a68c-fc7778f5be22}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="File di risorse\assets\textures">
+      <UniqueIdentifier>{56d05c7c-7be2-48cd-96c3-189b0c591683}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="source\app_basic.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+    <ClCompile Include="source\main.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\app_basic.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\planet_assets\assets.rs">
+      <Filter>File di risorse\assets</Filter>
+    </None>
+    <None Include="..\planet_assets\effects\planet_ground.fxhc">
+      <Filter>File di risorse\assets\effects</Filter>
+    </None>
+    <None Include="..\planet_assets\effects\planet_ground_from_ground.fxhc">
+      <Filter>File di risorse\assets\effects</Filter>
+    </None>
+    <None Include="..\planet_assets\effects\planet_sky.fxhc">
+      <Filter>File di risorse\assets\effects</Filter>
+    </None>
+    <None Include="..\planet_assets\effects\planet_sky_from_ground.fxhc">
+      <Filter>File di risorse\assets\effects</Filter>
+    </None>
+    <None Include="..\planet_assets\materials\earth_ground_from_ground.mat">
+      <Filter>File di risorse\assets\materials</Filter>
+    </None>
+    <None Include="..\planet_assets\materials\earth_ground_from_space.mat">
+      <Filter>File di risorse\assets\materials</Filter>
+    </None>
+    <None Include="..\planet_assets\materials\earth_sky_from_ground.mat">
+      <Filter>File di risorse\assets\materials</Filter>
+    </None>
+    <None Include="..\planet_assets\materials\earth_sky_from_space.mat">
+      <Filter>File di risorse\assets\materials</Filter>
+    </None>
+    <None Include="..\planet_assets\effects\wiremesh.fxhc">
+      <Filter>File di risorse\assets\effects</Filter>
+    </None>
+    <None Include="..\planet_assets\materials\earth_terrain.mat">
+      <Filter>File di risorse\assets\materials</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\planet_assets\textures\earth_color.png">
+      <Filter>File di risorse\assets\textures</Filter>
+    </Image>
+  </ItemGroup>
+</Project>

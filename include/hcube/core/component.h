@@ -6,7 +6,9 @@
 //  Copyright © 2016 Gabriele. All rights reserved.
 //
 #pragma once
+#include <string>
 #include <typeindex>
+#include <hcube/config.h>
 #include <hcube/core/smart_pointers.h>
 
 namespace hcube
@@ -15,13 +17,14 @@ namespace hcube
 	//class
 	class  entity;
 	class  component;
+	class  factory;
 	struct message;
 	//type
-	using message_id = unsigned;
+	using message_id   = unsigned;
 	using component_id = std::type_index;
-	using entity_id = unsigned;
+	using entity_id	   = unsigned;
 
-	struct message
+	struct HCUBE_API message
 	{
 		message_id m_id{ 0 };
 		void*      m_data{ nullptr };
@@ -48,7 +51,7 @@ namespace hcube
 	using component_uptr = std::unique_ptr< component >;
 	using component_wptr = std::weak_ptr  < component >;
 
-	class component
+	class HCUBE_API component
 	{
 
 		friend class entity;
@@ -57,7 +60,7 @@ namespace hcube
 
 		component() {}
 		virtual ~component() {}
-
+		
 		/* interface */
 		virtual bool on_update(double deltaTime) { return true; }
 		virtual void on_attach(entity&) { }
@@ -79,7 +82,6 @@ namespace hcube
 
 		entity* get_entity() const { return m_entity; }
 
-
 	private:
 
 		entity* m_entity{ nullptr };
@@ -87,5 +89,4 @@ namespace hcube
 		bool m_is_enabled{ true };  //is enabled, more for debug purpose or if we need to disable just one component
 
 	};
-
 }

@@ -6,7 +6,9 @@
 //  Copyright © 2016 Gabriele. All rights reserved.
 //
 #pragma once
+#include <regex>
 #include <unordered_map>
+#include <hcube/config.h>
 #include <hcube/core/resource.h>
 #include <hcube/render/shader.h>
 #include <hcube/render/effect.h>
@@ -16,11 +18,18 @@
 
 namespace hcube
 {
-	class resources_manager
+	class HCUBE_API resources_manager
 	{
 	public:
 
+		bool add_resources_file(const std::string& path);
+
+		void add_file(const std::string& path);
+		void add_file(const std::string& asset_name, const std::string& path);
+
 		void add_directory(const std::string& directory, bool recursive = false);
+		void add_directory(const std::string& directory, const std::string& filter, bool recursive = false);
+
 		shader::ptr get_shader(const std::string& name);
 		effect::ptr get_effect(const std::string& name);
 		texture::ptr get_texture(const std::string& name);
@@ -41,6 +50,13 @@ namespace hcube
 
 	private:
 
+		void add_file(const std::string& asset_name,
+					  const std::string& directory,
+					  const std::string& filename);
+
+		void add_directory(const std::string& directory,
+						   const std::regex& filter,
+						   bool recursive = false);
 
 		using resources_path_map = std::unordered_map< std::string, std::string >;
 		using resources_map = std::unordered_map< std::string, resource_ptr >;

@@ -15,19 +15,61 @@ namespace hcube
 	{
 
 #if defined( __APPLE__ )
-		extern open_file_output cocoa_open_file(GLFWwindow* window,
+		extern open_file_output cocoa_open_file
+		(
+			GLFWwindow* window,
 			const std::string& title,
 			const std::string& path,
-			const std::vector< std::string >& allowed_file_types);
-#define xxxx_open_file cocoa_open_file
+			const std::vector< std::string >& allowed_file_types
+		);
+		extern save_file_output cocoa_save_file
+		(
+			GLFWwindow* window,
+			const std::string& title,
+			const std::string& path,
+			const std::vector< std::string >& allowed_file_types
+		);
+		#define xxxx_open_file cocoa_open_file
+		#define xxxx_save_file cocoa_save_file
 #elif defined( _WIN32 )
-		extern open_file_output window_open_file(GLFWwindow* window,
+		extern open_file_output window_open_file
+		(
+			GLFWwindow* window,
 			const std::string& title,
 			const std::string& path,
-			const std::vector< std::string >& allowed_file_types);
-#define xxxx_open_file window_open_file
+			const std::vector< std::string >& allowed_file_types
+		);
+		extern save_file_output window_save_file
+		(
+			GLFWwindow* window,
+			const std::string& title,
+			const std::string& path,
+			const std::vector< std::string >& allowed_file_types
+		);
+		#define xxxx_open_file window_open_file
+		#define xxxx_save_file window_save_file
+#elif defined( HCUBE_USE_GTK )
+		extern open_file_output gtk_open_file
+		(
+			GLFWwindow* window,
+			const std::string& title,
+			const std::string& path,
+			const std::vector< std::string >& allowed_file_types
+		);
+		extern save_file_output gtk_save_file
+		(
+			GLFWwindow* window,
+			const std::string& title,
+			const std::string& path,
+			const std::vector< std::string >& allowed_file_types
+		);
+		#define xxxx_open_file gtk_open_file
+		#define xxxx_save_file gtk_save_file
+#elif defined( HCUBE_NO_NATIVE_DIALOG )
+		#define xxxx_open_file(x,y,z,w) open_file_output()
+		#define xxxx_save_file(x,y,z,w) save_file_output()
 #else
-#error OS not supported
+		#error OS not supported
 #endif
 
 		static inline std::string get_home_or_working_dir()
@@ -37,11 +79,24 @@ namespace hcube
 			else            return filesystem::working_dir();
 		}
 
-		open_file_output open_file_dialog(GLFWwindow* window,
+		open_file_output open_file_dialog
+		(
+			GLFWwindow* window,
 			const std::string& title,
-			const std::vector<std::string>& types)
+			const std::vector<std::string>& types
+		)
 		{
 			return xxxx_open_file(window, title, get_home_or_working_dir(), types);
+		}
+
+		save_file_output save_file_dialog
+		(
+			GLFWwindow* window,
+			const std::string& title,
+			const std::vector<std::string>& types
+		)
+		{
+			return xxxx_save_file(window, title, get_home_or_working_dir(), types);
 		}
 
 	};

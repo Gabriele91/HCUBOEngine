@@ -14,7 +14,8 @@ namespace hcube
 		vec4&  clear_color,
 		vec4&  ambient_color,
 		entity::ptr e_camera,
-		render_scene& rscene
+		render_scene& rscene,
+		rendering_system& rsystem
 	)
 	{
 		//save state
@@ -56,14 +57,14 @@ namespace hcube
 					if (!pass.m_support_light)
 					{
 						//draw
-						r_entity->draw();
+						r_entity->draw(rsystem, e_camera);
 					}
 					//ambient draw
 					else if (pass.m_uniform_ambient_light)
 					{
 						pass.m_uniform_ambient_light->set_value(ambient_color);
 						//draw
-						r_entity->draw();
+						r_entity->draw(rsystem, e_camera);
 					}
 					//draw all spot lights
 					else if(pass.m_uniform_spot.is_valid())
@@ -96,7 +97,7 @@ namespace hcube
 									t_light->get_matrix()
 								);
 								//draw
-								r_entity->draw();
+								r_entity->draw(rsystem, e_camera);
 							}
 						}
                     }
@@ -121,7 +122,7 @@ namespace hcube
 									t_light->get_matrix()
 								);
 								//draw
-								r_entity->draw();
+								r_entity->draw(rsystem, e_camera);
 							}
                         }
                     }
@@ -138,7 +139,7 @@ namespace hcube
                                                             t_light ->get_matrix()
                                                             );
                             //draw
-							r_entity->draw();
+							r_entity->draw(rsystem,e_camera);
                         }
                     }
 					//end

@@ -1,6 +1,6 @@
 #include <hcube/render/rendering_pass_deferred.h>
-#include <hcube/components/basic_meshs.h>
 #include <hcube/components/transform.h>
+#include <hcube/utilities/basic_meshs.h>
 
 
 namespace hcube
@@ -67,8 +67,9 @@ namespace hcube
                                                           context_texture* ssao,
 													      entity::ptr e_camera,
                                                           const vec4& ambient_light,
-                                                          render_scene& rsceme,
-													      render_scene_queue_type type)
+                                                          render_scene& rscene,
+													      render_scene_queue_type type,
+														  rendering_system& rsystem)
     {
         m_shader->bind();
         //uniform g_buffer and etc...
@@ -83,7 +84,7 @@ namespace hcube
 		render::set_depth_buffer_state({ DT_GREATER_EQUAL, DM_ENABLE_ONLY_READ });
 		render::set_cullface_state({ CF_FRONT });
         //uniform all lights
-        HCUBE_FOREACH_QUEUE(weak_light, rsceme.get_first(type))
+        HCUBE_FOREACH_QUEUE(weak_light, rscene.get_first(type))
         {            
             auto e_light = weak_light->lock();
             auto l_light = e_light->get_component<light>();
@@ -98,7 +99,7 @@ namespace hcube
 			//transform cone
 			m_transform_cone.uniform(t_light);
 			//draw cone
-			m_cone->draw();
+			m_cone->draw(rsystem, e_camera);
         }
 		m_shader->unbind();
     }
@@ -133,8 +134,9 @@ namespace hcube
 		context_texture* ssao,
 		entity::ptr e_camera,
 		const vec4& ambient_light,
-		render_scene& rsceme,
-		render_scene_queue_type type
+		render_scene& rscene,
+		render_scene_queue_type type,
+		rendering_system& rsystem
     )
 	{
 		m_shader->bind();
@@ -152,7 +154,7 @@ namespace hcube
 		render::set_depth_buffer_state({  DT_GREATER_EQUAL, DM_ENABLE_ONLY_READ });
 		render::set_cullface_state({ CF_FRONT });
         //uniform all lights
-        HCUBE_FOREACH_QUEUE(weak_light, rsceme.get_first(type))
+        HCUBE_FOREACH_QUEUE(weak_light, rscene.get_first(type))
         {
             
             auto e_light = weak_light->lock();
@@ -166,7 +168,7 @@ namespace hcube
 				 t_light->get_matrix()
             );
 			//cullface
-			m_sphere->draw();
+			m_sphere->draw(rsystem, e_camera);
         }
 		m_shader->unbind();
     }
@@ -195,9 +197,10 @@ namespace hcube
 															   context_texture* ssao,
 															   entity::ptr e_camera,
                                                                const vec4& ambient_light,
-                                                               render_scene& rsceme,
+                                                               render_scene& rscene,
 															   render_scene_queue_type type,
-                                                               mesh::ptr square)
+                                                               mesh::ptr square,
+															   rendering_system& rsystem)
 	{
 		m_shader->bind();
 		//uniform g_buffer and etc...
@@ -209,7 +212,7 @@ namespace hcube
 		m_camera.uniform(e_camera->get_component<camera>(),
 						 e_camera->get_component<transform>()->get_matrix());
 		//uniform all lights
-		HCUBE_FOREACH_QUEUE(weak_light, rsceme.get_first(type))
+		HCUBE_FOREACH_QUEUE(weak_light, rscene.get_first(type))
 		{
 			auto e_light = weak_light->lock();
 			auto l_light = e_light->get_component<light>();
@@ -221,7 +224,7 @@ namespace hcube
 				//light pos
 				t_light->get_matrix()
 			);
-			square->draw();
+			square->draw(rsystem, e_camera);
 		}
 		m_shader->unbind();
 	}
@@ -270,7 +273,8 @@ namespace hcube
         vec4&  clear_color,
 		vec4&  ambient_color,
 		entity::ptr e_camera,
-		render_scene& rscene
+		render_scene& rscene,
+		rendering_system& rsystem
     )
     {
         //area
@@ -318,7 +322,7 @@ namespace hcube
 						pass.m_uniform_ambient_light->set_value(ambient_color);
 					}
 					//draw
-					entity->get_component<renderable>()->draw();
+					entity->get_component<renderable>()->draw(rsystem, e_camera);
 					//end
 					pass.unbind();
 				}
@@ -331,7 +335,7 @@ namespace hcube
 		//ssao pass
 		if (m_enable_ambient_occlusion)
 		{
-			m_ssao.applay(e_camera, m_g_buffer, m_square);
+			m_ssao.applay(rsystem, e_camera, m_g_buffer, m_square);
 		}
 		////////////////////////////////////////////////////////////////////////////////
 		render::enable_render_target(m_g_buffer.get_lights_render_target());
@@ -350,7 +354,7 @@ namespace hcube
 			m_ssao.get_texture(), 
 			ambient_color
 		);
-        m_square->draw();
+        m_square->draw(rsystem, e_camera);
         m_ambient_light.unbind();
         render::print_errors();
         //SPOT LIGHTS
@@ -363,7 +367,8 @@ namespace hcube
 				e_camera, 
 				ambient_color, 
 				rscene,
-				RQ_SPOT_LIGHT
+				RQ_SPOT_LIGHT, 
+				rsystem
 			);
         }
         render::print_errors();
@@ -377,7 +382,8 @@ namespace hcube
 				e_camera, 
 				ambient_color, 
 				rscene,
-				RQ_POINT_LIGHT
+				RQ_POINT_LIGHT,
+				rsystem
 			);
         }
         //DIRECTION LIGHTS
@@ -391,7 +397,8 @@ namespace hcube
 				ambient_color, 
 				rscene,
 				RQ_DIRECTION_LIGHT,
-				m_square
+				m_square,
+				rsystem
 			);
         }
         render::disable_render_target(m_g_buffer.get_lights_render_target());

@@ -5,6 +5,7 @@
 //  Created by Gabriele on 24/07/16.
 //  Copyright © 2016 Gabriele. All rights reserved.
 //
+#include <algorithm>
 #include <hcube/core/system_manager.h>
 
 

@@ -6,13 +6,17 @@
 //  Copyright © 2016 Gabriele. All rights reserved.
 //
 #include <string>
+#include <hcube/config.h>
 #include <hcube/core/smart_pointers.h>
 #include <hcube/render/render.h>
+#include <hcube/render/rendering_system.h>
 #include <hcube/components/renderable.h>
+#include <hcube/core/component_register.h>
+#include <hcube/data/property.h>
 
 namespace hcube
 {
-	class text_mesh : public smart_pointers< text_mesh >, public renderable
+	class HCUBE_API text_mesh : public smart_pointers< text_mesh >, public renderable
 	{
 		//string info
 		std::u32string m_text;
@@ -25,11 +29,43 @@ namespace hcube
 
 	public:
 
-		text_mesh(size_t text_max_size = 255);
+        text_mesh(size_t text_max_size = 255);
+        text_mesh(const std::string& text, size_t text_max_size = 255);
+        text_mesh(const std::u32string& text, size_t text_max_size = 255);
 		virtual ~text_mesh();
 
+		void set_text_max_size(size_t max_size);
 		void set_text(const std::string& text);
 		void set_text(const std::u32string& text);
-		void draw();
+
+		size_t get_text_max_size() const;
+		std::u32string get_text() const;
+		std::string    get_text_utf8() const;
+		void draw(rendering_system& rsystem, entity::ptr view);
+
+		virtual component_ptr copy() const;
+
+		HCUBE_EXTENDS_PROPERTIES(
+			//EXTENDS
+			renderable,
+			//PROPERTIES
+			make_property_const_get_set(
+				&text_mesh::get_text_max_size, 
+				&text_mesh::set_text_max_size, 
+				"text_max_size"
+			),
+			make_property_function<text_mesh>(
+				[](text_mesh* _self)-> variant_ref
+				{ 
+					return variant_ref(_self->get_text_utf8());
+				},
+				[](text_mesh* _self, variant_ref value)
+				{ 
+					_self->set_text(value.get<std::string>());
+				},
+				"text"
+			)
+		)
+
 	};
 }

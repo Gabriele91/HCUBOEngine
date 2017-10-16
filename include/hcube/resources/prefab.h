@@ -1,4 +1,5 @@
 #pragma once
+#include <hcube/config.h>
 #include <hcube/core/smart_pointers.h>
 #include <hcube/core/entity.h>
 
@@ -11,7 +12,7 @@ namespace hcube
 	using prefab_uptr = std::unique_ptr< prefab >;
 	using prefab_wptr = std::weak_ptr  < prefab >;
 	//class defined
-	class prefab : public resource
+	class HCUBE_API prefab : public resource
 	{
 	public:
 		virtual entity::ptr instantiate() = 0;

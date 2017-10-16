@@ -6,15 +6,20 @@
 //  Copyright © 2016 Gabriele. All rights reserved.
 //
 #pragma once
+#include <hcube/config.h>
 #include <hcube/core/entity.h>
 #include <hcube/core/component.h>
 #include <hcube/geometries/obb.h>
+#include <hcube/data/property.h>
 #include <hcube/resources/material.h>
 #include <hcube/components/transform.h>
 
 namespace hcube
 {
-	class renderable : public component
+	//Forward declaration
+	class rendering_system;
+	//Renderable
+	class HCUBE_API renderable : public component
 	{
 
 		HCUBE_COMPONENT_DEC(renderable)
@@ -25,7 +30,7 @@ namespace hcube
 
 		virtual ~renderable() {};
 
-		virtual void draw()
+		virtual void draw(rendering_system& rsystem, entity::ptr view)
 		{
 			assert(0);
 		};
@@ -68,12 +73,17 @@ namespace hcube
 			set_obb_has_dirty();
 		}
 
-		material_ptr get_material() const
+		virtual const obb& get_base_bounding_box()
+		{
+			return m_bounding_box;
+		}
+
+		virtual material_ptr get_material() const
 		{
 			return m_material;
 		}
 
-		void set_material(material_ptr material)
+		virtual void set_material(material_ptr material)
 		{
 			m_material = material;
 		}
@@ -97,12 +107,19 @@ namespace hcube
 				if (get_entity())
 				if (auto t_entity = get_entity()->get_component<transform>())
 				{
-					m_global_bounding_box = m_bounding_box;
-					m_global_bounding_box.applay(t_entity->get_matrix());
+					m_global_bounding_box = m_bounding_box * t_entity->get_matrix();
 				}
 
 			}
 		}
+		
+		HCUBE_DEFINE_PROPERTIES(
+			make_property_const_get_set(
+				&renderable::has_support_culling,
+				&renderable::set_support_culling,
+				"culling"
+			)
+		)
 
 	private:
 

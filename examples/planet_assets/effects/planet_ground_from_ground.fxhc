@@ -1,0 +1,173 @@
+parameters
+{
+    mask float(-1.0)
+    diffuse_map texture("white")
+    normal_map texture("normal_up")
+    specular_map texture("black")
+	color vec4(1.0,1.0,1.0,1.0)				
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	camera_height     float(0.0)		 // The camera's current height	
+	atmosphere_radius float(0.0)	     // The outer (atmosphere) radius
+	planetary_radius  float(0.0)		 // The inner (planetary) radius
+	sun_pos	 		  vec3(0.0,0.0,1.0)  // The vector to the light source
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// ATTRIBUTE PRECOMPUTE FROM:
+	// const float scaleDepth = 0.25f;
+	// const float Kr = 0.0025f;
+	// const float Km = 0.0010f;
+	// const float ESun = 16.0f;
+	// const vec3  wave_length{
+	//	 0.650f // 650 nm for red
+	//	,0.570f // 570 nm for green
+	//	,0.475f // 475 nm for blue
+	// };
+	//
+	// 1 / pow(wavelength, 4) for the red, green, and blue channels
+	inv_wave_length   vec3
+	(
+		 5.60204474633241
+		,9.473284437923038
+		,19.64380261047721
+	)           
+	fKrESun           float(0.04)		          // Kr * ESun
+	fKmESun           float(0.016) 		          // Km * ESun
+	fKr4PI            float(0.031415926535897934) // Kr * 4 * PI
+	fKm4PI            float(0.012566370614359173) // Km * 4 * PI
+	fScaleDepth       float(0.25) 		          // The scale depth (i.e. the altitude at which the atmosphere's average density is found)
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+}
+
+sub_effect
+{
+    requirement
+    {
+        driver  OpenGL(4,1)
+        shader  GLSL(410)
+    }
+    
+    technique "deferred"
+    {
+        pass
+        {
+            zbuffer less
+            blend off
+            cullface back
+            lights off
+            shader source
+            {
+                #define DEFERRED_RENDERING
+				#define USE_VERTEX_SHADER
+				#define USE_FRAGMENT_SHADER
+				#pragma import <base_texture_normal_specular>
+				#pragma vertex 
+				
+					uniform float camera_height;			
+					uniform float atmosphere_radius;			
+					uniform float planetary_radius;								
+					uniform vec3  sun_pos;							
+					uniform vec3  inv_wave_length;	    // 1 / wavelength for the red, green, and blue channels
+					uniform float fKrESun;				// Kr * ESun
+					uniform float fKmESun;				// Km * ESun
+					uniform float fKr4PI;				// Kr * 4 * PI
+					uniform float fKm4PI;				// Km * 4 * PI
+					uniform float fScaleDepth;			// The scale depth (i.e. the altitude at which the atmosphere's average density is found)
+
+					const int nSamples = 2;
+					const float fSamples = 2.0;
+
+					out vec3 planet_first_color;
+					out vec3 planet_secondary_color;
+					
+					float scale(float fCos)
+					{
+						float x = 1.0 - fCos;
+						return fScaleDepth * exp(-0.00287 + x*(0.459 + x*(3.83 + x*(-6.80 + x*5.25))));
+					}
+					
+					void compute_planet_ground(vec3 camera_position, vec3 v3Pos,vec3 v3LightPos)
+					{
+						float camera_height2 = camera_height * camera_height;
+						float atmosphere_radius2 = atmosphere_radius * atmosphere_radius;
+						float planetary_radius2 = planetary_radius * planetary_radius;
+						float fScale =  1.0 /(atmosphere_radius - planetary_radius);
+						float fScaleOverScaleDepth = fScale / fScaleDepth;
+						
+						// Get the ray from the camera to the vertex and its length (which is the far point of the ray passing through the atmosphere)
+						vec3 v3Ray = v3Pos - camera_position;
+						float fFar = length(v3Ray);
+						v3Ray /= fFar;
+						
+						// Calculate the ray's starting position, then calculate its scattering offset
+						vec3 v3Start = camera_position;
+						float fDepth = exp((planetary_radius - atmosphere_radius) / fScaleDepth);
+						float fCameraAngle = dot(-v3Ray, v3Pos) / length(v3Pos);
+						float fLightAngle = dot(v3LightPos, v3Pos) / length(v3Pos);
+						float fCameraScale = scale(fCameraAngle);
+						float fLightScale = scale(fLightAngle);
+						float fCameraOffset = fDepth*fCameraScale;
+						float fTemp = (fLightScale + fCameraScale);
+
+						// Initialize the scattering loop variables
+						float fSampleLength = fFar / fSamples;
+						float fScaledLength = fSampleLength * fScale;
+						vec3 v3SampleRay = v3Ray * fSampleLength;
+						vec3 v3SamplePoint = v3Start + v3SampleRay * 0.5;
+
+						// Now loop through the sample rays
+						vec3 v3FrontColor = vec3(0.0, 0.0, 0.0);
+						vec3 v3Attenuate  = vec3(0.0, 0.0, 0.0);
+						for(int i=0; i<nSamples; i++)
+						{
+							float fHeight = length(v3SamplePoint);
+							float fDepth = exp(fScaleOverScaleDepth * (planetary_radius - fHeight));
+							float fScatter = fDepth*fTemp - fCameraOffset;
+							v3Attenuate = exp(-fScatter * (inv_wave_length * fKr4PI + fKm4PI));
+							v3FrontColor += v3Attenuate * (fDepth * fScaledLength);
+							v3SamplePoint += v3SampleRay;
+						}
+
+						planet_first_color = clamp(v3FrontColor * (inv_wave_length * fKrESun + fKmESun), 0.0, 1.0);
+						planet_secondary_color = clamp(v3Attenuate, 0.0, 1.0);
+					}
+					
+					//define function
+					void vertex_shader(out vertex_output vtx_output)
+					{
+						//compute uv
+						vtx_output.m_uvmap = uvcoord;
+						//compute vertex in model space
+						vtx_output.m_world_position = transform.m_model * vec4(vertex, 1.0);
+						//compute vertex in projection space
+						vtx_output.m_position = camera.m_projection * camera.m_view * vtx_output.m_world_position;
+						//compute tbn 
+						vtx_output.m_tbn = compute_tbn(transpose(inverse(mat3(transform.m_model))), normal, tangent, bitangents);
+						//compute compute_planet_ground
+						compute_planet_ground(camera.m_position, vtx_output.m_world_position.xyz, normalize(sun_pos));
+					}    
+				
+				#pragma fragment
+				
+					in vec3 planet_first_color;
+					in vec3 planet_secondary_color;
+					
+					void fragment_shader(inout vec4 position, inout vec3 normal, inout vec4 color, inout float specular)
+					{
+						#if 1
+						color = clamp(
+						   vec4(planet_first_color, 0.0) +  color  * vec4(planet_secondary_color,1.0) 
+						 , 0.0
+						 , 1.0
+						);
+						#else
+						color *= clamp(
+						   vec4(planet_first_color, 0.0) +  0.25  * vec4(planet_secondary_color,1.0) 
+						 , 0.0
+						 , 1.0
+						);
+						#endif
+					}
+				
+            }
+        }
+    }
+}

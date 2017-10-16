@@ -13,18 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="File di risorse\assets">
-      <UniqueIdentifier>{62dd8327-b5a5-4d9a-956b-ed41580b8863}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="File di risorse\assets\textures">
-      <UniqueIdentifier>{4f6d4cf0-c98a-4131-a2a2-51d3ac46dba7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="File di risorse\assets\materials">
-      <UniqueIdentifier>{1df61f29-f59b-446c-840b-52378961f0c4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="File di risorse\assets\ship">
-      <UniqueIdentifier>{024b4634-fa25-4758-8a3e-810ee384c9bd}</UniqueIdentifier>
-    </Filter>
     <Filter Include="File di risorse\common">
       <UniqueIdentifier>{ccf34896-0c2e-4591-8d04-b5f9bb247e0e}</UniqueIdentifier>
     </Filter>
@@ -79,11 +67,26 @@
     <Filter Include="File di intestazione\hcube\components">
       <UniqueIdentifier>{87deebf0-a8f8-42ee-abef-e5a486b05634}</UniqueIdentifier>
     </Filter>
+    <Filter Include="File di origine\utilities">
+      <UniqueIdentifier>{25bd480b-56bd-42cc-8e9c-b5c76f870837}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="File di intestazione\hcube\utilities">
+      <UniqueIdentifier>{4b48dab1-d459-4f5b-8cf7-1f2577f61cef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="File di risorse\common\meshs">
+      <UniqueIdentifier>{ccde4fc2-251f-419c-bdae-69c1313446d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="File di intestazione\hcube\data\parser">
+      <UniqueIdentifier>{b11331ba-aab2-417f-9dc2-c77ddc5feba0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="File di intestazione\hcube\data\dump">
+      <UniqueIdentifier>{5ade8c56-79fc-4664-baa3-86d03f9ccadf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="File di intestazione\hcube\math">
+      <UniqueIdentifier>{f23208e6-2879-4e84-ba2c-3a6b09d96c75}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\include\app_basic.h">
-      <Filter>File di intestazione</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\hcube\geometries\frustum.h">
       <Filter>File di intestazione\hcube\geometries</Filter>
     </ClInclude>
@@ -97,9 +100,6 @@
       <Filter>File di intestazione\hcube\geometries</Filter>
     </ClInclude>
     <ClInclude Include="..\include\hcube\data\align16_data.h">
-      <Filter>File di intestazione\hcube\data</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\hcube\data\json11.h">
       <Filter>File di intestazione\hcube\data</Filter>
     </ClInclude>
     <ClInclude Include="..\include\hcube\data\struct_attribute.h">
@@ -138,13 +138,7 @@
     <ClInclude Include="..\include\hcube\core\system_manager.h">
       <Filter>File di intestazione\hcube\core</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\hcube\components\basic_meshs.h">
-      <Filter>File di intestazione\hcube\components</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\hcube\components\camera.h">
-      <Filter>File di intestazione\hcube\components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\hcube\components\gameobject.h">
       <Filter>File di intestazione\hcube\components</Filter>
     </ClInclude>
     <ClInclude Include="..\include\hcube\components\light.h">
@@ -189,9 +183,6 @@
     <ClInclude Include="..\include\hcube\render\rendering_system.h">
       <Filter>File di intestazione\hcube\render</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\hcube\render\shader.h">
-      <Filter>File di intestazione\hcube\render</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\hcube\render\shadow_buffer.h">
       <Filter>File di intestazione\hcube\render</Filter>
     </ClInclude>
@@ -210,11 +201,83 @@
     <ClInclude Include="..\include\hcube\resources\texture.h">
       <Filter>File di intestazione\hcube\resources</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\hcube\config.h">
+      <Filter>File di intestazione\hcube</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\hcube\core\component_register.h">
+      <Filter>File di intestazione\hcube\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\hcube\utilities\basic_meshs.h">
+      <Filter>File di intestazione\hcube\utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\hcube\utilities\gameobject.h">
+      <Filter>File di intestazione\hcube\utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\hcube\data\json.h">
+      <Filter>File di intestazione\hcube\data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\hcube\data\property.h">
+      <Filter>File di intestazione\hcube\data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\hcube\data\parser\effect_parser.h">
+      <Filter>File di intestazione\hcube\data\parser</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\hcube\data\parser\utils_parser.h">
+      <Filter>File di intestazione\hcube\data\parser</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\hcube\data\parser\material_parser.h">
+      <Filter>File di intestazione\hcube\data\parser</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\hcube\data\parser\properties_parser.h">
+      <Filter>File di intestazione\hcube\data\parser</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\hcube\data\dump\variant_dump.h">
+      <Filter>File di intestazione\hcube\data\dump</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\hcube\data\parser\variant_parser.h">
+      <Filter>File di intestazione\hcube\data\parser</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\hcube\data\dump\cstring_dump.h">
+      <Filter>File di intestazione\hcube\data\dump</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\hcube\data\dump\properties_dump.h">
+      <Filter>File di intestazione\hcube\data\dump</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\hcube\utilities\utf_convert.h">
+      <Filter>File di intestazione\hcube\utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\hcube\math\arc_ball.h">
+      <Filter>File di intestazione\hcube\math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\hcube\math\picking.h">
+      <Filter>File di intestazione\hcube\math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\hcube\math\picking_rotation.h">
+      <Filter>File di intestazione\hcube\math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\hcube\math\tangent_space_calculation.h">
+      <Filter>File di intestazione\hcube\math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\hcube\math\vector_math.h">
+      <Filter>File di intestazione\hcube\math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\hcube\render\shader.h">
+      <Filter>File di intestazione\hcube\render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\hcube\render\rendering_pass_ui.h">
+      <Filter>File di intestazione\hcube\render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\hcube\utilities\timer.h">
+      <Filter>File di intestazione\hcube\utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\hcube\geometries\geometry.h">
+      <Filter>File di intestazione\hcube\geometries</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\hcube\geometries\aabb.h">
+      <Filter>File di intestazione\hcube\geometries</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\source\app_basic.cpp">
-      <Filter>File di origine</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\render\effect.cpp">
       <Filter>File di origine\render</Filter>
     </ClCompile>
@@ -237,9 +300,6 @@
       <Filter>File di origine\render</Filter>
     </ClCompile>
     <ClCompile Include="..\source\render\rendering_system.cpp">
-      <Filter>File di origine\render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\render\shader.cpp">
       <Filter>File di origine\render</Filter>
     </ClCompile>
     <ClCompile Include="..\source\render\shadow_buffer.cpp">
@@ -281,9 +341,6 @@
     <ClCompile Include="..\source\resources\texture.cpp">
       <Filter>File di origine\resources</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\components\basic_meshs.cpp">
-      <Filter>File di origine\components</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\components\camera.cpp">
       <Filter>File di origine\components</Filter>
     </ClCompile>
@@ -298,9 +355,6 @@
     </ClCompile>
     <ClCompile Include="..\source\components\transform.cpp">
       <Filter>File di origine\components</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\data\json11.cpp">
-      <Filter>File di origine\data</Filter>
     </ClCompile>
     <ClCompile Include="..\source\data\stb_image.cpp">
       <Filter>File di origine\data</Filter>
@@ -317,44 +371,35 @@
     <ClCompile Include="..\source\geometries\obb.cpp">
       <Filter>File di origine\geometries</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\main.cpp">
-      <Filter>File di origine</Filter>
+    <ClCompile Include="..\source\core\component_register.cpp">
+      <Filter>File di origine\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\utilities\basic_meshs.cpp">
+      <Filter>File di origine\utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\data\property.cpp">
+      <Filter>File di origine\data</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\utilities\utf_convert.cpp">
+      <Filter>File di origine\utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\render\shader.cpp">
+      <Filter>File di origine\render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\render\rendering_pass_ui.cpp">
+      <Filter>File di origine\render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\utilities\timer.cpp">
+      <Filter>File di origine\utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\geometries\geometry.cpp">
+      <Filter>File di origine\geometries</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\geometries\aabb.cpp">
+      <Filter>File di origine\geometries</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\assets\materials\baril_mat.mat">
-      <Filter>File di risorse\assets\materials</Filter>
-    </None>
-    <None Include="..\assets\materials\box_mat.mat">
-      <Filter>File di risorse\assets\materials</Filter>
-    </None>
-    <None Include="..\assets\materials\box2_mat.mat">
-      <Filter>File di risorse\assets\materials</Filter>
-    </None>
-    <None Include="..\assets\materials\wire_mat.mat">
-      <Filter>File di risorse\assets\materials</Filter>
-    </None>
-    <None Include="..\assets\ship\ship.smhc">
-      <Filter>File di risorse\assets\ship</Filter>
-    </None>
-    <None Include="..\assets\ship\vehicle_playerShip_glass_mat.mat">
-      <Filter>File di risorse\assets\ship</Filter>
-    </None>
-    <None Include="..\assets\ship\vehicle_playerShip_metal_mat.mat">
-      <Filter>File di risorse\assets\ship</Filter>
-    </None>
-    <None Include="..\common\effects\base_texture_normal_specular.fxhc">
-      <Filter>File di risorse\common\effects</Filter>
-    </None>
-    <None Include="..\common\effects\build_shadow.fxhc">
-      <Filter>File di risorse\common\effects</Filter>
-    </None>
-    <None Include="..\common\effects\no_cull_effect.fxhc">
-      <Filter>File di risorse\common\effects</Filter>
-    </None>
-    <None Include="..\common\effects\debug_spot_lights.fxhc">
-      <Filter>File di risorse\common\effects</Filter>
-    </None>
     <None Include="..\common\effects\shaders\deferred_ambient_light.glsl">
       <Filter>File di risorse\common\effects\shaders</Filter>
     </None>
@@ -403,80 +448,41 @@
     <None Include="..\common\effects\shaders\lib\post_processing_utilities.glsl">
       <Filter>File di risorse\common\effects\shaders\lib</Filter>
     </None>
-    <None Include="..\common\effects\translucent_texture_normal_specular.fxhc">
+    <None Include="..\source\core\cocoa_native_dialog.mm">
+      <Filter>File di origine\core</Filter>
+    </None>
+    <None Include="..\common\effects\base_texture_normal_specular.fxhc">
+      <Filter>File di risorse\common\effects</Filter>
+    </None>
+    <None Include="..\common\effects\build_shadow.fxhc">
+      <Filter>File di risorse\common\effects</Filter>
+    </None>
+    <None Include="..\common\effects\debug_lights.fxhc">
+      <Filter>File di risorse\common\effects</Filter>
+    </None>
+    <None Include="..\common\effects\no_cull_effect.fxhc">
       <Filter>File di risorse\common\effects</Filter>
     </None>
     <None Include="..\common\effects\translucent_no_cull_effect.fxhc">
       <Filter>File di risorse\common\effects</Filter>
     </None>
-    <None Include="..\assets\materials\box2_grid_mat.mat">
-      <Filter>File di risorse\assets\materials</Filter>
+    <None Include="..\common\effects\translucent_texture_normal_specular.fxhc">
+      <Filter>File di risorse\common\effects</Filter>
     </None>
-    <None Include="..\assets\materials\cross_mat.mat">
-      <Filter>File di risorse\assets\materials</Filter>
+    <None Include="..\common\meshs\cone.smhc">
+      <Filter>File di risorse\common\meshs</Filter>
     </None>
-    <None Include="..\assets\materials\rocks_mat.mat">
-      <Filter>File di risorse\assets\materials</Filter>
+    <None Include="..\common\meshs\cone_DefaultMaterial.mat">
+      <Filter>File di risorse\common\meshs</Filter>
     </None>
-    <None Include="..\assets\materials\w_box_mat.mat">
-      <Filter>File di risorse\assets\materials</Filter>
+    <None Include="..\common\meshs\sphere.smhc">
+      <Filter>File di risorse\common\meshs</Filter>
     </None>
-    <None Include="..\assets\materials\window_mat.mat">
-      <Filter>File di risorse\assets\materials</Filter>
-    </None>
-    <None Include="..\source\core\cocoa_native_dialog.mm">
-      <Filter>File di origine\core</Filter>
+    <None Include="..\common\meshs\sphere_DefaultMaterial.mat">
+      <Filter>File di risorse\common\meshs</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="..\assets\textures\box.png">
-      <Filter>File di risorse\assets\textures</Filter>
-    </Image>
-    <Image Include="..\assets\textures\font.png">
-      <Filter>File di risorse\assets\textures</Filter>
-    </Image>
-    <Image Include="..\assets\textures\baril.png">
-      <Filter>File di risorse\assets\textures</Filter>
-    </Image>
-    <Image Include="..\assets\textures\baril_normal.png">
-      <Filter>File di risorse\assets\textures</Filter>
-    </Image>
-    <Image Include="..\assets\textures\baril_specular.jpg">
-      <Filter>File di risorse\assets\textures</Filter>
-    </Image>
-    <Image Include="..\assets\textures\baril_specular.png">
-      <Filter>File di risorse\assets\textures</Filter>
-    </Image>
-    <Image Include="..\assets\textures\box_normal.png">
-      <Filter>File di risorse\assets\textures</Filter>
-    </Image>
-    <Image Include="..\assets\textures\box_specular.png">
-      <Filter>File di risorse\assets\textures</Filter>
-    </Image>
-    <Image Include="..\assets\textures\box2.png">
-      <Filter>File di risorse\assets\textures</Filter>
-    </Image>
-    <Image Include="..\assets\textures\box2_normal.png">
-      <Filter>File di risorse\assets\textures</Filter>
-    </Image>
-    <Image Include="..\assets\textures\box2_specular.png">
-      <Filter>File di risorse\assets\textures</Filter>
-    </Image>
-    <Image Include="..\assets\textures\box2_specular_2.png">
-      <Filter>File di risorse\assets\textures</Filter>
-    </Image>
-    <Image Include="..\assets\textures\NormalMap.png">
-      <Filter>File di risorse\assets\textures</Filter>
-    </Image>
-    <Image Include="..\assets\ship\vehicle_playerShip_dff.png">
-      <Filter>File di risorse\assets\ship</Filter>
-    </Image>
-    <Image Include="..\assets\ship\vehicle_playerShip_nrm.png">
-      <Filter>File di risorse\assets\ship</Filter>
-    </Image>
-    <Image Include="..\assets\ship\vehicle_playerShip_spc.png">
-      <Filter>File di risorse\assets\ship</Filter>
-    </Image>
     <Image Include="..\common\textures\black.tga">
       <Filter>File di risorse\common\textures</Filter>
     </Image>

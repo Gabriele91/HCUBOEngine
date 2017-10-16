@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Workspace
    version = "1.0">
+   <Group
+      location = "container:examples"
+      name = "examples">
+      <FileRef
+         location = "group:hello-world/hello-world.xcodeproj">
+      </FileRef>
+      <FileRef
+         location = "group:planets/planets.xcodeproj">
+      </FileRef>
+      <FileRef
+         location = "group:base/base.xcodeproj">
+      </FileRef>
+   </Group>
    <FileRef
       location = "container:HCubo.xcodeproj">
    </FileRef>

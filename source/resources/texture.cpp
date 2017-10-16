@@ -192,6 +192,8 @@ namespace hcube
 		//save size
 		m_width = width;
 		m_height = height;
+		m_format = format;
+		m_type = type;
 		//create texture
 		m_ctx_texture =
 		render::create_texture
@@ -229,6 +231,16 @@ namespace hcube
 	unsigned long texture::get_height() const
 	{
 		return m_height;
+	}
+
+	texture_format texture::get_format() const
+	{
+		return m_format;
+	}
+
+	texture_type texture::get_type() const
+	{
+		return m_type;
 	}
 
 	void texture::destoy()

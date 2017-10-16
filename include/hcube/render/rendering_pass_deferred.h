@@ -1,4 +1,5 @@
 #pragma once
+#include <hcube/config.h>
 #include <hcube/math/vector_math.h>
 #include <hcube/core/resources_manager.h>
 #include <hcube/render/shader.h>
@@ -10,9 +11,9 @@
 namespace hcube
 {
 
-	class rendering_pass_deferred :
-		public rendering_pass,
-		public smart_pointers< rendering_pass_deferred >
+	class HCUBE_API rendering_pass_deferred :
+					public rendering_pass,
+					public smart_pointers< rendering_pass_deferred >
 	{
 	public:
 		//limits
@@ -27,7 +28,8 @@ namespace hcube
                                vec4&  clear_color,
                                vec4&  ambient_color,
                                entity::ptr camera,
-                               render_scene& scene);
+                               render_scene& rscene,
+							   rendering_system& rsystem);
 
 		struct ambient_occlusion_param
 		{
@@ -42,15 +44,15 @@ namespace hcube
 
 	protected:
         
-        class ambient_light_shader
+        class HCUBE_API ambient_light_shader
         {
         public:
             shader::ptr        m_shader;
-            uniform*           m_position;
-            uniform*           m_normal;
-            uniform*           m_albedo;
-			uniform*           m_occlusion;
-            uniform*           m_ambient_light;
+            context_uniform*           m_position;
+            context_uniform*           m_normal;
+            context_uniform*           m_albedo;
+			context_uniform*           m_occlusion;
+            context_uniform*           m_ambient_light;
             
             void init(resources_manager& resources);
             void uniform(g_buffer& gbuffer,
@@ -59,15 +61,15 @@ namespace hcube
             void unbind();
         };
         
-        class spot_light_shader
+        class HCUBE_API spot_light_shader
         {
         public:            
             shader::ptr        m_shader;
 			uniform_camera	   m_camera;
-            uniform*           m_position;
-            uniform*           m_normal;
-            uniform*           m_albedo;
-            uniform*           m_occlusion;            
+            context_uniform*           m_position;
+            context_uniform*           m_normal;
+            context_uniform*           m_albedo;
+            context_uniform*           m_occlusion;            
             uniform_light_spot m_spot_light;
 			//geometry
 			uniform_transform  m_transform_cone;
@@ -78,19 +80,20 @@ namespace hcube
                       context_texture* ssao,
 					  entity::ptr t_camera,
                       const vec4& ambient_light,
-					  render_scene& rsceme,
-					  render_scene_queue_type type);
+					  render_scene& rscene,
+					  render_scene_queue_type type,
+					  rendering_system& rsystem);
         };
         
-        class point_light_shader
+        class HCUBE_API point_light_shader
         {
         public:
             shader::ptr         m_shader;
 			uniform_camera	    m_camera;
-            uniform*            m_position;
-            uniform*            m_normal;
-            uniform*            m_albedo;
-            uniform*            m_occlusion;
+            context_uniform*            m_position;
+            context_uniform*            m_normal;
+            context_uniform*            m_albedo;
+            context_uniform*            m_occlusion;
             uniform_light_point m_point_light;
 			//geometry
 			mesh::ptr			m_sphere;
@@ -100,20 +103,21 @@ namespace hcube
                       context_texture* ssao,
 					  entity::ptr t_camera,
                       const vec4& ambient_light,
-					  render_scene& rsceme,
-					  render_scene_queue_type type);
+					  render_scene& rscene,
+					  render_scene_queue_type type,
+					  rendering_system& rsystem);
         };
 
-		class direction_light_shader
+		class HCUBE_API direction_light_shader
 		{
 		public:
 
 			shader::ptr        m_shader;
 			uniform_camera	   m_camera;
-			uniform*           m_position;
-			uniform*           m_normal;
-			uniform*           m_albedo;
-			uniform*           m_occlusion;
+			context_uniform*           m_position;
+			context_uniform*           m_normal;
+			context_uniform*           m_albedo;
+			context_uniform*           m_occlusion;
 			uniform_light_direction m_direction_light;
 
 			void init(resources_manager& resources);
@@ -121,9 +125,10 @@ namespace hcube
 					  context_texture* ssao,
 					  entity::ptr t_camera,
 					  const vec4& ambient_light,
-					  render_scene& rsceme,
+					  render_scene& rscene,
 					  render_scene_queue_type type,
-					  mesh::ptr square);
+					  mesh::ptr square,
+					  rendering_system& rsystem);
 		};
         //size
         ivec2    m_q_size;
@@ -145,7 +150,7 @@ namespace hcube
 		std::vector < uniform_light_direction > m_uniform_lights_direction;
 
 		//size lights
-		uniform* m_uniform_n_lights_used;
+		context_uniform* m_uniform_n_lights_used;
 
 	};
 }

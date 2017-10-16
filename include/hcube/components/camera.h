@@ -6,8 +6,10 @@
 //  Copyright © 2016 Gabriele. All rights reserved.
 //
 #pragma once
+#include <hcube/config.h>
 #include <hcube/math/vector_math.h>
 #include <hcube/core/component.h>
+#include <hcube/core/component_register.h>
 #include <hcube/core/smart_pointers.h>
 #include <hcube/geometries/frustum.h>
 #include <hcube/render/shader.h>
@@ -15,7 +17,7 @@
 namespace hcube
 {
 
-	class camera : public component, public smart_pointers< camera >
+	class HCUBE_API camera : public component, public smart_pointers< camera >
 	{
 
 		HCUBE_COMPONENT_DEC(camera)
@@ -56,11 +58,11 @@ namespace hcube
 
 	struct uniform_camera
 	{
-		uniform* m_uniform_viewport{ nullptr };
-		uniform* m_uniform_projection{ nullptr };
-		uniform* m_uniform_view{ nullptr };
-		uniform* m_uniform_model{ nullptr };
-		uniform* m_uniform_position{ nullptr };
+		context_uniform* m_uniform_viewport{ nullptr };
+		context_uniform* m_uniform_projection{ nullptr };
+		context_uniform* m_uniform_view{ nullptr };
+		context_uniform* m_uniform_model{ nullptr };
+		context_uniform* m_uniform_position{ nullptr };
 
 		void get_uniform(shader::ptr shader);
 

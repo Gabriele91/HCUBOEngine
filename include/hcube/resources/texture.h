@@ -8,18 +8,21 @@
 #pragma once
 #include <vector>
 #include <string>
+#include <hcube/config.h>
 #include <hcube/core/resource.h>
 #include <hcube/core/smart_pointers.h>
 #include <hcube/render/render.h>
 
 namespace hcube
 {
-	class texture : public smart_pointers<texture>, public resource
+	class HCUBE_API texture : public smart_pointers<texture>, public resource
 	{
 
 		context_texture* m_ctx_texture{ nullptr };
 		unsigned long    m_width{ 0 };
 		unsigned long    m_height{ 0 };
+		texture_format	 m_format;
+		texture_type	 m_type;
 
 	public:
 
@@ -148,6 +151,8 @@ namespace hcube
 		context_texture* get_context_texture() const;
 		unsigned long    get_width() const;
 		unsigned long    get_height() const;
+		texture_format	 get_format() const;
+		texture_type	 get_type() const;
 
 		void destoy();
 

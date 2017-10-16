@@ -8,11 +8,12 @@
 #pragma once
 #include <memory>
 #include <string>
+#include <hcube/config.h>
 
 namespace hcube
 {
 	class resources_manager;
-	class resource
+	class HCUBE_API resource
 	{
 	public:
 

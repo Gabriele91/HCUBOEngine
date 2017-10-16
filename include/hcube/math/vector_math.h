@@ -53,6 +53,11 @@ namespace hcube
         {
             return glm::pi<T>();
         }
+		template <class T>
+		inline T pi2()
+		{
+			return glm::pi<T>()*((T)2.0);
+		}
     }
     
     template < class T >
@@ -108,6 +113,12 @@ namespace hcube
     {
         return glm::mix(a,b,f);
     }
+
+	template < class T, class F >
+	inline T lerp(const T& a, const T& b, const F&  f)
+	{
+		return glm::mix(a, b, f);
+	}
     
     template < class T >
     inline T traspose(const T& a)

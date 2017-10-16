@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 #include <GLFW/glfw3.h>
+#include <hcube/config.h>
 
 namespace hcube
 {
@@ -16,14 +17,23 @@ namespace hcube
 	namespace native_dialog
 	{
 
-		struct open_file_output
+		struct HCUBE_API open_file_output
 		{
 			bool        m_success;
 			std::string m_path;
 		};
 
-		open_file_output open_file_dialog(GLFWwindow* window,
-										  const std::string& title,
-									      const std::vector<std::string>& types);
+		struct HCUBE_API save_file_output
+		{
+			bool        m_success;
+			std::string m_path;
+		};
+
+		HCUBE_API  open_file_output open_file_dialog(GLFWwindow* window,
+											         const std::string& title,
+													 const std::vector<std::string>& types);
+		HCUBE_API  save_file_output save_file_dialog(GLFWwindow* window,
+													 const std::string& title,
+													 const std::vector<std::string>& types);
 	};
 }

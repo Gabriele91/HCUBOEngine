@@ -6,6 +6,7 @@
 //  Copyright © 2016 Gabriele. All rights reserved.
 //
 #pragma once
+#include <hcube/config.h>
 #include <hcube/math/vector_math.h>
 #include <hcube/core/smart_pointers.h>
 #include <hcube/core/resources_manager.h>
@@ -14,7 +15,7 @@
 
 namespace hcube
 {
-    class rendering_pass_shadow : public rendering_pass, public smart_pointers<rendering_pass_shadow>
+    class HCUBE_API rendering_pass_shadow : public rendering_pass, public smart_pointers<rendering_pass_shadow>
     {
         
         effect::ptr		   m_effect;
@@ -24,25 +25,25 @@ namespace hcube
         effect::technique* m_technique_shadow_point;
         effect::technique* m_technique_shadow_direction;
         //spot light
-        uniform*           m_shadow_spot_mask		    { nullptr };
+        context_uniform*           m_shadow_spot_mask		    { nullptr };
         //point light
-        uniform*           m_shadow_point_mask			{ nullptr };
-        uniform*           m_shadow_point_light_position{ nullptr };
-        uniform*           m_shadow_point_far_plane		{ nullptr };
+        context_uniform*           m_shadow_point_mask			{ nullptr };
+        context_uniform*           m_shadow_point_light_position{ nullptr };
+        context_uniform*           m_shadow_point_far_plane		{ nullptr };
         //direction light
-        uniform*           m_shadow_direction_mask		{ nullptr };
+        context_uniform*           m_shadow_direction_mask		{ nullptr };
         //view / projection
-        uniform*           m_shadow_spot_model      { nullptr };
-        uniform*           m_shadow_spot_view		{ nullptr };
-        uniform*           m_shadow_spot_projection { nullptr };
+        context_uniform*           m_shadow_spot_model      { nullptr };
+        context_uniform*           m_shadow_spot_view		{ nullptr };
+        context_uniform*           m_shadow_spot_projection { nullptr };
         
-        uniform*           m_shadow_point_model     { nullptr };
-        uniform*           m_shadow_point_view      { nullptr };
-        uniform*           m_shadow_point_projection{ nullptr };
+        context_uniform*           m_shadow_point_model     { nullptr };
+        context_uniform*           m_shadow_point_view      { nullptr };
+        context_uniform*           m_shadow_point_projection{ nullptr };
         
-        uniform*           m_shadow_direction_model	    { nullptr };
-        uniform*           m_shadow_direction_view	    { nullptr };
-        uniform*           m_shadow_direction_projection{ nullptr };
+        context_uniform*           m_shadow_direction_model	    { nullptr };
+        context_uniform*           m_shadow_direction_view	    { nullptr };
+        context_uniform*           m_shadow_direction_projection{ nullptr };
         
     public:
         
@@ -53,7 +54,8 @@ namespace hcube
                                vec4&  clear_color,
                                vec4&  ambient_color,
                                entity::ptr e_camera,
-                               render_scene& rscene
+                               render_scene& rscene,
+							   rendering_system& rsystem
                                );
     };
 }

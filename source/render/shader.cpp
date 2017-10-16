@@ -3,78 +3,58 @@
 #include <vector>
 #include <cstdio>
 #include <iostream>
+#include <cctype>
 #include <hcube/math/vector_math.h>
 #include <hcube/core/filesystem.h>
 #include <hcube/render/render.h>
-#include <hcube/render/OpenGL4.h>
 #include <hcube/render/shader.h>
+#include <hcube/core/resources_manager.h>
 
 namespace hcube
 {
 
-static const char default_glsl_defines[] =
-R"GLSL(
-//POSITION TRANSFORM
-#define ATT_POSITIONT 0
-#define ATT_NORMAL0   1
-#define ATT_TEXCOORD0 2
-#define ATT_TANGENT0  3
-#define ATT_BINORMAL0 4
-#define ATT_COLOR0    5
+	#pragma region "Shader parser"
 
-//POSITION 0
-#define ATT_POSITION0 6
-#define ATT_NORMAL1   7
-#define ATT_TEXCOORD1 8
-#define ATT_TANGENT1  9
-#define ATT_BINORMAL1 10
-#define ATT_COLOR1    11
-
-//POSITION 1
-#define ATT_POSITION1 12
-#define ATT_NORMAL2   13
-#define ATT_TEXCOORD2 14
-#define ATT_TANGENT2  15
-#define ATT_BINORMAL2 16
-#define ATT_COLOR2    17
-)GLSL";
-
-	static const char* glsl_type_to_string(GLenum type)
-	{
-		switch (type)
-		{
-		case GL_BOOL: return "bool";
-		case GL_INT: return "int";
-		case GL_FLOAT: return "float";
-		case GL_FLOAT_VEC2: return "vec2";
-		case GL_FLOAT_VEC3: return "vec3";
-		case GL_FLOAT_VEC4: return "vec4";
-		case GL_FLOAT_MAT2: return "mat2";
-		case GL_FLOAT_MAT3: return "mat3";
-		case GL_FLOAT_MAT4: return "mat4";
-		case GL_SAMPLER_2D: return "sampler2D";
-		case GL_SAMPLER_3D: return "sampler3D";
-		case GL_SAMPLER_CUBE: return "samplerCube";
-		case GL_SAMPLER_2D_SHADOW: return "sampler2DShadow";
-		default: break;
-		}
-		return "other";
-	}
-
-
+    enum vendor_error_type
+    {
+        VET_INTEL,
+        VET_NVIDIA,
+        VET_AMD,
+        VET_UNKNOW
+    };
+    
+    static vendor_error_type get_type_of_error()
+    {
+        std::string vendor = render::get_render_driver_info().m_name;
+        std::transform(vendor.begin(), vendor.end(), vendor.begin(), ::tolower);
+        if(vendor.find("intel")  != std::string::npos)  return VET_INTEL;
+        if(vendor.find("amd")    != std::string::npos)    return VET_AMD;
+        if(vendor.find("nvidia") != std::string::npos) return VET_NVIDIA;
+        return VET_UNKNOW;
+    }
+    
 	static void skeep_error_line_space(const char*& inout)
 	{
 		while ((*inout) == ' ' || (*inout) == '\t' || (*inout) == '\r') ++(inout);
-	}
-
-	static bool parse_error_file_id(const char* in, const char** cout, int& out)
-	{
-		skeep_error_line_space(in);
-		out = (int)std::strtod(in, (char**)cout);
-		return in != (*cout);
-	}
-
-	static std::string parsing_error_log(shader::filepath_map& filepath_map, const char* error)
+    }
+    
+    static bool generic_parse_error_file_id(const char* in, const char** cout, int& out)
+    {
+        //jump all
+        while(*in && (!std::isdigit(*in))) ++in;
+        //parse
+        out = (int)std::strtod(in, (char**)cout);
+        return in != (*cout);
+    }
+    
+    static bool nvidia_parse_error_file_id(const char* in, const char** cout, int& out)
+    {
+        skeep_error_line_space(in);
+        out = (int)std::strtod(in, (char**)cout);
+        return in != (*cout);
+    }
+    
+    static std::string parsing_error_log(const shader::filepath_map& filepath_map, const char* error)
 	{
 		std::stringstream stream_error(error);
 		std::string error_line;
@@ -85,48 +65,42 @@ R"GLSL(
 			const char* c_error_line_in  = error_line.c_str();
 			const char* c_error_line_out = c_error_line_in;
 			int line_id = -1;
-			if (parse_error_file_id(c_error_line_in, &c_error_line_out, line_id))
-			{
-				//get file path
-				auto it_filepat_map = filepath_map.find(line_id);
-				//put file path to output
-				if (it_filepat_map != filepath_map.end())
-				{
-					stream_output << it_filepat_map->second << " : ";
-					stream_output << c_error_line_out << "\n";
-					continue;
-				}
-			}
-			//put file path to output
-			stream_output << error_line << "\n";
+            bool error_id_found = false;
+            //type
+            //render info
+            vendor_error_type type = get_type_of_error();
+            //parsing by type
+            switch (type)
+            {
+                default:
+                case VET_AMD:
+                case VET_INTEL:
+                    error_id_found = generic_parse_error_file_id(c_error_line_in, &c_error_line_out, line_id);
+                break;
+                //AMD/NVIDIA
+                case VET_NVIDIA:
+                    error_id_found = nvidia_parse_error_file_id(c_error_line_in, &c_error_line_out, line_id);
+                break;
+            }
+            
+            if (error_id_found)
+            {
+                //get file path
+                auto it_filepath_map = filepath_map.find(line_id);
+                //put file path to output
+                if (it_filepath_map != filepath_map.end())
+                {
+                    stream_output << it_filepath_map->second << ", line ";
+                    stream_output << c_error_line_out << "\n";
+                    continue;
+                }
+            }
+            //default output
+            stream_output << error_line << "\n";
 		}
 		return stream_output.str();
 	}
-
-	static bool log_error(shader::filepath_map& filepath_map,
-						  unsigned int shader,
-						  int status, 
-						  const std::string& type)
-	{
-		if (!status)
-		{
-			//get len
-			GLint info_len = 0;
-			glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &info_len);
-			//print
-			if (info_len > 1)
-			{
-				char* info_log = (char*)malloc(sizeof(char) * info_len);
-				glGetShaderInfoLog(shader, info_len, NULL, info_log);
-				std::cout << type << ", error compiling shader:\n" << parsing_error_log(filepath_map,info_log) << std::endl;
-				free(info_log);
-			}
-			return false;
-		}
-		return true;
-	}
-
-
+		
 	inline void jmp_spaces(const char*& str)
 	{
 		//jump space chars
@@ -214,7 +188,79 @@ R"GLSL(
 		return false;
 	}
 
-	inline bool process_include(shader::filepath_map& filepath_map, 
+	inline bool parse_cinclude(const char* in_out, std::string& out, size_t& line)
+	{
+		const char *tmp = in_out;
+		out = "";
+		//start parse
+		if ((*tmp) == '<')  //["...."]
+		{
+			++tmp;  //[...."]
+			while ((*tmp) != '>' && (*tmp) != '\n')
+			{
+				if ((*tmp) == '\\') //[\.]
+				{
+					++tmp;  //[.]
+					switch (*tmp)
+					{
+					case 'n':
+						out += '\n';
+						break;
+					case 't':
+						out += '\t';
+						break;
+					case 'b':
+						out += '\b';
+						break;
+					case 'r':
+						out += '\r';
+						break;
+					case 'f':
+						out += '\f';
+						break;
+					case 'a':
+						out += '\a';
+						break;
+					case '\\':
+						out += '\\';
+						break;
+					case '?':
+						out += '\?';
+						break;
+					case '\'':
+						out += '\'';
+						break;
+					case '\"':
+						out += '\"';
+						break;
+					case '\n': /* jump unix */
+						++line;
+						break;
+					case '\r': /* jump mac */
+						++line;
+						if ((*(tmp + 1)) == '\n') ++tmp; /* jump window (\r\n)*/
+						break;
+					default:
+						return true;
+						break;
+					}
+				}
+				else
+				{
+					if ((*tmp) != '\0') out += (*tmp);
+					else return false;
+				}
+				++tmp;//next char
+			}
+			if ((*tmp) == '\n') return false;
+			in_out = tmp + 1;
+			return true;
+		}
+		return false;
+	}
+
+	inline bool process_include(resources_manager* rs_manager, 
+								shader::filepath_map& filepath_map,
 								std::string& output,
 								const std::string& path_file,
 								size_t& n_files,
@@ -224,7 +270,7 @@ R"GLSL(
 		if (level > 16)
 		{
 			std::cout << "effect shader, header inclusion depth limit reached:" << std::endl
-				<< "might be caused by cyclic header inclusion" << std::endl;
+					  << "might be caused by cyclic header inclusion" << std::endl;
 			return false;
 		}
 		//get base dir
@@ -264,16 +310,25 @@ R"GLSL(
 					//jmp space
 					jmp_spaces(c_effect_line);
 					//path
+					std::string file_name;
 					std::string path_include;
 					//path
 					std::string output_include;
 					//get path
-					if (!parse_cstring(c_effect_line, path_include, line))
+					if (parse_cstring(c_effect_line, file_name, line))
 					{
-						return false;
+						path_include = filedir + "/" + file_name;
+					}
+					else
+					{
+						if (!rs_manager || !parse_cinclude(c_effect_line, file_name, line))
+						{
+							return false;
+						}
+						path_include = rs_manager->get_shader_path(file_name);
 					}
 					//add include
-					if (!process_include(filepath_map,output_include, filedir + "/" + path_include, n_files, level + 1))
+					if (!process_include(rs_manager, filepath_map, output_include, path_include, n_files, level + 1))
 					{
 						return false;
 					}
@@ -288,12 +343,15 @@ R"GLSL(
 		return true;
 	}
 
-	inline bool process_import(shader::filepath_map& filepath_map,
+	inline bool process_import(resources_manager* rs_manager,
+							   shader::filepath_map& filepath_map,
 							   std::stringstream& effect, 
 							   const std::string& path_effect_file,
 							   std::string& out_vertex,
 							   std::string& out_fragment,
 							   std::string& out_geometry,
+							   std::string& out_tass_control,
+							   std::string& out_tass_eval,
 							   size_t& n_files,
 							   size_t line  /* = 0*/,
 							   size_t level /* = 0*/)
@@ -302,7 +360,7 @@ R"GLSL(
 		if (level > 16)
 		{
 			std::cout << "effect shader, header inclusion depth limit reached:" << std::endl
-				<< "might be caused by cyclic header inclusion" << std::endl;
+					  << "might be caused by cyclic header inclusion" << std::endl;
 			return false;
 		}
 		//state
@@ -312,6 +370,8 @@ R"GLSL(
 			P_VERTEX,
 			P_FRAGMENT,
 			P_GEOMETRY,
+			P_TASS_CONTROL,
+			P_TASS_EVAL,
 			P_SIZE
 		};
 		//strings
@@ -323,6 +383,8 @@ R"GLSL(
 		std::string& vertex = buffers[P_VERTEX];
 		std::string& fragment = buffers[P_FRAGMENT];
 		std::string& geometry = buffers[P_GEOMETRY];
+		std::string& tass_control = buffers[P_TASS_CONTROL];
+		std::string& tass_eval = buffers[P_TASS_EVAL];
 		//start state
 		parsing_state state = P_ALL;
 		//line buffer
@@ -348,7 +410,13 @@ R"GLSL(
 				//jmp space
 				jmp_spaces(c_effect_line);
 				//type
-				if (compare_and_jmp_keyword(c_effect_line, "vertex"))
+				if (compare_and_jmp_keyword(c_effect_line, "all"))
+				{
+					state = P_ALL;
+					all += "#line " + std::to_string(line + 1) + " " + std::to_string(this_file) + "\n";
+					continue;
+				}
+				else if (compare_and_jmp_keyword(c_effect_line, "vertex"))
 				{
 					state = P_VERTEX;
 					vertex += "#line " + std::to_string(line + 1) + " " + std::to_string(this_file) + "\n";
@@ -366,21 +434,47 @@ R"GLSL(
 					geometry += "#line " + std::to_string(line + 1) + " " + std::to_string(this_file) + "\n";
 					continue;
 				}
+				else if (compare_and_jmp_keyword(c_effect_line, "tass") || compare_and_jmp_keyword(c_effect_line, "tessellation"))
+				{
+					//jmp space
+					jmp_spaces(c_effect_line);
+					//test type of tessellation
+					if (compare_and_jmp_keyword(c_effect_line, "control"))
+					{
+						state = P_TASS_CONTROL;
+						tass_control += "#line " + std::to_string(line + 1) + " " + std::to_string(this_file) + "\n";
+					}
+					else if (compare_and_jmp_keyword(c_effect_line, "eval"))
+					{
+						state = P_TASS_EVAL;
+						tass_eval += "#line " + std::to_string(line + 1) + " " + std::to_string(this_file) + "\n";
+					}
+					continue;
+				}
 				else if (compare_and_jmp_keyword(c_effect_line, "include"))
 				{
 					//jmp space
 					jmp_spaces(c_effect_line);
 					//path
-					std::string path_include;
+					std::string file_name;
+					std::string path_include; 
 					//path
 					std::string output_include;
 					//get path
-					if (!parse_cstring(c_effect_line, path_include, line))
+					if (parse_cstring(c_effect_line, file_name, line))
 					{
-						return false;
+						path_include = filedir + "/" + file_name;
+					}
+					else
+					{
+						if (!rs_manager || !parse_cinclude(c_effect_line, file_name, line))
+						{
+							return false;
+						}
+						path_include = rs_manager->get_shader_path(file_name);
 					}
 					//add include
-					if (!process_include(filepath_map,output_include, filedir + "/" + path_include, n_files, level + 1))
+					if (!process_include(rs_manager, filepath_map, output_include, path_include, n_files, level + 1))
 					{
 						return false;
 					}
@@ -394,26 +488,44 @@ R"GLSL(
 					//jmp space
 					jmp_spaces(c_effect_line);
 					//path
-					std::string path_include;
+					std::string file_name;
+					std::string import_path;			
 					//get path
-					if (!parse_cstring(c_effect_line, path_include, line))
+					if (parse_cstring(c_effect_line, file_name, line))
 					{
-						return false;
+						import_path = filedir + "/" + file_name;
 					}
-					//path
-					std::string import_path = filedir + "/" + path_include;
+					else
+					{
+						if (!rs_manager || !parse_cinclude(c_effect_line, file_name, line))
+						{
+							return false;
+						}
+						import_path = rs_manager->get_shader_path(file_name);
+					}
 					//input stream
 					std::stringstream import_effect(filesystem::text_file_read_all(import_path));
 					//add include
-					if (!process_import(filepath_map, import_effect, import_path, vertex, fragment, geometry, n_files, line, level + 1))
+					if (!process_import(rs_manager,
+										filepath_map, 
+										import_effect, 
+										import_path, 
+										vertex, 
+										fragment, 
+										geometry,
+										tass_control,
+										tass_eval,
+									    n_files, line, level + 1))
 					{
 						return false;
 					}
 					//lines
 					std::string current_line = "#line " + std::to_string(line + 1) + " " + std::to_string(this_file) + "\n";
-					buffers[P_VERTEX] += current_line;
-					buffers[P_FRAGMENT] += current_line;
-					buffers[P_GEOMETRY] += geometry.size() ? current_line : "";
+					buffers[P_VERTEX]		+= current_line;
+					buffers[P_FRAGMENT]		+= current_line;
+					buffers[P_GEOMETRY]		+= geometry.size() ? current_line : "";
+					buffers[P_TASS_CONTROL] += tass_control.size() ? current_line : "";
+					buffers[P_TASS_EVAL]	+= tass_eval.size() ? current_line : "";
 					continue;
 				}
 			}
@@ -421,11 +533,49 @@ R"GLSL(
 			buffers[state] += effect_line; buffers[state] += "\n";
 		}
 		//copy output
-		out_vertex = all + vertex;
-		out_fragment = all + fragment;
-		out_geometry = geometry.size() ? all + geometry : "";
+		out_vertex		 += all + vertex;
+		out_fragment	 += all + fragment;
+		out_geometry	 += geometry.size()     || out_geometry.size()     ? all + geometry     : "";
+		out_tass_control += tass_control.size() || out_tass_control.size() ? all + tass_control : "";
+		out_tass_eval    += tass_eval.size()    || out_tass_eval.size()    ? all + tass_eval    : "";
 
 		return true;
+	}
+
+	#pragma endregion 
+
+	bool shader::load(resources_manager& resources, const std::string& effect_file)
+
+	{
+		//id file
+		size_t  this_file = 0;
+		//buffers
+		std::string vertex, fragment, geometry, tcontrol, teval;
+		//input stream
+		std::stringstream stream_effect(filesystem::text_file_read_all(effect_file));
+		//process
+		if (!process_import(&resources,
+							m_file_path_id,
+							stream_effect,
+							effect_file,
+							vertex,
+							fragment,
+							geometry,
+							tcontrol,
+							teval,
+							this_file,
+							0, //line 0
+							0  //file 0
+						)) return false;
+		//load shader
+		return load_shader(
+			vertex, 0,
+			fragment, 0,
+			geometry, 0,
+			tcontrol, 0,
+			teval, 0,
+			{}
+		);
 	}
 
 	bool shader::load(const std::string& effect_file,
@@ -434,17 +584,20 @@ R"GLSL(
 		//id file
 		size_t  this_file = 0;
 		//buffers
-		std::string vertex, fragment, geometry;
+		std::string vertex, fragment, geometry, tcontrol, teval;
 		//input stream
 		std::stringstream stream_effect(filesystem::text_file_read_all(effect_file));
 		//process
-		if (!process_import(m_file_path_id, 
+		if (!process_import(nullptr,
+							m_file_path_id, 
 							stream_effect,
 						    effect_file,
 							vertex, 
 							fragment, 
 							geometry, 
-							this_file, 
+							tcontrol,
+							teval,			
+							this_file,
 							0, //line 0
 							0  //file 0
                             )) return false;
@@ -452,6 +605,8 @@ R"GLSL(
 		return load_shader(vertex, 0,
 						   fragment, 0,
 						   geometry, 0,
+						   tcontrol, 0,
+			               teval, 0,
 						   defines);
 	}
 
@@ -465,16 +620,19 @@ R"GLSL(
 		//id file
 		size_t  this_file = 0;
 		//buffers
-		std::string vertex, fragment, geometry;
+		std::string vertex, fragment, geometry, tcontrol, teval;
 		//input stream
 		std::stringstream stream_effect(effect);
 		//process
-		if (!process_import(m_file_path_id,
+		if (!process_import(nullptr,
+						    m_file_path_id,
 							stream_effect,
 							effect_file,
 							vertex,
 							fragment,
 							geometry,
+							tcontrol,
+							teval,
 							this_file,
 						    line_effect,
 							0)) return false;
@@ -482,370 +640,153 @@ R"GLSL(
 		return load_shader(vertex, 0,
 						  fragment, 0,
 						  geometry, 0,
+						  tcontrol, 0,
+						  teval, 0,
 						  defines);
 	}
 
-	bool shader::load(const std::string& vs_file,
-		              const std::string& fs_file,
-                      const std::string& gs_file,
-                      const preprocess_map& defines)
+
+	bool shader::load_effect(resources_manager& resources,
+							 const std::string& effect,
+							 const std::string& effect_file,
+							 const preprocess_map& defines,
+							 const size_t line_effect)
+
 	{
-		return load_shader
-		(
-			filesystem::text_file_read_all(vs_file),                       0,
-			filesystem::text_file_read_all(fs_file),                       0,
-			gs_file.size() ? filesystem::text_file_read_all(gs_file) : "", 0,
+
+		//id file
+		size_t  this_file = 0;
+		//buffers
+		std::string vertex, fragment, geometry, tcontrol, teval;
+		//input stream
+		std::stringstream stream_effect(effect);
+		//process
+		if (!process_import(&resources,
+							m_file_path_id,
+							stream_effect,
+							effect_file,
+							vertex,
+							fragment,
+							geometry,
+							tcontrol,
+							teval,
+							this_file,
+							line_effect,
+							0)) return false;
+		//load shader
+		return load_shader(
+			vertex, 0,
+			fragment, 0,
+			geometry, 0,
+			tcontrol, 0,
+			teval, 0,
 			defines
 		);
 	}
 
+
 	bool shader::load_shader(const std::string& vs_str,const size_t line_vs,
 						     const std::string& fs_str,const size_t line_fs,
 							 const std::string& gs_str,const size_t line_gs,
+							 const std::string& tcs_str,const size_t line_tcs,
+							 const std::string& tes_str,const size_t line_tes,
 							 const preprocess_map& all_process)
 	{
 		bool success_to_compile = true;
 		//delete last shader
-		delete_program();
-		//int variables
-		GLint compiled = 0, linked = 0;
-        //version is defined?
-        bool version_is_defined = false;
+		if (m_shader) render::delete_shader(m_shader);
+		//int shader version
+		int shader_version = 410;
 		//list define
-		std::string defines_string;
+		std::string header_string;
         //defines
         for (auto& p : all_process)
         {
             //get version
-            if(std::get<0>(p)=="version"){ version_is_defined = true; }
+            if(std::get<0>(p)=="version")
+			{
+				shader_version = std::atoi(std::get<1>(p).c_str());
+				continue;
+			}
             //add
-            defines_string += "#" + std::get<0>(p) +" "+ std::get<1>(p) + "\n";
+			header_string += "#" + std::get<0>(p) +" "+ std::get<1>(p) + "\n";
         }
         ////////////////////////////////////////////////////////////////////////////////
         //define version
-        if(!version_is_defined) defines_string="#version 410\n"+defines_string;
+		header_string = "#version " + std::to_string(410) + "\n" + header_string;
 		////////////////////////////////////////////////////////////////////////////////
-		// load shaders files
-		// vertex
-		std::string file_vs =
-			defines_string +
-			default_glsl_defines +
-            "#define cbuffer     layout(std140) uniform     \n"
-			"#define saturate(x) clamp( x, 0.0, 1.0 )       \n"
-			"#define lerp        mix                        \n"
-			"#line " + std::to_string(line_vs) + "\n" +
-			vs_str;
-		//create a vertex shader
-		m_shader_vs = glCreateShader(GL_VERTEX_SHADER);
-		const char* c_vs_source = file_vs.c_str();
-		glShaderSource(m_shader_vs, 1, &c_vs_source, 0);
-		//compiling
-		compiled = 0;
-		glCompileShader(m_shader_vs);
-		glGetShaderiv(m_shader_vs, GL_COMPILE_STATUS, &compiled);
-		if (!log_error(m_file_path_id,m_shader_vs, compiled, "vertex shader"))
-        {
-            glDeleteShader(m_shader_vs);
-            m_shader_vs=0;
-			success_to_compile = false;
-        }
-		////////////////////////////////////////////////////////////////////////////////
-		//fragmentx
-		std::string file_fs =
-			defines_string +
-            default_glsl_defines +
-            "#define cbuffer     layout(std140) uniform     \n"
-			"#define saturate(x) clamp( x, 0.0, 1.0 )       \n"
-			"#define lerp        mix                        \n"
-			"#define bestp                                  \n"
-			"#define highp                                  \n"
-			"#define mediump                                \n"
-			"#define lowp                                   \n"
-			"#line " + std::to_string(line_fs) + "\n" +
-			fs_str;
-		//create a fragment shader
-		m_shader_fs = glCreateShader(GL_FRAGMENT_SHADER);
-		const char* c_fs_source = file_fs.c_str();
-		glShaderSource(m_shader_fs, 1, &c_fs_source, 0);
-		//compiling
-		compiled = 0;
-		glCompileShader(m_shader_fs);
-		glGetShaderiv(m_shader_fs, GL_COMPILE_STATUS, &compiled);
-		if (!log_error(m_file_path_id, m_shader_fs, compiled, "fragment shader"))
-        {
-            glDeleteShader(m_shader_fs);
-            m_shader_fs = 0;
-			success_to_compile = false;
-        }
-		////////////////////////////////////////////////////////////////////////////////
-		if (gs_str.size())
-		{
-			//geometrfs_stry
-			std::string file_gs =
-				defines_string +
-				default_glsl_defines +
-                "#define cbuffer     layout(std140) uniform     \n"
-				"#define saturate(x) clamp( x, 0.0, 1.0 )       \n"
-				"#define lerp        mix                        \n"
-				"#line " + std::to_string(line_gs) + "\n" +
-				gs_str;
-			//geometry
-			m_shader_gs = glCreateShader(GL_GEOMETRY_SHADER);
-			const char* c_gs_source = file_gs.c_str();
-			glShaderSource(m_shader_gs, 1, &(c_gs_source), 0);
-			//compiling
-			compiled = 0;
-			glCompileShader(m_shader_gs);
-			glGetShaderiv(m_shader_gs, GL_COMPILE_STATUS, &compiled);
-            if (!log_error(m_file_path_id, m_shader_gs, compiled, "Geometry"))
-            {
-                glDeleteShader(m_shader_gs);
-                m_shader_gs = 0;
-				success_to_compile = false;
-            }
-		}
-		////////////////////////////////////////////////////////////////////////////////
-		//made a shader program
-        m_shader_id = glCreateProgram();
-        if (m_shader_fs) glAttachShader(m_shader_id, m_shader_fs);
-		if (m_shader_vs) glAttachShader(m_shader_id, m_shader_vs);
-		if (m_shader_gs) glAttachShader(m_shader_id, m_shader_gs);
-		glLinkProgram(m_shader_id);
-		//get link status
-		glGetProgramiv(m_shader_id, GL_LINK_STATUS, &linked);
-		//out errors
-		if (!linked)
-		{
-            //get liking errors
-			GLint info_len = 0;
-			glGetProgramiv(m_shader_id, GL_INFO_LOG_LENGTH, &info_len);
-			if (info_len)
-			{
-				char* info_log = (char*)malloc(sizeof(char) * info_len);
-				glGetProgramInfoLog(m_shader_id, info_len, NULL, info_log);
-				std::cout << "error linking program: \n" << parsing_error_log(m_file_path_id,info_log) << std::endl;
-				free(info_log);
-			}
-			std::cout << "error linking" << std::endl;
-			//"detach" all shaders
-			if (m_shader_fs)  glDetachShader(m_shader_id, m_shader_fs);
-			if (m_shader_vs)  glDetachShader(m_shader_id, m_shader_vs);
-			if (m_shader_gs)  glDetachShader(m_shader_id, m_shader_gs);
-			//destoy all shaders
-			if (m_shader_fs) glDeleteShader(m_shader_fs);
-			if (m_shader_vs) glDeleteShader(m_shader_vs);
-			if (m_shader_gs) glDeleteShader(m_shader_gs);
-			//destoy program
-			if(m_shader_id) glDeleteProgram(m_shader_id);
-			//all to 0
-			m_shader_vs = 0;
-			m_shader_fs = 0;
-			m_shader_gs = 0;
-			m_shader_id = 0;
-			//fail
-			success_to_compile = false;
-		}
-		return success_to_compile;
+		// load shaders from files
+		std::vector < shader_source_information > shader_infos;
+		//add
+		if(vs_str.c_str())
+			shader_infos.emplace_back(shader_source_information{ ST_VERTEX_SHADER, header_string, vs_str, line_vs });
+		if (fs_str.c_str())
+			shader_infos.emplace_back(shader_source_information{ ST_FRAGMENT_SHADER, header_string, fs_str, line_fs });
+		if (gs_str.c_str())
+			shader_infos.emplace_back(shader_source_information{ ST_GEOMETRY_SHADER, header_string, gs_str, line_gs });
+		if (tcs_str.c_str())
+			shader_infos.emplace_back(shader_source_information{ ST_TASSELLATION_CONTROL_SHADER, header_string, tcs_str, line_tcs });
+		if (tes_str.c_str())
+			shader_infos.emplace_back(shader_source_information{ ST_TASSELLATION_EVALUATION_SHADER, header_string, tes_str, line_tes });
+		//compile
+		m_shader = render::create_shader(shader_infos);
+		//return success
+		return m_shader
+		   && !render::shader_compiled_with_errors(m_shader)
+		   && !render::shader_linked_with_error(m_shader);
 	}
 
-	void shader::delete_program()
+	std::string shader::get_errors() const
 	{
-		if (m_shader_id)
+		//output
+		std::string errors;
+		//liker error:
+		if (render::shader_linked_with_error(m_shader))
 		{
-			glUseProgram(0);
-			//"stacca" gli schader dal shader program
-			glDetachShader(m_shader_id, m_shader_fs);
-			glDetachShader(m_shader_id, m_shader_vs);
-			if (m_shader_gs) glDetachShader(m_shader_id, m_shader_gs);
-			//cancella gli shader
-			glDeleteShader(m_shader_fs);
-			glDeleteShader(m_shader_vs);
-			if (m_shader_gs) glDeleteShader(m_shader_gs);
-			//cancella lo shader program
-			glDeleteProgram(m_shader_id);
-			//to null
-			m_shader_gs = 0;
-			m_shader_fs = 0;
-			m_shader_vs = 0;
-			m_shader_id = 0;
+			errors += "Liker, error to liking:\n";
+			errors += render::get_shader_liker_error(m_shader);
 		}
+		//shader errors:
+		if (render::shader_compiled_with_errors(m_shader))
+		for(const std::string& error : render::get_shader_compiler_errors(m_shader))
+		{
+			errors += "Shader, error to compile:\n";
+			errors += parsing_error_log(m_file_path_id, error.c_str());
+		}
+		//return
+		return errors;
 	}
 
 	shader::~shader()
 	{
-		delete_program();
+		//delete last shader
+		if (m_shader) render::delete_shader(m_shader);
 	}
 
 	void shader::bind()
 	{
-		//start texture uniform
-		m_uniform_ntexture = -1;
-		//uniform parogram shaders
-		glUseProgram(m_shader_id);
+		render::bind_shader(m_shader);
 	}
-
-	//get uniform id
-	int shader::get_uniform_id(const char *name)
-	{
-		return glGetUniformLocation(m_shader_id, name);
-	}
-	unsigned int shader::get_uniform_buffer_id(const char *name)
-	{
-		return glGetUniformBlockIndex(m_shader_id, name);
-	}
-
+	
 	//disabilita shader
 	void shader::unbind()
 	{
-		//disable textures
-		while (m_uniform_ntexture >= 0)
-		{
-            render::unbind_texture((int)m_uniform_ntexture);
-			--m_uniform_ntexture;
-		}
-		//disable program
-		glUseProgram(0);
+		render::unbind_shader(m_shader);
 	}
 
-	//id programma
-	unsigned int shader::program_id() const
+	//program
+	context_shader* shader::get_raw_shader() const
 	{
-		return m_shader_id;
+		return m_shader;
 	}
 
-	//uniform
-
-	void uniform::set_value(texture::ptr in_texture)
+	//get consts
+	context_uniform* shader::get_uniform(const char *name)
 	{
-		long n_texture = ++m_shader->m_uniform_ntexture;
-		//bind texture
-		render::bind_texture(in_texture->get_context_texture(), (int)n_texture);
-		//bind id
-		glUniform1i((GLint)m_id, (int)n_texture);
+		return render::get_uniform(m_shader, std::string(name));
 	}
-
-	void uniform::set_value(context_texture* in_texture)
+	context_uniform* shader::get_uniform_buffer(const char *name)
 	{
-		long n_texture = ++m_shader->m_uniform_ntexture;
-		//bind texture
-		render::bind_texture(in_texture, (int)n_texture);
-		//bind id
-		glUniform1i((GLint)m_id, (int)n_texture);
-	}
-
-	void uniform::set_value(int i)
-	{
-		glUniform1i((GLint)m_id, i);
-	}
-	void uniform::set_value(float f)
-	{
-		glUniform1f((GLint)m_id, f);
-	}
-	void uniform::set_value(const vec2& v2)
-	{
-		glUniform2fv((GLint)m_id, 1, value_ptr(v2));
-	}
-	void uniform::set_value(const vec3& v3)
-	{
-		glUniform3fv((GLint)m_id, 1, value_ptr(v3));
-	}
-	void uniform::set_value(const vec4& v4)
-	{
-		glUniform4fv((GLint)m_id, 1, value_ptr(v4));
-	}
-	void uniform::set_value(const mat3& m3)
-	{
-		glUniformMatrix3fv((GLint)m_id, 1, GL_FALSE, value_ptr(m3));
-	}
-	void uniform::set_value(const mat4& m4)
-	{
-		glUniformMatrix4fv((GLint)m_id, 1, GL_FALSE, value_ptr(m4));
-	}
-
-	void uniform::set_value(const int* i, size_t n)
-	{
-		glUniform1iv((GLint)m_id, (GLsizei)n, i);
-	}
-	void uniform::set_value(const float* f, size_t n)
-	{
-		glUniform1fv((GLint)m_id, (GLsizei)n, f);
-	}
-	void uniform::set_value(const vec2* v2, size_t n)
-	{
-		glUniform2fv((GLint)m_id, (GLsizei)n, value_ptr(*v2));
-	}
-	void uniform::set_value(const vec3* v3, size_t n)
-	{
-		glUniform3fv((GLint)m_id, (GLsizei)n, value_ptr(*v3));
-	}
-	void uniform::set_value(const vec4* v4, size_t n)
-	{
-		glUniform4fv((GLint)m_id, (GLsizei)n, value_ptr(*v4));
-	}
-	void uniform::set_value(const mat3* m3, size_t n)
-	{
-		glUniformMatrix3fv((GLint)m_id, (GLsizei)n, GL_FALSE, value_ptr(*m3));
-	}
-	void uniform::set_value(const mat4* m4, size_t n)
-	{
-		glUniformMatrix4fv((GLint)m_id, (GLsizei)n, GL_FALSE, value_ptr(*m4));
-	}
-
-	void uniform::set_value(const std::vector < int >& i)
-	{
-		set_value(i.data(), i.size());
-	}
-	void uniform::set_value(const std::vector < float >& f)
-	{
-		set_value(f.data(), f.size());
-	}
-	void uniform::set_value(const std::vector < vec2 >& v2)
-	{
-		set_value(v2.data(), v2.size());
-	}
-	void uniform::set_value(const std::vector < vec3 >& v3)
-	{
-		set_value(v3.data(), v3.size());
-	}
-	void uniform::set_value(const std::vector < vec4 >& v4)
-	{
-		set_value(v4.data(), v4.size());
-	}
-	void uniform::set_value(const std::vector < mat3 >& m3)
-	{
-		set_value(m3.data(), m3.size());
-	}
-	void uniform::set_value(const std::vector < mat4 >& m4)
-	{
-		set_value(m4.data(), m4.size());
-	}
-
-	void uniform::set_value(const context_const_buffer* buffer)
-	{
-		glUniformBlockBinding(GL_UNIFORM_BUFFER,(GLuint)m_id, (GLuint)render::get_native_CB( buffer ));
-	}
-	
-	uniform* shader::get_uniform(const char *name)
-	{
-		auto uit = m_uniform_map.find(name);
-		//if find
-		if (uit != m_uniform_map.end()) return &uit->second;
-		//else
-		int uid = get_uniform_id(name);
-		if (uid < 0) return nullptr;
-		//add and return
-		return &(m_uniform_map[name] = uniform(this, (long)uid));
-	}
-
-	uniform* shader::get_uniform_buffer(const char *name)
-	{
-		auto uit = m_uniform_map.find(name);
-		//if find
-		if (uit != m_uniform_map.end()) return &uit->second;
-		//else
-		unsigned int uid = get_uniform_buffer_id(name);
-		if (uid == GL_INVALID_INDEX) return nullptr;
-		//add and return
-		return &(m_uniform_map[name] = uniform(this, (long)uid));
+		return nullptr;
 	}
 }

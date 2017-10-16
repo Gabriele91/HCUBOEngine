@@ -7,6 +7,7 @@
 //
 #pragma once
 #include <vector>
+#include <hcube/config.h>
 #include <hcube/core/entity.h>
 #include <hcube/core/smart_pointers.h>
 
@@ -16,7 +17,7 @@ namespace hcube
 	class system_component;
 	using system_component_id = std::type_index;
 
-	class system_component
+	class HCUBE_API system_component
 	{
 	public:
 		virtual void on_attach(system_manager&) { }
@@ -37,7 +38,7 @@ namespace hcube
     public: system_component_id get_id() const { return type(); }\
     private:
 
-	class system_manager
+	class HCUBE_API system_manager
 	{
 	public:
 

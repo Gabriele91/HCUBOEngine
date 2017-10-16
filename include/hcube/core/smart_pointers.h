@@ -7,6 +7,7 @@
 //
 #pragma once
 #include <memory>
+#include <hcube/config.h>
 namespace hcube
 {
 	template < class T >

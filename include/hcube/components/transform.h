@@ -6,13 +6,16 @@
 //  Copyright © 2016 Gabriele. All rights reserved.
 //
 #pragma once
+#include <hcube/config.h>
 #include <hcube/math/vector_math.h>
 #include <hcube/core/component.h>
 #include <hcube/render/shader.h>
+#include <hcube/data/property.h>
+#include <hcube/core/component_register.h>
 
 namespace hcube
 {
-	class transform : public component
+	class HCUBE_API transform : public component
 	{
 
 		HCUBE_COMPONENT_DEC(transform)
@@ -61,6 +64,12 @@ namespace hcube
 
 		virtual component_ptr copy() const;
 
+		HCUBE_DEFINE_PROPERTIES(
+			make_property_const_get_set(&transform::get_position, &transform::rotation, "position"),
+			make_property_const_get_set(&transform::get_rotation, &transform::rotation, "rotation"),
+			make_property_const_get_set(&transform::get_scale,    &transform::scale,    "scale")
+		)
+
 	private:
 		//info
 		struct local_tranform
@@ -94,10 +103,10 @@ namespace hcube
 
 	struct uniform_transform
 	{
-		uniform* m_uniform_model   { nullptr };
-		uniform* m_uniform_position{ nullptr };
-		uniform* m_uniform_rotation{ nullptr };
-		uniform* m_uniform_scale   { nullptr };
+		context_uniform* m_uniform_model   { nullptr };
+		context_uniform* m_uniform_position{ nullptr };
+		context_uniform* m_uniform_rotation{ nullptr };
+		context_uniform* m_uniform_scale   { nullptr };
 
 		void get_uniform(shader::ptr shader);
 

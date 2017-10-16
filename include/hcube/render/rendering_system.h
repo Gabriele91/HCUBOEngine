@@ -7,6 +7,7 @@
 //
 #pragma once
 #include <vector>
+#include <hcube/config.h>
 #include <hcube/math/vector_math.h>
 #include <hcube/core/entity.h>
 #include <hcube/core/smart_pointers.h>
@@ -19,6 +20,9 @@
 namespace hcube
 {
 
+	class rendering_pass;
+	class rendering_system;
+
     enum rendering_pass_type
     {
         RPT_SHADOW,
@@ -27,7 +31,7 @@ namespace hcube
         RPT_MAX
     };
     
-	class rendering_pass
+	class HCUBE_API rendering_pass
 	{
         
 	public:
@@ -42,7 +46,8 @@ namespace hcube
 			vec4&  clear_color,
 			vec4&  ambient_color,
 			entity::ptr e_camera,
-			render_scene& rscene
+			render_scene& rscene,
+			rendering_system& rsystem
 		) = 0;
         
         rendering_pass_type get_type()
@@ -59,7 +64,7 @@ namespace hcube
 	using rendering_pass_uptr = std::unique_ptr< rendering_pass >;
 
     
-    class rendering_pass_debug_spot_lights : public rendering_pass, public smart_pointers<rendering_pass_debug_spot_lights>
+    class HCUBE_API rendering_pass_debug_spot_lights : public rendering_pass, public smart_pointers<rendering_pass_debug_spot_lights>
     {
         
         effect::ptr     m_effect;
@@ -75,11 +80,12 @@ namespace hcube
                                vec4&  clear_color,
                                vec4&  ambient_color,
                                entity::ptr e_camera,
-                               render_scene& rscene
+                               render_scene& rscene,
+							   rendering_system& rsystem
                                );
     };
 
-	class rendering_system : public system_component, public smart_pointers< rendering_system >
+	class HCUBE_API rendering_system : public system_component, public smart_pointers< rendering_system >
 	{
 
 		HCUBE_SYSTEM_COMPONENT_DEC(rendering_system);
@@ -111,6 +117,8 @@ namespace hcube
 
 		entity::ptr get_camera() const;
 
+		entity::ptr get_current_draw_camera() const;
+
 		const std::vector< rendering_pass_ptr >& get_rendering_pass(rendering_pass_type type = RPT_RENDER) const;
 
 		void stop_update_frustum(bool stop_update);
@@ -125,6 +133,7 @@ namespace hcube
 		vec4                              m_clear_color;
 		vec4                              m_ambient_color;
 		entity::ptr						  m_camera;
+		entity::ptr						  m_current_draw_camera;
 		render_scene					  m_scene;
         //all paths
 		std::vector< rendering_pass_ptr > m_rendering_pass[RPT_MAX];

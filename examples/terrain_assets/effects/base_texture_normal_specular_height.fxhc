@@ -1,0 +1,80 @@
+parameters
+{
+    mask float(-1.0)
+    height_map texture("black")
+	
+    diffuse_map  texture("white")
+	normal_map   texture("normal_up")
+    specular_map texture("black")	
+	
+    diffuse_map_1  texture("white")
+	normal_map_1    texture("normal_up")
+    specular_map_1  texture("black")
+	
+    diffuse_map_2   texture("white")
+	normal_map_2    texture("normal_up")
+    specular_map_2  texture("black")
+	
+    diffuse_map_3  texture("white")
+	normal_map_3   texture("normal_up")
+    specular_map_3 texture("black")
+	
+	uv_height_offset vec2(0.0,0.0)
+	uv_height_step vec2(1.0,1.0)
+	uv_mapping_ripetition vec2(1.0,1.0)
+	levels vec3(0.75,0.5,0.25)
+	color vec4(1.0,1.0,1.0,1.0)
+}
+
+sub_effect
+{
+    requirement
+    {
+        driver  OpenGL(4,1)
+        shader  GLSL(410)
+    }
+    
+    technique "forward"
+    {
+        pass 
+        {
+            zbuffer less
+            blend off
+            cullface back
+            lights only_ambient
+            shader source 
+            {
+                #define FORWARD_RENDERING
+				#pragma import <terrain_shader>    
+            }
+        }
+        pass 
+        {
+            zbuffer equal
+            blend one one
+            cullface back
+            lights spot_point_direction
+            shader source 
+            {
+                #define FORWARD_RENDERING
+				#pragma import <terrain_shader>    
+            }
+        }
+    }
+
+    technique "deferred"
+    {
+        pass
+        {
+            zbuffer less
+            blend off
+            cullface back
+            lights off
+            shader source
+            {
+                #define DEFERRED_RENDERING
+				#pragma import <terrain_shader>          
+			}
+        }
+    }
+}

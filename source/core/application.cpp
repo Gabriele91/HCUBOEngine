@@ -93,6 +93,16 @@ namespace hcube
 		return m_window;
 	}
 
+	const instance* application::get_instance() const
+	{
+		return m_instance;
+	}
+
+	const GLFWwindow* application::get_window() const
+	{
+		return m_window;
+	}
+
 	window_size_pixel::window_size_pixel(const ivec2& size)
 	{
 		m_size = size;
@@ -125,7 +135,8 @@ namespace hcube
 		int major_gl_ctx,
 		int minor_gl_ctx,
 		const std::string& app_name,
-		instance* app
+		instance* app,
+		size_t n_workers
 	)
 	{
 		//save
@@ -233,6 +244,8 @@ namespace hcube
 			//call
 			l_app->get_instance()->resize_event(*l_app, ivec2{ width,height });
 		});
+		//init thread pool
+		init_threads_pool(n_workers);
 		//start
 		m_instance->start(*this);
 		render::print_errors();
@@ -245,6 +258,10 @@ namespace hcube
 			//compute delta time
 			old_time = last_time;
 			last_time = query_performance::get_time();
+			//execute main task
+			execute_a_main_task();
+			//print
+			render::print_errors();
 			//update delta time
 			m_last_delta_time = std::max(last_time - old_time, 0.0001);
 			//update
@@ -256,6 +273,8 @@ namespace hcube
 			glfwPollEvents();
 		}
 		bool end_state = m_instance->end(*this);
+		//stop thread pool
+		delete_threads_pool();
 		//dealloc
 		delete m_instance;
 		m_instance = nullptr;
@@ -268,5 +287,43 @@ namespace hcube
 		m_instance = nullptr;
 		//return status
 		return end_state;
+	}
+
+
+	bool application::is_fullscreen() const
+	{
+		return glfwGetWindowMonitor((GLFWwindow*)get_window()) != nullptr;
+	}
+
+	void application::set_window_size(const dvec2& pos, const dvec2& size)
+	{
+		glfwSetWindowMonitor(
+			  get_window()
+			, nullptr
+			, pos.x
+			, pos.y
+			, size.x
+			, size.y
+			, 60
+		);
+	}
+
+	void application::set_fullscreen_size(const dvec2& size)
+	{
+		int m_count = 0;
+		GLFWmonitor** monitors = glfwGetMonitors(&m_count);
+		if (m_count)
+		{
+			const GLFWvidmode* monitor_mode = glfwGetVideoMode(monitors[0]);
+			glfwSetWindowMonitor(
+				get_window()
+				, monitors[0]
+				, 0
+				, 0
+				, size.x
+				, size.y
+				, 60
+			);
+		}
 	}
 }

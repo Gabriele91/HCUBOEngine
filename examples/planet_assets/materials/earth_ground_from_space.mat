@@ -1,0 +1,5 @@
+effect "planet_ground"
+{
+	diffuse_map  texture("earth_color")
+	color        vec4(1.0,1.0,1.0,1.0)
+}

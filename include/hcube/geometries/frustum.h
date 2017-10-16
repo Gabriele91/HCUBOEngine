@@ -1,9 +1,11 @@
 #pragma once
+#include <hcube/config.h>
 #include <hcube/math/vector_math.h>
+
 
 namespace hcube
 {
-	class frustum
+	class HCUBE_API frustum
 	{
 	public:
 

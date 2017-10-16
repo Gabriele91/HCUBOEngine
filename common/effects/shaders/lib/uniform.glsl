@@ -1,3 +1,5 @@
+#ifndef UNIFORM_GLSL
+#define UNIFORM_GLSL
 
 struct __CAMERA__
 {
@@ -17,3 +19,5 @@ struct __TRANSFORM__
 	vec3 m_scale;
 };
 uniform __TRANSFORM__ transform;
+
+#endif

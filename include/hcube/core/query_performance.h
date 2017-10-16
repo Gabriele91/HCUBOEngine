@@ -6,16 +6,17 @@
 //  Copyright © 2016 Gabriele. All rights reserved.
 //
 #pragma once
+#include <hcube/config.h>
 
 namespace hcube
 {
 	namespace query_performance
 	{
 		//get time
-		extern long long get_ticks();
+		HCUBE_API long long get_ticks();
 		//time
-		extern double get_time();
+		HCUBE_API double get_time();
 		//time
-		extern double get_time_ms();
+		HCUBE_API double get_time_ms();
 	}
 }
