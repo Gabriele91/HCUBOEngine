@@ -188,7 +188,9 @@
     <ClInclude Include="..\include\hcube\data\dump\variant_dump.h" />
     <ClInclude Include="..\include\hcube\data\json.h" />
     <ClInclude Include="..\include\hcube\data\parser\effect_parser.h" />
+    <ClInclude Include="..\include\hcube\data\parser\error_field_parser.h" />
     <ClInclude Include="..\include\hcube\data\parser\material_parser.h" />
+    <ClInclude Include="..\include\hcube\data\parser\parameters_block_parser.h" />
     <ClInclude Include="..\include\hcube\data\parser\properties_parser.h" />
     <ClInclude Include="..\include\hcube\data\parser\utils_parser.h" />
     <ClInclude Include="..\include\hcube\data\parser\variant_parser.h" />

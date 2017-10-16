@@ -276,6 +276,12 @@
     <ClInclude Include="..\include\hcube\geometries\aabb.h">
       <Filter>File di intestazione\hcube\geometries</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\hcube\data\parser\error_field_parser.h">
+      <Filter>File di intestazione\hcube\data\parser</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\hcube\data\parser\parameters_block_parser.h">
+      <Filter>File di intestazione\hcube\data\parser</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\render\effect.cpp">
